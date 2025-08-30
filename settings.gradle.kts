@@ -1,4 +1,6 @@
 pluginManagement {
+    includeBuild("build-logic")
+
     repositories {
         google {
             content {
@@ -19,9 +21,7 @@ dependencyResolutionManagement {
     }
 }
 
-includeBuild("build-logic")
 
 
 rootProject.name = "Depromeet"
 include(":app")
- 

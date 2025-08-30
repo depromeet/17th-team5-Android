@@ -28,3 +28,13 @@ dependencies {
 //    compileOnly(libs.room.gradlePlugin)
     implementation(libs.truth)
 }
+
+gradlePlugin {
+    plugins {
+
+        register("AndroidApplication") {
+            id = libs.plugins.depromeet.team5.application.get().pluginId
+            implementationClass = "AndroidApplicationConventionPlugin"
+        }
+    }
+}

@@ -19,6 +19,9 @@ dependencyResolutionManagement {
     }
 }
 
+includeBuild("build-logic")
+
+
 rootProject.name = "Depromeet"
 include(":app")
  

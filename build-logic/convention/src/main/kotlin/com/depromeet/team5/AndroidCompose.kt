@@ -5,8 +5,6 @@ import org.gradle.api.Project
 import org.gradle.kotlin.dsl.dependencies
 
 internal fun Project.configureAndroidCompose(commonExtension: CommonExtension<*, *, *, *, *, *>) {
-    val libs = findVersionCatalog()
-
     commonExtension.apply {
         buildFeatures.compose = true
     }

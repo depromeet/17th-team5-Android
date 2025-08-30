@@ -64,4 +64,5 @@ ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 android-library = { id = "com.android.library", version.ref = "agp" }
 
 # Custom Plugins
-depromeet_team5_application = { id = "com.depromeet.team5.application", version = "unspecified"}
+depromeet_team5_application = { id = "com.depromeet.team5.application", version = "unspecified" }
+depromeet_team5_library = { id = "com.depromeet.team5.library", version = "unspecified" }

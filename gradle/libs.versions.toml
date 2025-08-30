@@ -82,4 +82,5 @@ android-library = { id = "com.android.library", version.ref = "agp" }
 
 # Custom Plugins
 depromeet-team5-application = { id = "com.depromeet.team5.application", version = "unspecified" }
+depromeet-team5-application-compose = { id = "com.depromeet.team5.application.compose", version = "unspecified" }
 depromeet-team5-library = { id = "com.depromeet.team5.library", version = "unspecified" }

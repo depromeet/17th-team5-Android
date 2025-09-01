@@ -33,8 +33,23 @@ gradlePlugin {
     plugins {
 
         register("AndroidApplication") {
-            id = libs.plugins.depromeet.team5.application.get().pluginId
+            id = libs.plugins.depromeet.team5.application.asProvider().get().pluginId
             implementationClass = "AndroidApplicationConventionPlugin"
+        }
+
+        register("AndroidApplicationCompose") {
+            id = libs.plugins.depromeet.team5.application.compose.get().pluginId
+            implementationClass = "AndroidApplicationComposeConventionPlugin"
+        }
+
+        register("AndroidLibrary") {
+            id = libs.plugins.depromeet.team5.library.asProvider().get().pluginId
+            implementationClass = "AndroidLibraryConventionPlugin"
+        }
+
+        register("AndroidLibraryCompose") {
+            id = libs.plugins.depromeet.team5.library.compose.get().pluginId
+            implementationClass = "AndroidLibraryComposeConventionPlugin"
         }
     }
 }

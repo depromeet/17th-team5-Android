@@ -1,8 +1,7 @@
 plugins {
     alias(libs.plugins.depromeet.team5.application)
     alias(libs.plugins.depromeet.team5.application.compose)
-    alias(libs.plugins.hilt)
-    alias(libs.plugins.ksp)
+    alias(libs.plugins.depromeet.team5.hilt)
 }
 
 android {
@@ -31,9 +30,6 @@ android {
 dependencies {
 
     implementation(libs.androidx.core.ktx)
-
-    implementation(libs.hilt.android)
-    ksp(libs.hilt.android.compiler)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

@@ -33,6 +33,7 @@ androidx-material3 = { group = "androidx.compose.material3", name = "material3" 
 #hilt
 hilt-android = { group = "com.google.dagger", name = "hilt-android", version.ref = "hilt" }
 hilt-android-compiler = { group = "com.google.dagger", name = "hilt-android-compiler", version.ref = "hilt" }
+hilt-gradlePlugin = { group = "com.google.dagger", name = "hilt-android-gradle-plugin", version.ref = "hilt" }
 
 #test
 junit = { group = "junit", name = "junit", version.ref = "junit" }
@@ -85,3 +86,4 @@ depromeet-team5-application = { id = "com.depromeet.team5.application", version 
 depromeet-team5-application-compose = { id = "com.depromeet.team5.application.compose", version = "unspecified" }
 depromeet-team5-library = { id = "com.depromeet.team5.library", version = "unspecified" }
 depromeet-team5-library-compose = { id = "com.depromeet.team5.library.compose", version = "unspecified" }
+depromeet-team5-hilt = { id = "com.depromeet.team5.hilt", version = "unspecified" }

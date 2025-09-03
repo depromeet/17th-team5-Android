@@ -1,3 +1,5 @@
+import com.depromeet.team5.implementation
+import com.depromeet.team5.ksp
 import com.depromeet.team5.libs
 import org.gradle.api.Plugin
 import org.gradle.api.Project
@@ -12,8 +14,8 @@ class AndroidHiltConventionPlugin : Plugin<Project> {
         }
 
         dependencies {
-            add("implementation", libs.findLibrary("hilt-android").get())
-            add("ksp", libs.findLibrary("hilt-android-compiler").get())
+            implementation(libs.findLibrary("hilt-android"))
+            ksp(libs.findLibrary("hilt-android-compiler").get())
         }
     }
 }

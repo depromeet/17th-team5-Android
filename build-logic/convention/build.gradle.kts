@@ -51,5 +51,10 @@ gradlePlugin {
             id = libs.plugins.depromeet.team5.library.compose.get().pluginId
             implementationClass = "AndroidLibraryComposeConventionPlugin"
         }
+
+        register("Hilt") {
+            id = libs.plugins.depromeet.team5.hilt.get().pluginId
+            implementationClass = "AndroidHiltConventionPlugin"
+        }
     }
 }

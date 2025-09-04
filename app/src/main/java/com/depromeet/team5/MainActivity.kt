@@ -9,19 +9,32 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import com.depromeet.team5.core.domain.usecase.TestUseCase
 import com.depromeet.team5.ui.theme.DepromeetTheme
 
 class MainActivity : ComponentActivity() {
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
             DepromeetTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
+                    var text by remember { mutableStateOf("") }
+
+                    LaunchedEffect(Unit) {
+                        text = TestUseCase().invoke()
+                    }
+
                     Greeting(
-                        name = "Android",
+                        name = text,
                         modifier = Modifier.padding(innerPadding)
                     )
                 }
@@ -33,7 +46,7 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun Greeting(name: String, modifier: Modifier = Modifier) {
     Text(
-        text = "Hello $name!",
+        text = name,
         modifier = modifier
     )
 }

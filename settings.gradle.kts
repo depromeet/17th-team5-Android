@@ -25,3 +25,5 @@ dependencyResolutionManagement {
 
 rootProject.name = "Depromeet"
 include(":app")
+include(":core")
+include(":core:domain")

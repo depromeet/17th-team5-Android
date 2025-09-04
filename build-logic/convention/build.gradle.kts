@@ -56,5 +56,13 @@ gradlePlugin {
             id = libs.plugins.depromeet.team5.hilt.get().pluginId
             implementationClass = "AndroidHiltConventionPlugin"
         }
+        register("PureKotlin") {
+            id  = libs.plugins.depromeet.team5.pure.kotlin.get().pluginId
+            implementationClass = "PureKotlinConventionPlugin"
+        }
+        register("PureHilt") {
+            id  = libs.plugins.depromeet.team5.pure.hilt.get().pluginId
+            implementationClass = "PureHiltConventionPlugin"
+        }
     }
 }

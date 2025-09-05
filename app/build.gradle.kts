@@ -6,7 +6,6 @@ plugins {
 
 android {
     namespace = "com.depromeet.team5"
-    compileSdk = 35
 
     defaultConfig {
         applicationId = "com.depromeet.team5"

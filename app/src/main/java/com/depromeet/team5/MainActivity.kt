@@ -18,8 +18,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import com.depromeet.team5.core.domain.usecase.TestUseCase
 import com.depromeet.team5.ui.theme.DepromeetTheme
+import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
+
+    @Inject
+    lateinit var testUseCase: TestUseCase
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -30,7 +36,7 @@ class MainActivity : ComponentActivity() {
                     var text by remember { mutableStateOf("") }
 
                     LaunchedEffect(Unit) {
-                        text = TestUseCase().invoke()
+                        text = testUseCase()
                     }
 
                     Greeting(

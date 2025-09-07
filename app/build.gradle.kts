@@ -6,7 +6,6 @@ plugins {
 
 android {
     namespace = "com.depromeet.team5"
-    compileSdk = 35
 
     defaultConfig {
         applicationId = "com.depromeet.team5"
@@ -25,10 +24,14 @@ android {
             )
         }
     }
+    hilt {
+        enableAggregatingTask = true
+    }
 }
 
 dependencies {
     implementation(projects.core.domain)
+    implementation(projects.core.data)
 
     implementation(libs.androidx.core.ktx)
 

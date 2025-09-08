@@ -4,7 +4,7 @@ plugins {
 }
 
 android {
-    namespace = "com.depromeet.team5.core"
+    namespace = "com.depromeet.team5.core.localdatasource"
 
     defaultConfig {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"

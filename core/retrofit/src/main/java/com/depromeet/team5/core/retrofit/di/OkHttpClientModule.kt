@@ -5,6 +5,7 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
+import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import java.util.concurrent.TimeUnit
@@ -18,11 +19,14 @@ internal object OkHttpClientModule {
     @Singleton
     fun provideOkHttpClient(
         httpLoggingInterceptor: HttpLoggingInterceptor,
+        mockInterceptor: Interceptor
     ): OkHttpClient {
         return OkHttpClient.Builder()
             .writeTimeout(NETWORK_TIMEOUT, TimeUnit.SECONDS)
             .readTimeout(NETWORK_TIMEOUT, TimeUnit.SECONDS)
             .connectTimeout(NETWORK_TIMEOUT, TimeUnit.SECONDS)
+            //for test
+            .addInterceptor(mockInterceptor)
             .addInterceptor(httpLoggingInterceptor)
             .build()
     }

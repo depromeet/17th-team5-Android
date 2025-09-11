@@ -20,6 +20,11 @@ android {
     hilt {
         enableAggregatingTask = true
     }
+
+    buildFeatures {
+        buildConfig = true
+    }
+
 }
 
 dependencies {

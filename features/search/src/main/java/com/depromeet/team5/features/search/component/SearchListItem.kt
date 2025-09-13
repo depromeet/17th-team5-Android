@@ -1,0 +1,84 @@
+package com.depromeet.team5.features.search.component
+
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.KeyboardArrowRight
+import androidx.compose.material3.Icon
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import coil.compose.AsyncImage
+import com.depromeet.team5.features.search.model.StockData
+
+@Composable
+fun SearchListItem(
+    stockData: StockData,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Row(
+        modifier = modifier
+            .clickable { onClick() }
+            .fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+//        AsyncImage(
+//            model = stockData.stockImageUrl,
+//            contentDescription = null,
+//            modifier = Modifier
+//                .padding(start = 20.dp, end = 16.dp, top = 12.dp, bottom = 12.dp)
+//                .clip(shape = CircleShape)
+//                .size(32.dp)
+//        )
+
+        Box(
+            modifier = Modifier
+                .padding(start = 20.dp, end = 16.dp, top = 12.dp, bottom = 12.dp)
+                .clip(shape = CircleShape)
+                .size(32.dp)
+                .background(color = Color.Gray)
+        )
+
+        Text(
+            text = stockData.stockName,
+            fontSize = 17.sp
+        )
+        Spacer(modifier = Modifier.weight(1f))
+
+        Icon(
+            imageVector = Icons.Default.KeyboardArrowRight,
+            contentDescription = null,
+            modifier = Modifier
+                .padding(top = 16.dp, bottom = 16.dp, end = 12.dp)
+                .size(24.dp)
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun SearchListItemPreview() {
+    SearchListItem(
+        onClick = {},
+        stockData = StockData(
+            symbol = "005930",
+            market = "KOSPI",
+            stockImageUrl = "",
+            stockName = "삼성전자"
+        )
+    )
+}

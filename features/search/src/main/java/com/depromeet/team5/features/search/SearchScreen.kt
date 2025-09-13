@@ -146,7 +146,7 @@ private fun SearchScreen(
 
 @Preview(showBackground = true)
 @Composable
-private fun Preview_Search_Default() {
+private fun RecentsPreview() {
     val recent = listOf(
         StockData(
             symbol = "005930",
@@ -176,7 +176,7 @@ private fun Preview_Search_Default() {
 
 @Preview(showBackground = true)
 @Composable
-private fun Preview_Search_Success() {
+private fun ResultsPreview() {
     val results = listOf(
         StockData(
             symbol = "035720",
@@ -196,5 +196,13 @@ private fun Preview_Search_Success() {
         onSearchTextChange = {},
         onDeleteClick = {},
         modifier = Modifier
+    )
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun SearchPreview() {
+    SearchRoute(
+        viewModel = SearchViewModel()
     )
 }

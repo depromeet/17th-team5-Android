@@ -35,6 +35,7 @@ dependencies {
     implementation(projects.core.localdatasource)
     implementation(projects.core.remotedatasource)
     implementation(projects.core.retrofit)
+    implementation(projects.core.designsystem)
     implementation(libs.androidx.core.ktx)
 
     testImplementation(libs.junit)

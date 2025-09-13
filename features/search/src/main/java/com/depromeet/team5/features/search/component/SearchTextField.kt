@@ -2,6 +2,7 @@ package com.depromeet.team5.features.search.component
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -17,8 +18,11 @@ import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
@@ -37,6 +41,7 @@ fun SearchTextField(
     modifier: Modifier = Modifier,
     placeholder: String = stringResource(id = R.string.search_textfield_hint)
 ) {
+    val focusRequester = remember { FocusRequester() }
     val keyboardController = LocalSoftwareKeyboardController.current
 
     Box(
@@ -46,6 +51,13 @@ fun SearchTextField(
                 color = HedgeColor.Brand.Secondary,
                 shape = RoundedCornerShape(14.dp)
             )
+            .clickable(
+                indication = null,
+                interactionSource = remember { MutableInteractionSource() }
+            ) {
+                focusRequester.requestFocus()
+                keyboardController?.show()
+            }
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically
@@ -87,7 +99,8 @@ fun SearchTextField(
                         )
                     }
                     innerTextField()
-                }
+                },
+                modifier = Modifier.focusRequester(focusRequester)
             )
         }
 
@@ -99,7 +112,10 @@ fun SearchTextField(
                     .padding(start = 8.dp, top = 10.dp, end = 14.dp, bottom = 10.dp)
                     .size(24.dp)
                     .align(Alignment.CenterEnd)
-                    .clickable { onDeleteClick() },
+                    .clickable(
+                        indication = null,
+                        interactionSource = remember { MutableInteractionSource() }
+                    ) { onDeleteClick() },
                 tint = HedgeColor.Text.Alternative
             )
         }

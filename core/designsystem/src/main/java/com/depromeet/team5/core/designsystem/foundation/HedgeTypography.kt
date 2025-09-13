@@ -9,7 +9,7 @@ import androidx.compose.ui.unit.sp
 import com.depromeet.team5.core.designsystem.R
 
 
-object DSTypography {
+object HedgeTypography {
 
     private val font = FontFamily(
         Font(R.font.pretendard_regular, FontWeight.Normal),

@@ -3,7 +3,7 @@ package com.depromeet.team5.core.designsystem.foundation
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 
-object DSColor {
+object HedgeColor {
     /*
     * semantic
     * */

@@ -20,8 +20,8 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import coil.compose.AsyncImage
+import com.depromeet.team5.core.designsystem.foundation.HedgeColor
+import com.depromeet.team5.core.designsystem.foundation.HedgeTypography
 import com.depromeet.team5.features.search.model.StockData
 
 @Composable
@@ -55,7 +55,8 @@ fun SearchListItem(
 
         Text(
             text = stockData.stockName,
-            fontSize = 17.sp
+            style = HedgeTypography.Body1.SemiBold,
+            color = HedgeColor.GREY_900
         )
         Spacer(modifier = Modifier.weight(1f))
 
@@ -64,7 +65,8 @@ fun SearchListItem(
             contentDescription = null,
             modifier = Modifier
                 .padding(top = 16.dp, bottom = 16.dp, end = 12.dp)
-                .size(24.dp)
+                .size(24.dp),
+            tint = HedgeColor.GREY_900
         )
     }
 }
@@ -77,7 +79,6 @@ private fun SearchListItemPreview() {
         stockData = StockData(
             symbol = "005930",
             market = "KOSPI",
-            stockImageUrl = "",
             stockName = "삼성전자"
         )
     )

@@ -28,6 +28,8 @@ import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
+import com.depromeet.team5.core.designsystem.foundation.HedgeColor
+import com.depromeet.team5.core.designsystem.foundation.HedgeTypography
 import com.depromeet.team5.features.search.R
 
 @Composable
@@ -45,7 +47,7 @@ fun SearchTextField(
         modifier = modifier
             .fillMaxWidth()
             .background(
-                color = Color.LightGray,
+                color = HedgeColor.Brand.Secondary,
                 shape = RoundedCornerShape(14.dp)
             )
     ) {
@@ -84,7 +86,8 @@ fun SearchTextField(
                     if (value.isEmpty()) {
                         Text(
                             text = placeholder,
-                            color = Color.Gray
+                            color = Color.Gray,
+                            style = HedgeTypography.Body1.Medium
                         )
                     }
                     innerTextField()

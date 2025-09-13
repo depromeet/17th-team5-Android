@@ -19,7 +19,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.depromeet.team5.core.designsystem.foundation.HedgeColor
 import com.depromeet.team5.core.designsystem.foundation.HedgeTypography
@@ -63,7 +62,8 @@ private fun SearchScreen(
             Icon(
                 imageVector = Icons.Default.KeyboardArrowLeft,
                 contentDescription = null,
-                modifier = Modifier.size(40.dp)
+                modifier = Modifier.size(40.dp),
+                tint = HedgeColor.GREY_900
             )
         }
 
@@ -92,7 +92,7 @@ private fun SearchScreen(
                     stickyHeader {
                         Text(
                             text = stringResource(id = R.string.search_retrospect_list),
-                            fontSize = 15.sp,
+                            style = HedgeTypography.Body3.Medium,
                             color = Color.LightGray,
                             modifier = Modifier.padding(start = 20.dp, top = 10.dp, bottom = 10.dp)
                         )
@@ -146,8 +146,55 @@ private fun SearchScreen(
 
 @Preview(showBackground = true)
 @Composable
-fun SearchPreview() {
-    SearchRoute(
-        viewModel = SearchViewModel()
+private fun Preview_Search_Default() {
+    val recent = listOf(
+        StockData(
+            symbol = "005930",
+            stockName = "삼성전자",
+            market = ""
+        ),
+        StockData(
+            symbol = "000660",
+            stockName = "SK하이닉스",
+            market = ""
+        ),
+        StockData(
+            symbol = "035420",
+            stockName = "NAVER",
+            market = ""
+        ),
+    )
+
+    SearchScreen(
+        searchText = "",
+        searchUiState = UiState.Default(recent),
+        onSearchTextChange = {},
+        onDeleteClick = {},
+        modifier = Modifier
+    )
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun Preview_Search_Success() {
+    val results = listOf(
+        StockData(
+            symbol = "035720",
+            stockName = "카카오",
+            market = ""
+        ),
+        StockData(
+            symbol = "051910",
+            stockName = "LG화학",
+            market = ""
+        ),
+    )
+
+    SearchScreen(
+        searchText = "카",
+        searchUiState = UiState.Success(results),
+        onSearchTextChange = {},
+        onDeleteClick = {},
+        modifier = Modifier
     )
 }

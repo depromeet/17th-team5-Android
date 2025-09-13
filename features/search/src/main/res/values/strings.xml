@@ -1,0 +1,5 @@
+<resources>
+    <string name="search_title">어떤 종목을 회고할까요?</string>
+    <string name="search_textfield_hint">종목 검색</string>
+    <string name="search_retrospect_list">회고한 종목</string>
+</resources>

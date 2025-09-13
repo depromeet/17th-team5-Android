@@ -23,10 +23,25 @@ object HedgeColor {
                 lightMode = GREY_600,
                 darkMode = GREY_600,
             )
+        val Alternative: Color
+            @Composable get() = com.depromeet.team5.core.designsystem.util.Color(
+                lightMode = GREY_500,
+                darkMode = GREY_500,
+            )
+        val Assistive: Color
+            @Composable get() = com.depromeet.team5.core.designsystem.util.Color(
+                lightMode = GREY_400,
+                darkMode = GREY_400,
+            )
         val Disabled: Color
             @Composable get() = com.depromeet.team5.core.designsystem.util.Color(
                 lightMode = GREY_300,
                 darkMode = GREY_300,
+            )
+        val White: Color
+            @Composable get() = com.depromeet.team5.core.designsystem.util.Color(
+                lightMode = WHITE,
+                darkMode = WHITE,
             )
     }
 
@@ -79,8 +94,8 @@ object HedgeColor {
     object Neutral {
         val BackgroundDefault: Color
             @Composable get() = com.depromeet.team5.core.designsystem.util.Color(
-                lightMode = Color(0xFFFFFFFF),
-                darkMode = Color(0xFFFFFFFF),
+                lightMode = WHITE,
+                darkMode = WHITE,
             )
         val BackgroundSecondary: Color
             @Composable get() = com.depromeet.team5.core.designsystem.util.Color(
@@ -112,9 +127,6 @@ object HedgeColor {
 
     val BLUE_500 = Color(0xFF3282F5)
 
-    val BRAND_500 = Color(0xFF111827)
-
-    val BACKGROUND_GREY = Color(0xFFF3F4F6)
-    val BACKGROUND_WHITE = Color(0xFFFFFFFF)
+    val WHITE = Color(0xFFFFFFFF)
 
 }

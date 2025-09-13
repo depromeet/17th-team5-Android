@@ -19,7 +19,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
@@ -57,13 +56,13 @@ fun SearchTextField(
                 modifier = Modifier
                     .padding(start = 10.dp, top = 10.dp, end = 8.dp, bottom = 10.dp)
                     .size(24.dp),
-                tint = Color.DarkGray
+                tint = HedgeColor.Text.Alternative
             )
 
             BasicTextField(
                 value = value,
                 onValueChange = onValueChange,
-                cursorBrush = SolidColor(Color.Black),
+                cursorBrush = SolidColor(HedgeColor.Text.Title),
                 maxLines = 1,
                 singleLine = true,
                 keyboardOptions = KeyboardOptions.Default.copy(
@@ -83,7 +82,7 @@ fun SearchTextField(
                     if (value.isEmpty()) {
                         Text(
                             text = placeholder,
-                            color = Color.Gray,
+                            color = HedgeColor.Text.Assistive,
                             style = HedgeTypography.Body1.Medium
                         )
                     }
@@ -100,7 +99,8 @@ fun SearchTextField(
                     .padding(start = 8.dp, top = 10.dp, end = 14.dp, bottom = 10.dp)
                     .size(24.dp)
                     .align(Alignment.CenterEnd)
-                    .clickable { onDeleteClick() }
+                    .clickable { onDeleteClick() },
+                tint = HedgeColor.Text.Alternative
             )
         }
     }

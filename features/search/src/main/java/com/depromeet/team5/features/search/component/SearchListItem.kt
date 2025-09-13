@@ -17,7 +17,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.depromeet.team5.core.designsystem.foundation.HedgeColor
@@ -50,7 +49,7 @@ fun SearchListItem(
                 .padding(start = 20.dp, end = 16.dp, top = 12.dp, bottom = 12.dp)
                 .clip(shape = CircleShape)
                 .size(32.dp)
-                .background(color = Color.Gray)
+                .background(color = HedgeColor.GREY_200)
         )
 
         Text(

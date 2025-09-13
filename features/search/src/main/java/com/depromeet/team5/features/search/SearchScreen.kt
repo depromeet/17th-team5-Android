@@ -15,7 +15,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -93,7 +92,7 @@ private fun SearchScreen(
                         Text(
                             text = stringResource(id = R.string.search_retrospect_list),
                             style = HedgeTypography.Body3.Medium,
-                            color = Color.LightGray,
+                            color = HedgeColor.Text.Alternative,
                             modifier = Modifier.padding(start = 20.dp, top = 10.dp, bottom = 10.dp)
                         )
                     }

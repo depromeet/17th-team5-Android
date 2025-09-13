@@ -1,4 +1,4 @@
-package com.depromeet.team5.core.designsystem.system
+package com.depromeet.team5.core.designsystem.foundation
 
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font

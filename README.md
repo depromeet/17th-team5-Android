@@ -11,6 +11,8 @@
   - squash merge
   - rebase the current branch
 - **Jira와 Branch 연결하기**
+- **브랜치명**
+  - [feature,chore,fix]/[티켓번호]-브랜치네임
 
 
 ### 기술 스택

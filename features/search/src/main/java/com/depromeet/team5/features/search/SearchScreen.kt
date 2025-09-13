@@ -22,6 +22,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.depromeet.team5.core.designsystem.foundation.HedgeColor
+import com.depromeet.team5.core.designsystem.foundation.HedgeTypography
 import com.depromeet.team5.features.search.component.SearchListItem
 import com.depromeet.team5.features.search.component.SearchTextField
 import com.depromeet.team5.features.search.model.StockData
@@ -68,8 +70,8 @@ private fun SearchScreen(
 
         Text(
             text = stringResource(id = R.string.search_title),
-            fontSize = 22.sp,
-            fontWeight = FontWeight.SemiBold,
+            style = HedgeTypography.Headline1.SemiBold,
+            color = HedgeColor.GREY_900,
             modifier = Modifier.padding(top = 16.dp, start = 20.dp, bottom = 10.dp)
         )
 

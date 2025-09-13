@@ -35,3 +35,5 @@ include(":core:retrofit")
 include(":core:navigation")
 include("features")
 include(":features:search")
+
+include(":core:designsystem")

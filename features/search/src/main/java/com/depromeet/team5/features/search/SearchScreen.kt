@@ -83,7 +83,7 @@ private fun SearchScreen(
         )
 
         when (searchUiState) {
-            is UiState.Default -> {
+            is UiState.Recents -> {
                 LazyColumn(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -111,7 +111,7 @@ private fun SearchScreen(
 
             }
 
-            is UiState.Success -> {
+            is UiState.Results -> {
                 LazyColumn(
                     modifier = Modifier.fillMaxWidth()
                 ) {
@@ -167,7 +167,7 @@ private fun Preview_Search_Default() {
 
     SearchScreen(
         searchText = "",
-        searchUiState = UiState.Default(recent),
+        searchUiState = UiState.Recents(recent),
         onSearchTextChange = {},
         onDeleteClick = {},
         modifier = Modifier
@@ -192,7 +192,7 @@ private fun Preview_Search_Success() {
 
     SearchScreen(
         searchText = "카",
-        searchUiState = UiState.Success(results),
+        searchUiState = UiState.Results(results),
         onSearchTextChange = {},
         onDeleteClick = {},
         modifier = Modifier

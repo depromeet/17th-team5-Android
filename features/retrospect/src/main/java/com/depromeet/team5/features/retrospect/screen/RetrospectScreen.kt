@@ -3,9 +3,11 @@ package com.depromeet.team5.features.retrospect.screen
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -14,9 +16,11 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Switch
+import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
@@ -32,10 +36,14 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.depromeet.team5.features.retrospect.R
+import com.depromeet.team5.features.retrospect.screen.annotation.CurrencyUnit
+import com.depromeet.team5.features.retrospect.screen.annotation.KOREAN
+import com.depromeet.team5.features.retrospect.screen.annotation.PERCENT
 
 
 @Composable
@@ -52,15 +60,16 @@ private fun RetrospectScreen(
     modifier: Modifier = Modifier,
     onBackPressed: () -> Unit
 ) {
+    var returnVisibility by remember { mutableStateOf(false) }
+
     Column(
-        modifier =
-            modifier
-                .fillMaxSize()
-                .background(color = Color(0xFFF3F4F6))
+        modifier = modifier
+            .fillMaxSize()
+            .background(color = Color(0xFFF3F4F6))
     ) {
         HedgeTopbar { }
         CompanyTitle(
-            modifier = Modifier.padding(start = 16.dp)
+            modifier = Modifier.padding(start = 16.dp, top = 10.dp)
         )
 
         Text(
@@ -73,7 +82,7 @@ private fun RetrospectScreen(
 
         Column(
             modifier = Modifier
-                .padding(start = 16.dp, top = 26.dp, end = 16.dp)
+                .padding(start = 20.dp, top = 26.dp, end = 20.dp)
                 .wrapContentSize()
                 .background(
                     color = colorResource(R.color.white),
@@ -83,16 +92,90 @@ private fun RetrospectScreen(
         ) {
             HedgeTextField(
                 label = "매도가",
-                placeholder = "1주당 가격"
+                placeholder = "1주당 가격",
+                unit = KOREAN
             )
             HedgeTextField(
                 label = "거래량",
-                placeholder = "거래량"
+                placeholder = "거래량",
+                unit = KOREAN
             )
             HedgeTextField(
                 label = "거래 날짜",
                 placeholder = "거래 날짜"
             )
+        }
+
+        if (returnVisibility) {
+            HedgeTextField(
+                modifier = Modifier.padding(start = 20.dp, end = 20.dp, top = 12.dp),
+                label = "수익률",
+                placeholder = "%",
+                unit = PERCENT
+            )
+        }
+
+        Spacer(
+            modifier = Modifier.weight(1f)
+        )
+
+        Column(
+            modifier = Modifier.padding(horizontal = 20.dp),
+            verticalArrangement = Arrangement.Bottom
+        ) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Column {
+                    Text(
+                        text = "수익률도 입력하기",
+                        color = colorResource(R.color.gray700),
+                        fontSize = 15.sp,
+                        letterSpacing = 0.14.sp,
+                        fontWeight = FontWeight.W600
+                    )
+                    Text(
+                        text = "더 자세한 AI 분석이 가능해요",
+                        color = colorResource(R.color.alternative),
+                        fontSize = 13.sp,
+                        letterSpacing = 0.03.sp,
+                        fontWeight = FontWeight.W600
+                    )
+                }
+
+                Switch(
+                    checked = returnVisibility,
+                    colors = SwitchDefaults.colors(
+                        checkedThumbColor = colorResource(R.color.white),
+                        uncheckedThumbColor = colorResource(R.color.white),
+                        checkedTrackColor = colorResource(R.color.gray300),
+                        uncheckedTrackColor = colorResource(R.color.gray300)
+                    ),
+                    onCheckedChange = {
+                        returnVisibility = it
+                    }
+                )
+            }
+
+            TextButton(
+                modifier = Modifier
+                    .padding(top = 24.dp, bottom = 10.dp)
+                    .fillMaxWidth()
+                    .height(57.dp),
+                shape = RoundedCornerShape(18.dp),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = colorResource(R.color.primary)
+                ),
+                onClick = {}
+            ) {
+                Text(
+                    text = "확인",
+                    color = colorResource(R.color.white),
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.W600
+                )
+            }
         }
     }
 }
@@ -105,7 +188,7 @@ private fun HedgeTopbar(
     Box(
         modifier = modifier
             .fillMaxWidth()
-            .height(88.dp)
+            .height(44.dp)
             .background(color = Color(0xFFF3F4F6)),
         contentAlignment = Alignment.CenterStart
     ) {
@@ -137,7 +220,7 @@ private fun CompanyTitle(
         Box(
             modifier = Modifier
                 .size(24.dp)
-                .background(Color.Gray)
+                .background(Color.Gray, shape = RoundedCornerShape(20.dp))
         )
 
         Text(
@@ -152,11 +235,11 @@ private fun CompanyTitle(
 private fun HedgeTextField(
     modifier: Modifier = Modifier,
     label: String,
-    placeholder: String
+    placeholder: String,
+    unit: CurrencyUnit? = null
 ) {
     var borderColor by remember { mutableIntStateOf(R.color.brand500) }
-    var keyword by remember { mutableStateOf("") }
-    var isFocused by remember { mutableStateOf(false) }
+    var inputText by remember { mutableStateOf("") }
 
     Box(
         modifier = modifier
@@ -172,15 +255,25 @@ private fun HedgeTextField(
                 borderColor = if (focusState.hasFocus) R.color.gray900
                 else R.color.white
 
-                isFocused = focusState.hasFocus
             }
-            .padding(vertical = 14.dp)
+            .padding(vertical = 14.dp, horizontal = 20.dp)
     ) {
-        Row {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
             TextField(
                 modifier = Modifier
+                    .wrapContentSize()
                     .padding(top = 4.dp),
-                value = keyword,
+                value = inputText,
+                onValueChange = { inputText = it },
+                visualTransformation = if (unit != null) {
+                    CurrencyVisualTransformation(unit)
+                } else {
+                    VisualTransformation.None
+                },
                 label = {
                     Text(
                         text = label,
@@ -204,21 +297,12 @@ private fun HedgeTextField(
 
                     focusedPlaceholderColor = colorResource(R.color.gray400),
 
-                    focusedTextColor = colorResource(R.color.gray900)),
-                onValueChange = {
-                    keyword = it
-                }
-            )
+                    focusedTextColor = colorResource(R.color.gray900),
 
-            Card(
-                modifier = Modifier.size(34.dp),
-                shape = RoundedCornerShape(8.dp),
-                colors = CardDefaults.cardColors(
-                    containerColor = colorResource(R.color.gray200)
+                    cursorColor = Color.Transparent,
+                    errorCursorColor = Color.Transparent,
                 )
-
-            ) {  }
-
+            )
         }
     }
 }
@@ -245,7 +329,9 @@ private fun HedgeTextFieldPreview() {
         label = "매도가",
         placeholder = "매도 가격"
     )
+
 }
+
 
 @Preview
 @Composable

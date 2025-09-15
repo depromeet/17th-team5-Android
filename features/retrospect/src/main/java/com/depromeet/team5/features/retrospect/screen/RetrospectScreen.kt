@@ -1,5 +1,10 @@
 package com.depromeet.team5.features.retrospect.screen
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -106,7 +111,23 @@ private fun RetrospectScreen(
             )
         }
 
-        if (returnVisibility) {
+        AnimatedVisibility(
+            visible = returnVisibility,
+            enter = fadeIn(
+                animationSpec = tween(
+                    durationMillis = 300,
+                    delayMillis = 0,
+                    easing = FastOutSlowInEasing
+                )
+            ),
+            exit = fadeOut(
+                animationSpec = tween(
+                    durationMillis = 200,
+                    delayMillis = 0,
+                    easing = FastOutSlowInEasing
+                )
+            )
+        ) {
             HedgeTextField(
                 modifier = Modifier.padding(start = 20.dp, end = 20.dp, top = 12.dp),
                 label = "수익률",
@@ -331,7 +352,6 @@ private fun HedgeTextFieldPreview() {
     )
 
 }
-
 
 @Preview
 @Composable

@@ -5,10 +5,11 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
-import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
@@ -25,24 +26,31 @@ import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.depromeet.team5.features.retrospect.R
 import com.depromeet.team5.features.retrospect.screen.CurrencyVisualTransformation
 import com.depromeet.team5.features.retrospect.screen.annotation.CurrencyUnit
+import com.depromeet.team5.features.retrospect.screen.annotation.KOREAN
+import com.depromeet.team5.features.retrospect.screen.annotation.NIL
+import com.depromeet.team5.features.retrospect.screen.annotation.USD
 
 
 @Composable
 internal fun HedgeTextField(
     modifier: Modifier = Modifier,
+    unit: CurrencyUnit = NIL,
     label: String,
     placeholder: String,
-    unit: CurrencyUnit? = null
+    trailingIcon: (@Composable (Boolean, (CurrencyUnit) -> Unit) -> Unit)? = null,
 ) {
     var borderColor by remember { mutableIntStateOf(R.color.brand500) }
     var inputText by remember { mutableStateOf("") }
+    var isToggled by remember { mutableStateOf(false) }
+    var currentUnit by remember { mutableStateOf(unit) }
+    val visualTransformation = remember(currentUnit) { CurrencyVisualTransformation(currentUnit) }
 
     Box(
         modifier = modifier
@@ -59,7 +67,7 @@ internal fun HedgeTextField(
                 else R.color.white
 
             }
-            .padding(vertical = 14.dp, horizontal = 20.dp)
+            .padding(start = 20.dp, top = 14.dp, end = 16.dp, bottom = 14.dp)
     ) {
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -68,21 +76,24 @@ internal fun HedgeTextField(
         ) {
             TextField(
                 modifier = Modifier
-                    .wrapContentSize()
+                    .fillMaxWidth()
                     .padding(top = 4.dp),
                 value = inputText,
                 onValueChange = { inputText = it },
-                visualTransformation = if (unit != null) {
-                    CurrencyVisualTransformation(unit)
-                } else {
-                    VisualTransformation.None
-                },
+                visualTransformation = visualTransformation,
                 label = {
                     Text(
                         text = label,
                         fontWeight = FontWeight.SemiBold,
                         fontSize = 13.sp
                     )
+                },
+                trailingIcon = {
+                    trailingIcon?.invoke(isToggled) { isCurrentUnit ->
+                        isToggled = !isToggled
+                        inputText = ""
+                        currentUnit = isCurrentUnit
+                    }
                 },
                 placeholder = { Text(placeholder) },
                 colors = TextFieldDefaults.colors(
@@ -113,9 +124,56 @@ internal fun HedgeTextField(
 @Preview
 @Composable
 private fun HedgeTextFieldPreview() {
-    HedgeTextField(
-        label = "매도가",
-        placeholder = "매도 가격"
-    )
+    var currentUnit by remember { mutableStateOf(KOREAN) }
 
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(colorResource(R.color.gray200)),
+        contentAlignment = Alignment.Center
+    ) {
+        HedgeTextField(
+            label = "매도가",
+            placeholder = "매도 가격",
+            trailingIcon = { isToggled, onToggleChanged ->
+                HedgeSwitch(
+                    isToggled = isToggled,
+                    onToggleChanged = onToggleChanged,
+                    offUnit = KOREAN,
+                    onUnit = USD,
+                    offContent = {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxHeight(),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(
+                                modifier = Modifier
+                                    .padding(horizontal = 7.dp, vertical = 6.dp),
+                                text = "원",
+                                fontSize = 12.sp,
+                                fontWeight = FontWeight.W600
+                            )
+                        }
+                    },
+                    onContent = {
+                        Box(
+                            modifier = Modifier.fillMaxHeight(),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(
+                                modifier = Modifier
+                                    .padding(horizontal = 7.dp, vertical = 6.dp),
+                                text = "$",
+                                fontSize = 12.sp,
+                                fontWeight = FontWeight.W600,
+                                textAlign = TextAlign.Center
+                            )
+                        }
+                    }
+                )
+            },
+            unit = currentUnit
+        )
+    }
 }

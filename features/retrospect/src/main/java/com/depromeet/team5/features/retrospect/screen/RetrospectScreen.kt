@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -30,18 +31,23 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.depromeet.team5.features.retrospect.R
+import com.depromeet.team5.features.retrospect.screen.annotation.CurrencyUnit
 import com.depromeet.team5.features.retrospect.screen.annotation.KOREAN
 import com.depromeet.team5.features.retrospect.screen.annotation.PERCENT
+import com.depromeet.team5.features.retrospect.screen.annotation.USD
+import com.depromeet.team5.features.retrospect.screen.component.HedgeSwitch
 import com.depromeet.team5.features.retrospect.screen.component.HedgeTextField
 import com.depromeet.team5.features.retrospect.screen.component.HedgeTopbar
 import kotlinx.coroutines.delay
@@ -99,17 +105,18 @@ private fun RetrospectScreen(
                 )
                 .border(1.dp, colorResource(R.color.white), RoundedCornerShape(16.dp))
         ) {
-            HedgeTextField(
+            UnitTextField(
+                unit = KOREAN,
                 label = "매도가",
-                placeholder = "1주당 가격",
-                unit = KOREAN
+                placeholder = "매도 가격"
             )
-            HedgeTextField(
+            UnitTextField(
+                unit = KOREAN,
                 label = "거래량",
-                placeholder = "거래량",
-                unit = KOREAN
+                placeholder = "거래량 가격"
             )
-            HedgeTextField(
+            UnitTextField(
+                unit = KOREAN,
                 label = "거래 날짜",
                 placeholder = "거래 날짜"
             )
@@ -205,6 +212,70 @@ private fun RetrospectScreen(
             }
         }
     }
+}
+
+@Composable
+private fun UnitTextField(
+    unit: CurrencyUnit,
+    label: String,
+    placeholder: String
+) {
+    var currentUnit by remember { mutableStateOf(unit) }
+
+    HedgeTextField(
+        label = label,
+        placeholder = placeholder,
+        unit = currentUnit,
+        trailingIcon = { isToggled, onToggleChanged ->
+            KoreanHedgeSwitch(
+                isToggled = isToggled,
+                onToggleChanged = onToggleChanged
+            )
+        }
+    )
+}
+
+@Composable
+private fun KoreanHedgeSwitch(
+    isToggled: Boolean,
+    onToggleChanged: (CurrencyUnit) -> Unit
+) {
+    HedgeSwitch(
+        isToggled = isToggled,
+        onToggleChanged = onToggleChanged,
+        offUnit = KOREAN,
+        onUnit = USD,
+        offContent = {
+            Box(
+                modifier = Modifier
+                    .fillMaxHeight(),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    modifier = Modifier
+                        .padding(horizontal = 7.dp, vertical = 6.dp),
+                    text = "원",
+                    fontSize = 12.sp,
+                    fontWeight = FontWeight.W600
+                )
+            }
+        },
+        onContent = {
+            Box(
+                modifier = Modifier.fillMaxHeight(),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    modifier = Modifier
+                        .padding(horizontal = 7.dp, vertical = 6.dp),
+                    text = "$",
+                    fontSize = 12.sp,
+                    fontWeight = FontWeight.W600,
+                    textAlign = TextAlign.Center
+                )
+            }
+        }
+    )
 }
 
 @Composable

@@ -10,10 +10,11 @@ const val USD = "$"
 
 const val PERCENT = "%"
 
+const val NIL = ""
 
 @Target(AnnotationTarget.ANNOTATION_CLASS)
 @Retention(AnnotationRetention.SOURCE)
-@StringDef(KOREAN, USD, PERCENT)
+@StringDef(KOREAN, USD, PERCENT, NIL)
 private annotation class CurrencyUnitDef
 
 @CurrencyUnitDef

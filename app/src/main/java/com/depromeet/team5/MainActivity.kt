@@ -16,6 +16,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.compose.rememberNavController
 import com.depromeet.team5.core.domain.usecase.TestUseCase
 import com.depromeet.team5.ui.theme.DepromeetTheme
 import dagger.hilt.android.AndroidEntryPoint
@@ -32,35 +33,9 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             DepromeetTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    var text by remember { mutableStateOf("") }
-
-                    LaunchedEffect(Unit) {
-                        text = testUseCase()
-                    }
-
-                    Greeting(
-                        name = text,
-                        modifier = Modifier.padding(innerPadding)
-                    )
-                }
+                val navController = rememberNavController()
+                HedgeNavHost(navController)
             }
         }
-    }
-}
-
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = name,
-        modifier = modifier
-    )
-}
-
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    DepromeetTheme {
-        Greeting("Android")
     }
 }

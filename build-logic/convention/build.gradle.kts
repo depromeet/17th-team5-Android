@@ -26,6 +26,8 @@ dependencies {
     compileOnly(libs.kotlin.gradlePlugin)
     compileOnly(libs.ksp.gradlePlugin)
 //    compileOnly(libs.room.gradlePlugin)
+    implementation(libs.kotlin.serialization.gradlePlugin)
+
     implementation(libs.truth)
 }
 

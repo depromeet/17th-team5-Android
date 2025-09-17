@@ -1,5 +1,6 @@
 package com.depromeet.team5.features.search
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -18,6 +19,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.depromeet.team5.core.designsystem.foundation.HedgeColor
 import com.depromeet.team5.core.designsystem.foundation.HedgeTypography
@@ -27,13 +29,15 @@ import com.depromeet.team5.features.search.model.StockData
 
 @Composable
 fun SearchRoute(
+    onBackClick: () -> Unit,
     modifier: Modifier = Modifier,
-    viewModel: SearchViewModel
+    viewModel: SearchViewModel = hiltViewModel()
 ) {
     val searchText by viewModel.searchText.collectAsStateWithLifecycle()
     val searchUiState by viewModel.searchUiState.collectAsStateWithLifecycle()
 
     SearchScreen(
+        onBackClick = onBackClick,
         searchText = searchText,
         searchUiState = searchUiState,
         onSearchTextChange = viewModel::updateSearchText,
@@ -44,6 +48,7 @@ fun SearchRoute(
 
 @Composable
 private fun SearchScreen(
+    onBackClick: () -> Unit,
     searchText: String,
     searchUiState: UiState<List<StockData>>,
     onSearchTextChange: (String) -> Unit,
@@ -61,7 +66,9 @@ private fun SearchScreen(
             Icon(
                 imageVector = Icons.Default.KeyboardArrowLeft,
                 contentDescription = null,
-                modifier = Modifier.size(40.dp),
+                modifier = Modifier
+                    .clickable { onBackClick() }
+                    .size(40.dp),
                 tint = HedgeColor.GREY_900
             )
         }
@@ -165,6 +172,7 @@ private fun RecentsPreview() {
     )
 
     SearchScreen(
+        onBackClick = {},
         searchText = "",
         searchUiState = UiState.Recents(recent),
         onSearchTextChange = {},
@@ -190,6 +198,7 @@ private fun ResultsPreview() {
     )
 
     SearchScreen(
+        onBackClick = {},
         searchText = "카",
         searchUiState = UiState.Results(results),
         onSearchTextChange = {},
@@ -202,6 +211,6 @@ private fun ResultsPreview() {
 @Composable
 private fun SearchPreview() {
     SearchRoute(
-        viewModel = SearchViewModel()
+        onBackClick = {}
     )
 }

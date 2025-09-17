@@ -21,6 +21,8 @@ kotlinxSerialization = "2.1.0"
 kotlinxSerializationJson = "1.8.0"
 okhttp = "4.12.0"
 coil = "2.7.0"
+androidxComposeNavigation = "2.9.2"
+hiltNavigationCompose = "1.2.0"
 
 
 [libraries]
@@ -37,6 +39,7 @@ androidx-ui-test-manifest = { group = "androidx.compose.ui", name = "ui-test-man
 androidx-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit4" }
 androidx-material3 = { group = "androidx.compose.material3", name = "material3" }
 androidx-material = { group = "androidx.compose.material", name = "material" }
+androidx-compose-navigation = { group = "androidx.navigation", name = "navigation-compose", version.ref = "androidxComposeNavigation" }
 
 #kotlin
 kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinxCoroutinesCore" }
@@ -48,6 +51,7 @@ hilt-android-compiler = { group = "com.google.dagger", name = "hilt-android-comp
 hilt-gradlePlugin = { group = "com.google.dagger", name = "hilt-android-gradle-plugin", version.ref = "hilt" }
 hilt-core = { module = "com.google.dagger:hilt-core", version.ref = "hilt" }
 hilt-compiler = { module = "com.google.dagger:hilt-compiler", version.ref = "hilt" }
+hilt-navigation-compose = { group = "androidx.hilt", name = "hilt-navigation-compose", version.ref = "hiltNavigationCompose" }
 
 #test
 junit = { group = "junit", name = "junit", version.ref = "junit" }
@@ -86,7 +90,8 @@ compose = [
     "androidx-material",
     "androidx-activity-compose",
     "androidx-ui-tooling-preview",
-    "coil"
+    "coil",
+    "androidx-compose-navigation"
 ]
 
 compose-debug = [

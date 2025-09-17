@@ -21,7 +21,7 @@ class AndroidLibraryConventionPlugin : Plugin<Project> {
 
         dependencies {
             implementation(libs.findLibrary("androidx-core-ktx").get())
-            implementation(libs.findLibrary("kotlinx.coroutines.core").get())
+            implementation(libs.findLibrary("kotlinx-coroutines-core").get())
         }
     }
 }

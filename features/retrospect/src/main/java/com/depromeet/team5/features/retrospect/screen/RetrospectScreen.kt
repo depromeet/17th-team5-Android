@@ -20,6 +20,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
@@ -36,20 +38,26 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.TextFieldValue
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.depromeet.team5.features.retrospect.R
-import com.depromeet.team5.features.retrospect.screen.annotation.CurrencyUnit
-import com.depromeet.team5.features.retrospect.screen.annotation.KOREAN
-import com.depromeet.team5.features.retrospect.screen.annotation.PERCENT
-import com.depromeet.team5.features.retrospect.screen.annotation.USD
+import com.depromeet.team5.features.retrospect.screen.component.HedgeSimpleTextField
 import com.depromeet.team5.features.retrospect.screen.component.HedgeSwitch
-import com.depromeet.team5.features.retrospect.screen.component.HedgeTextField
 import com.depromeet.team5.features.retrospect.screen.component.HedgeTopbar
+import com.depromeet.team5.features.retrospect.screen.component.HedgeUnitTextField
+import com.depromeet.team5.features.retrospect.screen.visualtransmation.DateVisualTransformation
+import com.depromeet.team5.features.retrospect.screen.visualtransmation.KoreanCurrencyVisualTransformation
+import com.depromeet.team5.features.retrospect.screen.visualtransmation.USDCurrencyVisualTransformation
+import com.depromeet.team5.features.retrospect.screen.visualtransmation.UnitTransformation
 import kotlinx.coroutines.delay
 
 
@@ -105,21 +113,13 @@ private fun RetrospectScreen(
                 )
                 .border(1.dp, colorResource(R.color.white), RoundedCornerShape(16.dp))
         ) {
-            UnitTextField(
-                unit = KOREAN,
-                label = "매도가",
-                placeholder = "매도 가격"
-            )
-            UnitTextField(
-                unit = KOREAN,
+            CurrencyTextField()
+            SimpleNumberTextField(
                 label = "거래량",
-                placeholder = "거래량 가격"
+                placeholder = "거래량 가격",
+                visualTransformation = UnitTransformation("주")
             )
-            UnitTextField(
-                unit = KOREAN,
-                label = "거래 날짜",
-                placeholder = "거래 날짜"
-            )
+            DateTextField()
         }
 
         AnimatedVisibility(
@@ -139,13 +139,13 @@ private fun RetrospectScreen(
                 )
             )
         ) {
-            HedgeTextField(
+            SimpleNumberTextField(
                 modifier = Modifier
                     .focusRequester(focusRequester)
                     .padding(start = 20.dp, end = 20.dp, top = 12.dp),
                 label = "수익률",
                 placeholder = "%",
-                unit = PERCENT
+                visualTransformation = UnitTransformation("%")
             )
         }
 
@@ -215,36 +215,106 @@ private fun RetrospectScreen(
 }
 
 @Composable
-private fun UnitTextField(
-    unit: CurrencyUnit,
-    label: String,
-    placeholder: String
-) {
-    var currentUnit by remember { mutableStateOf(unit) }
+private fun CurrencyTextField() {
+    val keyboardController = LocalSoftwareKeyboardController.current
 
-    HedgeTextField(
+    var isToggled by remember { mutableStateOf(false) }
+    var textFieldValue by remember { mutableStateOf(TextFieldValue("")) }
+    val currentVisualTransformation =
+        if (isToggled) USDCurrencyVisualTransformation() else KoreanCurrencyVisualTransformation()
+
+    HedgeUnitTextField(
+        label = "매도가",
+        placeholder = "매도 가격",
+        value = textFieldValue,
+        onValueChange = { newValue ->
+            val digitsOnlyText = newValue.text.filter { it.isDigit() }
+            val newCursorPosition = newValue.selection.start.let { transformedOffset ->
+                newValue.text.substring(0, transformedOffset).count { it.isDigit() }
+            }.coerceIn(0, digitsOnlyText.length)
+
+            textFieldValue = TextFieldValue(
+                text = digitsOnlyText,
+                selection = androidx.compose.ui.text.TextRange(newCursorPosition)
+            )
+        },
+        keyboardOptions = KeyboardOptions(
+            keyboardType = KeyboardType.Number,
+            imeAction = ImeAction.Done
+        ),
+        keyboardActions = KeyboardActions(
+            onDone = {
+                keyboardController?.hide()
+            }
+        ),
+        trailingIcon = {
+            CurrencySwitch(
+                isToggled = isToggled,
+                onToggleChanged = { newToggleState ->
+                    isToggled = newToggleState
+                    textFieldValue = TextFieldValue("")
+                }
+            )
+        },
+        visualTransformation = currentVisualTransformation
+    )
+
+}
+
+@Composable
+private fun SimpleNumberTextField(
+    modifier: Modifier = Modifier,
+    label: String,
+    placeholder: String,
+    visualTransformation: VisualTransformation = VisualTransformation.None
+) {
+    val keyboardController = LocalSoftwareKeyboardController.current
+
+    HedgeSimpleTextField(
+        modifier = modifier,
         label = label,
         placeholder = placeholder,
-        unit = currentUnit,
-        trailingIcon = { isToggled, onToggleChanged ->
-            KoreanHedgeSwitch(
-                isToggled = isToggled,
-                onToggleChanged = onToggleChanged
-            )
-        }
+        keyboardOptions = KeyboardOptions(
+            keyboardType = KeyboardType.Number,
+            imeAction = ImeAction.Done
+        ),
+        keyboardActions = KeyboardActions(
+            onDone = {
+                keyboardController?.hide()
+            }
+        ),
+        visualTransformation = visualTransformation
     )
 }
 
 @Composable
-private fun KoreanHedgeSwitch(
+private fun DateTextField() {
+    val keyboardController = LocalSoftwareKeyboardController.current
+
+    HedgeSimpleTextField(
+        label = "거래 날짜",
+        placeholder = "거래 날짜",
+        keyboardOptions = KeyboardOptions(
+            keyboardType = KeyboardType.Number,
+            imeAction = ImeAction.Done
+        ),
+        keyboardActions = KeyboardActions(
+            onDone = {
+                keyboardController?.hide()
+            }
+        ),
+        visualTransformation = DateVisualTransformation()
+    )
+}
+
+@Composable
+private fun CurrencySwitch(
     isToggled: Boolean,
-    onToggleChanged: (CurrencyUnit) -> Unit
+    onToggleChanged: (Boolean) -> Unit
 ) {
     HedgeSwitch(
         isToggled = isToggled,
         onToggleChanged = onToggleChanged,
-        offUnit = KOREAN,
-        onUnit = USD,
         offContent = {
             Box(
                 modifier = Modifier

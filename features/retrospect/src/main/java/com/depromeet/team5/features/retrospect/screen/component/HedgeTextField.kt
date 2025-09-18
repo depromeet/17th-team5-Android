@@ -4,6 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
@@ -11,6 +12,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
@@ -24,33 +27,113 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.TextFieldValue
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.depromeet.team5.features.retrospect.R
-import com.depromeet.team5.features.retrospect.screen.CurrencyVisualTransformation
-import com.depromeet.team5.features.retrospect.screen.annotation.CurrencyUnit
-import com.depromeet.team5.features.retrospect.screen.annotation.KOREAN
-import com.depromeet.team5.features.retrospect.screen.annotation.NIL
-import com.depromeet.team5.features.retrospect.screen.annotation.USD
+import com.depromeet.team5.features.retrospect.screen.visualtransmation.KoreanCurrencyVisualTransformation
+import com.depromeet.team5.features.retrospect.screen.visualtransmation.USDCurrencyVisualTransformation
 
 
 @Composable
-internal fun HedgeTextField(
+internal fun HedgeUnitTextField(
     modifier: Modifier = Modifier,
-    unit: CurrencyUnit = NIL,
+    label: String,
+    value: TextFieldValue,
+    onValueChange: (TextFieldValue) -> Unit,
+    placeholder: String,
+    keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
+    keyboardActions: KeyboardActions = KeyboardActions.Default,
+    visualTransformation: VisualTransformation,
+    trailingIcon: @Composable () -> Unit = {}
+) {
+    var borderColor by remember { mutableIntStateOf(R.color.brand500) }
+
+    Box(
+        modifier = modifier
+            .padding(1.dp)
+            .fillMaxWidth()
+            .wrapContentHeight()
+            .background(
+                color = colorResource(R.color.white),
+                shape = RoundedCornerShape(16.dp)
+            )
+            .border(1.5.dp, colorResource(borderColor), RoundedCornerShape(16.dp))
+            .onFocusChanged { focusState ->
+                borderColor = if (focusState.hasFocus) R.color.gray900
+                else R.color.white
+
+            }
+            .padding(start = 20.dp, top = 14.dp, end = 16.dp, bottom = 14.dp)
+    ) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            TextField(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 4.dp),
+                value = value,
+                onValueChange = onValueChange,
+                visualTransformation = visualTransformation,
+                label = {
+                    Text(
+                        text = label,
+                        fontWeight = FontWeight.SemiBold,
+                        fontSize = 13.sp
+                    )
+                },
+                trailingIcon = trailingIcon,
+                placeholder = { Text(placeholder) },
+                colors = TextFieldDefaults.colors(
+                    focusedContainerColor = Color.Transparent,
+                    unfocusedContainerColor = Color.Transparent,
+                    disabledContainerColor = Color.Transparent,
+
+                    focusedIndicatorColor = Color.Transparent,
+                    unfocusedIndicatorColor = Color.Transparent,
+                    disabledIndicatorColor = Color.Transparent,
+                    errorIndicatorColor = Color.Transparent,
+
+                    focusedLabelColor = colorResource(R.color.gray900),
+                    unfocusedLabelColor = colorResource(R.color.gray500),
+
+                    focusedPlaceholderColor = colorResource(R.color.gray400),
+
+                    focusedTextColor = colorResource(R.color.gray900),
+
+                    cursorColor = Color.Transparent,
+                    errorCursorColor = Color.Transparent,
+                ),
+                keyboardActions = keyboardActions,
+                keyboardOptions = keyboardOptions
+            )
+        }
+    }
+}
+
+@Composable
+internal fun HedgeSimpleTextField(
+    modifier: Modifier = Modifier,
     label: String,
     placeholder: String,
-    trailingIcon: (@Composable (Boolean, (CurrencyUnit) -> Unit) -> Unit)? = null,
+    keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
+    keyboardActions: KeyboardActions = KeyboardActions.Default,
+    visualTransformation: VisualTransformation = VisualTransformation.None
 ) {
     var borderColor by remember { mutableIntStateOf(R.color.brand500) }
     var inputText by remember { mutableStateOf("") }
-    var isToggled by remember { mutableStateOf(false) }
-    var currentUnit by remember { mutableStateOf(unit) }
-    val visualTransformation = remember(currentUnit) { CurrencyVisualTransformation(currentUnit) }
 
     Box(
         modifier = modifier
@@ -88,13 +171,6 @@ internal fun HedgeTextField(
                         fontSize = 13.sp
                     )
                 },
-                trailingIcon = {
-                    trailingIcon?.invoke(isToggled) { isCurrentUnit ->
-                        isToggled = !isToggled
-                        inputText = ""
-                        currentUnit = isCurrentUnit
-                    }
-                },
                 placeholder = { Text(placeholder) },
                 colors = TextFieldDefaults.colors(
                     focusedContainerColor = Color.Transparent,
@@ -115,32 +191,60 @@ internal fun HedgeTextField(
 
                     cursorColor = Color.Transparent,
                     errorCursorColor = Color.Transparent,
-                )
+                ),
+                keyboardActions = keyboardActions,
+                keyboardOptions = keyboardOptions
             )
         }
     }
 }
 
+
 @Preview
 @Composable
 private fun HedgeTextFieldPreview() {
-    var currentUnit by remember { mutableStateOf(KOREAN) }
+    val keyboardController = LocalSoftwareKeyboardController.current
 
-    Box(
+    var isToggled by remember { mutableStateOf(false) }
+    var textFieldValue by remember { mutableStateOf(TextFieldValue("")) }
+
+    Column(
         modifier = Modifier
             .fillMaxSize()
             .background(colorResource(R.color.gray200)),
-        contentAlignment = Alignment.Center
+        verticalArrangement = Arrangement.Center
     ) {
-        HedgeTextField(
+        HedgeUnitTextField(
             label = "매도가",
             placeholder = "매도 가격",
-            trailingIcon = { isToggled, onToggleChanged ->
+            value = textFieldValue,
+            onValueChange = { newValue ->
+                val digitsOnlyText = newValue.text.filter { it.isDigit() }
+                val newCursorPosition = newValue.selection.start.let { transformedOffset ->
+                    newValue.text.substring(0, transformedOffset).count { it.isDigit() }
+                }.coerceIn(0, digitsOnlyText.length)
+
+                textFieldValue = TextFieldValue(
+                    text = digitsOnlyText,
+                    selection = TextRange(newCursorPosition)
+                )
+            },
+            keyboardOptions = KeyboardOptions(
+                keyboardType = KeyboardType.Number,
+                imeAction = ImeAction.Done
+            ),
+            keyboardActions = KeyboardActions(
+                onDone = {
+                    keyboardController?.hide()
+                }
+            ),
+            trailingIcon = {
                 HedgeSwitch(
                     isToggled = isToggled,
-                    onToggleChanged = onToggleChanged,
-                    offUnit = KOREAN,
-                    onUnit = USD,
+                    onToggleChanged = { newToggleState ->
+                        isToggled = newToggleState
+                        textFieldValue = TextFieldValue("")
+                    },
                     offContent = {
                         Box(
                             modifier = Modifier
@@ -173,7 +277,11 @@ private fun HedgeTextFieldPreview() {
                     }
                 )
             },
-            unit = currentUnit
+            visualTransformation = if (isToggled) {
+                USDCurrencyVisualTransformation()
+            } else {
+                KoreanCurrencyVisualTransformation()
+            }
         )
     }
 }

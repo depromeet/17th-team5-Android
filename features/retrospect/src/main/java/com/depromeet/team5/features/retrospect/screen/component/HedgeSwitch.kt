@@ -34,19 +34,13 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.depromeet.team5.features.retrospect.R
-import com.depromeet.team5.features.retrospect.screen.annotation.CurrencyUnit
-import com.depromeet.team5.features.retrospect.screen.annotation.KOREAN
-import com.depromeet.team5.features.retrospect.screen.annotation.NIL
-import com.depromeet.team5.features.retrospect.screen.annotation.USD
 
 
 @Composable
 fun HedgeSwitch(
     modifier: Modifier = Modifier,
     isToggled: Boolean,
-    onToggleChanged: (CurrencyUnit) -> Unit,
-    offUnit: CurrencyUnit = NIL,
-    onUnit: CurrencyUnit = NIL,
+    onToggleChanged: (Boolean) -> Unit,
     offContent: @Composable () -> Unit,
     onContent: @Composable () -> Unit,
     selectedColor: Color = colorResource(R.color.white),
@@ -81,7 +75,7 @@ fun HedgeSwitch(
                         interactionSource = offItemInteractionSource,
                         indication = null
                     ) {
-                        onToggleChanged(offUnit)
+                        onToggleChanged(false)
                     },
                 shape = RoundedCornerShape(6.dp),
                 colors = CardDefaults.cardColors(
@@ -104,7 +98,7 @@ fun HedgeSwitch(
                         interactionSource = onItemInteractionSource,
                         indication = null
                     ) {
-                        onToggleChanged(onUnit)
+                        onToggleChanged(true)
                     },
                 shape = RoundedCornerShape(6.dp),
                 colors = CardDefaults.cardColors(
@@ -126,7 +120,7 @@ fun HedgeSwitch(
 @Preview(showBackground = true)
 @Composable
 fun PreviewCustomSwitch() {
-    var currencyUnit by remember { mutableStateOf(KOREAN) }
+    var isToggled by remember { mutableStateOf(false) }
 
     Column(
         modifier = Modifier
@@ -136,12 +130,10 @@ fun PreviewCustomSwitch() {
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         HedgeSwitch(
-            isToggled = false,
-            onToggleChanged = {
-                currencyUnit = it
+            isToggled = isToggled,
+            onToggleChanged = { isResult ->
+                isToggled = isResult
             },
-            offUnit = KOREAN,
-            onUnit = USD,
             offContent = {
                 Box(
                     modifier = Modifier

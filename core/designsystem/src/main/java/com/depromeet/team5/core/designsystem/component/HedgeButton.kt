@@ -34,7 +34,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import com.depromeet.team5.core.designsystem.component.HedgeButton.Cta.Background
+import com.depromeet.team5.core.designsystem.component.HedgeButton.CallToAction.Background
 import com.depromeet.team5.core.designsystem.foundation.HedgeColor
 import com.depromeet.team5.core.designsystem.foundation.HedgeIcon
 import com.depromeet.team5.core.designsystem.foundation.HedgeTypography
@@ -236,7 +236,7 @@ object HedgeButton {
         }
     }
 
-    object Cta {
+    object CallToAction {
 
         sealed class Background {
             data object Transparent : Background()
@@ -559,24 +559,24 @@ fun CtaButtonPreview() {
             .background(HedgeColor.GREY_300),
         verticalArrangement = Arrangement.Bottom,
     ) {
-        HedgeButton.Cta.Single(
+        HedgeButton.CallToAction.Single(
             text = "버튼명",
             onClick = {},
         )
-        HedgeButton.Cta.Double(
+        HedgeButton.CallToAction.Double(
             text1 = "버튼1",
             text2 = "버튼2",
             onClickButton1 = {},
             onClickButton2 = {},
         )
-        HedgeButton.Cta.SingleWithSecondary(
+        HedgeButton.CallToAction.SingleWithSecondary(
             text = "버튼명",
             secondaryText = "Text",
             background = Background.Gradient(HedgeColor.Neutral.BackgroundDefault),
             onClickButton = {},
             onClickSecondaryButton = {},
         )
-        HedgeButton.Cta.DoubleWithSecondary(
+        HedgeButton.CallToAction.DoubleWithSecondary(
             text1 = "버튼1",
             text2 = "버튼2",
             secondaryText = "Text",

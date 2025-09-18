@@ -104,6 +104,12 @@ object HedgeColor {
             )
     }
 
+    val Transparent: Color
+        @Composable get() = com.depromeet.team5.core.designsystem.util.Color(
+            lightMode = Color(0x00000000),
+            darkMode = Color(0x00000000)
+        )
+
     /*
     * palette
     * todo 추후 internal로 변경하고 semantic만 노출(아직 semantic 정의가 다 안 되었고, 피그마 화면에 연결도 안 되어있음)

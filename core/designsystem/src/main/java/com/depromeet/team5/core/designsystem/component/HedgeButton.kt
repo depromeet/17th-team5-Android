@@ -228,7 +228,7 @@ object HedgeButton {
                     modifier = Modifier.size(
                         width = size.iconWidth, height = size.iconHeight
                     ),
-                    imageVector = imageVector,
+                    imageVector = it,
                     contentDescription = null,
                     tint = if (enabled) color.active else color.disabled,
                 )

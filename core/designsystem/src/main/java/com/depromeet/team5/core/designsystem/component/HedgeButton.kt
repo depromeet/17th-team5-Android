@@ -239,7 +239,7 @@ object HedgeButton {
     object CallToAction {
 
         sealed class Background {
-            data object Transparent : Background()
+            object Transparent : Background()
             data class Gradient(val color: Color) : Background()
         }
 

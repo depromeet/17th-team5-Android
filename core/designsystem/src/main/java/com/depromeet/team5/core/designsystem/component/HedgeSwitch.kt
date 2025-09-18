@@ -114,7 +114,6 @@ fun HedgeSwitch(
 ) {
     val density = LocalDensity.current
 
-
     val trackColor by animateColorAsState(
         color.trackColor(checked),
         label = "trackColor"
@@ -125,7 +124,6 @@ fun HedgeSwitch(
         label = "thumbOffset"
     )
     val thumbOffsetPx = with(density) { thumbOffset.toPx() }
-
 
     Box(
         modifier = modifier

@@ -105,7 +105,7 @@ private fun RetrospectScreen(
     Column(
         modifier = modifier
             .fillMaxSize()
-            .background(color = Color(0xFFF3F4F6))
+            .background(color = colorResource(R.color.background_secondary))
     ) {
         HedgeTopbar { }
         CompanyTitle(
@@ -117,7 +117,7 @@ private fun RetrospectScreen(
             text = stringResource(id = R.string.retrospect_selling_price_title),
             fontWeight = FontWeight.W600,
             fontSize = 22.sp,
-            color = Color(0xFF111827)
+            color = colorResource(R.color.primary)
         )
 
         Column(

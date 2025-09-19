@@ -54,6 +54,7 @@ internal fun HedgeUnitTextField(
     keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
     keyboardActions: KeyboardActions = KeyboardActions.Default,
     visualTransformation: VisualTransformation,
+    singleLine: Boolean = true,
     trailingIcon: @Composable () -> Unit = {}
 ) {
     var borderColor by remember { mutableIntStateOf(R.color.brand500) }
@@ -117,7 +118,8 @@ internal fun HedgeUnitTextField(
                     errorCursorColor = Color.Transparent,
                 ),
                 keyboardActions = keyboardActions,
-                keyboardOptions = keyboardOptions
+                keyboardOptions = keyboardOptions,
+                singleLine = singleLine
             )
         }
     }
@@ -126,14 +128,16 @@ internal fun HedgeUnitTextField(
 @Composable
 internal fun HedgeSimpleTextField(
     modifier: Modifier = Modifier,
+    value: TextFieldValue,
+    onValueChange: (TextFieldValue) -> Unit,
     label: String,
     placeholder: String,
     keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
     keyboardActions: KeyboardActions = KeyboardActions.Default,
-    visualTransformation: VisualTransformation = VisualTransformation.None
+    visualTransformation: VisualTransformation = VisualTransformation.None,
+    singleLine: Boolean = true
 ) {
     var borderColor by remember { mutableIntStateOf(R.color.brand500) }
-    var inputText by remember { mutableStateOf("") }
 
     Box(
         modifier = modifier
@@ -161,8 +165,8 @@ internal fun HedgeSimpleTextField(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(top = 4.dp),
-                value = inputText,
-                onValueChange = { inputText = it },
+                value = value,
+                onValueChange = onValueChange,
                 visualTransformation = visualTransformation,
                 label = {
                     Text(
@@ -193,7 +197,9 @@ internal fun HedgeSimpleTextField(
                     errorCursorColor = Color.Transparent,
                 ),
                 keyboardActions = keyboardActions,
-                keyboardOptions = keyboardOptions
+                keyboardOptions = keyboardOptions,
+                singleLine = singleLine,
+
             )
         }
     }

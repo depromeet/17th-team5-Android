@@ -12,7 +12,7 @@ class UnitTransformation(private val unit: String) : VisualTransformation {
         val originalText = text.text
 
         if (text.text.isEmpty() || text.text.toLongOrNull() == null) {
-            return TransformedText(text, OffsetMapping.Companion.Identity)
+            return TransformedText(text, OffsetMapping.Identity)
         }
 
         val formattedText = "${originalText}${unit}"

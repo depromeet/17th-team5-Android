@@ -20,6 +20,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActionScope
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.ButtonDefaults
@@ -35,11 +36,15 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
@@ -76,12 +81,23 @@ private fun RetrospectScreen(
     onBackPressed: () -> Unit
 ) {
     var returnVisibility by remember { mutableStateOf(false) }
-    val focusRequester = remember { FocusRequester() }
+
+    val keyboardController = LocalSoftwareKeyboardController.current
+    val focusManager = LocalFocusManager.current
+    val sellingFocusRequester = remember { FocusRequester() }
+    val stockFocusRequester = remember { FocusRequester() }
+    val dateFocusRequester = remember { FocusRequester() }
+    val returnFocusRequester = remember { FocusRequester() }
+
+    var sellingText by remember { mutableStateOf(TextFieldValue("")) }
+    var stockText by remember { mutableStateOf(TextFieldValue("")) }
+    var dateText by remember { mutableStateOf(TextFieldValue("")) }
+    var returnText by remember { mutableStateOf(TextFieldValue("")) }
 
     LaunchedEffect(returnVisibility) {
         if (returnVisibility) {
             delay(300)
-            focusRequester.requestFocus()
+            returnFocusRequester.requestFocus()
         }
     }
 
@@ -113,13 +129,78 @@ private fun RetrospectScreen(
                 )
                 .border(1.dp, colorResource(R.color.white), RoundedCornerShape(16.dp))
         ) {
-            CurrencyTextField()
+            SellingTextField(
+                modifier = modifier.focusRequester(sellingFocusRequester),
+                value = sellingText,
+                onValueChange = { newValue ->
+                    val digitsOnlyText = newValue.text.filter { it.isDigit() }
+                    val newCursorPosition = newValue.selection.start.let { transformedOffset ->
+                        newValue.text.substring(0, transformedOffset).count { it.isDigit() }
+                    }.coerceIn(0, digitsOnlyText.length)
+
+                    sellingText = TextFieldValue(
+                        text = digitsOnlyText,
+                        selection = androidx.compose.ui.text.TextRange(newCursorPosition)
+                    )
+                },
+                onDone = {
+                    focusManager.moveFocus(FocusDirection.Down)
+                }
+            )
             SimpleNumberTextField(
+                modifier = modifier.focusRequester(stockFocusRequester),
+                value = stockText,
+                onValueChange = { newValue ->
+                    val digitsOnlyText = newValue.text.filter { it.isDigit() }
+                    val newCursorPosition = newValue.selection.start.let { transformedOffset ->
+                        newValue.text.substring(0, transformedOffset).count { it.isDigit() }
+                    }.coerceIn(0, digitsOnlyText.length)
+
+                    stockText = TextFieldValue(
+                        text = digitsOnlyText,
+                        selection = androidx.compose.ui.text.TextRange(newCursorPosition)
+                    )
+                },
                 label = "거래량",
                 placeholder = "거래량 가격",
-                visualTransformation = UnitTransformation("주")
+                visualTransformation = UnitTransformation("주"),
+                onDone = {
+                    focusManager.moveFocus(FocusDirection.Down)
+                }
             )
-            DateTextField()
+            DateTextField(
+                modifier = modifier.focusRequester(dateFocusRequester),
+                value = dateText,
+                onValueChange = { newValue ->
+                    val targetText = newValue.text.take(8)
+                    val length = targetText.length
+
+                    val newText = if (length == 6) {
+                        val sub = newValue.text.substring(4)
+
+                        if (sub.toInt() > 12) {
+                            "${newValue.text.substring(0, 4)}0$sub"
+                        } else {
+                            targetText
+                        }
+                    } else {
+                        targetText
+                    }
+
+                    dateText = TextFieldValue(
+                        annotatedString = AnnotatedString(newText),
+                        selection = TextRange(newText.length)
+                    )
+                },
+                onDone = {
+                    if (returnVisibility) {
+                        focusManager.moveFocus(FocusDirection.Down)
+                    } else {
+                        focusManager.clearFocus()
+                        keyboardController?.hide()
+                    }
+                }
+            )
         }
 
         AnimatedVisibility(
@@ -141,10 +222,26 @@ private fun RetrospectScreen(
         ) {
             SimpleNumberTextField(
                 modifier = Modifier
-                    .focusRequester(focusRequester)
+                    .focusRequester(returnFocusRequester)
                     .padding(start = 20.dp, end = 20.dp, top = 12.dp),
                 label = "수익률",
                 placeholder = "%",
+                value = returnText,
+                onValueChange = { newValue ->
+                    val digitsOnlyText = newValue.text.filter { it.isDigit() }
+                    val newCursorPosition = newValue.selection.start.let { transformedOffset ->
+                        newValue.text.substring(0, transformedOffset).count { it.isDigit() }
+                    }.coerceIn(0, digitsOnlyText.length)
+
+                    returnText = TextFieldValue(
+                        text = digitsOnlyText,
+                        selection = androidx.compose.ui.text.TextRange(newCursorPosition)
+                    )
+                },
+                onDone = {
+                    focusManager.clearFocus()
+                    keyboardController?.hide()
+                },
                 visualTransformation = UnitTransformation("%")
             )
         }
@@ -215,44 +312,36 @@ private fun RetrospectScreen(
 }
 
 @Composable
-private fun CurrencyTextField() {
-    val keyboardController = LocalSoftwareKeyboardController.current
+private fun SellingTextField(
+    modifier: Modifier = Modifier,
+    value: TextFieldValue,
+    onValueChange: (TextFieldValue) -> Unit,
+    onDone: KeyboardActionScope.() -> Unit = {}
+) {
 
     var isToggled by remember { mutableStateOf(false) }
-    var textFieldValue by remember { mutableStateOf(TextFieldValue("")) }
     val currentVisualTransformation =
         if (isToggled) USDCurrencyVisualTransformation() else KoreanCurrencyVisualTransformation()
 
     HedgeUnitTextField(
+        modifier = modifier,
         label = "매도가",
         placeholder = "매도 가격",
-        value = textFieldValue,
-        onValueChange = { newValue ->
-            val digitsOnlyText = newValue.text.filter { it.isDigit() }
-            val newCursorPosition = newValue.selection.start.let { transformedOffset ->
-                newValue.text.substring(0, transformedOffset).count { it.isDigit() }
-            }.coerceIn(0, digitsOnlyText.length)
-
-            textFieldValue = TextFieldValue(
-                text = digitsOnlyText,
-                selection = androidx.compose.ui.text.TextRange(newCursorPosition)
-            )
-        },
+        value = value,
+        onValueChange = onValueChange,
         keyboardOptions = KeyboardOptions(
             keyboardType = KeyboardType.Number,
             imeAction = ImeAction.Done
         ),
         keyboardActions = KeyboardActions(
-            onDone = {
-                keyboardController?.hide()
-            }
+            onDone = onDone
         ),
         trailingIcon = {
             CurrencySwitch(
                 isToggled = isToggled,
                 onToggleChanged = { newToggleState ->
                     isToggled = newToggleState
-                    textFieldValue = TextFieldValue("")
+                    onValueChange(TextFieldValue(""))
                 }
             )
         },
@@ -264,34 +353,44 @@ private fun CurrencyTextField() {
 @Composable
 private fun SimpleNumberTextField(
     modifier: Modifier = Modifier,
+    value: TextFieldValue,
+    onValueChange: (TextFieldValue) -> Unit,
     label: String,
     placeholder: String,
-    visualTransformation: VisualTransformation = VisualTransformation.None
+    visualTransformation: VisualTransformation = VisualTransformation.None,
+    onDone: KeyboardActionScope.() -> Unit = {}
 ) {
     val keyboardController = LocalSoftwareKeyboardController.current
 
     HedgeSimpleTextField(
         modifier = modifier,
         label = label,
+        value = value,
+        onValueChange = onValueChange,
         placeholder = placeholder,
         keyboardOptions = KeyboardOptions(
             keyboardType = KeyboardType.Number,
             imeAction = ImeAction.Done
         ),
         keyboardActions = KeyboardActions(
-            onDone = {
-                keyboardController?.hide()
-            }
+            onDone = onDone
         ),
         visualTransformation = visualTransformation
     )
 }
 
 @Composable
-private fun DateTextField() {
-    val keyboardController = LocalSoftwareKeyboardController.current
+private fun DateTextField(
+    modifier: Modifier = Modifier,
+    value: TextFieldValue,
+    onValueChange: (TextFieldValue) -> Unit,
+    onDone: KeyboardActionScope.() -> Unit = {}
+) {
 
     HedgeSimpleTextField(
+        modifier = modifier,
+        value = value,
+        onValueChange = onValueChange,
         label = "거래 날짜",
         placeholder = "거래 날짜",
         keyboardOptions = KeyboardOptions(
@@ -299,9 +398,7 @@ private fun DateTextField() {
             imeAction = ImeAction.Done
         ),
         keyboardActions = KeyboardActions(
-            onDone = {
-                keyboardController?.hide()
-            }
+            onDone = onDone
         ),
         visualTransformation = DateVisualTransformation()
     )

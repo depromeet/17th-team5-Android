@@ -9,31 +9,28 @@ import androidx.compose.ui.text.input.VisualTransformation
 class DateVisualTransformation : VisualTransformation {
 
     override fun filter(text: AnnotatedString): TransformedText {
-        val originalText = text.text
+        val originalText = text.text.take(8)
 
-        if (text.text.isEmpty()) {
-            return TransformedText(text, OffsetMapping.Identity)
-        }
-
-        // 입력 길이에 따라 포맷팅을 다르게 적용
         val formattedText = when (originalText.length) {
-            in 1..4 -> originalText
+            in 0..4 -> originalText
             in 5..6 -> "${originalText.substring(0, 4)}년 ${originalText.substring(4)}"
-            else -> {
+            in 7..8 -> {
                 val year = originalText.substring(0, 4)
                 val month = originalText.substring(4, 6)
-                val day = originalText.substring(6, minOf(originalText.length, 8))
-                "${year}년 ${month}월 $day" + if (originalText.length >= 9) "일" else ""
+                val day = originalText.substring(6)
+                "${year}년 ${month}월 $day" + if (originalText.length == 8) "일" else ""
             }
+
+            else -> ""
         }
 
         val offsetMapping = object : OffsetMapping {
-
             override fun originalToTransformed(offset: Int): Int {
                 return when {
                     offset <= 4 -> offset
                     offset <= 6 -> offset + 2
-                    else -> offset + 4
+                    offset <= 8 -> offset + 4
+                    else -> 14
                 }
             }
 
@@ -41,7 +38,8 @@ class DateVisualTransformation : VisualTransformation {
                 return when {
                     offset <= 4 -> offset
                     offset <= 7 -> offset - 2
-                    else -> offset - 4
+                    offset <= 12 -> offset - 4
+                    else -> 8
                 }
             }
         }

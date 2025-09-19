@@ -55,6 +55,7 @@ internal fun HedgeUnitTextField(
     keyboardActions: KeyboardActions = KeyboardActions.Default,
     visualTransformation: VisualTransformation,
     singleLine: Boolean = true,
+    enabled: Boolean = true,
     trailingIcon: @Composable () -> Unit = {}
 ) {
     var borderColor by remember { mutableIntStateOf(R.color.brand500) }
@@ -119,7 +120,8 @@ internal fun HedgeUnitTextField(
                 ),
                 keyboardActions = keyboardActions,
                 keyboardOptions = keyboardOptions,
-                singleLine = singleLine
+                singleLine = singleLine,
+                enabled = enabled
             )
         }
     }
@@ -135,9 +137,16 @@ internal fun HedgeSimpleTextField(
     keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
     keyboardActions: KeyboardActions = KeyboardActions.Default,
     visualTransformation: VisualTransformation = VisualTransformation.None,
-    singleLine: Boolean = true
+    singleLine: Boolean = true,
+    isError: Boolean = false,
 ) {
-    var borderColor by remember { mutableIntStateOf(R.color.brand500) }
+    var borderColor by remember(isError) {
+        if (isError) {
+            mutableIntStateOf(R.color.error)
+        } else {
+            mutableIntStateOf(R.color.brand500)
+        }
+    }
 
     Box(
         modifier = modifier
@@ -181,6 +190,10 @@ internal fun HedgeSimpleTextField(
                     unfocusedContainerColor = Color.Transparent,
                     disabledContainerColor = Color.Transparent,
 
+                    errorLabelColor = colorResource(R.color.error),
+                    errorTextColor = colorResource(R.color.gray900),
+                    errorContainerColor = Color.Transparent,
+
                     focusedIndicatorColor = Color.Transparent,
                     unfocusedIndicatorColor = Color.Transparent,
                     disabledIndicatorColor = Color.Transparent,
@@ -199,7 +212,7 @@ internal fun HedgeSimpleTextField(
                 keyboardActions = keyboardActions,
                 keyboardOptions = keyboardOptions,
                 singleLine = singleLine,
-
+                isError = isError
             )
         }
     }

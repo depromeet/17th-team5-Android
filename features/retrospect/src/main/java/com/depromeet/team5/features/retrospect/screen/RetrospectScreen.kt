@@ -30,6 +30,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -65,6 +66,10 @@ import com.depromeet.team5.features.retrospect.screen.visualtransmation.KoreanCu
 import com.depromeet.team5.features.retrospect.screen.visualtransmation.USDCurrencyVisualTransformation
 import com.depromeet.team5.features.retrospect.screen.visualtransmation.UnitTransformation
 import kotlinx.coroutines.delay
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
+import java.time.format.DateTimeParseException
+import java.time.format.ResolverStyle
 
 
 @Composable
@@ -94,6 +99,10 @@ private fun RetrospectScreen(
     var stockText by remember { mutableStateOf(TextFieldValue("")) }
     var dateText by remember { mutableStateOf(TextFieldValue("")) }
     var returnText by remember { mutableStateOf(TextFieldValue("")) }
+
+    var isDateTextFieldError by remember { mutableStateOf(false) }
+    val isButtonEnabled by remember { derivedStateOf { !isDateTextFieldError } }
+
 
     LaunchedEffect(returnVisibility) {
         if (returnVisibility) {
@@ -173,34 +182,39 @@ private fun RetrospectScreen(
                 modifier = modifier.focusRequester(dateFocusRequester),
                 value = dateText,
                 onValueChange = { newValue ->
-                    val targetText = newValue.text.take(8)
-                    val length = targetText.length
+                    val substring = newValue.text.take(8)
+                    val length = substring.length
 
-                    val newText = if (length == 6) {
+                    val targetString = if (length == 6) {
                         val sub = newValue.text.substring(4)
 
                         if (sub.toInt() > 12) {
                             "${newValue.text.substring(0, 4)}0$sub"
                         } else {
-                            targetText
+                            substring
                         }
                     } else {
-                        targetText
+                        substring
                     }
 
                     dateText = TextFieldValue(
-                        annotatedString = AnnotatedString(newText),
-                        selection = TextRange(newText.length)
+                        annotatedString = AnnotatedString(targetString),
+                        selection = TextRange(targetString.length)
                     )
                 },
                 onDone = {
+                    if (dateText.text.length == 8) {
+                        isDateTextFieldError = !isValidDate(dateText.text)
+                    }
+
                     if (returnVisibility) {
                         focusManager.moveFocus(FocusDirection.Down)
                     } else {
                         focusManager.clearFocus()
                         keyboardController?.hide()
                     }
-                }
+                },
+                isError = isDateTextFieldError
             )
         }
 
@@ -299,6 +313,7 @@ private fun RetrospectScreen(
                 colors = ButtonDefaults.buttonColors(
                     containerColor = colorResource(R.color.primary)
                 ),
+                enabled = isButtonEnabled,
                 onClick = {}
             ) {
                 Text(
@@ -383,7 +398,8 @@ private fun DateTextField(
     modifier: Modifier = Modifier,
     value: TextFieldValue,
     onValueChange: (TextFieldValue) -> Unit,
-    onDone: KeyboardActionScope.() -> Unit = {}
+    onDone: KeyboardActionScope.() -> Unit = {},
+    isError: Boolean = false
 ) {
     HedgeSimpleTextField(
         modifier = modifier,
@@ -398,8 +414,28 @@ private fun DateTextField(
         keyboardActions = KeyboardActions(
             onDone = onDone
         ),
-        visualTransformation = DateVisualTransformation()
+        visualTransformation = DateVisualTransformation(),
+        isError = isError
     )
+}
+
+private fun isValidDate(dateString: String): Boolean {
+    if (dateString.length != 8) {
+        return false
+    }
+
+    if (!dateString.all { it.isDigit() }) {
+        return false
+    }
+
+    try {
+        val formatter = DateTimeFormatter.ofPattern("uuuuMMdd")
+            .withResolverStyle(ResolverStyle.STRICT)
+        LocalDate.parse(dateString, formatter)
+        return true
+    } catch (e: DateTimeParseException) {
+        return false
+    }
 }
 
 @Composable

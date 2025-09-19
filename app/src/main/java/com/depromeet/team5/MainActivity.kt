@@ -33,8 +33,7 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             DepromeetTheme {
-                val navController = rememberNavController()
-                HedgeNavHost(navController)
+                HedgeNavHost()
             }
         }
     }

@@ -43,6 +43,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.font.FontWeight
@@ -113,7 +114,7 @@ private fun RetrospectScreen(
 
         Text(
             modifier = modifier.padding(start = 16.dp, top = 8.dp),
-            text = "얼마에 매도하셨나요?",
+            text = stringResource(id = R.string.retrospect_selling_price_title),
             fontWeight = FontWeight.W600,
             fontSize = 22.sp,
             color = Color(0xFF111827)
@@ -161,9 +162,9 @@ private fun RetrospectScreen(
                         selection = androidx.compose.ui.text.TextRange(newCursorPosition)
                     )
                 },
-                label = "거래량",
-                placeholder = "거래량 가격",
-                visualTransformation = UnitTransformation("주"),
+                label = stringResource(id = R.string.retrospect_volume),
+                placeholder = stringResource(id = R.string.retrospect_volume_placeholder),
+                visualTransformation = UnitTransformation(stringResource(id = R.string.retrospect_unit_stock)),
                 onDone = {
                     focusManager.moveFocus(FocusDirection.Down)
                 }
@@ -224,8 +225,8 @@ private fun RetrospectScreen(
                 modifier = Modifier
                     .focusRequester(returnFocusRequester)
                     .padding(start = 20.dp, end = 20.dp, top = 12.dp),
-                label = "수익률",
-                placeholder = "%",
+                label = stringResource(id = R.string.retrospect_rate_of_return),
+                placeholder = stringResource(id = R.string.retrospect_unit_percent),
                 value = returnText,
                 onValueChange = { newValue ->
                     val digitsOnlyText = newValue.text.filter { it.isDigit() }
@@ -242,7 +243,7 @@ private fun RetrospectScreen(
                     focusManager.clearFocus()
                     keyboardController?.hide()
                 },
-                visualTransformation = UnitTransformation("%")
+                visualTransformation = UnitTransformation(stringResource(id = R.string.retrospect_unit_percent))
             )
         }
 
@@ -260,14 +261,14 @@ private fun RetrospectScreen(
             ) {
                 Column {
                     Text(
-                        text = "수익률도 입력하기",
+                        text = stringResource(id = R.string.retrospect_enter_rate_of_return),
                         color = colorResource(R.color.gray700),
                         fontSize = 15.sp,
                         letterSpacing = 0.14.sp,
                         fontWeight = FontWeight.W600
                     )
                     Text(
-                        text = "더 자세한 AI 분석이 가능해요",
+                        text = stringResource(id = R.string.retrospect_ai_analysis_description),
                         color = colorResource(R.color.alternative),
                         fontSize = 13.sp,
                         letterSpacing = 0.03.sp,
@@ -301,7 +302,7 @@ private fun RetrospectScreen(
                 onClick = {}
             ) {
                 Text(
-                    text = "확인",
+                    text = stringResource(id = R.string.retrospect_confirm),
                     color = colorResource(R.color.white),
                     fontSize = 18.sp,
                     fontWeight = FontWeight.W600
@@ -325,8 +326,8 @@ private fun SellingTextField(
 
     HedgeUnitTextField(
         modifier = modifier,
-        label = "매도가",
-        placeholder = "매도 가격",
+        label = stringResource(id = R.string.retrospect_selling_price),
+        placeholder = stringResource(id = R.string.retrospect_selling_price_placeholder),
         value = value,
         onValueChange = onValueChange,
         keyboardOptions = KeyboardOptions(
@@ -391,8 +392,8 @@ private fun DateTextField(
         modifier = modifier,
         value = value,
         onValueChange = onValueChange,
-        label = "거래 날짜",
-        placeholder = "거래 날짜",
+        label = stringResource(id = R.string.retrospect_transaction_date),
+        placeholder = stringResource(id = R.string.retrospect_transaction_date),
         keyboardOptions = KeyboardOptions(
             keyboardType = KeyboardType.Number,
             imeAction = ImeAction.Done
@@ -421,7 +422,7 @@ private fun CurrencySwitch(
                 Text(
                     modifier = Modifier
                         .padding(horizontal = 7.dp, vertical = 6.dp),
-                    text = "원",
+                    text = stringResource(id = R.string.retrospect_unit_won),
                     fontSize = 12.sp,
                     fontWeight = FontWeight.W600
                 )
@@ -435,7 +436,7 @@ private fun CurrencySwitch(
                 Text(
                     modifier = Modifier
                         .padding(horizontal = 7.dp, vertical = 6.dp),
-                    text = "$",
+                    text = stringResource(id = R.string.retrospect_unit_dollar),
                     fontSize = 12.sp,
                     fontWeight = FontWeight.W600,
                     textAlign = TextAlign.Center
@@ -461,7 +462,7 @@ private fun CompanyTitle(
 
         Text(
             modifier = Modifier.padding(start = 7.dp),
-            text = "삼성전자"
+            text = stringResource(id = R.string.retrospect_company_name_temp)
         )
     }
 }

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="retrospect_selling_price_title">얼마에 매도하셨나요?</string>
+    <string name="retrospect_volume">거래량</string>
+    <string name="retrospect_volume_placeholder">거래량 가격</string>
+    <string name="retrospect_unit_stock">주</string>
+    <string name="retrospect_rate_of_return">수익률</string>
+    <string name="retrospect_unit_percent">%</string>
+    <string name="retrospect_enter_rate_of_return">수익률도 입력하기</string>
+    <string name="retrospect_ai_analysis_description">더 자세한 AI 분석이 가능해요</string>
+    <string name="retrospect_confirm">확인</string>
+    <string name="retrospect_selling_price">매도가</string>
+    <string name="retrospect_selling_price_placeholder">매도 가격</string>
+    <string name="retrospect_unit_won">원</string>
+    <string name="retrospect_unit_dollar">$</string>
+    <string name="retrospect_transaction_date">거래 날짜</string>
+    <string name="retrospect_company_name_temp">삼성전자</string>
+</resources>

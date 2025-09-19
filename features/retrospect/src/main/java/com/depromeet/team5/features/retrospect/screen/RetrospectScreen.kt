@@ -141,7 +141,7 @@ private fun RetrospectScreen(
 
                     sellingText = TextFieldValue(
                         text = digitsOnlyText,
-                        selection = androidx.compose.ui.text.TextRange(newCursorPosition)
+                        selection = TextRange(newCursorPosition)
                     )
                 },
                 onDone = {
@@ -159,7 +159,7 @@ private fun RetrospectScreen(
 
                     stockText = TextFieldValue(
                         text = digitsOnlyText,
-                        selection = androidx.compose.ui.text.TextRange(newCursorPosition)
+                        selection = TextRange(newCursorPosition)
                     )
                 },
                 label = stringResource(id = R.string.retrospect_volume),
@@ -236,7 +236,7 @@ private fun RetrospectScreen(
 
                     returnText = TextFieldValue(
                         text = digitsOnlyText,
-                        selection = androidx.compose.ui.text.TextRange(newCursorPosition)
+                        selection = TextRange(newCursorPosition)
                     )
                 },
                 onDone = {
@@ -361,8 +361,6 @@ private fun SimpleNumberTextField(
     visualTransformation: VisualTransformation = VisualTransformation.None,
     onDone: KeyboardActionScope.() -> Unit = {}
 ) {
-    val keyboardController = LocalSoftwareKeyboardController.current
-
     HedgeSimpleTextField(
         modifier = modifier,
         label = label,
@@ -387,7 +385,6 @@ private fun DateTextField(
     onValueChange: (TextFieldValue) -> Unit,
     onDone: KeyboardActionScope.() -> Unit = {}
 ) {
-
     HedgeSimpleTextField(
         modifier = modifier,
         value = value,

@@ -25,6 +25,7 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
@@ -157,7 +158,7 @@ private fun RetrospectScreen(
         )
 
         Text(
-            modifier = modifier.padding(start = 16.dp, top = 8.dp),
+            modifier = Modifier.padding(start = 16.dp, top = 8.dp),
             text = stringResource(id = R.string.retrospect_selling_price_title),
             fontWeight = FontWeight.W600,
             fontSize = 22.sp,
@@ -183,7 +184,6 @@ private fun RetrospectScreen(
                 onUpdateStockText = onUpdateStockText
             )
             DateTextField(
-                modifier = modifier,
                 state = dateTextFieldState,
                 onUpdateDateText = onUpdateDateText,
                 onErrorDateText = onErrorDateText,
@@ -650,41 +650,45 @@ private fun RetrospectRoutePreview() {
         }
     }
 
-    RetrospectScreen(
-        sellingTextFieldState = sellingTextFieldState,
-        stockTextFieldState = stockTextFieldState,
-        dateTextFieldState = dateTextFieldState,
-        returnTextFieldState = returnTextFieldState,
-        buttonEnabled = buttonState,
-        returnToggleState = returnToggleState,
-        onUpdateSellingText = { text, selection ->
-            sellingTextFieldState = sellingTextFieldState.copy(text = text, selection = selection)
-        },
-        onUpdateStockText = { text, selection ->
-            stockTextFieldState = stockTextFieldState.copy(text = text, selection = selection)
-        },
-        onUpdateDateText = { text, selection ->
-            dateTextFieldState = dateTextFieldState.copy(
-                label = context.getString(R.string.retrospect_transaction_date),
-                text = text,
-                selection = selection,
-                isError = false
-            )
-        },
-        onUpdateReturnText = { text, selection ->
-            returnTextFieldState =
-                returnTextFieldState.copy(text = text, selection = selection)
-        },
-        onErrorDateText = { text, selection ->
-            dateTextFieldState = dateTextFieldState.copy(
-                label = context.getString(R.string.error_message_future_date),
-                text = text,
-                selection = selection,
-                isError = true
-            )
-        },
-        onClickedConfirmButton = {},
-        onUpdateReturnToggle = { returnToggleState = it },
-        onBackPressed = {}
-    )
+    Scaffold { paddingValues ->
+        RetrospectScreen(
+            modifier = Modifier.padding(paddingValues),
+            sellingTextFieldState = sellingTextFieldState,
+            stockTextFieldState = stockTextFieldState,
+            dateTextFieldState = dateTextFieldState,
+            returnTextFieldState = returnTextFieldState,
+            buttonEnabled = buttonState,
+            returnToggleState = returnToggleState,
+            onUpdateSellingText = { text, selection ->
+                sellingTextFieldState =
+                    sellingTextFieldState.copy(text = text, selection = selection)
+            },
+            onUpdateStockText = { text, selection ->
+                stockTextFieldState = stockTextFieldState.copy(text = text, selection = selection)
+            },
+            onUpdateDateText = { text, selection ->
+                dateTextFieldState = dateTextFieldState.copy(
+                    label = context.getString(R.string.retrospect_transaction_date),
+                    text = text,
+                    selection = selection,
+                    isError = false
+                )
+            },
+            onUpdateReturnText = { text, selection ->
+                returnTextFieldState =
+                    returnTextFieldState.copy(text = text, selection = selection)
+            },
+            onErrorDateText = { text, selection ->
+                dateTextFieldState = dateTextFieldState.copy(
+                    label = context.getString(R.string.error_message_future_date),
+                    text = text,
+                    selection = selection,
+                    isError = true
+                )
+            },
+            onClickedConfirmButton = {},
+            onUpdateReturnToggle = { returnToggleState = it },
+            onBackPressed = {}
+        )
+    }
 }

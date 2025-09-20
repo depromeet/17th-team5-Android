@@ -31,7 +31,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -61,6 +60,10 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.depromeet.team5.features.retrospect.R
+import com.depromeet.team5.features.retrospect.screen.annotation.DATE
+import com.depromeet.team5.features.retrospect.screen.annotation.RETURN
+import com.depromeet.team5.features.retrospect.screen.annotation.SELLING
+import com.depromeet.team5.features.retrospect.screen.annotation.STOCK
 import com.depromeet.team5.features.retrospect.screen.component.HedgeDatePickerDialog
 import com.depromeet.team5.features.retrospect.screen.component.HedgeSimpleTextField
 import com.depromeet.team5.features.retrospect.screen.component.HedgeSwitch
@@ -82,11 +85,11 @@ fun RetrospectRoute(
     viewModel: RetrospectViewModel = hiltViewModel(),
     onBackPressed: () -> Unit
 ) {
-    val context = LocalContext.current
     val sellingTextFieldState by viewModel.sellingTextFieldState.stateFlow.collectAsStateWithLifecycle()
     val stockTextFieldState by viewModel.stockTextFieldState.stateFlow.collectAsStateWithLifecycle()
     val dateTextFieldState by viewModel.dateTextFieldState.stateFlow.collectAsStateWithLifecycle()
     val returnTextFieldState by viewModel.returnTextFieldState.stateFlow.collectAsStateWithLifecycle()
+    val buttonState by viewModel.okButtonState.stateFlow.collectAsStateWithLifecycle()
 
     RetrospectScreen(
         modifier = modifier,
@@ -94,35 +97,23 @@ fun RetrospectRoute(
         stockTextFieldState = stockTextFieldState,
         dateTextFieldState = dateTextFieldState,
         returnTextFieldState = returnTextFieldState,
+        buttonEnabled = buttonState,
         onUpdateSellingText = { text, selection ->
-            viewModel.sellingTextFieldState::update
+            viewModel.updateState(SELLING, text, selection)
         },
         onUpdateStockText = { text, selection ->
-            viewModel.stockTextFieldState::update
+            viewModel.updateState(STOCK, text, selection)
         },
         onUpdateDateText = { text, selection ->
-            viewModel.dateTextFieldState.update {
-                it.copy(
-                    label = context.getString(R.string.retrospect_transaction_date),
-                    text = text,
-                    selection = selection,
-                    isError = false
-                )
-            }
+            viewModel.updateState(DATE, text, selection)
         },
         onUpdateReturnText = { text, selection ->
-            viewModel.returnTextFieldState::update
+            viewModel.updateState(RETURN, text, selection)
         },
         onErrorDateText = { text, selection ->
-            viewModel.dateTextFieldState.update {
-                it.copy(
-                    label = context.getString(R.string.error_message_future_date),
-                    text = text,
-                    selection = selection,
-                    isError = true
-                )
-            }
+            viewModel.updateState(RETURN, text, selection, true)
         },
+        onClickedConfirmButton = viewModel::onClickedConfirmButton,
         onBackPressed = onBackPressed
     )
 }
@@ -135,11 +126,13 @@ private fun RetrospectScreen(
     stockTextFieldState: TextFieldState,
     dateTextFieldState: TextFieldState,
     returnTextFieldState: TextFieldState,
+    buttonEnabled: Boolean,
     onUpdateSellingText: (String, Int) -> Unit,
     onUpdateStockText: (String, Int) -> Unit,
     onUpdateDateText: (String, Int) -> Unit,
     onErrorDateText: (String, Int) -> Unit,
     onUpdateReturnText: (String, Int) -> Unit,
+    onClickedConfirmButton: () -> Unit,
     onBackPressed: () -> Unit
 ) {
     val focusManager = LocalFocusManager.current
@@ -147,8 +140,6 @@ private fun RetrospectScreen(
 
     val keyboardController = LocalSoftwareKeyboardController.current
 
-    var isDateTextFieldError by remember { mutableStateOf(false) }
-    val isButtonEnabled by remember { derivedStateOf { !isDateTextFieldError } }
 
     Column(
         modifier = modifier
@@ -283,8 +274,8 @@ private fun RetrospectScreen(
                 colors = ButtonDefaults.buttonColors(
                     containerColor = colorResource(R.color.primary)
                 ),
-                enabled = isButtonEnabled,
-                onClick = {}
+                enabled = buttonEnabled,
+                onClick = onClickedConfirmButton
             ) {
                 Text(
                     text = stringResource(id = R.string.retrospect_confirm),
@@ -611,6 +602,8 @@ private fun CompanyTitlePreview() {
 private fun RetrospectRoutePreview() {
     val context = LocalContext.current
 
+    var buttonState by remember { mutableStateOf(false) }
+
     var sellingTextFieldState by remember {
         mutableStateOf(
             TextFieldState.EMPTY.copy(
@@ -639,6 +632,7 @@ private fun RetrospectRoutePreview() {
         stockTextFieldState = stockTextFieldState,
         dateTextFieldState = dateTextFieldState,
         returnTextFieldState = returnTextFieldState,
+        buttonEnabled = buttonState,
         onUpdateSellingText = { text, selection ->
             sellingTextFieldState = sellingTextFieldState.copy(text = text, selection = selection)
         },
@@ -665,6 +659,7 @@ private fun RetrospectRoutePreview() {
                 isError = true
             )
         },
+        onClickedConfirmButton = {},
         onBackPressed = {}
     )
 }

@@ -3,21 +3,19 @@ package com.depromeet.team5.features.retrospect.screen.annotation
 import androidx.annotation.StringDef
 
 
-typealias CurrencyUnit = @CurrencyUnitType String
+typealias savedStateHandleKey = @SavedStateHandleKeyType String
 
-const val KOREAN = "원"
-const val USD = "$"
-
-const val PERCENT = "%"
-
-const val NIL = ""
+const val SELLING = "selling"
+const val STOCK = "stock"
+const val DATE = "date"
+const val RETURN = "return"
 
 @Target(AnnotationTarget.ANNOTATION_CLASS)
 @Retention(AnnotationRetention.SOURCE)
-@StringDef(KOREAN, USD, PERCENT, NIL)
-private annotation class CurrencyUnitDef
+@StringDef(SELLING, STOCK, DATE, RETURN)
+private annotation class SavedStateHandleKey
 
-@CurrencyUnitDef
+@SavedStateHandleKey
 @Target(AnnotationTarget.TYPE)
 @Retention(AnnotationRetention.SOURCE)
-private annotation class CurrencyUnitType
+private annotation class SavedStateHandleKeyType

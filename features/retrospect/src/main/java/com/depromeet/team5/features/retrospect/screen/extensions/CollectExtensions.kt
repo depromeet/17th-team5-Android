@@ -8,9 +8,7 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.onCompletion
 
 
-suspend fun <T> Flow<T>.baseCollect() {
-    collect()
-}
+suspend fun <T> Flow<T>.baseCollect() = collect()
 
 suspend fun <T> Flow<T>.baseCollect(
     onSuccess: suspend (T) -> Unit

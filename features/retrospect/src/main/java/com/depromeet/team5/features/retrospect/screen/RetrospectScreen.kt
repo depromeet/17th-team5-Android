@@ -31,7 +31,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -44,6 +43,7 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.colorResource
@@ -58,16 +58,18 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.depromeet.team5.features.retrospect.R
 import com.depromeet.team5.features.retrospect.screen.component.HedgeDatePickerDialog
 import com.depromeet.team5.features.retrospect.screen.component.HedgeSimpleTextField
 import com.depromeet.team5.features.retrospect.screen.component.HedgeSwitch
 import com.depromeet.team5.features.retrospect.screen.component.HedgeTopbar
 import com.depromeet.team5.features.retrospect.screen.component.HedgeUnitTextField
+import com.depromeet.team5.features.retrospect.screen.state.TextFieldState
 import com.depromeet.team5.features.retrospect.screen.visualtransmation.KoreanCurrencyVisualTransformation
 import com.depromeet.team5.features.retrospect.screen.visualtransmation.USDCurrencyVisualTransformation
 import com.depromeet.team5.features.retrospect.screen.visualtransmation.UnitTransformation
-import kotlinx.coroutines.delay
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
@@ -77,97 +79,76 @@ import java.util.Locale
 @Composable
 fun RetrospectRoute(
     modifier: Modifier,
+    viewModel: RetrospectViewModel = hiltViewModel(),
     onBackPressed: () -> Unit
 ) {
+    val context = LocalContext.current
+    val sellingTextFieldState by viewModel.sellingTextFieldState.stateFlow.collectAsStateWithLifecycle()
+    val stockTextFieldState by viewModel.stockTextFieldState.stateFlow.collectAsStateWithLifecycle()
+    val dateTextFieldState by viewModel.dateTextFieldState.stateFlow.collectAsStateWithLifecycle()
+    val returnTextFieldState by viewModel.returnTextFieldState.stateFlow.collectAsStateWithLifecycle()
 
-    RetrospectScreen(modifier, onBackPressed)
+    RetrospectScreen(
+        modifier = modifier,
+        sellingTextFieldState = sellingTextFieldState,
+        stockTextFieldState = stockTextFieldState,
+        dateTextFieldState = dateTextFieldState,
+        returnTextFieldState = returnTextFieldState,
+        onUpdateSellingText = { text, selection ->
+            viewModel.sellingTextFieldState::update
+        },
+        onUpdateStockText = { text, selection ->
+            viewModel.stockTextFieldState::update
+        },
+        onUpdateDateText = { text, selection ->
+            viewModel.dateTextFieldState.update {
+                it.copy(
+                    label = context.getString(R.string.retrospect_transaction_date),
+                    text = text,
+                    selection = selection,
+                    isError = false
+                )
+            }
+        },
+        onUpdateReturnText = { text, selection ->
+            viewModel.returnTextFieldState::update
+        },
+        onErrorDateText = { text, selection ->
+            viewModel.dateTextFieldState.update {
+                it.copy(
+                    label = context.getString(R.string.error_message_future_date),
+                    text = text,
+                    selection = selection,
+                    isError = true
+                )
+            }
+        },
+        onBackPressed = onBackPressed
+    )
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun RetrospectScreen(
     modifier: Modifier = Modifier,
+    sellingTextFieldState: TextFieldState,
+    stockTextFieldState: TextFieldState,
+    dateTextFieldState: TextFieldState,
+    returnTextFieldState: TextFieldState,
+    onUpdateSellingText: (String, Int) -> Unit,
+    onUpdateStockText: (String, Int) -> Unit,
+    onUpdateDateText: (String, Int) -> Unit,
+    onErrorDateText: (String, Int) -> Unit,
+    onUpdateReturnText: (String, Int) -> Unit,
     onBackPressed: () -> Unit
 ) {
+    val focusManager = LocalFocusManager.current
     var returnVisibility by remember { mutableStateOf(false) }
 
     val keyboardController = LocalSoftwareKeyboardController.current
-    val focusManager = LocalFocusManager.current
-    val sellingFocusRequester = remember { FocusRequester() }
-    val stockFocusRequester = remember { FocusRequester() }
-    val dateFocusRequester = remember { FocusRequester() }
-    val returnFocusRequester = remember { FocusRequester() }
-
-    var sellingText by remember { mutableStateOf(TextFieldValue("")) }
-    var stockText by remember { mutableStateOf(TextFieldValue("")) }
-    var dateText by remember { mutableStateOf(TextFieldValue("")) }
-    var returnText by remember { mutableStateOf(TextFieldValue("")) }
 
     var isDateTextFieldError by remember { mutableStateOf(false) }
     val isButtonEnabled by remember { derivedStateOf { !isDateTextFieldError } }
-
-    var isShowDatePicker by remember { mutableStateOf(false) }
-
-    val currentYear = Calendar.getInstance().get(Calendar.YEAR)
-    val datePickerState = rememberDatePickerState(
-        yearRange = currentYear - 100..currentYear
-    )
-
-    if (isShowDatePicker) {
-        HedgeDatePickerDialog(
-            datePickerState = datePickerState,
-            onClickConfirm = {
-                dateText =
-                    datePickerState.selectedDateMillis?.let {
-                        TextFieldValue(formatDate(it))
-                    } ?: dateText
-
-                isShowDatePicker = false
-
-                if (dateText.text.isEmpty()) {
-                    focusManager.clearFocus()
-                    return@HedgeDatePickerDialog
-                }
-
-                val current = Calendar.getInstance()
-
-                val digitsOnlyText = dateText.text.filter { it.isDigit() }
-
-                val year = digitsOnlyText.substring(0, 4)
-                val month = digitsOnlyText.substring(4, 6)
-                val day = digitsOnlyText.substring(6)
-
-                val selectedDate = getCalendar(
-                    year.toInt(),
-                    month.toInt() - 1,
-                    day.toInt()
-                )
-
-                isDateTextFieldError = selectedDate.after(current)
-
-                if (returnVisibility) {
-                    focusManager.moveFocus(FocusDirection.Down)
-                } else {
-                    focusManager.clearFocus()
-                }
-            },
-            onClickDismiss = {
-                isShowDatePicker = false
-                focusManager.clearFocus()
-            },
-            onDismissRequest = {
-                isShowDatePicker = false
-                focusManager.clearFocus()
-            }
-        )
-    }
-
-    LaunchedEffect(returnVisibility) {
-        if (returnVisibility) {
-            delay(300)
-            returnFocusRequester.requestFocus()
-        }
-    }
 
     Column(
         modifier = modifier
@@ -198,53 +179,25 @@ private fun RetrospectScreen(
                 .border(1.dp, colorResource(R.color.white), RoundedCornerShape(16.dp))
         ) {
             SellingTextField(
-                modifier = modifier.focusRequester(sellingFocusRequester),
-                value = sellingText,
-                onValueChange = { newValue ->
-                    val digitsOnlyText = newValue.text.filter { it.isDigit() }
-                    val newCursorPosition = newValue.selection.start.let { transformedOffset ->
-                        newValue.text.substring(0, transformedOffset).count { it.isDigit() }
-                    }.coerceIn(0, digitsOnlyText.length)
-
-                    sellingText = TextFieldValue(
-                        text = digitsOnlyText,
-                        selection = TextRange(newCursorPosition)
-                    )
-                },
-                onDone = {
-                    focusManager.moveFocus(FocusDirection.Down)
-                }
+                state = sellingTextFieldState,
+                onUpdateSellingText = onUpdateSellingText
             )
-            SimpleNumberTextField(
-                modifier = modifier.focusRequester(stockFocusRequester),
-                value = stockText,
-                onValueChange = { newValue ->
-                    val digitsOnlyText = newValue.text.filter { it.isDigit() }
-                    val newCursorPosition = newValue.selection.start.let { transformedOffset ->
-                        newValue.text.substring(0, transformedOffset).count { it.isDigit() }
-                    }.coerceIn(0, digitsOnlyText.length)
-
-                    stockText = TextFieldValue(
-                        text = digitsOnlyText,
-                        selection = TextRange(newCursorPosition)
-                    )
-                },
-                label = stringResource(id = R.string.retrospect_volume),
-                placeholder = stringResource(id = R.string.retrospect_volume_placeholder),
-                visualTransformation = UnitTransformation(stringResource(id = R.string.retrospect_unit_stock)),
-                onDone = {
-                    focusManager.moveFocus(FocusDirection.Down)
-                }
+            StockTextField(
+                state = stockTextFieldState,
+                onUpdateStockText = onUpdateStockText
             )
             DateTextField(
-                modifier = modifier
-                    .focusRequester(dateFocusRequester)
-                    .onFocusChanged {
-                        isShowDatePicker = it.isFocused
-                    },
-                value = dateText,
-                isError = isDateTextFieldError,
-                readOnly = true
+                modifier = modifier,
+                state = dateTextFieldState,
+                onUpdateDateText = onUpdateDateText,
+                onErrorDateText = onErrorDateText,
+                onFocusChanged = {
+                    if (returnVisibility) {
+                        focusManager.moveFocus(FocusDirection.Down)
+                    } else {
+                        focusManager.clearFocus()
+                    }
+                }
             )
         }
 
@@ -265,29 +218,16 @@ private fun RetrospectScreen(
                 )
             )
         ) {
-            SimpleNumberTextField(
-                modifier = Modifier
-                    .focusRequester(returnFocusRequester)
-                    .padding(start = 20.dp, end = 20.dp, top = 12.dp),
-                label = stringResource(id = R.string.retrospect_rate_of_return),
-                placeholder = stringResource(id = R.string.retrospect_unit_percent),
-                value = returnText,
-                onValueChange = { newValue ->
-                    val digitsOnlyText = newValue.text.filter { it.isDigit() }
-                    val newCursorPosition = newValue.selection.start.let { transformedOffset ->
-                        newValue.text.substring(0, transformedOffset).count { it.isDigit() }
-                    }.coerceIn(0, digitsOnlyText.length)
-
-                    returnText = TextFieldValue(
-                        text = digitsOnlyText,
-                        selection = TextRange(newCursorPosition)
-                    )
-                },
-                onDone = {
-                    focusManager.clearFocus()
-                    keyboardController?.hide()
-                },
-                visualTransformation = UnitTransformation(stringResource(id = R.string.retrospect_unit_percent))
+            ReturnTextField(
+                state = returnTextFieldState,
+                onUpdateReturnText = onUpdateReturnText,
+                onChangedKeyboardVisibility = {
+                    if (it) {
+                        keyboardController?.show()
+                    } else {
+                        keyboardController?.hide()
+                    }
+                }
             )
         }
 
@@ -360,40 +300,84 @@ private fun RetrospectScreen(
 @Composable
 private fun SellingTextField(
     modifier: Modifier = Modifier,
-    value: TextFieldValue,
-    onValueChange: (TextFieldValue) -> Unit,
-    onDone: KeyboardActionScope.() -> Unit = {}
+    state: TextFieldState,
+    onUpdateSellingText: (String, Int) -> Unit
 ) {
+    val focusManager = LocalFocusManager.current
+    val focusRequester = remember { FocusRequester() }
 
     var isToggled by remember { mutableStateOf(false) }
     val currentVisualTransformation =
         if (isToggled) USDCurrencyVisualTransformation() else KoreanCurrencyVisualTransformation()
 
     HedgeUnitTextField(
-        modifier = modifier,
-        label = stringResource(id = R.string.retrospect_selling_price),
+        modifier = modifier.focusRequester(focusRequester),
+        label = state.label,
         placeholder = stringResource(id = R.string.retrospect_selling_price_placeholder),
-        value = value,
-        onValueChange = onValueChange,
+        value = TextFieldValue(
+            text = state.text,
+            selection = TextRange(state.selection)
+        ),
+        onValueChange = { newValue ->
+            val digitsOnlyText = newValue.text.filter { it.isDigit() }
+            val newCursorPosition = newValue.selection.start.let { transformedOffset ->
+                newValue.text.substring(0, transformedOffset).count { it.isDigit() }
+            }.coerceIn(0, digitsOnlyText.length)
+
+            onUpdateSellingText(digitsOnlyText, newCursorPosition)
+        },
         keyboardOptions = KeyboardOptions(
             keyboardType = KeyboardType.Number,
             imeAction = ImeAction.Done
         ),
         keyboardActions = KeyboardActions(
-            onDone = onDone
+            onDone = {
+                focusManager.moveFocus(FocusDirection.Down)
+            }
         ),
         trailingIcon = {
             CurrencySwitch(
                 isToggled = isToggled,
                 onToggleChanged = { newToggleState ->
                     isToggled = newToggleState
-                    onValueChange(TextFieldValue(""))
+                    onUpdateSellingText("", 0)
                 }
             )
         },
         visualTransformation = currentVisualTransformation
     )
+}
 
+@Composable
+private fun StockTextField(
+    modifier: Modifier = Modifier,
+    state: TextFieldState,
+    onUpdateStockText: (String, Int) -> Unit
+) {
+    val focusManager = LocalFocusManager.current
+    val focusRequester = remember { FocusRequester() }
+
+    SimpleNumberTextField(
+        modifier = modifier.focusRequester(focusRequester),
+        value = TextFieldValue(
+            text = state.text,
+            selection = TextRange(state.selection)
+        ),
+        onValueChange = { newValue ->
+            val digitsOnlyText = newValue.text.filter { it.isDigit() }
+            val newCursorPosition = newValue.selection.start.let { transformedOffset ->
+                newValue.text.substring(0, transformedOffset).count { it.isDigit() }
+            }.coerceIn(0, digitsOnlyText.length)
+
+            onUpdateStockText(digitsOnlyText, newCursorPosition)
+        },
+        label = state.label,
+        placeholder = stringResource(id = R.string.retrospect_volume_placeholder),
+        visualTransformation = UnitTransformation(stringResource(id = R.string.retrospect_unit_stock)),
+        onDone = {
+            focusManager.moveFocus(FocusDirection.Down)
+        }
+    )
 }
 
 @Composable
@@ -423,24 +407,115 @@ private fun SimpleNumberTextField(
     )
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun DateTextField(
     modifier: Modifier = Modifier,
-    value: TextFieldValue,
-    isError: Boolean = false,
-    readOnly: Boolean = false
+    state: TextFieldState,
+    onUpdateDateText: (String, Int) -> Unit,
+    onErrorDateText: (String, Int) -> Unit,
+    onFocusChanged: () -> Unit
 ) {
+    val focusManager = LocalFocusManager.current
+    val focusRequester = remember { FocusRequester() }
+
+    var isShowDatePicker by remember { mutableStateOf(false) }
+
+    val currentYear = Calendar.getInstance().get(Calendar.YEAR)
+    val datePickerState = rememberDatePickerState(
+        yearRange = currentYear - 100..currentYear
+    )
+
+    if (isShowDatePicker) {
+        HedgeDatePickerDialog(
+            datePickerState = datePickerState,
+            onClickConfirm = {
+                isShowDatePicker = false
+
+                val date = datePickerState.selectedDateMillis?.let {
+                    formatDate(it)
+                } ?: run {
+                    focusManager.clearFocus()
+                    return@HedgeDatePickerDialog
+                }
+
+                val current = Calendar.getInstance()
+
+                val digitsOnlyText = date.filter { it.isDigit() }
+
+                val year = digitsOnlyText.substring(0, 4)
+                val month = digitsOnlyText.substring(4, 6)
+                val day = digitsOnlyText.substring(6)
+
+                val selectedDate = getCalendar(
+                    year.toInt(),
+                    month.toInt() - 1,
+                    day.toInt()
+                )
+
+                if (selectedDate.after(current)) {
+                    onErrorDateText(date, digitsOnlyText.length)
+                } else {
+                    onUpdateDateText(date, digitsOnlyText.length)
+                }
+
+                onFocusChanged()
+            },
+            onClickDismiss = {
+                isShowDatePicker = false
+                focusManager.clearFocus()
+            },
+            onDismissRequest = {
+                isShowDatePicker = false
+                focusManager.clearFocus()
+            }
+        )
+    }
+
     HedgeSimpleTextField(
-        modifier = modifier,
-        value = value,
+        modifier = modifier
+            .focusRequester(focusRequester)
+            .onFocusChanged { isShowDatePicker = it.isFocused },
+        value = TextFieldValue(state.text, TextRange(state.selection)),
         onValueChange = {},
-        label = stringResource(id = R.string.retrospect_transaction_date),
+        label = state.label,
         placeholder = stringResource(id = R.string.retrospect_transaction_date),
-        isError = isError,
-        readOnly = readOnly
+        isError = state.isError,
+        readOnly = true
     )
 }
 
+@Composable
+fun ReturnTextField(
+    state: TextFieldState,
+    onUpdateReturnText: (String, Int) -> Unit,
+    onChangedKeyboardVisibility: (Boolean) -> Unit
+) {
+    val focusManager = LocalFocusManager.current
+    val focusRequester = remember { FocusRequester() }
+
+    SimpleNumberTextField(
+        modifier = Modifier
+            .focusRequester(focusRequester)
+            .padding(start = 20.dp, end = 20.dp, top = 12.dp),
+        label = stringResource(id = R.string.retrospect_rate_of_return),
+        placeholder = stringResource(id = R.string.retrospect_unit_percent),
+        value = TextFieldValue(state.text, TextRange(state.selection)),
+        onValueChange = { newValue ->
+            val digitsOnlyText = newValue.text.filter { it.isDigit() }
+            val newCursorPosition = newValue.selection.start.let { transformedOffset ->
+                newValue.text.substring(0, transformedOffset).count { it.isDigit() }
+            }.coerceIn(0, digitsOnlyText.length)
+
+            onUpdateReturnText(digitsOnlyText, newCursorPosition)
+        },
+        onDone = {
+            focusManager.clearFocus()
+            onChangedKeyboardVisibility(false)
+        },
+        visualTransformation = UnitTransformation(stringResource(id = R.string.retrospect_unit_percent))
+    )
+}
 
 private fun getCalendar(year: Int, month: Int, day: Int): Calendar {
     val calendar = Calendar.getInstance()
@@ -534,8 +609,62 @@ private fun CompanyTitlePreview() {
 @Preview
 @Composable
 private fun RetrospectRoutePreview() {
-    RetrospectRoute(
-        modifier = Modifier,
+    val context = LocalContext.current
+
+    var sellingTextFieldState by remember {
+        mutableStateOf(
+            TextFieldState.EMPTY.copy(
+                label = context.getString(
+                    R.string.retrospect_selling_price
+                )
+            )
+        )
+    }
+    var stockTextFieldState by remember {
+        mutableStateOf(
+            TextFieldState.EMPTY.copy(label = context.getString(R.string.retrospect_volume))
+        )
+    }
+    var dateTextFieldState by remember {
+        mutableStateOf(
+            TextFieldState.EMPTY.copy(label = context.getString(R.string.retrospect_transaction_date))
+        )
+    }
+    var returnTextFieldState by remember {
+        mutableStateOf(TextFieldState.EMPTY.copy(label = context.getString(R.string.retrospect_rate_of_return)))
+    }
+
+    RetrospectScreen(
+        sellingTextFieldState = sellingTextFieldState,
+        stockTextFieldState = stockTextFieldState,
+        dateTextFieldState = dateTextFieldState,
+        returnTextFieldState = returnTextFieldState,
+        onUpdateSellingText = { text, selection ->
+            sellingTextFieldState = sellingTextFieldState.copy(text = text, selection = selection)
+        },
+        onUpdateStockText = { text, selection ->
+            stockTextFieldState = stockTextFieldState.copy(text = text, selection = selection)
+        },
+        onUpdateDateText = { text, selection ->
+            dateTextFieldState = dateTextFieldState.copy(
+                label = context.getString(R.string.retrospect_transaction_date),
+                text = text,
+                selection = selection,
+                isError = false
+            )
+        },
+        onUpdateReturnText = { text, selection ->
+            returnTextFieldState =
+                returnTextFieldState.copy(text = text, selection = selection, isError = false)
+        },
+        onErrorDateText = { text, selection ->
+            dateTextFieldState = dateTextFieldState.copy(
+                label = context.getString(R.string.error_message_future_date),
+                text = text,
+                selection = selection,
+                isError = true
+            )
+        },
         onBackPressed = {}
     )
 }

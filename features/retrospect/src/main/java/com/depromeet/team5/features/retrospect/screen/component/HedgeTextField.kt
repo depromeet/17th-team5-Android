@@ -144,7 +144,7 @@ internal fun HedgeSimpleTextField(
         if (isError) {
             mutableIntStateOf(R.color.error)
         } else {
-            mutableIntStateOf(R.color.brand500)
+            mutableIntStateOf(R.color.white)
         }
     }
 
@@ -159,9 +159,12 @@ internal fun HedgeSimpleTextField(
             )
             .border(1.5.dp, colorResource(borderColor), RoundedCornerShape(16.dp))
             .onFocusChanged { focusState ->
-                borderColor = if (focusState.hasFocus) R.color.gray900
-                else R.color.white
+                if (isError) return@onFocusChanged
 
+                borderColor = when (focusState.hasFocus) {
+                    true -> R.color.gray900
+                    else -> R.color.white
+                }
             }
             .padding(start = 20.dp, top = 14.dp, end = 16.dp, bottom = 14.dp)
     ) {

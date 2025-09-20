@@ -14,6 +14,7 @@ import com.depromeet.team5.features.retrospect.screen.extensions.hedgeState
 import com.depromeet.team5.features.retrospect.screen.state.TextFieldState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -36,6 +37,8 @@ class RetrospectViewModel @Inject constructor(
         TextFieldState.EMPTY.copy(text = savedStateHandle[RETURN] ?: "")
     }
 
+    var returnToggleState by hedgeState { false }
+
     var okButtonState: HedgeState<Boolean> by hedgeState { false }
 
 
@@ -44,9 +47,18 @@ class RetrospectViewModel @Inject constructor(
             combine(
                 sellingTextFieldState.stateFlow,
                 stockTextFieldState.stateFlow,
-                dateTextFieldState.stateFlow,
-                returnTextFieldState.stateFlow
+                dateTextFieldState.stateFlow
             ) { array -> array.all { it.text.isNotEmpty() && !it.isError } }
+                .map { isResult ->
+                    if (returnToggleState.stateFlow.value) {
+                        val textIsNotEmpty = returnTextFieldState.stateFlow.value.text.isNotEmpty()
+                        val isError = returnTextFieldState.stateFlow.value.isError
+
+                        isResult && textIsNotEmpty && !isError
+                    } else {
+                        isResult
+                    }
+                }
                 .baseCollect(
                     onSuccess = { isResult ->
                         okButtonState.update { isResult }

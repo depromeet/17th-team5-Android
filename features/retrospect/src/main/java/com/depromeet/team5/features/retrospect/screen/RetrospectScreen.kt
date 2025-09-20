@@ -31,6 +31,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -90,6 +91,7 @@ fun RetrospectRoute(
     val dateTextFieldState by viewModel.dateTextFieldState.stateFlow.collectAsStateWithLifecycle()
     val returnTextFieldState by viewModel.returnTextFieldState.stateFlow.collectAsStateWithLifecycle()
     val buttonState by viewModel.okButtonState.stateFlow.collectAsStateWithLifecycle()
+    val returnToggleState by viewModel.returnToggleState.stateFlow.collectAsStateWithLifecycle()
 
     RetrospectScreen(
         modifier = modifier,
@@ -98,6 +100,7 @@ fun RetrospectRoute(
         dateTextFieldState = dateTextFieldState,
         returnTextFieldState = returnTextFieldState,
         buttonEnabled = buttonState,
+        returnToggleState = returnToggleState,
         onUpdateSellingText = { text, selection ->
             viewModel.updateState(SELLING, text, selection)
         },
@@ -114,6 +117,9 @@ fun RetrospectRoute(
             viewModel.updateState(RETURN, text, selection, true)
         },
         onClickedConfirmButton = viewModel::onClickedConfirmButton,
+        onUpdateReturnToggle = {
+            viewModel.returnToggleState.update { it }
+        },
         onBackPressed = onBackPressed
     )
 }
@@ -127,19 +133,18 @@ private fun RetrospectScreen(
     dateTextFieldState: TextFieldState,
     returnTextFieldState: TextFieldState,
     buttonEnabled: Boolean,
+    returnToggleState: Boolean,
     onUpdateSellingText: (String, Int) -> Unit,
     onUpdateStockText: (String, Int) -> Unit,
     onUpdateDateText: (String, Int) -> Unit,
     onErrorDateText: (String, Int) -> Unit,
     onUpdateReturnText: (String, Int) -> Unit,
     onClickedConfirmButton: () -> Unit,
+    onUpdateReturnToggle: (Boolean) -> Unit,
     onBackPressed: () -> Unit
 ) {
     val focusManager = LocalFocusManager.current
-    var returnVisibility by remember { mutableStateOf(false) }
-
     val keyboardController = LocalSoftwareKeyboardController.current
-
 
     Column(
         modifier = modifier
@@ -183,7 +188,7 @@ private fun RetrospectScreen(
                 onUpdateDateText = onUpdateDateText,
                 onErrorDateText = onErrorDateText,
                 onFocusChanged = {
-                    if (returnVisibility) {
+                    if (returnToggleState) {
                         focusManager.moveFocus(FocusDirection.Down)
                     } else {
                         focusManager.clearFocus()
@@ -193,7 +198,7 @@ private fun RetrospectScreen(
         }
 
         AnimatedVisibility(
-            visible = returnVisibility,
+            visible = returnToggleState,
             enter = fadeIn(
                 animationSpec = tween(
                     durationMillis = 300,
@@ -252,16 +257,14 @@ private fun RetrospectScreen(
                 }
 
                 Switch(
-                    checked = returnVisibility,
+                    checked = returnToggleState,
                     colors = SwitchDefaults.colors(
                         checkedThumbColor = colorResource(R.color.white),
                         uncheckedThumbColor = colorResource(R.color.white),
                         checkedTrackColor = colorResource(R.color.gray300),
                         uncheckedTrackColor = colorResource(R.color.gray300)
                     ),
-                    onCheckedChange = {
-                        returnVisibility = it
-                    }
+                    onCheckedChange = onUpdateReturnToggle
                 )
             }
 
@@ -604,6 +607,8 @@ private fun RetrospectRoutePreview() {
 
     var buttonState by remember { mutableStateOf(false) }
 
+    var returnToggleState by remember { mutableStateOf(false) }
+
     var sellingTextFieldState by remember {
         mutableStateOf(
             TextFieldState.EMPTY.copy(
@@ -627,12 +632,31 @@ private fun RetrospectRoutePreview() {
         mutableStateOf(TextFieldState.EMPTY.copy(label = context.getString(R.string.retrospect_rate_of_return)))
     }
 
+    LaunchedEffect(
+        returnToggleState,
+        sellingTextFieldState,
+        stockTextFieldState,
+        dateTextFieldState,
+        returnTextFieldState
+    ) {
+        val array = arrayOf(sellingTextFieldState, stockTextFieldState, dateTextFieldState)
+
+        val isResult = array.all { it.text.isNotEmpty() && !it.isError }
+
+        buttonState = if (returnToggleState) {
+            isResult && (returnTextFieldState.text.isNotEmpty() && !returnTextFieldState.isError)
+        } else {
+            isResult
+        }
+    }
+
     RetrospectScreen(
         sellingTextFieldState = sellingTextFieldState,
         stockTextFieldState = stockTextFieldState,
         dateTextFieldState = dateTextFieldState,
         returnTextFieldState = returnTextFieldState,
         buttonEnabled = buttonState,
+        returnToggleState = returnToggleState,
         onUpdateSellingText = { text, selection ->
             sellingTextFieldState = sellingTextFieldState.copy(text = text, selection = selection)
         },
@@ -649,7 +673,7 @@ private fun RetrospectRoutePreview() {
         },
         onUpdateReturnText = { text, selection ->
             returnTextFieldState =
-                returnTextFieldState.copy(text = text, selection = selection, isError = false)
+                returnTextFieldState.copy(text = text, selection = selection)
         },
         onErrorDateText = { text, selection ->
             dateTextFieldState = dateTextFieldState.copy(
@@ -660,6 +684,7 @@ private fun RetrospectRoutePreview() {
             )
         },
         onClickedConfirmButton = {},
+        onUpdateReturnToggle = { returnToggleState = it },
         onBackPressed = {}
     )
 }

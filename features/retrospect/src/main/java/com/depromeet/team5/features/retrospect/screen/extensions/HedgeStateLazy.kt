@@ -7,7 +7,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
-import kotlin.properties.ReadOnlyProperty
+import kotlin.properties.ReadWriteProperty
 import kotlin.reflect.KProperty
 
 
@@ -43,7 +43,7 @@ class HedgeState<T : Any?>(
 
 class HedgeStateLazy<T : Any?>(
     private val initValue: () -> T
-) : ReadOnlyProperty<Any?, HedgeState<T>> {
+) : ReadWriteProperty<Any?, HedgeState<T>> {
 
     var value: T? = null
 
@@ -54,6 +54,14 @@ class HedgeStateLazy<T : Any?>(
         }
 
         return HedgeState(value!!)
+    }
+
+    override fun setValue(
+        thisRef: Any?,
+        property: KProperty<*>,
+        value: HedgeState<T>
+    ) {
+        this.value = value.stateFlow.value
     }
 }
 

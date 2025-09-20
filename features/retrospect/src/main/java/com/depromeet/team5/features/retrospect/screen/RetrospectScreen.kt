@@ -24,10 +24,12 @@ import androidx.compose.foundation.text.KeyboardActionScope
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
@@ -40,12 +42,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
@@ -57,19 +59,19 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.depromeet.team5.features.retrospect.R
+import com.depromeet.team5.features.retrospect.screen.component.HedgeDatePickerDialog
 import com.depromeet.team5.features.retrospect.screen.component.HedgeSimpleTextField
 import com.depromeet.team5.features.retrospect.screen.component.HedgeSwitch
 import com.depromeet.team5.features.retrospect.screen.component.HedgeTopbar
 import com.depromeet.team5.features.retrospect.screen.component.HedgeUnitTextField
-import com.depromeet.team5.features.retrospect.screen.visualtransmation.DateVisualTransformation
 import com.depromeet.team5.features.retrospect.screen.visualtransmation.KoreanCurrencyVisualTransformation
 import com.depromeet.team5.features.retrospect.screen.visualtransmation.USDCurrencyVisualTransformation
 import com.depromeet.team5.features.retrospect.screen.visualtransmation.UnitTransformation
 import kotlinx.coroutines.delay
-import java.time.LocalDate
-import java.time.format.DateTimeFormatter
-import java.time.format.DateTimeParseException
-import java.time.format.ResolverStyle
+import java.text.SimpleDateFormat
+import java.util.Calendar
+import java.util.Date
+import java.util.Locale
 
 
 @Composable
@@ -81,6 +83,7 @@ fun RetrospectRoute(
     RetrospectScreen(modifier, onBackPressed)
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun RetrospectScreen(
     modifier: Modifier = Modifier,
@@ -103,6 +106,61 @@ private fun RetrospectScreen(
     var isDateTextFieldError by remember { mutableStateOf(false) }
     val isButtonEnabled by remember { derivedStateOf { !isDateTextFieldError } }
 
+    var isShowDatePicker by remember { mutableStateOf(false) }
+
+    val currentYear = Calendar.getInstance().get(Calendar.YEAR)
+    val datePickerState = rememberDatePickerState(
+        yearRange = currentYear - 100..currentYear
+    )
+
+    if (isShowDatePicker) {
+        HedgeDatePickerDialog(
+            datePickerState = datePickerState,
+            onClickConfirm = {
+                dateText =
+                    datePickerState.selectedDateMillis?.let {
+                        TextFieldValue(formatDate(it))
+                    } ?: dateText
+
+                isShowDatePicker = false
+
+                if (dateText.text.isEmpty()) {
+                    focusManager.clearFocus()
+                    return@HedgeDatePickerDialog
+                }
+
+                val current = Calendar.getInstance()
+
+                val digitsOnlyText = dateText.text.filter { it.isDigit() }
+
+                val year = digitsOnlyText.substring(0, 4)
+                val month = digitsOnlyText.substring(4, 6)
+                val day = digitsOnlyText.substring(6)
+
+                val selectedDate = getCalendar(
+                    year.toInt(),
+                    month.toInt() - 1,
+                    day.toInt()
+                )
+
+                isDateTextFieldError = selectedDate.after(current)
+
+                if (returnVisibility) {
+                    focusManager.moveFocus(FocusDirection.Down)
+                } else {
+                    focusManager.clearFocus()
+                }
+            },
+            onClickDismiss = {
+                isShowDatePicker = false
+                focusManager.clearFocus()
+            },
+            onDismissRequest = {
+                isShowDatePicker = false
+                focusManager.clearFocus()
+            }
+        )
+    }
 
     LaunchedEffect(returnVisibility) {
         if (returnVisibility) {
@@ -179,42 +237,14 @@ private fun RetrospectScreen(
                 }
             )
             DateTextField(
-                modifier = modifier.focusRequester(dateFocusRequester),
+                modifier = modifier
+                    .focusRequester(dateFocusRequester)
+                    .onFocusChanged {
+                        isShowDatePicker = it.isFocused
+                    },
                 value = dateText,
-                onValueChange = { newValue ->
-                    val substring = newValue.text.take(8)
-                    val length = substring.length
-
-                    val targetString = if (length == 6) {
-                        val sub = newValue.text.substring(4)
-
-                        if (sub.toInt() > 12) {
-                            "${newValue.text.substring(0, 4)}0$sub"
-                        } else {
-                            substring
-                        }
-                    } else {
-                        substring
-                    }
-
-                    dateText = TextFieldValue(
-                        annotatedString = AnnotatedString(targetString),
-                        selection = TextRange(targetString.length)
-                    )
-                },
-                onDone = {
-                    if (dateText.text.length == 8) {
-                        isDateTextFieldError = !isValidDate(dateText.text)
-                    }
-
-                    if (returnVisibility) {
-                        focusManager.moveFocus(FocusDirection.Down)
-                    } else {
-                        focusManager.clearFocus()
-                        keyboardController?.hide()
-                    }
-                },
-                isError = isDateTextFieldError
+                isError = isDateTextFieldError,
+                readOnly = true
             )
         }
 
@@ -397,45 +427,32 @@ private fun SimpleNumberTextField(
 private fun DateTextField(
     modifier: Modifier = Modifier,
     value: TextFieldValue,
-    onValueChange: (TextFieldValue) -> Unit,
-    onDone: KeyboardActionScope.() -> Unit = {},
-    isError: Boolean = false
+    isError: Boolean = false,
+    readOnly: Boolean = false
 ) {
     HedgeSimpleTextField(
         modifier = modifier,
         value = value,
-        onValueChange = onValueChange,
+        onValueChange = {},
         label = stringResource(id = R.string.retrospect_transaction_date),
         placeholder = stringResource(id = R.string.retrospect_transaction_date),
-        keyboardOptions = KeyboardOptions(
-            keyboardType = KeyboardType.Number,
-            imeAction = ImeAction.Done
-        ),
-        keyboardActions = KeyboardActions(
-            onDone = onDone
-        ),
-        visualTransformation = DateVisualTransformation(),
-        isError = isError
+        isError = isError,
+        readOnly = readOnly
     )
 }
 
-private fun isValidDate(dateString: String): Boolean {
-    if (dateString.length != 8) {
-        return false
-    }
 
-    if (!dateString.all { it.isDigit() }) {
-        return false
-    }
+private fun getCalendar(year: Int, month: Int, day: Int): Calendar {
+    val calendar = Calendar.getInstance()
+    calendar.set(Calendar.YEAR, year)
+    calendar.set(Calendar.MONTH, month)
+    calendar.set(Calendar.DAY_OF_MONTH, day)
+    return calendar
+}
 
-    try {
-        val formatter = DateTimeFormatter.ofPattern("uuuuMMdd")
-            .withResolverStyle(ResolverStyle.STRICT)
-        LocalDate.parse(dateString, formatter)
-        return true
-    } catch (e: DateTimeParseException) {
-        return false
-    }
+private fun formatDate(milliseconds: Long): String {
+    val formatter = SimpleDateFormat("YYYY년 MM월 dd일", Locale.KOREA)
+    return formatter.format(Date(milliseconds))
 }
 
 @Composable

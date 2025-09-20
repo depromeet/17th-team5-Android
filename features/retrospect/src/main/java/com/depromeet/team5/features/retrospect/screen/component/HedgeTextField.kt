@@ -139,6 +139,7 @@ internal fun HedgeSimpleTextField(
     visualTransformation: VisualTransformation = VisualTransformation.None,
     singleLine: Boolean = true,
     isError: Boolean = false,
+    readOnly: Boolean = false
 ) {
     var borderColor by remember(isError) {
         if (isError) {
@@ -215,7 +216,8 @@ internal fun HedgeSimpleTextField(
                 keyboardActions = keyboardActions,
                 keyboardOptions = keyboardOptions,
                 singleLine = singleLine,
-                isError = isError
+                isError = isError,
+                readOnly = readOnly
             )
         }
     }

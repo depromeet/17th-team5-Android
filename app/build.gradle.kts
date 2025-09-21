@@ -38,6 +38,7 @@ dependencies {
     implementation(projects.core.designsystem)
     implementation(projects.features.search)
     implementation(projects.features.retrospect)
+    implementation(projects.features.principle)
 
     implementation(libs.androidx.core.ktx)
 

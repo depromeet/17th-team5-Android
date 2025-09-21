@@ -8,7 +8,7 @@ import kotlinx.serialization.Serializable
 @Serializable
 object Search
 
-fun NavGraphBuilder.searchGraph(
+fun NavGraphBuilder.searchScreen(
     onBackClick: () -> Unit
 ){
     composable<Search>{

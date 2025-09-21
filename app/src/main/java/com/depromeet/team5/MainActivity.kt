@@ -17,6 +17,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import com.depromeet.team5.core.domain.usecase.TestUseCase
+import com.depromeet.team5.features.principle.PrincipleRoute
 import com.depromeet.team5.ui.theme.DepromeetTheme
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
@@ -32,18 +33,7 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             DepromeetTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    var text by remember { mutableStateOf("") }
-
-                    LaunchedEffect(Unit) {
-                        text = testUseCase()
-                    }
-
-                    Greeting(
-                        name = text,
-                        modifier = Modifier.padding(innerPadding)
-                    )
-                }
+                PrincipleRoute {  }
             }
         }
     }

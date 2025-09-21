@@ -91,7 +91,6 @@ compose = [
     "androidx-material",
     "androidx-activity-compose",
     "androidx-ui-tooling-preview",
-    "coil",
     "androidx-compose-navigation",
     "hilt-navigation-compose"
 ]

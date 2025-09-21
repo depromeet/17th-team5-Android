@@ -74,14 +74,20 @@ object HedgeColor {
     object Brand {
         val Primary: Color
             @Composable get() = com.depromeet.team5.core.designsystem.util.Color(
-                lightMode = GREY_900,
-                darkMode = GREY_900,
+                lightMode = Color(0xFF0EBC80),
+                darkMode = Color(0xFF0EBC80),
+            )
+
+        val Darken: Color
+            @Composable get() = com.depromeet.team5.core.designsystem.util.Color(
+                lightMode = Color(0xFF12AA79),
+                darkMode = Color(0xFF12AA79),
             )
 
         val Secondary: Color
             @Composable get() = com.depromeet.team5.core.designsystem.util.Color(
-                lightMode = GREY_100,
-                darkMode = GREY_100,
+                lightMode = Color(0xFFE5F8F1),
+                darkMode = Color(0xFFE5F8F1),
             )
 
         val Disabled: Color

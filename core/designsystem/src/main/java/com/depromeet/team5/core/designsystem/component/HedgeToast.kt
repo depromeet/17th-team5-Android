@@ -45,7 +45,7 @@ fun HedgeToast(
     text: CharSequence,
     modifier: Modifier = Modifier,
     backgroundColor: Color = HedgeColor.Text.Secondary,
-    textColor: Color = HedgeColor.Brand.Secondary,
+    textColor: Color = HedgeColor.Neutral.BackgroundSecondary,
     textStyle: TextStyle = HedgeTypography.Body3.Medium,
     icon: ImageVector? = null,
     iconTint: Color = Color.Unspecified,

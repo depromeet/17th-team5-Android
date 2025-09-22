@@ -21,10 +21,10 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.depromeet.team5.core.designsystem.component.HedgeTextField
 import com.depromeet.team5.core.designsystem.foundation.HedgeColor
 import com.depromeet.team5.core.designsystem.foundation.HedgeTypography
 import com.depromeet.team5.features.search.component.SearchListItem
-import com.depromeet.team5.features.search.component.SearchTextField
 import com.depromeet.team5.features.search.model.StockData
 
 @Composable
@@ -80,12 +80,14 @@ private fun SearchScreen(
             modifier = Modifier.padding(top = 16.dp, start = 20.dp, bottom = 10.dp)
         )
 
-        SearchTextField(
+        HedgeTextField.Search(
             value = searchText,
             onValueChange = onSearchTextChange,
-            onSearchClick = {},
-            onDeleteClick = onDeleteClick,
-            modifier = Modifier.padding(start = 20.dp, top = 8.dp, end = 20.dp, bottom = 16.dp)
+            placeholder = stringResource(R.string.search_textfield_hint),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 20.dp)
+                .padding(top = 8.dp, bottom = 16.dp)
         )
 
         when (searchUiState) {

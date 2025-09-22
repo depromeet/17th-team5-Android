@@ -20,6 +20,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.depromeet.team5.core.designsystem.foundation.HedgeColor
+import com.depromeet.team5.core.designsystem.foundation.HedgeIcon
 import com.depromeet.team5.core.designsystem.foundation.HedgeTypography
 import com.depromeet.team5.features.search.model.StockData
 
@@ -56,16 +57,6 @@ fun SearchListItem(
             text = stockData.stockName,
             style = HedgeTypography.Body1.SemiBold,
             color = HedgeColor.GREY_900
-        )
-        Spacer(modifier = Modifier.weight(1f))
-
-        Icon(
-            imageVector = Icons.Default.KeyboardArrowRight,
-            contentDescription = null,
-            modifier = Modifier
-                .padding(top = 16.dp, bottom = 16.dp, end = 12.dp)
-                .size(24.dp),
-            tint = HedgeColor.GREY_900
         )
     }
 }

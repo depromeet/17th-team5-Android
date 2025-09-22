@@ -2,18 +2,25 @@ package com.depromeet.team5.features.principle
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Text
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -21,32 +28,39 @@ import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.depromeet.team5.core.designsystem.component.HedgeButton
 import com.depromeet.team5.core.designsystem.component.HedgeTopBar
 import com.depromeet.team5.core.designsystem.foundation.HedgeColor
-import com.depromeet.team5.core.designsystem.foundation.HedgeIcon
 import com.depromeet.team5.core.designsystem.foundation.HedgeTypography
 
 data class Principle(
-    val description: CharSequence,
-    val checked: Boolean,
-    val icon: ImageVector,
+    val id: Long,
+    val description: String,
+    val checked: Boolean = false,
+    val icon: ImageVector? = null,
 )
 
 @Composable
 fun PrincipleRoute(
+    onBackPressed: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: RetrospectViewModel = hiltViewModel(),
-    onBackPressed: () -> Unit
 ) {
+    val principles by viewModel.principles.collectAsStateWithLifecycle()
+    val hasAnyChecked by viewModel.hasAnyChecked.collectAsStateWithLifecycle()
+
     PrincipleScreen(
         modifier = modifier,
-        onBackPressed = {},
+        onBackPressed = onBackPressed,
         onClickNext = {},
-        onClickPrinciple = {},
+        principles = principles,
+        hasAnyChecked = hasAnyChecked,
+        onClickPrinciple = { id -> viewModel.toggle(id) }
     )
 }
 
@@ -54,32 +68,13 @@ fun PrincipleRoute(
 private fun PrincipleScreen(
     onBackPressed: () -> Unit,
     onClickNext: () -> Unit,
-    onClickPrinciple: (Int) -> Unit,
+    principles: List<Principle>,
+    hasAnyChecked: Boolean,
+    onClickPrinciple: (Long) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val defaultPrinciples: List<Principle> = listOf(
-        Principle("안전마진을 확보하라1", false, HedgeIcon.error),
-        Principle("안전마진을 확보하라2", true, HedgeIcon.error),
-        Principle("안전마진을 확보하라3", false, HedgeIcon.error),
-        Principle("안전마진을 확보하라4", true, HedgeIcon.error),
-        Principle("안전마진을 확보하라5", false, HedgeIcon.error),
-        Principle("안전마진을 확보하라6", false, HedgeIcon.error),
-        Principle("안전마진을 확보하라7", false, HedgeIcon.error),
-        Principle("안전마진을 확보하라8", false, HedgeIcon.error),
-        Principle("안전마진을 확보하라9", false, HedgeIcon.error),
-        Principle("안전마진을 확보하라10", false, HedgeIcon.error),
-        Principle("안전마진을 확보하라11", false, HedgeIcon.error),
-        Principle("안전마진을 확보하라12", false, HedgeIcon.error),
-        Principle("안전마진을 확보하라13", false, HedgeIcon.error),
-    )
-    Box(
-        modifier = modifier
-            .fillMaxSize()
-            .background(color = HedgeColor.Neutral.BackgroundDefault)
-    ) {
-        Column(
-            modifier = Modifier,
-        ) {
+    Scaffold(
+        topBar = {
             HedgeTopBar(
                 onClickBack = onBackPressed,
                 action = {
@@ -87,38 +82,60 @@ private fun PrincipleScreen(
                         text = "건너뛰기",
                         imageVector = null,
                         size = HedgeButton.Text.Size.Medium,
-                        color = HedgeButton.Text.Color.Primary, //색상 대응 Secondary
-                        onClick = onClickNext,
+                        color = HedgeButton.Text.Color.Primary,
+                        onClick = onClickNext
                     )
                 }
             )
+        },
+        bottomBar = {
+            Box(Modifier.fillMaxWidth()) {
+                HedgeButton.Action.Filled(
+                    text = "다음",
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 20.dp, vertical = 10.dp)
+                        .align(Alignment.Center),
+                    buttonColors = if (hasAnyChecked)
+                        HedgeButton.Action.Color.Filled.Primary
+                    else
+                        HedgeButton.Action.Color.Filled.Secondary,
+                    onClick = onClickNext
+                )
+            }
+        },
+        containerColor = HedgeColor.Neutral.BackgroundDefault
+    ) { innerPadding ->
+        Column(Modifier.padding(innerPadding)) {
             Text(
-                text = "어떤 투자 원칙에 따른\n{매도}였나요?",
+                text = if (hasAnyChecked)
+                    stringResource(
+                        R.string.principle_checked_title,
+                        principles.count { it.checked }
+                    )
+                else stringResource(R.string.principle_title),
                 color = HedgeColor.Text.Title,
                 style = HedgeTypography.Headline1.SemiBold,
-                modifier = Modifier
-                    .padding(horizontal = 20.dp, vertical = 10.dp)
+                modifier = Modifier.padding(horizontal = 20.dp, vertical = 10.dp)
             )
             Spacer(Modifier.size(8.dp))
+
             LazyColumn {
                 itemsIndexed(
-                    items = defaultPrinciples,
-                    key = { _, item -> item.hashCode() },
-                ) { index, item ->
+                    items = principles,
+                    key = { _, item -> item.id }
+                ) { _, item ->
                     PrincipleItem(
                         principle = item,
-                        onClickItem = { onClickPrinciple(index) }
+                        onClickItem = { onClickPrinciple(item.id) }
+                    )
+                    HorizontalDivider(
+                        color = HedgeColor.Neutral.BackgroundSecondary,
+                        thickness = 1.dp
                     )
                 }
             }
         }
-        HedgeButton.CallToAction.Single(
-            text = "다음",
-            onClick = onClickNext,
-            background = HedgeButton.CallToAction.Background.Gradient(HedgeColor.Neutral.BackgroundDefault),
-            modifier = Modifier
-                .align(Alignment.BottomCenter)
-        )
     }
 }
 
@@ -130,7 +147,8 @@ fun PrincipleItem(
 ) {
     Row(
         modifier = modifier
-            .padding(horizontal = 24.dp, vertical = 12.dp),
+            .padding(horizontal = 24.dp, vertical = 24.dp)
+            .clickable { onClickItem() },
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Spacer(
@@ -144,12 +162,18 @@ fun PrincipleItem(
                     )
                 },
         )
+
         Spacer(Modifier.size(16.dp))
+
         Text(
-            text = principle.description.toString(),
-            modifier = Modifier.weight(1f)
+            text = principle.description,
+            modifier = Modifier.weight(1f),
+            style = HedgeTypography.Body3.SemiBold,
+            color = HedgeColor.GREY_900
         )
+
         Spacer(Modifier.size(24.dp))
+
         Box(
             modifier = Modifier
                 .size(26.dp)
@@ -175,9 +199,34 @@ fun PrincipleItem(
 @Composable
 @Preview
 private fun PrincipleScreenPreview() {
+    val items = remember {
+        mutableStateListOf(
+            Principle(1, "안전마진을 확보하라1"),
+            Principle(2, "안전마진을 확보하라2"),
+            Principle(3, "안전마진을 확보하라3"),
+            Principle(4, "안전마진을 확보하라4"),
+            Principle(5, "안전마진을 확보하라5"),
+            Principle(6, "안전마진을 확보하라6"),
+            Principle(7, "안전마진을 확보하라7"),
+            Principle(8, "안전마진을 확보하라8"),
+            Principle(9, "안전마진을 확보하라9"),
+            Principle(10, "안전마진을 확보하라10"),
+        )
+    }
+    val hasAnyChecked by remember {
+        derivedStateOf { items.any { it.checked } }
+    }
+
     PrincipleScreen(
         onBackPressed = {},
         onClickNext = {},
-        onClickPrinciple = {},
+        principles = items,
+        hasAnyChecked = hasAnyChecked,
+        onClickPrinciple = { id ->
+            val idx = items.indexOfFirst { it.id == id }
+            if (idx != -1) {
+                items[idx] = items[idx].copy(checked = !items[idx].checked)
+            }
+        }
     )
 }

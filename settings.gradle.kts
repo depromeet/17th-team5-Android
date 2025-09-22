@@ -40,3 +40,5 @@ include(":features:search")
 include(":features:principle")
 include(":features:home")
 include(":features:feedback")
+
+include(":features:reasons")

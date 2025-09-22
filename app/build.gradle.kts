@@ -43,6 +43,8 @@ dependencies {
     implementation(projects.features.home)
     implementation(projects.features.feedback)
 
+    implementation(projects.features.reasons)
+
     implementation(libs.androidx.core.ktx)
 
     testImplementation(libs.junit)

@@ -81,7 +81,7 @@ object HedgeTextFieldDefaults {
     object Search {
         @Composable
         fun searchColor(
-            container: Color = HedgeColor.Brand.Secondary,
+            container: Color = HedgeColor.Neutral.BackgroundSecondary,
             placeholder: Color = HedgeColor.Text.Assistive,
             text: Color = HedgeColor.Text.Title,
             border: Color = HedgeColor.Transparent,

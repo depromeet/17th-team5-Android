@@ -53,9 +53,9 @@ object HedgeButton {
 
                 val Secondary: ButtonColors
                     @Composable get() = ButtonDefaults.buttonColors(
-                        backgroundColor = HedgeColor.Brand.Secondary,
+                        backgroundColor = HedgeColor.Neutral.BackgroundSecondary,
                         contentColor = HedgeColor.Text.Title,
-                        disabledBackgroundColor = HedgeColor.Brand.Secondary,
+                        disabledBackgroundColor = HedgeColor.Neutral.BackgroundSecondary,
                         disabledContentColor = HedgeColor.Brand.Disabled,
                     )
             }
@@ -150,7 +150,15 @@ object HedgeButton {
 
             data object Primary : Color() {
                 override val active: androidx.compose.ui.graphics.Color
-                    @Composable get() = HedgeColor.Text.Title
+                    @Composable get() = HedgeColor.Brand.Darken
+
+                override val disabled: androidx.compose.ui.graphics.Color
+                    @Composable get() = HedgeColor.Text.Disabled
+            }
+
+            data object Secondary : Color() {
+                override val active: androidx.compose.ui.graphics.Color
+                    @Composable get() = HedgeColor.Text.Alternative
 
                 override val disabled: androidx.compose.ui.graphics.Color
                     @Composable get() = HedgeColor.Text.Disabled
@@ -502,8 +510,9 @@ fun TextButtonPreview() {
                         onClick = {},
                     )
                     HedgeButton.Text(
-                        text = "Primary",
+                        text = "Secondary",
                         enabled = enabled,
+                        color = HedgeButton.Text.Color.Secondary,
                         size = HedgeButton.Text.Size.Medium,
                         onClick = {},
                     )
@@ -532,9 +541,10 @@ fun TextButtonPreview() {
                         onClick = {},
                     )
                     HedgeButton.Text(
-                        text = "Primary",
+                        text = "Secondary",
                         imageVector = null,
                         enabled = enabled,
+                        color = HedgeButton.Text.Color.Secondary,
                         size = HedgeButton.Text.Size.Medium,
                         onClick = {},
                     )

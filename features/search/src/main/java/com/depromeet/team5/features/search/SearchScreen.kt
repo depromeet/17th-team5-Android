@@ -6,9 +6,11 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -18,9 +20,11 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.depromeet.team5.core.designsystem.component.HedgeTextField
 import com.depromeet.team5.core.designsystem.component.HedgeTopBar
 import com.depromeet.team5.core.designsystem.foundation.HedgeColor
+import com.depromeet.team5.core.designsystem.foundation.HedgeIcon
 import com.depromeet.team5.core.designsystem.foundation.HedgeTypography
 import com.depromeet.team5.features.search.component.SearchListItem
 import com.depromeet.team5.features.search.model.StockData
+import androidx.compose.ui.graphics.Color
 
 @Composable
 fun SearchRoute(
@@ -116,7 +120,32 @@ private fun SearchScreen(
             }
 
             is UiState.Error -> {
-                // 에러뷰
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(top = 194.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ){
+                    Icon(
+                        imageVector = HedgeIcon.Error,
+                        contentDescription = "error",
+                        tint = Color.Unspecified
+                    )
+
+                    Text(
+                        text = stringResource(id = R.string.search_error_title),
+                        style = HedgeTypography.Body1.Medium,
+                        color = HedgeColor.Text.Secondary,
+                        modifier = Modifier.padding(top = 12.dp)
+                    )
+
+                    Text(
+                        text = stringResource(id = R.string.search_error_description),
+                        style = HedgeTypography.Body3.Medium,
+                        color = HedgeColor.Text.Assistive,
+                        modifier = Modifier.padding(top = 4.dp)
+                    )
+                }
             }
 
             is UiState.Loading -> {
@@ -192,5 +221,16 @@ private fun ResultsPreview() {
 private fun SearchPreview() {
     SearchRoute(
         onBackClick = {}
+    )
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun SearchErrorPreview() {
+    SearchScreen(
+        onBackClick = {},
+        searchText = "",
+        searchUiState = UiState.Error("error"),
+        onSearchTextChange = {}
     )
 }

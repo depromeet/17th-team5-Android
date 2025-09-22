@@ -2,4 +2,7 @@
     <string name="search_title">어떤 종목을 회고할까요?</string>
     <string name="search_textfield_hint">종목 검색</string>
     <string name="search_retrospect_list">회고한 종목</string>
+
+    <string name="search_error_title">검색 결과가 없어요</string>
+    <string name="search_error_description">검색어를 다시 확인해보세요</string>
 </resources>

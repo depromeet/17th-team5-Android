@@ -3,6 +3,9 @@
     <string name="search_textfield_hint">종목 검색</string>
     <string name="search_retrospect_list">회고한 종목</string>
 
-    <string name="search_error_title">검색 결과가 없어요</string>
-    <string name="search_error_description">검색어를 다시 확인해보세요</string>
+    <string name="search_empty_title">검색 결과가 없어요</string>
+    <string name="search_empty_description">검색어를 다시 확인해보세요</string>
+
+    <string name="search_error_title">네트워크 오류가 발생했습니다</string>
+    <string name="search_error_description">잠시 후 다시 시도해주세요</string>
 </resources>

@@ -1,0 +1,50 @@
+package com.depromeet.team5.core.designsystem.foundation
+
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.vectorResource
+import com.depromeet.team5.core.designsystem.R
+
+object HedgeIcon {
+
+    val ArrowLeftThin: ImageVector
+        @Composable
+        get() = ImageVector.vectorResource(id = R.drawable.ic_arrow_left_thin)
+
+    val ArrowLeftThick: ImageVector
+        @Composable
+        get() = ImageVector.vectorResource(id = R.drawable.ic_arrow_left_thick)
+
+    val ArrowRightThin: ImageVector
+        @Composable
+        get() = ImageVector.vectorResource(id = R.drawable.ic_arrow_right_thin)
+
+    val ArrowRightThick: ImageVector
+        @Composable
+        get() = ImageVector.vectorResource(id = R.drawable.ic_arrow_right_thick)
+
+    val CloseThin: ImageVector
+        @Composable
+        get() = ImageVector.vectorResource(id = R.drawable.ic_close_thin)
+
+    val CloseThick: ImageVector
+        @Composable
+        get() = ImageVector.vectorResource(id = R.drawable.ic_close_thick)
+
+    val CloseFill: ImageVector
+        @Composable
+        get() = ImageVector.vectorResource(id = R.drawable.ic_close_fill)
+
+    val Copy: ImageVector
+        @Composable
+        get() = ImageVector.vectorResource(id = R.drawable.ic_copy)
+
+    val error: ImageVector
+        @Composable
+        get() = ImageVector.vectorResource(id = R.drawable.ic_error)
+
+    val Search: ImageVector
+        @Composable
+        get() = ImageVector.vectorResource(id = R.drawable.ic_search)
+
+}

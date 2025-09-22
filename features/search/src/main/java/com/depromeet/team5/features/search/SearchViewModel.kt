@@ -9,18 +9,15 @@ import javax.inject.Inject
 
 @HiltViewModel
 class SearchViewModel @Inject constructor(
-) : ViewModel(){
-    private val _searchUiState = MutableStateFlow<UiState<List<StockData>>>(UiState.Recents(emptyList()))
+) : ViewModel() {
+    private val _searchUiState =
+        MutableStateFlow<UiState<List<StockData>>>(UiState.Recents(emptyList()))
     val searchUiState = _searchUiState.asStateFlow()
 
     private val _searchText = MutableStateFlow("")
     val searchText = _searchText.asStateFlow()
 
-    fun updateSearchText(text: String){
+    fun updateSearchText(text: String) {
         _searchText.value = text
-    }
-
-    fun deleteSearchText(){
-        _searchText.value = ""
     }
 }

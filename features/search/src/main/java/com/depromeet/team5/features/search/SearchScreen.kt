@@ -1,17 +1,11 @@
 package com.depromeet.team5.features.search
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.KeyboardArrowLeft
-import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -22,6 +16,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.depromeet.team5.core.designsystem.component.HedgeTextField
+import com.depromeet.team5.core.designsystem.component.HedgeTopBar
 import com.depromeet.team5.core.designsystem.foundation.HedgeColor
 import com.depromeet.team5.core.designsystem.foundation.HedgeTypography
 import com.depromeet.team5.features.search.component.SearchListItem
@@ -41,7 +36,6 @@ fun SearchRoute(
         searchText = searchText,
         searchUiState = searchUiState,
         onSearchTextChange = viewModel::updateSearchText,
-        onDeleteClick = viewModel::deleteSearchText,
         modifier = modifier
     )
 }
@@ -52,26 +46,12 @@ private fun SearchScreen(
     searchText: String,
     searchUiState: UiState<List<StockData>>,
     onSearchTextChange: (String) -> Unit,
-    onDeleteClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(
         modifier = modifier.fillMaxSize()
     ) {
-        Row(
-            modifier = Modifier
-                .padding(8.dp)
-                .fillMaxWidth()
-        ) {
-            Icon(
-                imageVector = Icons.Default.KeyboardArrowLeft,
-                contentDescription = null,
-                modifier = Modifier
-                    .clickable { onBackClick() }
-                    .size(40.dp),
-                tint = HedgeColor.GREY_900
-            )
-        }
+        HedgeTopBar(onClickBack = onBackClick)
 
         Text(
             text = stringResource(id = R.string.search_title),
@@ -178,7 +158,6 @@ private fun RecentsPreview() {
         searchText = "",
         searchUiState = UiState.Recents(recent),
         onSearchTextChange = {},
-        onDeleteClick = {},
         modifier = Modifier
     )
 }
@@ -204,7 +183,6 @@ private fun ResultsPreview() {
         searchText = "카",
         searchUiState = UiState.Results(results),
         onSearchTextChange = {},
-        onDeleteClick = {},
         modifier = Modifier
     )
 }

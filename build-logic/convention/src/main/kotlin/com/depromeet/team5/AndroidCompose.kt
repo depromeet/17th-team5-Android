@@ -8,6 +8,7 @@ import org.gradle.kotlin.dsl.dependencies
 internal fun Project.configureAndroidCompose(commonExtension: CommonExtension<*, *, *, *, *, *>) {
 
     apply(plugin = "org.jetbrains.kotlin.plugin.compose")
+    apply(plugin = "org.jetbrains.kotlin.plugin.serialization")
 
     commonExtension.apply {
         buildFeatures.compose = true
@@ -23,5 +24,7 @@ internal fun Project.configureAndroidCompose(commonExtension: CommonExtension<*,
         implementationBundle(libs, "compose")
         debugImplementationBundle(libs, "compose-debug")
         androidTestImplementationBundle(libs, "compose-androidTest")
+
+        implementation(libs.findLibrary("org-jetbrains-kotlinx-kotlinx-serialization-json").get())
     }
 }

@@ -41,7 +41,7 @@ object HedgeIcon {
 
     val Empty: ImageVector
         @Composable
-        get() = ImageVector.vectorResource(id = R.drawable.ic_empty)
+        get() = ImageVector.vectorResource(id = R.drawable.ic_notice)
 
     val Error: ImageVector
         @Composable

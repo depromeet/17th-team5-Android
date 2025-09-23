@@ -79,10 +79,10 @@ private fun PrincipleScreen(
                 onClickBack = onBackPressed,
                 action = {
                     HedgeButton.Text(
-                        text = "건너뛰기",
+                        text = stringResource(R.string.principle_skip),
                         imageVector = null,
                         size = HedgeButton.Text.Size.Medium,
-                        color = HedgeButton.Text.Color.Primary,
+                        color = HedgeButton.Text.Color.Secondary,
                         onClick = onClickNext
                     )
                 }
@@ -91,7 +91,7 @@ private fun PrincipleScreen(
         bottomBar = {
             Box(Modifier.fillMaxWidth()) {
                 HedgeButton.Action.Filled(
-                    text = "다음",
+                    text = stringResource(R.string.principle_next_button),
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(horizontal = 20.dp, vertical = 10.dp)
@@ -106,7 +106,9 @@ private fun PrincipleScreen(
         },
         containerColor = HedgeColor.Neutral.BackgroundDefault
     ) { innerPadding ->
-        Column(Modifier.padding(innerPadding)) {
+        Column(
+            modifier = modifier.padding(innerPadding)
+        ) {
             Text(
                 text = if (hasAnyChecked)
                     stringResource(

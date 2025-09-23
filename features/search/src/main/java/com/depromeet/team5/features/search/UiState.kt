@@ -7,7 +7,7 @@ sealed interface UiState<out T> {
 
     data class Results<T>(val data: T): UiState<T>
 
-    data class Error(val message: String): UiState<Nothing>
+    data object Error: UiState<Nothing>
 
     data class Recents<T>(val data: T): UiState<T>
 }

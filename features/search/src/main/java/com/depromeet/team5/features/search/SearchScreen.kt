@@ -1,30 +1,30 @@
 package com.depromeet.team5.features.search
 
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.KeyboardArrowLeft
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.depromeet.team5.core.designsystem.component.HedgeTextField
+import com.depromeet.team5.core.designsystem.component.HedgeTopBar
 import com.depromeet.team5.core.designsystem.foundation.HedgeColor
+import com.depromeet.team5.core.designsystem.foundation.HedgeIcon
 import com.depromeet.team5.core.designsystem.foundation.HedgeTypography
 import com.depromeet.team5.features.search.component.SearchListItem
-import com.depromeet.team5.features.search.component.SearchTextField
 import com.depromeet.team5.features.search.model.StockData
 
 @Composable
@@ -41,7 +41,6 @@ fun SearchRoute(
         searchText = searchText,
         searchUiState = searchUiState,
         onSearchTextChange = viewModel::updateSearchText,
-        onDeleteClick = viewModel::deleteSearchText,
         modifier = modifier
     )
 }
@@ -52,101 +51,160 @@ private fun SearchScreen(
     searchText: String,
     searchUiState: UiState<List<StockData>>,
     onSearchTextChange: (String) -> Unit,
-    onDeleteClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    Column(
-        modifier = modifier.fillMaxSize()
-    ) {
-        Row(
-            modifier = Modifier
-                .padding(8.dp)
-                .fillMaxWidth()
-        ) {
-            Icon(
-                imageVector = Icons.Default.KeyboardArrowLeft,
-                contentDescription = null,
+    val showHeader = when (searchUiState) {
+        is UiState.Error -> false
+        else -> true
+    }
+
+    SearchLayout(
+        modifier = modifier,
+        onBackClick = onBackClick,
+        showHeader = showHeader,
+        searchText = searchText,
+        onSearchTextChange = onSearchTextChange,
+        content = {
+            when (searchUiState) {
+                is UiState.Recents -> RecentsContent(searchUiState.data)
+                is UiState.Results -> ResultsContent(searchUiState.data)
+                is UiState.Loading -> LoadingContent()
+                is UiState.Empty -> EmptyContent()
+                is UiState.Error -> ErrorContent()
+            }
+        }
+    )
+}
+
+@Composable
+private fun SearchLayout(
+    onBackClick: () -> Unit,
+    showHeader: Boolean,
+    searchText: String,
+    onSearchTextChange: (String) -> Unit,
+    content: @Composable () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Column(modifier = modifier.fillMaxSize()) {
+        HedgeTopBar(onClickBack = onBackClick)
+
+        if (showHeader) {
+            Text(
+                text = stringResource(id = R.string.search_title),
+                style = HedgeTypography.Headline1.SemiBold,
+                color = HedgeColor.GREY_900,
+                modifier = Modifier.padding(top = 16.dp, start = 20.dp, bottom = 10.dp)
+            )
+
+            HedgeTextField.Search(
+                value = searchText,
+                onValueChange = onSearchTextChange,
+                placeholder = stringResource(R.string.search_textfield_hint),
                 modifier = Modifier
-                    .clickable { onBackClick() }
-                    .size(40.dp),
-                tint = HedgeColor.GREY_900
+                    .fillMaxWidth()
+                    .padding(horizontal = 20.dp)
+                    .padding(top = 8.dp, bottom = 16.dp)
             )
         }
 
-        Text(
-            text = stringResource(id = R.string.search_title),
-            style = HedgeTypography.Headline1.SemiBold,
-            color = HedgeColor.GREY_900,
-            modifier = Modifier.padding(top = 16.dp, start = 20.dp, bottom = 10.dp)
-        )
+        content()
+    }
+}
 
-        SearchTextField(
-            value = searchText,
-            onValueChange = onSearchTextChange,
-            onSearchClick = {},
-            onDeleteClick = onDeleteClick,
-            modifier = Modifier.padding(start = 20.dp, top = 8.dp, end = 20.dp, bottom = 16.dp)
-        )
-
-        when (searchUiState) {
-            is UiState.Recents -> {
-                LazyColumn(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = 4.dp)
-                ) {
-                    stickyHeader {
-                        Text(
-                            text = stringResource(id = R.string.search_retrospect_list),
-                            style = HedgeTypography.Body3.Medium,
-                            color = HedgeColor.Text.Alternative,
-                            modifier = Modifier.padding(start = 20.dp, top = 10.dp, bottom = 10.dp)
-                        )
-                    }
-
-                    items(
-                        items = searchUiState.data,
-                        key = { it.symbol }
-                    ) { item ->
-                        SearchListItem(
-                            stockData = item,
-                            onClick = {}
-                        )
-                    }
-                }
-
-            }
-
-            is UiState.Results -> {
-                LazyColumn(
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    items(
-                        items = searchUiState.data,
-                        key = { it.symbol }
-                    ) { item ->
-                        SearchListItem(
-                            stockData = item,
-                            onClick = {}
-                        )
-                    }
-                }
-            }
-
-            is UiState.Error -> {
-                // 에러뷰
-            }
-
-            is UiState.Loading -> {
-                // 로딩뷰
-            }
-
-            is UiState.Empty -> {
-                // 검색 결과 없음 뷰
-            }
-
+@Composable
+private fun RecentsContent(items: List<StockData>) {
+    LazyColumn(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(top = 4.dp)
+    ) {
+        stickyHeader {
+            Text(
+                text = stringResource(id = R.string.search_retrospect_list),
+                style = HedgeTypography.Body3.Medium,
+                color = HedgeColor.Text.Alternative,
+                modifier = Modifier.padding(start = 20.dp, top = 10.dp, bottom = 10.dp)
+            )
         }
+        items(items, key = { it.symbol }) { item ->
+            SearchListItem(stockData = item, onClick = {})
+        }
+    }
+}
 
+@Composable
+private fun ResultsContent(items: List<StockData>) {
+    LazyColumn(modifier = Modifier.fillMaxWidth()) {
+        items(items, key = { it.symbol }) { item ->
+            SearchListItem(stockData = item, onClick = {})
+        }
+    }
+}
+
+@Composable
+private fun LoadingContent() {
+    // 로딩뷰
+}
+
+@Composable
+private fun EmptyContent() {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(bottom = 120.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+        Icon(
+            imageVector = HedgeIcon.Empty,
+            contentDescription = "empty",
+            tint = Color.Unspecified
+        )
+
+        Text(
+            text = stringResource(id = R.string.search_empty_title),
+            style = HedgeTypography.Body1.Medium,
+            color = HedgeColor.Text.Secondary,
+            modifier = Modifier.padding(top = 12.dp)
+        )
+
+        Text(
+            text = stringResource(id = R.string.search_empty_description),
+            style = HedgeTypography.Body3.Medium,
+            color = HedgeColor.Text.Assistive,
+            modifier = Modifier.padding(top = 4.dp)
+        )
+    }
+}
+
+@Composable
+private fun ErrorContent() {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(bottom = 100.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+        Icon(
+            imageVector = HedgeIcon.Error,
+            contentDescription = "error",
+            tint = Color.Unspecified
+        )
+
+        Text(
+            text = stringResource(id = R.string.search_error_title),
+            style = HedgeTypography.Body1.Medium,
+            color = HedgeColor.Text.Secondary,
+            modifier = Modifier.padding(top = 12.dp)
+        )
+
+        Text(
+            text = stringResource(id = R.string.search_error_description),
+            style = HedgeTypography.Body3.Medium,
+            color = HedgeColor.Text.Assistive,
+            modifier = Modifier.padding(top = 4.dp)
+        )
     }
 }
 
@@ -176,7 +234,6 @@ private fun RecentsPreview() {
         searchText = "",
         searchUiState = UiState.Recents(recent),
         onSearchTextChange = {},
-        onDeleteClick = {},
         modifier = Modifier
     )
 }
@@ -202,7 +259,6 @@ private fun ResultsPreview() {
         searchText = "카",
         searchUiState = UiState.Results(results),
         onSearchTextChange = {},
-        onDeleteClick = {},
         modifier = Modifier
     )
 }
@@ -212,5 +268,27 @@ private fun ResultsPreview() {
 private fun SearchPreview() {
     SearchRoute(
         onBackClick = {}
+    )
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun SearchEmptyPreview() {
+    SearchScreen(
+        onBackClick = {},
+        searchText = "",
+        searchUiState = UiState.Empty,
+        onSearchTextChange = {}
+    )
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun SearchErrorPreview() {
+    SearchScreen(
+        onBackClick = {},
+        searchText = "",
+        searchUiState = UiState.Error,
+        onSearchTextChange = {}
     )
 }

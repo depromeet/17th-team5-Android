@@ -34,10 +34,6 @@ class RetrospectViewModel @Inject constructor(
     private val _principles = MutableStateFlow(initialPrinciples)
     val principles: StateFlow<List<Principle>> = _principles.asStateFlow()
 
-    val hasAnyChecked: StateFlow<Boolean> = principles
-        .map { list -> list.any { it.checked } }
-        .stateIn(viewModelScope, SharingStarted.Eagerly, initialPrinciples.any { it.checked })
-
     fun toggle(id: Long) {
         _principles.update { list ->
             list.map { principle -> if (principle.id == id) principle.copy(checked = !principle.checked) else principle }

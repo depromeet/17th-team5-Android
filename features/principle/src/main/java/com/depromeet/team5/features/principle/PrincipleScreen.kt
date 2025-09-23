@@ -11,7 +11,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Scaffold
@@ -52,7 +52,9 @@ fun PrincipleRoute(
     viewModel: RetrospectViewModel = hiltViewModel(),
 ) {
     val principles by viewModel.principles.collectAsStateWithLifecycle()
-    val hasAnyChecked by viewModel.hasAnyChecked.collectAsStateWithLifecycle()
+    val hasAnyChecked by remember(principles) {
+        derivedStateOf { principles.any(Principle::checked) }
+    }
 
     PrincipleScreen(
         modifier = modifier,
@@ -118,10 +120,10 @@ private fun PrincipleScreen(
             Spacer(Modifier.size(8.dp))
 
             LazyColumn {
-                itemsIndexed(
+                items(
                     items = principles,
-                    key = { _, item -> item.id }
-                ) { _, item ->
+                    key = { item -> item.id }
+                ) { item ->
                     PrincipleItem(
                         principle = item,
                         onClickItem = { onClickPrinciple(item.id) }
@@ -152,11 +154,7 @@ fun PrincipleItem(
             Modifier
                 .size(32.dp)
                 .drawBehind {
-                    drawCircle(
-                        color = Color.Black,
-                        radius = size.minDimension / 2f,
-                        center = center
-                    )
+                    drawCircle(color = Color.Black)
                 },
         )
 

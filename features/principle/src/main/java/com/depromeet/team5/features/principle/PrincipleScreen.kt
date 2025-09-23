@@ -89,20 +89,15 @@ private fun PrincipleScreen(
             )
         },
         bottomBar = {
-            Box(Modifier.fillMaxWidth()) {
-                HedgeButton.Action.Filled(
-                    text = stringResource(R.string.principle_next_button),
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 20.dp, vertical = 10.dp)
-                        .align(Alignment.Center),
-                    buttonColors = if (hasAnyChecked)
-                        HedgeButton.Action.Color.Filled.Primary
-                    else
-                        HedgeButton.Action.Color.Filled.Secondary,
-                    onClick = onClickNext
-                )
-            }
+            HedgeButton.Action.Filled(
+                text = stringResource(R.string.principle_next_button),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 20.dp, vertical = 10.dp),
+                buttonColors = HedgeButton.Action.Color.Filled.Primary,
+                enabled = hasAnyChecked,
+                onClick = onClickNext
+            )
         },
         containerColor = HedgeColor.Neutral.BackgroundDefault
     ) { innerPadding ->

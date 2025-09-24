@@ -38,12 +38,6 @@ private fun HomeScreen(
     Box(
         modifier = modifier.fillMaxSize()
     ) {
-        Text(
-            text = "잉잉",
-            modifier = Modifier
-                .clickable { onBuyClick() }
-                .align(Alignment.Center)
-        )
         HomeFloatingActionButton(
             fabChecked = fabChecked,
             onCheckedChange = { fabChecked = !fabChecked },

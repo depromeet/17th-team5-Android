@@ -38,4 +38,4 @@ include("features")
 include(":features:retrospect")
 include(":features:search")
 include(":features:principle")
-
+include(":features:home")

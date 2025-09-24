@@ -74,6 +74,8 @@ import com.depromeet.team5.features.retrospect.screen.visualtransmation.USDCurre
 import com.depromeet.team5.features.retrospect.screen.visualtransmation.UnitTransformation
 import com.depromeet.team5.features.retrospect.state.TextFieldState
 import java.text.SimpleDateFormat
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 import java.util.Calendar
 import java.util.Date
 import java.util.Locale
@@ -428,21 +430,14 @@ private fun DateTextField(
                     return@HedgeDatePickerDialog
                 }
 
-                val current = Calendar.getInstance()
-
                 val digitsOnlyText = date.filter { it.isDigit() }
 
-                val year = digitsOnlyText.substring(0, 4)
-                val month = digitsOnlyText.substring(4, 6)
-                val day = digitsOnlyText.substring(6)
+                val current = LocalDate.now()
 
-                val selectedDate = getCalendar(
-                    year.toInt(),
-                    month.toInt() - 1,
-                    day.toInt()
-                )
+                val formatter = DateTimeFormatter.ofPattern("yyyyMMdd")
+                val selectedDate = LocalDate.parse(digitsOnlyText, formatter)
 
-                if (selectedDate.after(current)) {
+                if (selectedDate.isAfter(current)) {
                     onErrorDateText(date, digitsOnlyText.length)
                 } else {
                     onUpdateDateText(date, digitsOnlyText.length)

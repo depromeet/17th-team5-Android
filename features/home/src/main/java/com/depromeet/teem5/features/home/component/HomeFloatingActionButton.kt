@@ -148,7 +148,7 @@ private fun FABItem(
                 ) {
                     onClick()
                 }
-                .background(color = itemIconBackgroundColor)
+                .background(color = itemIconBackgroundColor, shape = RoundedCornerShape(10.dp))
                 .padding(7.dp)
                 .size(14.dp)
         )

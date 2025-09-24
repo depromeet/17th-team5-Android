@@ -16,7 +16,7 @@ import com.depromeet.teem5.features.home.component.HomeFloatingActionButton
 fun HomeRoute(
     modifier: Modifier = Modifier
 ) {
-    HomeScreen()
+    HomeScreen(modifier = modifier)
 }
 
 @Composable

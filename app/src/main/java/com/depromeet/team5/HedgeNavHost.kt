@@ -4,8 +4,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.rememberNavController
-import com.depromeet.team5.features.search.Search
-import com.depromeet.team5.features.search.searchScreen
+import com.depromeet.teem5.features.home.Home
+import com.depromeet.teem5.features.home.homeScreen
 
 @Composable
 fun HedgeNavHost(
@@ -15,11 +15,9 @@ fun HedgeNavHost(
 
     NavHost(
         navController = navController,
-        startDestination = Search,
+        startDestination = Home,
         modifier = modifier
     ) {
-        searchScreen(
-            onBackClick = { navController.popBackStack() }
-        )
+        homeScreen()
     }
 }

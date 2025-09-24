@@ -1,0 +1,4 @@
+<resources>
+    <string name="home_buy_button">매수 회고하기</string>
+    <string name="home_sell_button">매도 회고하기</string>
+</resources>

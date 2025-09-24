@@ -5,7 +5,7 @@ plugins {
 }
 
 android {
-    namespace = "com.depromeet.teem5.features.home"
+    namespace = "com.depromeet.team5.features.home"
 
     defaultConfig {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"

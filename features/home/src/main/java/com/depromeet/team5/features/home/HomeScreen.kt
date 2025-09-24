@@ -1,4 +1,4 @@
-package com.depromeet.teem5.features.home
+package com.depromeet.team5.features.home
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -10,7 +10,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import com.depromeet.teem5.features.home.component.HomeFloatingActionButton
+import com.depromeet.team5.features.home.component.HomeFloatingActionButton
 
 @Composable
 fun HomeRoute(

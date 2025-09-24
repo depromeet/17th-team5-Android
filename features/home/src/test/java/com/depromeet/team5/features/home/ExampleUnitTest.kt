@@ -1,4 +1,4 @@
-package com.depromeet.teem5.features.home
+package com.depromeet.team5.features.home
 
 import org.junit.Test
 

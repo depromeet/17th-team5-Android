@@ -1,4 +1,4 @@
-package com.depromeet.teem5.features.home.component
+package com.depromeet.team5.features.home.component
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -30,7 +30,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.depromeet.team5.core.designsystem.foundation.HedgeColor
 import com.depromeet.team5.core.designsystem.foundation.HedgeTypography
-import com.depromeet.teem5.features.home.R
+import com.depromeet.team5.features.home.R
 
 @Composable
 fun HomeFloatingActionButton(

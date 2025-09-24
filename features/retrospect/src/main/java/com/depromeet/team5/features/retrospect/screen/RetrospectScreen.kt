@@ -83,9 +83,9 @@ import java.util.Locale
 
 @Composable
 fun RetrospectRoute(
+    onBackPressed: () -> Unit,
     modifier: Modifier,
     viewModel: RetrospectViewModel = hiltViewModel(),
-    onBackPressed: () -> Unit
 ) {
     val sellingTextFieldState by viewModel.sellingTextFieldState.stateFlow.collectAsStateWithLifecycle()
     val stockTextFieldState by viewModel.stockTextFieldState.stateFlow.collectAsStateWithLifecycle()
@@ -290,9 +290,9 @@ private fun RetrospectScreen(
 
 @Composable
 private fun SellingTextField(
-    modifier: Modifier = Modifier,
     state: TextFieldState,
-    onUpdateSellingText: (String, Int) -> Unit
+    onUpdateSellingText: (String, Int) -> Unit,
+    modifier: Modifier = Modifier
 ) {
     val focusManager = LocalFocusManager.current
     val focusRequester = remember { FocusRequester() }
@@ -341,9 +341,9 @@ private fun SellingTextField(
 
 @Composable
 private fun StockTextField(
-    modifier: Modifier = Modifier,
     state: TextFieldState,
-    onUpdateStockText: (String, Int) -> Unit
+    onUpdateStockText: (String, Int) -> Unit,
+    modifier: Modifier = Modifier
 ) {
     val focusManager = LocalFocusManager.current
     val focusRequester = remember { FocusRequester() }
@@ -373,11 +373,11 @@ private fun StockTextField(
 
 @Composable
 private fun SimpleNumberTextField(
-    modifier: Modifier = Modifier,
     value: TextFieldValue,
-    onValueChange: (TextFieldValue) -> Unit,
     label: String,
     placeholder: String,
+    onValueChange: (TextFieldValue) -> Unit,
+    modifier: Modifier = Modifier,
     visualTransformation: VisualTransformation = VisualTransformation.None,
     onDone: KeyboardActionScope.() -> Unit = {}
 ) {
@@ -401,11 +401,11 @@ private fun SimpleNumberTextField(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun DateTextField(
-    modifier: Modifier = Modifier,
     state: TextFieldState,
     onUpdateDateText: (String, Int) -> Unit,
     onErrorDateText: (String, Int) -> Unit,
-    onFocusChanged: () -> Unit
+    onFocusChanged: () -> Unit,
+    modifier: Modifier = Modifier
 ) {
     val focusManager = LocalFocusManager.current
     val focusRequester = remember { FocusRequester() }
@@ -499,14 +499,6 @@ fun ReturnTextField(
         },
         visualTransformation = UnitTransformation(stringResource(id = R.string.retrospect_unit_percent))
     )
-}
-
-private fun getCalendar(year: Int, month: Int, day: Int): Calendar {
-    val calendar = Calendar.getInstance()
-    calendar.set(Calendar.YEAR, year)
-    calendar.set(Calendar.MONTH, month)
-    calendar.set(Calendar.DAY_OF_MONTH, day)
-    return calendar
 }
 
 private fun formatDate(milliseconds: Long): String {

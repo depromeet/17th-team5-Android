@@ -1,4 +1,4 @@
-package com.depromeet.team5.features.retrospect.screen.extensions
+package com.depromeet.team5.features.retrospect.extensions
 
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.FlowCollector

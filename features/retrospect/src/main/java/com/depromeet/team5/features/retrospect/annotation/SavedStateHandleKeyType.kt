@@ -1,4 +1,4 @@
-package com.depromeet.team5.features.retrospect.screen.annotation
+package com.depromeet.team5.features.retrospect.annotation
 
 import androidx.annotation.StringDef
 

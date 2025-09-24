@@ -6,7 +6,6 @@ import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -18,7 +17,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActionScope
 import androidx.compose.foundation.text.KeyboardActions
@@ -62,19 +60,19 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.depromeet.team5.features.retrospect.R
-import com.depromeet.team5.features.retrospect.screen.annotation.DATE
-import com.depromeet.team5.features.retrospect.screen.annotation.RETURN
-import com.depromeet.team5.features.retrospect.screen.annotation.SELLING
-import com.depromeet.team5.features.retrospect.screen.annotation.STOCK
+import com.depromeet.team5.features.retrospect.annotation.DATE
+import com.depromeet.team5.features.retrospect.annotation.RETURN
+import com.depromeet.team5.features.retrospect.annotation.SELLING
+import com.depromeet.team5.features.retrospect.annotation.STOCK
 import com.depromeet.team5.features.retrospect.screen.component.HedgeDatePickerDialog
 import com.depromeet.team5.features.retrospect.screen.component.HedgeSimpleTextField
 import com.depromeet.team5.features.retrospect.screen.component.HedgeSwitch
 import com.depromeet.team5.features.retrospect.screen.component.HedgeTopbar
 import com.depromeet.team5.features.retrospect.screen.component.HedgeUnitTextField
-import com.depromeet.team5.features.retrospect.screen.state.TextFieldState
 import com.depromeet.team5.features.retrospect.screen.visualtransmation.KoreanCurrencyVisualTransformation
 import com.depromeet.team5.features.retrospect.screen.visualtransmation.USDCurrencyVisualTransformation
 import com.depromeet.team5.features.retrospect.screen.visualtransmation.UnitTransformation
+import com.depromeet.team5.features.retrospect.state.TextFieldState
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
@@ -125,10 +123,8 @@ fun RetrospectRoute(
     )
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun RetrospectScreen(
-    modifier: Modifier = Modifier,
     sellingTextFieldState: TextFieldState,
     stockTextFieldState: TextFieldState,
     dateTextFieldState: TextFieldState,
@@ -142,7 +138,8 @@ private fun RetrospectScreen(
     onUpdateReturnText: (String, Int) -> Unit,
     onClickedConfirmButton: () -> Unit,
     onUpdateReturnToggle: (Boolean) -> Unit,
-    onBackPressed: () -> Unit
+    onBackPressed: () -> Unit,
+    modifier: Modifier = Modifier
 ) {
     val focusManager = LocalFocusManager.current
     val keyboardController = LocalSoftwareKeyboardController.current
@@ -168,12 +165,10 @@ private fun RetrospectScreen(
         Column(
             modifier = Modifier
                 .padding(start = 20.dp, top = 26.dp, end = 20.dp)
-                .wrapContentSize()
                 .background(
                     color = colorResource(R.color.white),
                     shape = RoundedCornerShape(16.dp)
                 )
-                .border(1.dp, colorResource(R.color.white), RoundedCornerShape(16.dp))
         ) {
             SellingTextField(
                 state = sellingTextFieldState,

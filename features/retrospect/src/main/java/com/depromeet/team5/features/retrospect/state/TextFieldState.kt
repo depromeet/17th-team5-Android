@@ -1,4 +1,4 @@
-package com.depromeet.team5.features.retrospect.screen.state
+package com.depromeet.team5.features.retrospect.state
 
 
 data class TextFieldState(

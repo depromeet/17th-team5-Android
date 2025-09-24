@@ -3,15 +3,15 @@ package com.depromeet.team5.features.retrospect.screen
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.depromeet.team5.features.retrospect.screen.annotation.DATE
-import com.depromeet.team5.features.retrospect.screen.annotation.RETURN
-import com.depromeet.team5.features.retrospect.screen.annotation.SELLING
-import com.depromeet.team5.features.retrospect.screen.annotation.STOCK
-import com.depromeet.team5.features.retrospect.screen.annotation.savedStateHandleKey
-import com.depromeet.team5.features.retrospect.screen.extensions.HedgeState
-import com.depromeet.team5.features.retrospect.screen.extensions.baseCollect
-import com.depromeet.team5.features.retrospect.screen.extensions.hedgeState
-import com.depromeet.team5.features.retrospect.screen.state.TextFieldState
+import com.depromeet.team5.features.retrospect.annotation.DATE
+import com.depromeet.team5.features.retrospect.annotation.RETURN
+import com.depromeet.team5.features.retrospect.annotation.SELLING
+import com.depromeet.team5.features.retrospect.annotation.STOCK
+import com.depromeet.team5.features.retrospect.annotation.savedStateHandleKey
+import com.depromeet.team5.features.retrospect.extensions.HedgeState
+import com.depromeet.team5.features.retrospect.extensions.baseCollect
+import com.depromeet.team5.features.retrospect.extensions.hedgeState
+import com.depromeet.team5.features.retrospect.state.TextFieldState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
@@ -27,6 +27,7 @@ class RetrospectViewModel @Inject constructor(
     val sellingTextFieldState: HedgeState<TextFieldState> by hedgeState {
         TextFieldState.EMPTY.copy(text = savedStateHandle[SELLING] ?: "")
     }
+
     val stockTextFieldState: HedgeState<TextFieldState> by hedgeState {
         TextFieldState.EMPTY.copy(text = savedStateHandle[STOCK] ?: "")
     }
@@ -37,9 +38,9 @@ class RetrospectViewModel @Inject constructor(
         TextFieldState.EMPTY.copy(text = savedStateHandle[RETURN] ?: "")
     }
 
-    var returnToggleState by hedgeState { false }
+    val returnToggleState by hedgeState { false }
 
-    var okButtonState: HedgeState<Boolean> by hedgeState { false }
+    val okButtonState: HedgeState<Boolean> by hedgeState { false }
 
 
     init {
@@ -80,15 +81,12 @@ class RetrospectViewModel @Inject constructor(
             SELLING -> sellingTextFieldState.update {
                 it.copy(text = value, selection = selection, isError = isError)
             }
-
             STOCK -> stockTextFieldState.update {
                 it.copy(text = value, selection = selection, isError = isError)
             }
-
             DATE -> dateTextFieldState.update {
                 it.copy(text = value, selection = selection, isError = isError)
             }
-
             RETURN -> returnTextFieldState.update {
                 it.copy(text = value, selection = selection, isError = isError)
             }

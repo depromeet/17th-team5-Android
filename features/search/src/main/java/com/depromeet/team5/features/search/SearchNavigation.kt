@@ -6,18 +6,21 @@ import androidx.navigation.compose.composable
 import kotlinx.serialization.Serializable
 
 @Serializable
-object Search
+enum class TradeType { BUY, SELL }
+
+@Serializable
+data class Search(val trade: TradeType)
 
 fun NavGraphBuilder.searchScreen(
     onBackClick: () -> Unit
-){
-    composable<Search>{
+) {
+    composable<Search> {
         SearchRoute(
             onBackClick = onBackClick
         )
     }
 }
 
-fun NavController.navigateToSearch(){
-    navigate(Search)
+fun NavController.navigateToSearch(trade: TradeType) {
+    navigate(Search(trade))
 }

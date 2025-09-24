@@ -133,7 +133,13 @@ private fun FABItem(
     modifier: Modifier = Modifier
 ) {
     Row(
-        modifier = modifier,
+        modifier = modifier
+            .clickable(
+                interactionSource = interaction,
+                indication = null
+            ) {
+                onClick()
+            },
         verticalAlignment = Alignment.CenterVertically
     ) {
         Icon(
@@ -142,12 +148,6 @@ private fun FABItem(
             tint = itemIconColor,
             modifier = Modifier
                 .padding(end = 8.dp)
-                .clickable(
-                    interactionSource = interaction,
-                    indication = null
-                ) {
-                    onClick()
-                }
                 .background(color = itemIconBackgroundColor, shape = RoundedCornerShape(10.dp))
                 .padding(7.dp)
                 .size(14.dp)

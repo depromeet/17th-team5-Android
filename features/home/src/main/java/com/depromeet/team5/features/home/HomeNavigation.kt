@@ -8,9 +8,15 @@ import kotlinx.serialization.Serializable
 @Serializable
 object Home
 
-fun NavGraphBuilder.homeScreen() {
+fun NavGraphBuilder.homeScreen(
+    onBuyClick: () -> Unit,
+    onSellClick: () -> Unit
+) {
     composable<Home> {
-        HomeRoute()
+        HomeRoute(
+            onBuyClick = onBuyClick,
+            onSellClick = onSellClick
+        )
     }
 }
 

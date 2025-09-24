@@ -1,7 +1,9 @@
 package com.depromeet.team5.features.home
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -14,13 +16,21 @@ import com.depromeet.team5.features.home.component.HomeFloatingActionButton
 
 @Composable
 fun HomeRoute(
+    onBuyClick: () -> Unit,
+    onSellClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    HomeScreen(modifier = modifier)
+    HomeScreen(
+        onBuyClick = onBuyClick,
+        onSellClick = onSellClick,
+        modifier = modifier
+    )
 }
 
 @Composable
 private fun HomeScreen(
+    onBuyClick: () -> Unit,
+    onSellClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     var fabChecked by remember { mutableStateOf(false) }
@@ -28,11 +38,17 @@ private fun HomeScreen(
     Box(
         modifier = modifier.fillMaxSize()
     ) {
+        Text(
+            text = "잉잉",
+            modifier = Modifier
+                .clickable { onBuyClick() }
+                .align(Alignment.Center)
+        )
         HomeFloatingActionButton(
             fabChecked = fabChecked,
             onCheckedChange = { fabChecked = !fabChecked },
-            onBuyClick = {},
-            onSellClick = {},
+            onBuyClick = onBuyClick,
+            onSellClick = onSellClick,
             modifier = Modifier.align(Alignment.BottomEnd)
         )
     }
@@ -42,5 +58,8 @@ private fun HomeScreen(
 @Preview(showBackground = true)
 @Composable
 private fun HomePreview() {
-    HomeScreen()
+    HomeScreen(
+        onBuyClick = {},
+        onSellClick = {}
+    )
 }

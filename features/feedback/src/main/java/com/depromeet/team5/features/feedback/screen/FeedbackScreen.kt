@@ -12,15 +12,16 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
 import androidx.compose.material3.TabRowDefaults
@@ -72,79 +73,8 @@ private fun FeedbackScreen(
     state: AiFeedbackState,
     onClickBackPressed: () -> Unit = {},
 ) {
-    val verticalScrollState = rememberScrollState()
-
-    Column(
-        modifier = modifier
-            .fillMaxSize()
-            .background(color = HedgeColor.WHITE)
-            .verticalScroll(verticalScrollState)
-    ) {
-        HedgeTopBar(
-            onClickBack = onClickBackPressed,
-            action = {
-                Text(
-                    text = "삭제",
-                    style = HedgeTypography.Body1.SemiBold,
-                    color = HedgeColor.Text.Alternative
-                )
-            }
-        )
-
-        Row(
-            modifier = Modifier
-                .padding(horizontal = 20.dp, vertical = 10.dp)
-                .fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Box(
-                modifier = Modifier
-                    .size(24.dp)
-                    .background(Color.Gray, shape = RoundedCornerShape(20.dp))
-            )
-
-            Text(
-                modifier = Modifier.padding(start = 7.dp),
-                text = "삼성전자",
-                style = HedgeTypography.Body3.Medium,
-                color = HedgeColor.Text.Title
-            )
-        }
-
-        Text(
-            modifier = Modifier.padding(start = 20.dp, top = 4.dp),
-            text = "65,000원・3주 매도",
-            style = HedgeTypography.Headline1.SemiBold
-        )
-
-        Text(
-            modifier = Modifier.padding(start = 20.dp, top = 4.dp),
-            text = "65,000원・3주 매도",
-            style = HedgeTypography.Label2.Regular,
-            color = HedgeColor.Text.Alternative
-        )
-
-        Image(
-            modifier = Modifier
-                .fillMaxWidth()
-                .background(color = HedgeColor.WHITE)
-                .padding(top = 13.dp),
-            painter = painterResource(R.drawable.img_chart),
-            contentDescription = null
-        )
-
-        TabMediator(
-            state = state
-        )
-    }
-}
-
-@Composable
-private fun TabMediator(
-    modifier: Modifier = Modifier,
-    state: AiFeedbackState
-) {
     val tabs = listOf("나의 회고", "AI 피드백")
+    val lazyColumnState = rememberLazyListState()
     val pagerState = rememberPagerState(
         initialPage = 1,
         pageCount = { tabs.size }
@@ -152,65 +82,131 @@ private fun TabMediator(
 
     val scope = rememberCoroutineScope()
 
-    Column {
-        TabRow(
-            modifier = modifier.padding(top = 10.dp),
-            containerColor = HedgeColor.WHITE,
-            contentColor = HedgeColor.Text.Primary,
-            selectedTabIndex = pagerState.currentPage,
-            indicator = { tabPositions ->
-                TabRowDefaults.SecondaryIndicator(
-                    modifier = Modifier.tabIndicatorOffset(tabPositions[pagerState.currentPage]),
-                    height = 2.dp,
-                    color = HedgeColor.Text.Title
-                )
-            },
-            divider = {
-                HorizontalDivider(
-                    thickness = 1.dp,
-                    color = HedgeColor.Neutral.BackgroundSecondary
-                )
-            }
-        ) {
-            tabs.forEachIndexed { index, title ->
-                Tab(
-                    text = {
+    LazyColumn(
+        modifier = modifier
+            .fillMaxSize()
+            .background(HedgeColor.WHITE),
+        state = lazyColumnState
+    ) {
+        item {
+            Column(
+                modifier = Modifier
+                    .background(color = HedgeColor.WHITE)
+            ) {
+                HedgeTopBar(
+                    onClickBack = onClickBackPressed,
+                    action = {
                         Text(
-                            text = tabs[index]
+                            text = "삭제",
+                            style = HedgeTypography.Body1.SemiBold,
+                            color = HedgeColor.Text.Alternative
                         )
-                    },
-                    selected = pagerState.currentPage == index,
-                    onClick = {
-                        scope.launch {
-                            pagerState.animateScrollToPage(index)
-                        }
-                    },
-                    selectedContentColor = HedgeColor.Text.Primary,
-                    unselectedContentColor = HedgeColor.Text.Alternative
+                    }
+                )
+                Row(
+                    modifier = Modifier
+                        .padding(horizontal = 20.dp, vertical = 10.dp)
+                        .fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .size(24.dp)
+                            .background(Color.Gray, shape = RoundedCornerShape(20.dp))
+                    )
+
+                    Text(
+                        modifier = Modifier.padding(start = 7.dp),
+                        text = "삼성전자",
+                        style = HedgeTypography.Body3.Medium,
+                        color = HedgeColor.Text.Title
+                    )
+                }
+                Text(
+                    modifier = Modifier.padding(start = 20.dp, top = 4.dp),
+                    text = "65,000원・3주 매도",
+                    style = HedgeTypography.Headline1.SemiBold
+                )
+                Text(
+                    modifier = Modifier.padding(start = 20.dp, top = 4.dp),
+                    text = "65,000원・3주 매도",
+                    style = HedgeTypography.Label2.Regular,
+                    color = HedgeColor.Text.Alternative
+                )
+                Image(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .background(color = HedgeColor.WHITE)
+                        .padding(top = 13.dp),
+                    painter = painterResource(R.drawable.img_chart),
+                    contentDescription = null
                 )
             }
         }
-
-        HorizontalPager(
-            state = pagerState,
-            modifier = Modifier.fillMaxSize()
-        ) { page ->
-
-            if (page == 1) {
-                AiFeedbackPage(state = state)
-            } else {
-                Box(
-                    modifier = Modifier.fillMaxSize(),
-                    contentAlignment = Alignment.Center
+        stickyHeader {
+            Box(
+                modifier = Modifier.background(HedgeColor.WHITE)
+            ) {
+                TabRow(
+                    modifier = Modifier.padding(top = 10.dp),
+                    containerColor = HedgeColor.WHITE,
+                    contentColor = HedgeColor.Text.Primary,
+                    selectedTabIndex = pagerState.currentPage,
+                    indicator = { tabPositions ->
+                        TabRowDefaults.SecondaryIndicator(
+                            modifier = Modifier.tabIndicatorOffset(tabPositions[pagerState.currentPage]),
+                            height = 2.dp,
+                            color = HedgeColor.Text.Title
+                        )
+                    },
+                    divider = {
+                        HorizontalDivider(
+                            thickness = 1.dp,
+                            color = HedgeColor.Neutral.BackgroundSecondary
+                        )
+                    }
                 ) {
-
-                    Text(
-                        "$page",
-                        fontSize = 24.sp
-                    )
+                    tabs.forEachIndexed { index, title ->
+                        Tab(
+                            text = {
+                                Text(
+                                    text = tabs[index]
+                                )
+                            },
+                            selected = pagerState.currentPage == index,
+                            onClick = {
+                                scope.launch {
+                                    pagerState.animateScrollToPage(index)
+                                }
+                            },
+                            selectedContentColor = HedgeColor.Text.Primary,
+                            unselectedContentColor = HedgeColor.Text.Alternative
+                        )
+                    }
                 }
             }
+        }
 
+        item {
+            HorizontalPager(
+                state = pagerState,
+                modifier = Modifier.fillMaxSize()
+            ) { page ->
+                if (page == 1) {
+                    AiFeedbackPage(state = state)
+                } else {
+                    Box(
+                        modifier = Modifier.fillMaxSize(),
+                        contentAlignment = Alignment.Center
+                    ) {
+
+                        Text(
+                            "$page",
+                            fontSize = 24.sp
+                        )
+                    }
+                }
+            }
         }
     }
 }
@@ -359,6 +355,14 @@ private fun AIContent(
             }
         )
         Spacer(modifier = Modifier.padding(top = 16.dp))
+        PrincipleViewHolder(
+            title = "원칙 타이틀 최대 2줄까지 원칙 타이틀 최대 2줄까지 원칙 타이틀 최대 2줄까",
+            content = "원칙 내용 최대 3줄까지 원칙 내용 최대 3줄까지 원칙 내용 최대 3줄까지 원칙 내용 최대 3줄까지 원칙 내용 최대 3줄까지 원칙 내용 최"
+        ) { }
+        PrincipleViewHolder(
+            title = "원칙 타이틀 최대 2줄까지 원칙 타이틀 최대 2줄까지 원칙 타이틀 최대 2줄까",
+            content = "원칙 내용 최대 3줄까지 원칙 내용 최대 3줄까지 원칙 내용 최대 3줄까지 원칙 내용 최대 3줄까지 원칙 내용 최대 3줄까지 원칙 내용 최"
+        ) { }
         PrincipleViewHolder(
             title = "원칙 타이틀 최대 2줄까지 원칙 타이틀 최대 2줄까지 원칙 타이틀 최대 2줄까",
             content = "원칙 내용 최대 3줄까지 원칙 내용 최대 3줄까지 원칙 내용 최대 3줄까지 원칙 내용 최대 3줄까지 원칙 내용 최대 3줄까지 원칙 내용 최"
@@ -546,7 +550,10 @@ fun AiFeedBackScreenPreview() {
         state = AiFeedbackState.Success("")
     }
 
-    FeedbackScreen(
-        state = state
-    )
+    Scaffold { contentPadding ->
+        FeedbackScreen(
+            modifier = Modifier.padding(contentPadding),
+            state = state
+        )
+    }
 }

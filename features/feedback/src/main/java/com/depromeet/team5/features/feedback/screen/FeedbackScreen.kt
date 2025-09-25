@@ -21,7 +21,6 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
 import androidx.compose.material3.TabRowDefaults
@@ -277,7 +276,7 @@ private fun AIContent(
         modifier = modifier
             .fillMaxSize()
             .background(HedgeColor.WHITE)
-            .padding(bottom = 44.dp)
+            .padding(bottom = 62.dp)
     ) {
         AiHeader(
             icon = {
@@ -291,12 +290,14 @@ private fun AIContent(
                 )
             }
         )
+
         Text(
             modifier = Modifier.padding(top = 16.dp),
             text = "요약 한 마디",
             style = HedgeTypography.Headline2.SemiBold,
             color = HedgeColor.Text.Title
         )
+
         Text(
             modifier = Modifier.padding(top = 8.dp),
             text = "사실 몇 줄까지 나올지 모르겠음 최대 4~5줄 정도가 좋지 않을까? 최대 4~5줄 정도가 좋지 않을까? 최대 4~5줄 정도가 좋지 않을까? 최대 4~5줄 정도가 좋지 않을까? 최대 4~5줄 정도가 좋지 않을까? 최대 4~5줄 정도가 좋지 않을까? 최대 4~5줄 정도가 좋지 않을까?",
@@ -305,6 +306,7 @@ private fun AIContent(
             maxLines = 5,
             overflow = TextOverflow.Ellipsis
         )
+
         AiHeader(
             modifier = Modifier.padding(top = 44.dp),
             icon = {
@@ -322,6 +324,7 @@ private fun AIContent(
                 )
             }
         )
+
         Box(
             modifier = Modifier
                 .padding(top = 16.dp)
@@ -337,6 +340,7 @@ private fun AIContent(
                 overflow = TextOverflow.Ellipsis
             )
         }
+
         AiHeader(
             modifier = Modifier.padding(top = 44.dp),
             icon = {
@@ -354,19 +358,36 @@ private fun AIContent(
                 )
             }
         )
-        Spacer(modifier = Modifier.padding(top = 16.dp))
         PrincipleViewHolder(
             title = "원칙 타이틀 최대 2줄까지 원칙 타이틀 최대 2줄까지 원칙 타이틀 최대 2줄까",
-            content = "원칙 내용 최대 3줄까지 원칙 내용 최대 3줄까지 원칙 내용 최대 3줄까지 원칙 내용 최대 3줄까지 원칙 내용 최대 3줄까지 원칙 내용 최"
-        ) { }
+            content = "원칙 내용 최대 3줄까지 원칙 내용 최대 3줄까지 원칙 내용 최대 3줄까지 원칙 내용 최대 3줄까지 원칙 내용 최대 3줄까지 원칙 내용 최",
+            contentPadding = PaddingValues(top = 16.dp, bottom = 22.dp),
+            onClickedAddButton = {}
+        )
+
+        HorizontalDivider(
+            thickness = 1.dp,
+            color = HedgeColor.Neutral.BackgroundSecondary
+        )
+
         PrincipleViewHolder(
             title = "원칙 타이틀 최대 2줄까지 원칙 타이틀 최대 2줄까지 원칙 타이틀 최대 2줄까",
-            content = "원칙 내용 최대 3줄까지 원칙 내용 최대 3줄까지 원칙 내용 최대 3줄까지 원칙 내용 최대 3줄까지 원칙 내용 최대 3줄까지 원칙 내용 최"
-        ) { }
+            content = "원칙 내용 최대 3줄까지 원칙 내용 최대 3줄까지 원칙 내용 최대 3줄까지 원칙 내용 최대 3줄까지 원칙 내용 최대 3줄까지 원칙 내용 최",
+            contentPadding = PaddingValues(top = 22.dp, bottom = 22.dp),
+            onClickedAddButton = {}
+        )
+
+        HorizontalDivider(
+            thickness = 1.dp,
+            color = HedgeColor.Neutral.BackgroundSecondary
+        )
+
         PrincipleViewHolder(
             title = "원칙 타이틀 최대 2줄까지 원칙 타이틀 최대 2줄까지 원칙 타이틀 최대 2줄까",
-            content = "원칙 내용 최대 3줄까지 원칙 내용 최대 3줄까지 원칙 내용 최대 3줄까지 원칙 내용 최대 3줄까지 원칙 내용 최대 3줄까지 원칙 내용 최"
-        ) { }
+            content = "원칙 내용 최대 3줄까지 원칙 내용 최대 3줄까지 원칙 내용 최대 3줄까지 원칙 내용 최대 3줄까지 원칙 내용 최대 3줄까지 원칙 내용 최",
+            contentPadding = PaddingValues(top = 22.dp, bottom = 22.dp),
+            onClickedAddButton = {}
+        )
     }
 }
 
@@ -388,12 +409,16 @@ private fun AiHeader(
 
 @Composable
 private fun PrincipleViewHolder(
-    modifier: Modifier = Modifier,
     title: String,
     content: String,
-    onClickedAddButton: () -> Unit
+    onClickedAddButton: () -> Unit,
+    contentPadding: PaddingValues = PaddingValues(0.dp),
+    modifier: Modifier = Modifier
 ) {
-    Column(modifier = modifier) {
+    Column(
+        modifier = modifier
+            .padding(contentPadding)
+    ) {
         Row(
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -550,10 +575,7 @@ fun AiFeedBackScreenPreview() {
         state = AiFeedbackState.Success("")
     }
 
-    Scaffold { contentPadding ->
-        FeedbackScreen(
-            modifier = Modifier.padding(contentPadding),
-            state = state
-        )
-    }
+    FeedbackScreen(
+        state = state
+    )
 }

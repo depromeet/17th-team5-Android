@@ -46,10 +46,12 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.depromeet.team5.core.designsystem.component.HedgeTopBar
 import com.depromeet.team5.core.designsystem.foundation.HedgeColor
 import com.depromeet.team5.core.designsystem.foundation.HedgeIcon
 import com.depromeet.team5.core.designsystem.foundation.HedgeTypography
+import com.depromeet.team5.core.model.Principle
 import com.depromeet.team5.features.feedback.AiFeedbackState
 import com.depromeet.team5.features.feedback.R
 import kotlinx.coroutines.delay
@@ -61,17 +63,18 @@ fun FeedbackRoute(
     modifier: Modifier,
     viewModel: AiFeedbackViewModel = hiltViewModel()
 ) {
+    val state by viewModel.feedbackStateFlow.collectAsStateWithLifecycle()
 
     FeedbackScreen(
-        state = AiFeedbackState.Loading
+        state = state
     )
 }
 
 @Composable
 private fun FeedbackScreen(
-    modifier: Modifier = Modifier,
     state: AiFeedbackState,
     onClickBackPressed: () -> Unit = {},
+    modifier: Modifier = Modifier
 ) {
     val tabs = listOf(
         stringResource(id = R.string.feedback_my_retrospect),
@@ -84,6 +87,11 @@ private fun FeedbackScreen(
     )
 
     val scope = rememberCoroutineScope()
+
+    if (state is AiFeedbackState.Failure || state is AiFeedbackState.Error) {
+        //todo error 화면 오픈
+        return
+    }
 
     LazyColumn(
         modifier = modifier
@@ -223,20 +231,23 @@ private fun AiFeedbackPage(
         modifier = modifier.fillMaxSize()
     ) {
         when (state) {
+            AiFeedbackState.Loading -> {
+                AiLoadingProgress()
+            }
+
             is AiFeedbackState.Success -> {
                 Column {
                     AiNotice()
                     Spacer(modifier = Modifier.padding(top = 22.dp))
                     AIContent(
+                        state = state,
                         modifier = Modifier.padding(horizontal = 20.dp)
                     )
                 }
             }
 
             is AiFeedbackState.Failure,
-            AiFeedbackState.Loading -> {
-                AiLoadingProgress()
-            }
+            is AiFeedbackState.Error -> TODO()
         }
     }
 }
@@ -274,6 +285,7 @@ private fun AiNotice() {
 
 @Composable
 private fun AIContent(
+    state: AiFeedbackState.Success,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -304,7 +316,7 @@ private fun AIContent(
 
         Text(
             modifier = Modifier.padding(top = 8.dp),
-            text = "",
+            text = state.summarize,
             style = HedgeTypography.Body3.Medium,
             color = HedgeColor.Text.Secondary,
             maxLines = 5,
@@ -337,7 +349,7 @@ private fun AIContent(
         ) {
             Text(
                 modifier = Modifier.padding(horizontal = 20.dp, vertical = 32.dp),
-                text = "",
+                text = state.summarizeOfMarket,
                 style = HedgeTypography.Body3.Medium,
                 color = HedgeColor.Text.Secondary,
                 maxLines = 3,
@@ -362,36 +374,22 @@ private fun AIContent(
                 )
             }
         )
-        PrincipleViewHolder(
-            title = "",
-            content = "",
-            contentPadding = PaddingValues(top = 16.dp, bottom = 22.dp),
-            onClickedAddButton = {}
-        )
 
-        HorizontalDivider(
-            thickness = 1.dp,
-            color = HedgeColor.Neutral.BackgroundSecondary
-        )
+        state.principles.forEachIndexed { index, principle ->
+            val topPadding = if (index == 0) 16.dp else 22.dp
 
-        PrincipleViewHolder(
-            title = "",
-            content = "",
-            contentPadding = PaddingValues(top = 22.dp, bottom = 22.dp),
-            onClickedAddButton = {}
-        )
+            PrincipleViewHolder(
+                title = principle.title,
+                content = principle.content,
+                contentPadding = PaddingValues(top = topPadding, bottom = 22.dp),
+                onClickedAddButton = {}
+            )
 
-        HorizontalDivider(
-            thickness = 1.dp,
-            color = HedgeColor.Neutral.BackgroundSecondary
-        )
-
-        PrincipleViewHolder(
-            title = "",
-            content = "",
-            contentPadding = PaddingValues(top = 22.dp, bottom = 22.dp),
-            onClickedAddButton = {}
-        )
+            HorizontalDivider(
+                thickness = 1.dp,
+                color = HedgeColor.Neutral.BackgroundSecondary
+            )
+        }
     }
 }
 
@@ -561,8 +559,25 @@ fun AiContentPreview() {
             .wrapContentSize()
     ) {
         AIContent(
-            modifier = Modifier
-                .padding(horizontal = 20.dp)
+            state = AiFeedbackState.Success(
+                summarize = "사실 몇 줄까지 나올지 모르겠음 최대 4~5줄 정도가 좋지 않을까? 최대 4~5줄 정도가 좋지 않을까? 최대 4~5줄 정도가 좋지 않을까? 최대 4~5줄 정도가 좋지 않을까? 최대 4~5줄 정도가 좋지 않을까? 최대 4~5줄 정도가 좋지 않을까? 최대 4~5줄 정도가 좋지 않을까? ",
+                summarizeOfMarket = "최대 3줄까지 설명 최대 3줄까지 설명 최대 3줄까지 설명 최대 3줄까지 설명 최대 3줄까지 설명 최대 3줄까지 설명 최대 3줄까지 설명 최대 3줄까지 ",
+                principles = listOf(
+                    Principle(
+                        title = "원칙 타이틀 최대 2줄까지 원칙 타이틀 최대 2줄까지 원칙 타이틀 최대 2줄까",
+                        content = "최대 3줄까지 최대 3줄까지 최대 3줄까지 최대 3줄까지 최대 3줄까지 최대 3줄까지 최대 3줄까지 최대 3줄까지 최대 3줄까지 최대 3줄까지 최대 3줄까지 최대 3줄까지 최대 3줄"
+                    ),
+                    Principle(
+                        title = "원칙 타이틀 최대 2줄까지 원칙 타이틀 최대 2줄까지 원칙 타이틀 최대 2줄까",
+                        content = "최대 3줄까지 최대 3줄까지 최대 3줄까지 최대 3줄까지 최대 3줄까지 최대 3줄까지 최대 3줄까지 최대 3줄까지 최대 3줄까지 최대 3줄까지 최대 3줄까지 최대 3줄까지 최대 3줄"
+                    ),
+                    Principle(
+                        title = "원칙 타이틀 최대 2줄까지 원칙 타이틀 최대 2줄까지 원칙 타이틀 최대 2줄까",
+                        content = "최대 3줄까지 최대 3줄까지 최대 3줄까지 최대 3줄까지 최대 3줄까지 최대 3줄까지 최대 3줄까지 최대 3줄까지 최대 3줄까지 최대 3줄까지 최대 3줄까지 최대 3줄까지 최대 3줄"
+                    )
+                )
+            ),
+            modifier = Modifier.padding(horizontal = 20.dp)
         )
     }
 }
@@ -576,7 +591,24 @@ fun AiFeedBackScreenPreview() {
     LaunchedEffect(Unit) {
 
         delay(4000)
-        state = AiFeedbackState.Success("")
+        state = AiFeedbackState.Success(
+            summarize = "사실 몇 줄까지 나올지 모르겠음 최대 4~5줄 정도가 좋지 않을까? 최대 4~5줄 정도가 좋지 않을까? 최대 4~5줄 정도가 좋지 않을까? 최대 4~5줄 정도가 좋지 않을까? 최대 4~5줄 정도가 좋지 않을까? 최대 4~5줄 정도가 좋지 않을까? 최대 4~5줄 정도가 좋지 않을까? ",
+            summarizeOfMarket = "최대 3줄까지 설명 최대 3줄까지 설명 최대 3줄까지 설명 최대 3줄까지 설명 최대 3줄까지 설명 최대 3줄까지 설명 최대 3줄까지 설명 최대 3줄까지 ",
+            principles = listOf(
+                Principle(
+                    title = "원칙 타이틀 최대 2줄까지 원칙 타이틀 최대 2줄까지 원칙 타이틀 최대 2줄까",
+                    content = "최대 3줄까지 최대 3줄까지 최대 3줄까지 최대 3줄까지 최대 3줄까지 최대 3줄까지 최대 3줄까지 최대 3줄까지 최대 3줄까지 최대 3줄까지 최대 3줄까지 최대 3줄까지 최대 3줄"
+                ),
+                Principle(
+                    title = "원칙 타이틀 최대 2줄까지 원칙 타이틀 최대 2줄까지 원칙 타이틀 최대 2줄까",
+                    content = "최대 3줄까지 최대 3줄까지 최대 3줄까지 최대 3줄까지 최대 3줄까지 최대 3줄까지 최대 3줄까지 최대 3줄까지 최대 3줄까지 최대 3줄까지 최대 3줄까지 최대 3줄까지 최대 3줄"
+                ),
+                Principle(
+                    title = "원칙 타이틀 최대 2줄까지 원칙 타이틀 최대 2줄까지 원칙 타이틀 최대 2줄까",
+                    content = "최대 3줄까지 최대 3줄까지 최대 3줄까지 최대 3줄까지 최대 3줄까지 최대 3줄까지 최대 3줄까지 최대 3줄까지 최대 3줄까지 최대 3줄까지 최대 3줄까지 최대 3줄까지 최대 3줄"
+                )
+            )
+        )
     }
 
     FeedbackScreen(

@@ -6,11 +6,8 @@ plugins {
 
 android {
     namespace = "com.depromeet.team5.features.feedback"
-    compileSdk = 35
 
     defaultConfig {
-        minSdk = 29
-
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
@@ -19,12 +16,15 @@ android {
             isMinifyEnabled = false
         }
     }
+
     hilt {
         enableAggregatingTask = true
     }
 }
 
 dependencies {
+    implementation(projects.core.domain)
+    implementation(projects.core.model)
     implementation(projects.core.designsystem)
 
     implementation("androidx.hilt:hilt-navigation-compose:1.3.0")

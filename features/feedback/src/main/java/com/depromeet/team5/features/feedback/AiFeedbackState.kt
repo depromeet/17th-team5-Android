@@ -1,13 +1,22 @@
 package com.depromeet.team5.features.feedback
 
+import com.depromeet.team5.core.model.Principle
+
 
 sealed class AiFeedbackState {
 
     data class Success(
-        val feedback: String
+        val summarize: String,
+        val summarizeOfMarket: String,
+        val principles: List<Principle>
     ) : AiFeedbackState()
 
     object Loading : AiFeedbackState()
+
+    data class Error(
+        val code: Int,
+        val message: String
+    ) : AiFeedbackState()
 
     data class Failure(
         val throwable: Throwable

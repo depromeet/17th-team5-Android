@@ -28,7 +28,6 @@ internal object OkHttpClientModule {
             .writeTimeout(NETWORK_TIMEOUT, TimeUnit.SECONDS)
             .readTimeout(NETWORK_TIMEOUT, TimeUnit.SECONDS)
             .connectTimeout(NETWORK_TIMEOUT, TimeUnit.SECONDS)
-            //for test
             .addInterceptor(interceptor)
             .addInterceptor(httpLoggingInterceptor)
             .build()

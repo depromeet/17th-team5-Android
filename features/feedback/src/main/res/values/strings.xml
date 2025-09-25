@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="feedback_my_retrospect">나의 회고</string>
+    <string name="feedback_ai_feedback">AI 피드백</string>
+    <string name="feedback_delete">삭제</string>
+    <string name="feedback_ai_notice">본 서비스에서 제공하는 AI 피드백은 투자 참고용 정보이며, 실제 투자 판단에 대한 책임은 사용자 본인에게 있습니다.</string>
+    <string name="feedback_summary">요약</string>
+    <string name="feedback_summary_one_line">요약 한 마디</string>
+    <string name="feedback_market_status">당시 시장 현황</string>
+    <string name="feedback_ai_recommended_principle">AI 추천 원칙</string>
+    <string name="feedback_add">추가</string>
+    <string name="feedback_ai_feedback_in_progress">AI 피드백 작성중...</string>
+</resources>

@@ -40,6 +40,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -72,7 +73,10 @@ private fun FeedbackScreen(
     state: AiFeedbackState,
     onClickBackPressed: () -> Unit = {},
 ) {
-    val tabs = listOf("나의 회고", "AI 피드백")
+    val tabs = listOf(
+        stringResource(id = R.string.feedback_my_retrospect),
+        stringResource(id = R.string.feedback_ai_feedback)
+    )
     val lazyColumnState = rememberLazyListState()
     val pagerState = rememberPagerState(
         initialPage = 1,
@@ -96,7 +100,7 @@ private fun FeedbackScreen(
                     onClickBack = onClickBackPressed,
                     action = {
                         Text(
-                            text = "삭제",
+                            text = stringResource(id = R.string.feedback_delete),
                             style = HedgeTypography.Body1.SemiBold,
                             color = HedgeColor.Text.Alternative
                         )
@@ -116,19 +120,19 @@ private fun FeedbackScreen(
 
                     Text(
                         modifier = Modifier.padding(start = 7.dp),
-                        text = "삼성전자",
+                        text = "",
                         style = HedgeTypography.Body3.Medium,
                         color = HedgeColor.Text.Title
                     )
                 }
                 Text(
                     modifier = Modifier.padding(start = 20.dp, top = 4.dp),
-                    text = "65,000원・3주 매도",
+                    text = "",
                     style = HedgeTypography.Headline1.SemiBold
                 )
                 Text(
                     modifier = Modifier.padding(start = 20.dp, top = 4.dp),
-                    text = "65,000원・3주 매도",
+                    text = "",
                     style = HedgeTypography.Label2.Regular,
                     color = HedgeColor.Text.Alternative
                 )
@@ -260,7 +264,7 @@ private fun AiNotice() {
 
             Text(
                 modifier = Modifier.padding(top = 22.dp, start = 10.dp),
-                text = "본 서비스에서 제공하는 AI 피드백은 투자 참고용 정보이며, 실제 투자 판단에 대한 책임은 사용자 본인에게 있습니다.",
+                text = stringResource(id = R.string.feedback_ai_notice),
                 style = HedgeTypography.Label2.Medium,
                 color = HedgeColor.Feedback.AI
             )
@@ -284,7 +288,7 @@ private fun AIContent(
             },
             title = {
                 Text(
-                    text = "요약",
+                    text = stringResource(id = R.string.feedback_summary),
                     style = HedgeTypography.Body2.SemiBold,
                     color = HedgeColor.Feedback.AI
                 )
@@ -293,14 +297,14 @@ private fun AIContent(
 
         Text(
             modifier = Modifier.padding(top = 16.dp),
-            text = "요약 한 마디",
+            text = stringResource(id = R.string.feedback_summary_one_line),
             style = HedgeTypography.Headline2.SemiBold,
             color = HedgeColor.Text.Title
         )
 
         Text(
             modifier = Modifier.padding(top = 8.dp),
-            text = "사실 몇 줄까지 나올지 모르겠음 최대 4~5줄 정도가 좋지 않을까? 최대 4~5줄 정도가 좋지 않을까? 최대 4~5줄 정도가 좋지 않을까? 최대 4~5줄 정도가 좋지 않을까? 최대 4~5줄 정도가 좋지 않을까? 최대 4~5줄 정도가 좋지 않을까? 최대 4~5줄 정도가 좋지 않을까?",
+            text = "",
             style = HedgeTypography.Body3.Medium,
             color = HedgeColor.Text.Secondary,
             maxLines = 5,
@@ -318,7 +322,7 @@ private fun AIContent(
             },
             title = {
                 Text(
-                    text = "당시 시장 현황",
+                    text = stringResource(id = R.string.feedback_market_status),
                     style = HedgeTypography.Headline2.SemiBold,
                     color = HedgeColor.Text.Title
                 )
@@ -333,7 +337,7 @@ private fun AIContent(
         ) {
             Text(
                 modifier = Modifier.padding(horizontal = 20.dp, vertical = 32.dp),
-                text = "최대 3줄까지 설명 최대 3줄까지 설명 최대 3줄까지 설명 최대 3줄까지 설명 최대 3줄까지 설명 최대 3줄까지 설명 최대 3줄까지 설명 최대 3줄까지",
+                text = "",
                 style = HedgeTypography.Body3.Medium,
                 color = HedgeColor.Text.Secondary,
                 maxLines = 3,
@@ -352,15 +356,15 @@ private fun AIContent(
             },
             title = {
                 Text(
-                    text = "AI 추천 원칙",
+                    text = stringResource(id = R.string.feedback_ai_recommended_principle),
                     style = HedgeTypography.Headline2.SemiBold,
                     color = HedgeColor.Text.Title
                 )
             }
         )
         PrincipleViewHolder(
-            title = "원칙 타이틀 최대 2줄까지 원칙 타이틀 최대 2줄까지 원칙 타이틀 최대 2줄까",
-            content = "원칙 내용 최대 3줄까지 원칙 내용 최대 3줄까지 원칙 내용 최대 3줄까지 원칙 내용 최대 3줄까지 원칙 내용 최대 3줄까지 원칙 내용 최",
+            title = "",
+            content = "",
             contentPadding = PaddingValues(top = 16.dp, bottom = 22.dp),
             onClickedAddButton = {}
         )
@@ -371,8 +375,8 @@ private fun AIContent(
         )
 
         PrincipleViewHolder(
-            title = "원칙 타이틀 최대 2줄까지 원칙 타이틀 최대 2줄까지 원칙 타이틀 최대 2줄까",
-            content = "원칙 내용 최대 3줄까지 원칙 내용 최대 3줄까지 원칙 내용 최대 3줄까지 원칙 내용 최대 3줄까지 원칙 내용 최대 3줄까지 원칙 내용 최",
+            title = "",
+            content = "",
             contentPadding = PaddingValues(top = 22.dp, bottom = 22.dp),
             onClickedAddButton = {}
         )
@@ -383,8 +387,8 @@ private fun AIContent(
         )
 
         PrincipleViewHolder(
-            title = "원칙 타이틀 최대 2줄까지 원칙 타이틀 최대 2줄까지 원칙 타이틀 최대 2줄까",
-            content = "원칙 내용 최대 3줄까지 원칙 내용 최대 3줄까지 원칙 내용 최대 3줄까지 원칙 내용 최대 3줄까지 원칙 내용 최대 3줄까지 원칙 내용 최",
+            title = "",
+            content = "",
             contentPadding = PaddingValues(top = 22.dp, bottom = 22.dp),
             onClickedAddButton = {}
         )
@@ -447,7 +451,7 @@ private fun PrincipleViewHolder(
                     Image(painter = painterResource(R.drawable.img_add), contentDescription = "")
                     Text(
                         modifier = Modifier.padding(start = 3.2.dp),
-                        text = "추가",
+                        text = stringResource(id = R.string.feedback_add),
                         style = HedgeTypography.Label2.SemiBold,
                         color = HedgeColor.Neutral.BackgroundDefault
                     )
@@ -488,7 +492,7 @@ private fun AiLoadingProgress(
             )
             Text(
                 modifier = Modifier.padding(start = 12.dp),
-                text = "AI 피드백 작성중...",
+                text = stringResource(id = R.string.feedback_ai_feedback_in_progress),
                 style = HedgeTypography.Body3.Medium,
                 color = HedgeColor.Feedback.AI
             )
@@ -525,7 +529,7 @@ fun AiHeaderPreview() {
             },
             title = {
                 Text(
-                    text = "요약",
+                    text = stringResource(id = R.string.feedback_summary),
                     style = HedgeTypography.Body2.SemiBold,
                     color = HedgeColor.Feedback.AI
                 )

@@ -1,6 +1,6 @@
 package com.depromeet.team5.core.retrofit.di
 
-import com.depromeet.team5.core.retrofit.NETWORK_TIMEOUT
+import com.depromeet.team5.core.retrofit.di.qualifier.RegularInterceptorQualifier
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -15,18 +15,21 @@ import javax.inject.Singleton
 @InstallIn(SingletonComponent::class)
 internal object OkHttpClientModule {
 
+    private const val NETWORK_TIMEOUT = 60L
+
     @Provides
     @Singleton
     fun provideOkHttpClient(
         httpLoggingInterceptor: HttpLoggingInterceptor,
-        mockInterceptor: Interceptor
+        @RegularInterceptorQualifier
+        interceptor: Interceptor
     ): OkHttpClient {
         return OkHttpClient.Builder()
             .writeTimeout(NETWORK_TIMEOUT, TimeUnit.SECONDS)
             .readTimeout(NETWORK_TIMEOUT, TimeUnit.SECONDS)
             .connectTimeout(NETWORK_TIMEOUT, TimeUnit.SECONDS)
             //for test
-            .addInterceptor(mockInterceptor)
+            .addInterceptor(interceptor)
             .addInterceptor(httpLoggingInterceptor)
             .build()
     }

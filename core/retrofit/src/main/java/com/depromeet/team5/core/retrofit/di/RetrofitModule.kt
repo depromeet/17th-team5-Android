@@ -1,5 +1,6 @@
 package com.depromeet.team5.core.retrofit.di
 
+import com.depromeet.team5.core.retrofit.BuildConfig
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -20,7 +21,7 @@ internal object RetrofitModule {
         converterFactory: Converter.Factory,
     ): Retrofit {
         return Retrofit.Builder()
-            .baseUrl("https://example.com")
+            .baseUrl(BuildConfig.BASE_URL)
             .client(okHttpClient)
             .addConverterFactory(converterFactory)
             .build()

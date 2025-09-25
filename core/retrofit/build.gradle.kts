@@ -12,6 +12,11 @@ android {
     }
 
     buildTypes {
+        debug {
+            isMinifyEnabled = false
+            isShrinkResources = false
+            buildConfigField("String", "BASE_URL", "\"http://13.209.109.151:8080/\"")
+        }
         release {
             isMinifyEnabled = false
         }
@@ -33,6 +38,9 @@ dependencies {
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
+
+    implementation("com.google.code.gson:gson:2.13.0")
+    implementation("com.squareup.retrofit2:converter-gson:3.0.0")
 
     implementation(libs.com.squareup.retrofit2.retrofit)
     implementation(libs.com.jakewharton.retrofit.retrofit2.kotlinx.serialization.converter)

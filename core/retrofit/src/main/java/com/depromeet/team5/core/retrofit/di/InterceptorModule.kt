@@ -1,6 +1,8 @@
 package com.depromeet.team5.core.retrofit.di
 
 import com.depromeet.team5.core.retrofit.BuildConfig
+import com.depromeet.team5.core.retrofit.di.qualifier.RegularInterceptorQualifier
+import com.depromeet.team5.core.retrofit.di.qualifier.TestInterceptorQualifier
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -26,9 +28,24 @@ internal object InterceptorModule {
         }
     }
 
+    @Provides
+    @Singleton
+    @RegularInterceptorQualifier
+    fun provideRegularInterceptor(): Interceptor {
+        return Interceptor { chain ->
+            val request = chain.request().newBuilder()
+                .header("Accept", "*/*")
+                .header("Content-Type", "application/json")
+                .build()
+
+            chain.proceed(request)
+        }
+    }
+
     //for test
     @Provides
     @Singleton
+    @TestInterceptorQualifier
     fun provideMockInterceptor(): Interceptor {
         return Interceptor { chain ->
             val request = chain.request()

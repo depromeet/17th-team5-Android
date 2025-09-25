@@ -36,6 +36,7 @@ dependencies {
     implementation(projects.core.remotedatasource)
     implementation(projects.core.retrofit)
     implementation(projects.core.designsystem)
+    implementation(projects.core.model)
     implementation(projects.features.search)
     implementation(projects.features.principle)
     implementation(projects.features.retrospect)

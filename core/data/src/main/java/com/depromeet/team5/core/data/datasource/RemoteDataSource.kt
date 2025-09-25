@@ -1,9 +1,9 @@
 package com.depromeet.team5.core.data.datasource
 
-import com.depromeet.team5.core.data.model.TestData
+import com.depromeet.team5.core.data.model.RetrospectionData
 
 
 interface RemoteDataSource {
 
-    suspend fun getData(): TestData
+    suspend fun createRetrospection(body: Map<String, Any?>): RetrospectionData
 }

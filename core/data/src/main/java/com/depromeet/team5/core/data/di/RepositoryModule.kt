@@ -1,7 +1,7 @@
 package com.depromeet.team5.core.data.di
 
-import com.depromeet.team5.core.data.repositoryimpl.TestRepositoryImpl
-import com.depromeet.team5.core.domain.repository.TestRepository
+import com.depromeet.team5.core.data.repositoryimpl.HedgeRepositoryImpl
+import com.depromeet.team5.core.domain.repository.HedgeRepository
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -16,6 +16,6 @@ internal abstract class RepositoryModule {
     @Binds
     @Singleton
     abstract fun provideTestRepository(
-        testRepositoryImpl: TestRepositoryImpl
-    ): TestRepository
+        hedgeRepositoryImpl: HedgeRepositoryImpl
+    ): HedgeRepository
 }

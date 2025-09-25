@@ -65,14 +65,24 @@ fun FeedbackRoute(
 ) {
     val state by viewModel.feedbackStateFlow.collectAsStateWithLifecycle()
 
+    val companyName = "삼성전자"
+    val priceAndStock = "65,000원・3주 매도"
+    val date = "2025년 8월 25일"
+
     FeedbackScreen(
-        state = state
+        state = state,
+        companyName = companyName,
+        priceAndStock = priceAndStock,
+        date = date
     )
 }
 
 @Composable
 private fun FeedbackScreen(
     state: AiFeedbackState,
+    companyName: String,
+    priceAndStock: String,
+    date: String,
     onClickBackPressed: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
@@ -93,128 +103,130 @@ private fun FeedbackScreen(
         return
     }
 
-    LazyColumn(
-        modifier = modifier
-            .fillMaxSize()
-            .background(HedgeColor.WHITE),
-        state = lazyColumnState
+    Column(
+        modifier = Modifier
+            .background(HedgeColor.WHITE)
     ) {
-        item {
-            Column(
-                modifier = Modifier
-                    .background(color = HedgeColor.WHITE)
-            ) {
-                HedgeTopBar(
-                    onClickBack = onClickBackPressed,
-                    action = {
-                        Text(
-                            text = stringResource(id = R.string.feedback_delete),
-                            style = HedgeTypography.Body1.SemiBold,
-                            color = HedgeColor.Text.Alternative
-                        )
-                    }
-                )
-                Row(
-                    modifier = Modifier
-                        .padding(horizontal = 20.dp, vertical = 10.dp)
-                        .fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Box(
-                        modifier = Modifier
-                            .size(24.dp)
-                            .background(Color.Gray, shape = RoundedCornerShape(20.dp))
-                    )
-
-                    Text(
-                        modifier = Modifier.padding(start = 7.dp),
-                        text = "",
-                        style = HedgeTypography.Body3.Medium,
-                        color = HedgeColor.Text.Title
-                    )
-                }
+        HedgeTopBar(
+            onClickBack = onClickBackPressed,
+            action = {
                 Text(
-                    modifier = Modifier.padding(start = 20.dp, top = 4.dp),
-                    text = "",
-                    style = HedgeTypography.Headline1.SemiBold
-                )
-                Text(
-                    modifier = Modifier.padding(start = 20.dp, top = 4.dp),
-                    text = "",
-                    style = HedgeTypography.Label2.Regular,
+                    text = stringResource(id = R.string.feedback_delete),
+                    style = HedgeTypography.Body1.SemiBold,
                     color = HedgeColor.Text.Alternative
                 )
+            }
+        )
+        Row(
+            modifier = Modifier
+                .padding(start = 20.dp, top = 10.dp, end = 20.dp)
+                .fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Box(
+                modifier = Modifier
+                    .size(24.dp)
+                    .background(Color.Gray, shape = RoundedCornerShape(20.dp))
+            )
+
+            Text(
+                modifier = Modifier.padding(start = 7.dp),
+                text = companyName,
+                style = HedgeTypography.Body3.Medium,
+                color = HedgeColor.Text.Title
+            )
+        }
+        Text(
+            modifier = Modifier.padding(start = 20.dp, top = 4.dp),
+            text = priceAndStock,
+            style = HedgeTypography.Headline1.SemiBold
+        )
+        Text(
+            modifier = Modifier.padding(start = 20.dp, top = 4.dp),
+            text = date,
+            style = HedgeTypography.Label2.Regular,
+            color = HedgeColor.Text.Alternative
+        )
+
+        Spacer(modifier = Modifier.padding(10.dp))
+
+        LazyColumn(
+            modifier = modifier
+                .fillMaxSize()
+                .background(HedgeColor.WHITE),
+            state = lazyColumnState
+        ) {
+            item {
                 Image(
                     modifier = Modifier
                         .fillMaxWidth()
                         .background(color = HedgeColor.WHITE)
-                        .padding(top = 13.dp),
+                        .padding(top = 8.dp),
                     painter = painterResource(R.drawable.img_chart),
                     contentDescription = null
                 )
             }
-        }
-        stickyHeader {
-            Box(
-                modifier = Modifier.background(HedgeColor.WHITE)
-            ) {
-                TabRow(
-                    modifier = Modifier.padding(top = 10.dp),
-                    containerColor = HedgeColor.WHITE,
-                    contentColor = HedgeColor.Text.Primary,
-                    selectedTabIndex = pagerState.currentPage,
-                    indicator = { tabPositions ->
-                        TabRowDefaults.SecondaryIndicator(
-                            modifier = Modifier.tabIndicatorOffset(tabPositions[pagerState.currentPage]),
-                            height = 2.dp,
-                            color = HedgeColor.Text.Title
-                        )
-                    },
-                    divider = {
-                        HorizontalDivider(
-                            thickness = 1.dp,
-                            color = HedgeColor.Neutral.BackgroundSecondary
-                        )
-                    }
+            stickyHeader {
+                Box(
+                    modifier = Modifier.background(HedgeColor.WHITE)
                 ) {
-                    tabs.forEachIndexed { index, title ->
-                        Tab(
-                            text = {
-                                Text(
-                                    text = tabs[index]
-                                )
-                            },
-                            selected = pagerState.currentPage == index,
-                            onClick = {
-                                scope.launch {
-                                    pagerState.animateScrollToPage(index)
-                                }
-                            },
-                            selectedContentColor = HedgeColor.Text.Primary,
-                            unselectedContentColor = HedgeColor.Text.Alternative
-                        )
+                    TabRow(
+                        containerColor = HedgeColor.WHITE,
+                        contentColor = HedgeColor.Text.Primary,
+                        selectedTabIndex = pagerState.currentPage,
+                        indicator = { tabPositions ->
+                            TabRowDefaults.SecondaryIndicator(
+                                modifier = Modifier.tabIndicatorOffset(tabPositions[pagerState.currentPage]),
+                                height = 2.dp,
+                                color = HedgeColor.Text.Title
+                            )
+                        },
+                        divider = {
+                            HorizontalDivider(
+                                thickness = 1.dp,
+                                color = HedgeColor.Neutral.BackgroundSecondary
+                            )
+                        }
+                    ) {
+                        tabs.forEachIndexed { index, title ->
+                            Tab(
+                                text = {
+                                    Text(
+                                        text = tabs[index]
+                                    )
+                                },
+                                selected = pagerState.currentPage == index,
+                                onClick = {
+                                    scope.launch {
+                                        pagerState.animateScrollToPage(index)
+                                    }
+                                },
+                                selectedContentColor = HedgeColor.Text.Primary,
+                                unselectedContentColor = HedgeColor.Text.Alternative
+                            )
+                        }
                     }
                 }
             }
-        }
 
-        item {
-            HorizontalPager(
-                state = pagerState,
-                modifier = Modifier.fillMaxSize()
-            ) { page ->
-                if (page == 1) {
-                    AiFeedbackPage(state = state)
-                } else {
-                    Box(
-                        modifier = Modifier.fillMaxSize(),
-                        contentAlignment = Alignment.Center
-                    ) {
+            item {
+                HorizontalPager(
+                    state = pagerState,
+                    modifier = Modifier.fillMaxSize()
+                ) { page ->
+                    if (page == 1) {
+                        AiFeedbackPage(state = state)
+                    } else {
+                        Box(
+                            modifier = Modifier.fillMaxSize(),
+                            contentAlignment = Alignment.Center
+                        ) {
 
-                        Text(
-                            "$page",
-                            fontSize = 24.sp
-                        )
+                            Text(
+                                "$page",
+                                fontSize = 24.sp
+                            )
+                        }
                     }
                 }
             }
@@ -612,6 +624,10 @@ fun AiFeedBackScreenPreview() {
     }
 
     FeedbackScreen(
+        companyName = "삼성전자",
+        priceAndStock = "65,000원・3주 매도",
+        date = "2025년 8월 25일",
+        onClickBackPressed = {},
         state = state
     )
 }

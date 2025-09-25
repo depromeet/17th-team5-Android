@@ -1,16 +1,16 @@
 package com.depromeet.team5.core.data.model
 
 import com.depromeet.team5.core.data.mapper.DomainMapper
-import com.depromeet.team5.core.domain.model.Retrospection
+import com.depromeet.team5.core.domain.model.RetrospectionEntity
 
 
 data class RetrospectionData(
     val code: String,
     val message: String,
     val data: DataData?
-) : DomainMapper<Retrospection> {
+) : DomainMapper<RetrospectionEntity> {
 
-    override fun toDomain(): Retrospection = Retrospection(
+    override fun toDomain(): RetrospectionEntity = RetrospectionEntity(
         id = data?.id ?: -1,
         userId = data?.userId ?: -1,
         market = data?.market ?: "",

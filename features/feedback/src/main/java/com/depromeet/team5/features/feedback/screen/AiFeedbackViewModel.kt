@@ -3,13 +3,11 @@ package com.depromeet.team5.features.feedback.screen
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.navigation.toRoute
 import com.depromeet.team5.core.domain.usecase.CreateFeedbackUseCase
 import com.depromeet.team5.core.model.Feedback
 import com.depromeet.team5.core.model.mapper.toUi
 import com.depromeet.team5.features.feedback.AiFeedbackUiState
 import com.depromeet.team5.features.feedback.PrincipleState
-import com.depromeet.team5.features.feedback.navigation.FeedbackParams
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -27,18 +25,16 @@ class AiFeedbackViewModel @Inject constructor(
     private val createFeedbackUseCase: CreateFeedbackUseCase
 ) : ViewModel() {
 
-    val feedbackParams = savedStateHandle.toRoute<FeedbackParams>()
-
-    private val _companyName = MutableStateFlow(feedbackParams.companyName)
+    private val _companyName = MutableStateFlow("")
     val companyName: StateFlow<String> = _companyName.asStateFlow()
 
-    private val _price = MutableStateFlow(feedbackParams.price)
+    private val _price = MutableStateFlow(0L)
     val price: StateFlow<Long> = _price.asStateFlow()
 
-    private val _stock = MutableStateFlow(feedbackParams.stock)
+    private val _stock = MutableStateFlow(0)
     val stock: StateFlow<Int> = _stock.asStateFlow()
 
-    private val _date = MutableStateFlow(feedbackParams.date)
+    private val _date = MutableStateFlow("")
     val date: StateFlow<String> = _date.asStateFlow()
 
     private val _feedbackStateFlow: MutableStateFlow<AiFeedbackUiState> =
@@ -48,7 +44,7 @@ class AiFeedbackViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
-            createFeedbackUseCase(feedbackParams.retrospectionId)
+            createFeedbackUseCase(0)
                 .map { it.toUi() }
                 .map {
                     if (it != Feedback.EMPTY) {

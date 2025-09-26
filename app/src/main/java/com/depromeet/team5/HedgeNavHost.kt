@@ -7,10 +7,12 @@ import androidx.navigation.compose.rememberNavController
 import com.depromeet.team5.feature.reasons.navigateToReason
 import com.depromeet.team5.feature.reasons.reasonScreen
 import com.depromeet.team5.features.feedback.navigation.feedbackScreen
+import com.depromeet.team5.features.feedback.navigation.navigateToFeedback
 import com.depromeet.team5.features.home.Home
 import com.depromeet.team5.features.home.homeScreen
 import com.depromeet.team5.features.principle.navigation.navigateToPrinciple
 import com.depromeet.team5.features.principle.navigation.principleScreen
+import com.depromeet.team5.features.retrospect.screen.Retrospect
 import com.depromeet.team5.features.retrospect.screen.navigateToRetrospect
 import com.depromeet.team5.features.retrospect.screen.retrospectScreen
 import com.depromeet.team5.features.search.navigateToSearch
@@ -53,10 +55,13 @@ fun HedgeNavHost(
 
         reasonScreen(
             navController = navController,
-            onClickBack = { navController.popBackStack() }
+            onClickBack = navController::popBackStack,
+            onClickDone = navController::navigateToFeedback,
+            onClickEditTradeInfo = { navController.popBackStack(route = Retrospect, inclusive = false) }
         )
 
         feedbackScreen(
+            navController = navController,
             onRemoveClick = { navController.popBackStack(Home, inclusive = false) }
         )
     }

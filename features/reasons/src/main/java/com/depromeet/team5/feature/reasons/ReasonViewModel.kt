@@ -8,6 +8,8 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.depromeet.team5.core.model.request.EmotionParams
+import com.depromeet.team5.core.model.request.PrincipleCheckParams
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -54,7 +56,16 @@ enum class Emotion(
         R.drawable.ic_emotion_conviction_on,
         R.drawable.ic_emotion_conviction_off,
         R.string.emotion_conviction,
-    )
+    );
+    fun toEmotionParams(): EmotionParams {
+        return when (this) {
+            Anxious -> EmotionParams.ANXIETY
+            Impulse -> EmotionParams.IMPULSE
+            Neutral -> EmotionParams.MINDLESSNESS
+            Confidence -> EmotionParams.CONFIDENCE
+            Conviction -> EmotionParams.CONVICTION
+        }
+    }
 }
 
 enum class OrderType {
@@ -76,7 +87,20 @@ data class Principle(
     val description: String,
     val checked: Boolean = false,
     val icon: ImageVector? = null,
-)
+) {
+    fun toPrincipleCheckParams(): PrincipleCheckParams = PrincipleCheckParams(
+        isFollowed = checked,
+        principleId = id.toInt()
+    )
+}
+
+fun PrincipleCheckParams.toPrinciple(): Principle {
+    return Principle(
+        id = principleId.toLong(),
+        description = "",
+        checked = isFollowed
+    )
+}
 
 @HiltViewModel
 class ReasonsViewModel @Inject constructor(

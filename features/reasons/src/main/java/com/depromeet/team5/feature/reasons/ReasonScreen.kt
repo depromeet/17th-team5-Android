@@ -1,6 +1,5 @@
 package com.depromeet.team5.feature.reasons
 
-import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -73,6 +72,8 @@ import com.depromeet.team5.feature.reasons.ui.PrincipleBottomSheet
 @Composable
 fun ReasonRoute(
     onClickBack: () -> Unit,
+    onClickDone: () -> Unit,
+    onClickEditTradeInfo: () -> Unit,
     modifier: Modifier = Modifier,
     requestViewModel: RequestViewModel = hiltViewModel(),
     viewModel: ReasonsViewModel = hiltViewModel(),
@@ -91,10 +92,20 @@ fun ReasonRoute(
         analysisReport = analysisReport,
         onClickBack = onClickBack,
         onClickDone = {
-            /* todo */
+            requestViewModel.request.copy(
+                content = reason.text,
+                emotion = selectedEmotion?.toEmotionParams(),
+                principleChecks = principles.map { it.toPrincipleCheckParams() },
+            )
+            onClickDone()
         },
         onClickEditTradeInfo = {
-            /* todo */
+            requestViewModel.request.copy(
+                content = reason.text,
+                emotion = selectedEmotion?.toEmotionParams(),
+                principleChecks = principles.map { it.toPrincipleCheckParams() },
+            )
+            onClickEditTradeInfo()
         },
         onReasonChanged = viewModel::onReasonChanged,
         onEmotionChanged = viewModel::onEmotionChanged,

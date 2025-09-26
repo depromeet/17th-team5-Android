@@ -52,6 +52,7 @@ import com.depromeet.team5.core.designsystem.component.HedgeTopBar
 import com.depromeet.team5.core.designsystem.foundation.HedgeColor
 import com.depromeet.team5.core.designsystem.foundation.HedgeIcon
 import com.depromeet.team5.core.designsystem.foundation.HedgeTypography
+import com.depromeet.team5.core.model.request.RequestViewModel
 import com.depromeet.team5.features.feedback.AiFeedbackUiState
 import com.depromeet.team5.features.feedback.PrincipleState
 import com.depromeet.team5.features.feedback.R
@@ -64,6 +65,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun FeedbackRoute(
     modifier: Modifier = Modifier,
+    requestViewModel: RequestViewModel,
     onRemoveClick: () -> Unit,
     viewModel: AiFeedbackViewModel = hiltViewModel()
 ) {
@@ -74,7 +76,6 @@ fun FeedbackRoute(
     val date by viewModel.date.collectAsStateWithLifecycle()
 
     val toastState = rememberHedgeToastState()
-
     FeedbackScreen(
         state = state,
         companyName = companyName,

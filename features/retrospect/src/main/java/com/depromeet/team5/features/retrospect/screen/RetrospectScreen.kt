@@ -1,5 +1,6 @@
 package com.depromeet.team5.features.retrospect.screen
 
+import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.tween
@@ -119,6 +120,21 @@ fun RetrospectRoute(
         },
         onClickedConfirmButton = {
             if (!viewModel.okButtonState.stateFlow.value) return@RetrospectScreen
+
+            requestViewModel.request = requestViewModel.request.copy(
+                price = viewModel.sellingTextFieldState.stateFlow.value.text.toInt(),
+                volume = viewModel.stockTextFieldState.stateFlow.value.text.toInt(),
+                orderDate = formatDate(
+                    viewModel.dateTextFieldState.stateFlow.value.text
+                ),
+                returnRate = try {
+                    viewModel.returnTextFieldState.stateFlow.value.text.toDouble()
+                } catch (e: Exception) {
+                    null
+                }
+            )
+
+            Log.e("requestViewModel", requestViewModel.request.toString())
 
             onClickedConfirmButton()
         },
@@ -416,7 +432,7 @@ private fun DateTextField(
                 isShowDatePicker = false
 
                 val date = datePickerState.selectedDateMillis?.let {
-                    formatDate(it)
+                    formatDate("YYYY년 MM월 dd일", it)
                 } ?: run {
                     focusManager.clearFocus()
                     return@HedgeDatePickerDialog
@@ -517,8 +533,25 @@ fun ReturnTextField(
     )
 }
 
-private fun formatDate(milliseconds: Long): String {
-    val formatter = SimpleDateFormat("YYYY년 MM월 dd일", Locale.KOREA)
+private fun formatDate(date: String): String {
+    val regex = """(\d{4})년\s*(\d{1,2})월\s*(\d{1,2})일""".toRegex()
+
+    val matchResult = regex.find(date)
+
+    if (matchResult != null) {
+        val (year, month, day) = matchResult.destructured
+
+        val formattedMonth = month.padStart(2, '0')
+        val formattedDay = day.padStart(2, '0')
+
+        return "$year-$formattedMonth-$formattedDay"
+    }
+
+    error("잘못된 Date Format이 들어왔습니다. Params : { $date }")
+}
+
+private fun formatDate(format: String, milliseconds: Long): String {
+    val formatter = SimpleDateFormat(format, Locale.KOREA)
     return formatter.format(Date(milliseconds))
 }
 

@@ -4,9 +4,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.rememberNavController
+import com.depromeet.team5.feature.reasons.navigateToReason
+import com.depromeet.team5.feature.reasons.reasonScreen
 import com.depromeet.team5.features.feedback.navigation.feedbackScreen
 import com.depromeet.team5.features.home.Home
 import com.depromeet.team5.features.home.homeScreen
+import com.depromeet.team5.features.principle.navigation.navigateToPrinciple
 import com.depromeet.team5.features.principle.navigation.principleScreen
 import com.depromeet.team5.features.retrospect.screen.navigateToRetrospect
 import com.depromeet.team5.features.retrospect.screen.retrospectScreen
@@ -38,11 +41,19 @@ fun HedgeNavHost(
 
         retrospectScreen(
             navController = navController,
-            onBackPressed = { navController.popBackStack() }
+            onBackPressed = { navController.popBackStack() },
+            onClick = { navController.navigateToPrinciple() }
         )
 
         principleScreen(
-            navController = navController
+            navController = navController,
+            onBackPressed = { navController.popBackStack() },
+            onClickNext = { navController.navigateToReason() }
+        )
+
+        reasonScreen(
+            navController = navController,
+            onClickBack = { navController.popBackStack() }
         )
 
         feedbackScreen(

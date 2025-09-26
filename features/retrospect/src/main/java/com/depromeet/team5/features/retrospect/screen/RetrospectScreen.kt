@@ -86,6 +86,7 @@ import java.util.Locale
 fun RetrospectRoute(
     onBackPressed: () -> Unit,
     requestViewModel: RequestViewModel,
+    onClick: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: RetrospectViewModel = hiltViewModel(),
 ) {
@@ -119,11 +120,15 @@ fun RetrospectRoute(
         onErrorDateText = { text, selection ->
             viewModel.updateState(RETURN, text, selection, true)
         },
-        onClickedConfirmButton = viewModel::onClickedConfirmButton,
+        onClickedConfirmButton = {
+            viewModel::onClickedConfirmButton
+            onClick()
+
+        },
         onUpdateReturnToggle = {
             viewModel.returnToggleState.update { it }
         },
-        onBackPressed = onBackPressed
+        onBackPressed = onBackPressed,
     )
 }
 

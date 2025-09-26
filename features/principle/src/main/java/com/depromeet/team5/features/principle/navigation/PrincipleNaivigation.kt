@@ -13,11 +13,15 @@ import kotlinx.serialization.Serializable
 @Serializable
 object Principle
 
-fun NavController.navigationPrinciple() {
+fun NavController.navigateToPrinciple() {
     navigate(route = Principle)
 }
 
-fun NavGraphBuilder.principleScreen(navController: NavController) {
+fun NavGraphBuilder.principleScreen(
+    navController: NavController,
+    onClickNext: () -> Unit,
+    onBackPressed: () -> Unit
+) {
     composable<Principle> { backStackEntry ->
         val parentEntry = remember(backStackEntry) {
             navController.getBackStackEntry(navController.graph.startDestinationRoute!!)
@@ -26,8 +30,9 @@ fun NavGraphBuilder.principleScreen(navController: NavController) {
         val sharedViewModel: RequestViewModel = viewModel(viewModelStoreOwner = parentEntry)
 
         PrincipleRoute(
-            onBackPressed = {},
-            requestViewModel = sharedViewModel
+            onBackPressed = onBackPressed,
+            requestViewModel = sharedViewModel,
+            onClickNext = onClickNext
         )
     }
 }

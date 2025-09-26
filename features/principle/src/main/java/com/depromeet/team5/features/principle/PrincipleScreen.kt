@@ -14,6 +14,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -24,7 +25,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.painterResource
@@ -37,6 +37,7 @@ import com.depromeet.team5.core.designsystem.component.HedgeButton
 import com.depromeet.team5.core.designsystem.component.HedgeTopBar
 import com.depromeet.team5.core.designsystem.foundation.HedgeColor
 import com.depromeet.team5.core.designsystem.foundation.HedgeTypography
+import com.depromeet.team5.core.model.request.PrincipleCheckParams
 import com.depromeet.team5.core.model.request.RequestViewModel
 
 data class Principle(
@@ -50,26 +51,48 @@ data class Principle(
 fun PrincipleRoute(
     onBackPressed: () -> Unit,
     modifier: Modifier = Modifier,
+    onClickNext: () -> Unit,
     requestViewModel: RequestViewModel = hiltViewModel(),
-    viewModel: RetrospectViewModel = hiltViewModel(),
+    viewModel: PrincipleViewModel = hiltViewModel(),
 ) {
     val principles by viewModel.principles.collectAsStateWithLifecycle()
     val hasAnyChecked by remember(principles) {
         derivedStateOf { principles.any(Principle::checked) }
     }
+    val orderType = requestViewModel.request.orderType
+
+    val handleNext = remember(principles) {
+        {
+            val selected = principles
+                .filter { it.checked }
+                .map { p ->
+                    PrincipleCheckParams(
+                        isFollowed = true,
+                        principleId = p.id.toInt()
+                    )
+                }
+
+            requestViewModel.request =
+                requestViewModel.request.copy(principleChecks = selected)
+
+            onClickNext()
+        }
+    }
 
     PrincipleScreen(
-        modifier = modifier,
+        orderType = orderType.toKorean(),
         onBackPressed = onBackPressed,
-        onClickNext = {},
+        onClickNext = handleNext,
         principles = principles,
         hasAnyChecked = hasAnyChecked,
-        onClickPrinciple = { id -> viewModel.toggle(id) }
+        onClickPrinciple = { id -> viewModel.toggle(id) },
+        modifier = modifier,
     )
 }
 
 @Composable
 private fun PrincipleScreen(
+    orderType: String,
     onBackPressed: () -> Unit,
     onClickNext: () -> Unit,
     principles: List<Principle>,
@@ -112,9 +135,10 @@ private fun PrincipleScreen(
                 text = if (hasAnyChecked)
                     stringResource(
                         R.string.principle_checked_title,
-                        principles.count { it.checked }
+                        principles.count { it.checked },
+                        orderType
                     )
-                else stringResource(R.string.principle_title),
+                else stringResource(R.string.principle_title, orderType),
                 color = HedgeColor.Text.Title,
                 style = HedgeTypography.Headline1.SemiBold,
                 modifier = Modifier.padding(horizontal = 20.dp, vertical = 10.dp)
@@ -152,12 +176,11 @@ fun PrincipleItem(
             .clickable { onClickItem() },
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        Spacer(
-            Modifier
-                .size(32.dp)
-                .drawBehind {
-                    drawCircle(color = Color.Black)
-                },
+        Icon(
+            painter = painterResource(R.drawable.ic_sample_principle),
+            contentDescription = null,
+            tint = Color.Unspecified,
+            modifier = Modifier.size(32.dp)
         )
 
         Spacer(Modifier.size(16.dp))
@@ -215,6 +238,7 @@ private fun PrincipleScreenPreview() {
     }
 
     PrincipleScreen(
+        orderType = "",
         onBackPressed = {},
         onClickNext = {},
         principles = items,

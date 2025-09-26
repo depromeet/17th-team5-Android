@@ -17,6 +17,7 @@ fun NavController.navigateToRetrospect(){
 
 fun NavGraphBuilder.retrospectScreen(
     navController: NavController,
+    onClick: ()-> Unit,
     onBackPressed: () -> Unit
 ){
     composable<Retrospect>{backStackEntry ->
@@ -28,7 +29,8 @@ fun NavGraphBuilder.retrospectScreen(
 
         RetrospectRoute(
             onBackPressed = onBackPressed,
-            requestViewModel = sharedViewModel
+            requestViewModel = sharedViewModel,
+            onClick = onClick
         )
     }
 }

@@ -1,48 +1,33 @@
 package com.depromeet.team5.features.principle.navigation
 
+import androidx.compose.runtime.remember
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
-import com.depromeet.team5.core.model.request.CreateRetrospectionParams
+import com.depromeet.team5.core.model.request.RequestViewModel
 import com.depromeet.team5.features.principle.PrincipleRoute
 import kotlinx.serialization.Serializable
 
 
 @Serializable
-data class Principle(
-    val params: CreateRetrospectionParams,
-)
+object Principle
 
-fun NavController.navigationPrinciple(
-    symbol: String,
-    market: String,
-    currency: String,
-    volume: Int,
-    orderDate: String,
-    orderType: OrderType,
-    price: Int,
-    returnRate: Double?,
-) {
-    navigate(
-        route = Principle(
-            params = CreateRetrospectionParams.EMPTY.copy(
-                symbol = symbol,
-                market = market,
-                currency = currency,
-                volume = volume,
-                orderDate = orderDate,
-                orderType = orderType,
-                price = price,
-                returnRate = returnRate,
-            )
-        )
-    )
+fun NavController.navigationPrinciple() {
+    navigate(route = Principle)
 }
 
-fun NavGraphBuilder.principleScreen() {
-    composable<Principle> {
+fun NavGraphBuilder.principleScreen(navController: NavController) {
+    composable<Principle> { backStackEntry ->
+        val parentEntry = remember(backStackEntry) {
+            navController.getBackStackEntry(navController.graph.startDestinationRoute!!)
+        }
+
+        val sharedViewModel: RequestViewModel = viewModel(viewModelStoreOwner = parentEntry)
+
         PrincipleRoute(
-            onBackPressed = {}
+            onBackPressed = {},
+            requestViewModel = sharedViewModel
         )
     }
 }

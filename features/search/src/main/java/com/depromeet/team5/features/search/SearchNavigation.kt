@@ -1,35 +1,34 @@
 package com.depromeet.team5.features.search
 
+import androidx.compose.runtime.remember
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
-import com.depromeet.team5.core.model.request.CreateRetrospectionParams
-import com.depromeet.team5.core.model.request.OrderTypeParams
+import com.depromeet.team5.core.model.request.RequestViewModel
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class Search(
-    val params: CreateRetrospectionParams
-)
+object Search
 
 fun NavGraphBuilder.searchScreen(
+    navController: NavController,
     onBackClick: () -> Unit
 ) {
-    composable<Search> {
+    composable<Search> { backStackEntry ->
+        val parentEntry = remember(backStackEntry) {
+            navController.getBackStackEntry(navController.graph.startDestinationRoute!!)
+        }
+
+        val sharedViewModel: RequestViewModel = viewModel(viewModelStoreOwner = parentEntry)
+
         SearchRoute(
-            onBackClick = onBackClick
+            onBackClick = onBackClick,
+            requestViewModel = sharedViewModel
         )
     }
 }
 
-fun NavController.navigateToSearch(
-    orderType: OrderTypeParams,
-) {
-    navigate(
-        Search(
-            CreateRetrospectionParams.EMPTY.copy(
-                orderType = orderType
-            )
-        )
-    )
+fun NavController.navigateToSearch() {
+    navigate(route = Search)
 }

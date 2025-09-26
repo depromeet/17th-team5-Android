@@ -1,19 +1,30 @@
 package com.depromeet.team5.feature.reasons
 
+import androidx.compose.runtime.remember
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
+import com.depromeet.team5.core.model.request.RequestViewModel
 import kotlinx.serialization.Serializable
 
 @Serializable
 object Reason
 
 fun NavGraphBuilder.reasonScreen(
+    navController: NavController,
     onClickBack: () -> Unit
 ) {
-    composable<Reason> {
+    composable<Reason> {backStackEntry ->
+        val parentEntry = remember(backStackEntry) {
+            navController.getBackStackEntry(navController.graph.startDestinationRoute!!)
+        }
+
+        val sharedViewModel: RequestViewModel = viewModel(viewModelStoreOwner = parentEntry)
+
         ReasonRoute(
-            onClickBack = onClickBack
+            onClickBack = onClickBack,
+            requestViewModel = sharedViewModel
         )
     }
 }

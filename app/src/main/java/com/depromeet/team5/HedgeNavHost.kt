@@ -4,6 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.rememberNavController
+import com.depromeet.team5.feature.reasons.navigateToReason
 import com.depromeet.team5.features.feedback.navigation.feedbackScreen
 import com.depromeet.team5.features.home.Home
 import com.depromeet.team5.features.home.homeScreen
@@ -42,7 +43,9 @@ fun HedgeNavHost(
         )
 
         principleScreen(
-            navController = navController
+            navController = navController,
+            onBackPressed = { navController.popBackStack() },
+            onClickNext = { navController.navigateToReason() }
         )
 
         feedbackScreen(

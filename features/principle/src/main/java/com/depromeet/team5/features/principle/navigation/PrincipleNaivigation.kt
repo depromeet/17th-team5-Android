@@ -13,7 +13,7 @@ import kotlinx.serialization.Serializable
 @Serializable
 object Principle
 
-fun NavController.navigationPrinciple() {
+fun NavController.navigateToPrinciple() {
     navigate(route = Principle)
 }
 

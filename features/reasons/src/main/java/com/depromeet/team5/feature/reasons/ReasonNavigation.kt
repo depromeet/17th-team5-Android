@@ -13,9 +13,11 @@ object Reason
 
 fun NavGraphBuilder.reasonScreen(
     navController: NavController,
-    onClickBack: () -> Unit
+    onClickBack: () -> Unit,
+    onClickDone: () -> Unit,
+    onClickEditTradeInfo: () -> Unit
 ) {
-    composable<Reason> {backStackEntry ->
+    composable<Reason> { backStackEntry ->
         val parentEntry = remember(backStackEntry) {
             navController.getBackStackEntry(navController.graph.startDestinationRoute!!)
         }
@@ -24,6 +26,8 @@ fun NavGraphBuilder.reasonScreen(
 
         ReasonRoute(
             onClickBack = onClickBack,
+            onClickDone = onClickDone,
+            onClickEditTradeInfo = onClickEditTradeInfo,
             requestViewModel = sharedViewModel
         )
     }

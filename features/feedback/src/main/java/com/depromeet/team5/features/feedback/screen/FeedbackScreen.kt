@@ -101,7 +101,7 @@ fun FeedbackRoute(
                 )
             },
             icon = {
-                Image(imageVector = HedgeIcon.Check, contentDescription = null)
+                Image(imageVector = HedgeIcon.ToastCheck, contentDescription = null)
             }
         )
     }
@@ -757,7 +757,7 @@ fun AiFeedBackScreenPreview() {
                 )
             },
             icon = {
-                Image(imageVector = HedgeIcon.Check, contentDescription = null)
+                Image(imageVector = HedgeIcon.ToastCheck, contentDescription = null)
             }
         )
     }

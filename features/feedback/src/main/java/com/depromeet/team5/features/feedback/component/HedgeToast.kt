@@ -148,7 +148,7 @@ private fun HedgeToastPreView() {
                     )
                 },
                 icon = {
-                    Image(imageVector = HedgeIcon.Check, contentDescription = null)
+                    Image(imageVector = HedgeIcon.ToastCheck, contentDescription = null)
                 }
             )
         }

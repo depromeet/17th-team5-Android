@@ -51,7 +51,15 @@ object HedgeIcon {
         @Composable
         get() = ImageVector.vectorResource(id = R.drawable.ic_search)
 
-    val Check: ImageVector
+    val ToastCheck: ImageVector
         @Composable
         get() = ImageVector.vectorResource(id = R.drawable.ic_toast_check)
+
+    val Check: ImageVector
+        @Composable
+        get() = ImageVector.vectorResource(id = R.drawable.ic_check)
+
+    val Add: ImageVector
+        @Composable
+        get() = ImageVector.vectorResource(id = R.drawable.ic_add)
 }

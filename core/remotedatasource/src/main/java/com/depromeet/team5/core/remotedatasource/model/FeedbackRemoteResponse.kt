@@ -7,12 +7,27 @@ import com.depromeet.team5.core.remotedatasource.mapper.DataMapper
 data class FeedbackRemoteResponse(
     val code: String,
     val message: String,
-    val feedback: String
+    val summarize: String,
+    val summarizeOfMarket: String,
+    val principles: List<PrincipleRemoteResponse>
 ) : DataMapper<FeedbackData> {
 
     override fun toData(): FeedbackData = FeedbackData(
         code = code,
         message = message,
-        feedback = feedback
+        summarize = summarize,
+        summarizeOfMarket = summarizeOfMarket,
+        principles = principles.map { it.toData() }
     )
+
+    companion object {
+
+        val EMPTY = FeedbackRemoteResponse(
+            code = "",
+            message = "",
+            summarize = "",
+            summarizeOfMarket = "",
+            principles = emptyList()
+        )
+    }
 }

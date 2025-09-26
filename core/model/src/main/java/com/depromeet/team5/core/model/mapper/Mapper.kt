@@ -1,6 +1,7 @@
 package com.depromeet.team5.core.model.mapper
 
 import com.depromeet.team5.core.domain.model.FeedbackEntity
+import com.depromeet.team5.core.domain.model.PrincipleEntity
 import com.depromeet.team5.core.domain.model.RetrospectionEntity
 import com.depromeet.team5.core.model.Feedback
 import com.depromeet.team5.core.model.Principle
@@ -26,27 +27,15 @@ fun RetrospectionEntity.toPresentation(): Retrospection {
     )
 }
 
-fun FeedbackEntity.toUi(): Feedback {
-    //todo 여기서 feedback string을 파싱하여 summarize, summarizeOfMarket, principles로 변환
+fun FeedbackEntity.toUi() = Feedback(
+    code = code,
+    message = message,
+    summarize = summarize,
+    summarizeOfMarket = summarizeOfMarket,
+    principles = principles.map { it.toUi() }
+)
 
-    return Feedback(
-        code = code,
-        message = message,
-        summarize = "",
-        summarizeOfMarket = "",
-        principles = listOf(
-            Principle(
-                title = "",
-                content = ""
-            ),
-            Principle(
-                title = "",
-                content = ""
-            ),
-            Principle(
-                title = "",
-                content = ""
-            )
-        )
-    )
-}
+fun PrincipleEntity.toUi(): Principle = Principle(
+    title = title,
+    content = content
+)

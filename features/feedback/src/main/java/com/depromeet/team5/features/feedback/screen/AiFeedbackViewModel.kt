@@ -3,6 +3,7 @@ package com.depromeet.team5.features.feedback.screen
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.depromeet.team5.core.domain.usecase.CreateFeedbackUseCase
+import com.depromeet.team5.core.model.Feedback
 import com.depromeet.team5.core.model.mapper.toUi
 import com.depromeet.team5.features.feedback.AiFeedbackState
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -22,7 +23,7 @@ class AiFeedbackViewModel @Inject constructor(
     val feedbackStateFlow: StateFlow<AiFeedbackState> = createFeedbackUseCase(1, mapOf())
         .map { it.toUi() }
         .map {
-            if (it.code == "200") {
+            if (it != Feedback.EMPTY) {
                 AiFeedbackState.Success(
                     summarize = it.summarize,
                     summarizeOfMarket = it.summarizeOfMarket,
@@ -30,8 +31,8 @@ class AiFeedbackViewModel @Inject constructor(
                 )
             } else {
                 AiFeedbackState.Error(
-                    code = it.code.toInt(),
-                    message = "잘 안된단다"
+                    code = it.code,
+                    message = it.message
                 )
             }
         }

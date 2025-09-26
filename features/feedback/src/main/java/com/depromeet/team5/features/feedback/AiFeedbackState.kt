@@ -14,7 +14,7 @@ sealed class AiFeedbackState {
     object Loading : AiFeedbackState()
 
     data class Error(
-        val code: Int,
+        val code: String,
         val message: String
     ) : AiFeedbackState()
 

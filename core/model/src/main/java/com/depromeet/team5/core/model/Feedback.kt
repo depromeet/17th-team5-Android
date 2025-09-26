@@ -10,4 +10,17 @@ data class Feedback(
     val summarize: String,
     val summarizeOfMarket: String,
     val principles: List<Principle>
-)
+) {
+
+
+    companion object {
+
+        val EMPTY = Feedback(
+            code = "",
+            message = "",
+            summarize = "",
+            summarizeOfMarket = "",
+            principles = emptyList()
+        )
+    }
+}

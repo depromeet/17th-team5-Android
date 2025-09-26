@@ -1,6 +1,5 @@
 package com.depromeet.team5.core.remotedatasource.apisource
 
-import com.depromeet.team5.core.remotedatasource.model.FeedbackRemoteResponse
 import com.depromeet.team5.core.remotedatasource.model.RetrospectionRemoteData
 
 
@@ -11,5 +10,5 @@ interface HedgeApiSource {
     suspend fun createFeedback(
         retrospectionId: Int,
         body: Map<String, Any?>
-    ): FeedbackRemoteResponse
+    ): String
 }

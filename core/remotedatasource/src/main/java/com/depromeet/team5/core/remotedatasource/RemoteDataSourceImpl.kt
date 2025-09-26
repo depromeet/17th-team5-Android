@@ -4,6 +4,12 @@ import com.depromeet.team5.core.data.datasource.RemoteDataSource
 import com.depromeet.team5.core.data.model.FeedbackData
 import com.depromeet.team5.core.data.model.RetrospectionData
 import com.depromeet.team5.core.remotedatasource.apisource.HedgeApiSource
+import com.depromeet.team5.core.remotedatasource.model.FeedbackRemoteResponse
+import com.depromeet.team5.core.remotedatasource.model.PrincipleRemoteResponse
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.jsonArray
+import kotlinx.serialization.json.jsonObject
+import kotlinx.serialization.json.jsonPrimitive
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -19,5 +25,53 @@ internal class RemoteDataSourceImpl @Inject constructor(
     override suspend fun createFeedback(
         retrospectionId: Int,
         body: Map<String, Any?>
-    ): FeedbackData = hedgeApiSource.createFeedback(retrospectionId, body).toData()
+    ): FeedbackData {
+        val response = hedgeApiSource.createFeedback(retrospectionId, body)
+
+        val jsonObject = Json.parseToJsonElement(response).jsonObject
+
+        val code = jsonObject.getValue(KEY_CODE).jsonPrimitive.content
+        val message = jsonObject.getValue(KEY_MESSAGE).jsonPrimitive.content
+
+        val entity = jsonObject[KEY_DATA]?.jsonObject?.let { jsonObject ->
+            val summarize = jsonObject[KEY_SUMMARIZE]?.jsonPrimitive?.content ?: ""
+            val summarizeForMarket =
+                jsonObject[KEY_SUMMARIZE_FOR_MARKET]?.jsonPrimitive?.content ?: ""
+            val principlesJsonArray = jsonObject[KEY_PRINCIPLES]?.jsonArray
+
+            val principles = mutableListOf<PrincipleRemoteResponse>()
+
+            principlesJsonArray?.forEach { jsonElement ->
+                for ((key, value) in jsonElement.jsonObject.entries) {
+                    principles.add(
+                        PrincipleRemoteResponse(
+                            title = key,
+                            content = value.jsonPrimitive.content
+                        )
+                    )
+                }
+            }
+
+            FeedbackRemoteResponse(
+                code = code,
+                message = message,
+                summarize = summarize,
+                summarizeOfMarket = summarizeForMarket,
+                principles = principles
+            )
+        } ?: FeedbackRemoteResponse.EMPTY
+
+        return entity.toData()
+    }
+
+
+    companion object {
+
+        private const val KEY_CODE = "code"
+        private const val KEY_MESSAGE = "message"
+        private const val KEY_DATA = "data"
+        private const val KEY_SUMMARIZE = "요약 한 마디"
+        private const val KEY_SUMMARIZE_FOR_MARKET = "당시 시장 현황"
+        private const val KEY_PRINCIPLES = "AI 추천 원칙"
+    }
 }

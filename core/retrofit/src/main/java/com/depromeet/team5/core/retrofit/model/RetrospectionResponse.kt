@@ -1,41 +1,41 @@
-package com.depromeet.team5.core.remotedatasource.model
+package com.depromeet.team5.core.retrofit.model
 
-import com.depromeet.team5.core.data.model.DataData
-import com.depromeet.team5.core.data.model.RetrospectionData
-import com.depromeet.team5.core.remotedatasource.mapper.DataMapper
+import com.depromeet.team5.core.remotedatasource.model.DataRemoteData
+import com.depromeet.team5.core.remotedatasource.model.RetrospectionRemoteData
+import com.depromeet.team5.core.retrofit.mapper.RetrofitMapper
 
 
 data class RetrospectionResponse(
     val code: String,
-    val message: String,
-    val data: DataResponse?
-) : DataMapper<RetrospectionData> {
+    val data: DataResponse?,
+    val message: String
+) : RetrofitMapper<RetrospectionRemoteData> {
 
-    override fun toData(): RetrospectionData = RetrospectionData(
+    override fun toRemoteData() = RetrospectionRemoteData(
         code = code,
-        message = message,
-        data = data?.toData()
+        data = data?.toRemoteData(),
+        message = message
     )
 }
 
 data class DataResponse(
+    val id: Int,
+    val userId: Int,
+    val market: String,
+    val price: Int,
     val content: String,
     val createdAt: String,
     val currency: String,
     val emotion: String,
-    val id: Int,
-    val market: String,
     val orderDate: String,
     val orderType: String,
-    val price: Int,
     val returnRate: Double,
     val symbol: String,
     val updatedAt: String,
-    val userId: Int,
     val volume: Int
-) : DataMapper<DataData> {
+) : RetrofitMapper<DataRemoteData> {
 
-    override fun toData(): DataData = DataData(
+    override fun toRemoteData() = DataRemoteData(
         content = content,
         createdAt = createdAt,
         currency = currency,

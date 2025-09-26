@@ -2,6 +2,7 @@ package com.depromeet.team5.features.feedback.screen
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -60,22 +61,24 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun FeedbackRoute(
-    modifier: Modifier,
+    modifier: Modifier = Modifier,
+    onRemoveClick: () -> Unit,
     viewModel: AiFeedbackViewModel = hiltViewModel()
 ) {
     val state by viewModel.feedbackStateFlow.collectAsStateWithLifecycle()
-
-    val companyName = "삼성전자"
-    val priceAndStock = "65,000원・3주 매도"
-    val date = "2025년 8월 25일"
+    val companyName by viewModel.companyName.collectAsStateWithLifecycle()
+    val price by viewModel.price.collectAsStateWithLifecycle()
+    val stock by viewModel.stock.collectAsStateWithLifecycle()
+    val date by viewModel.date.collectAsStateWithLifecycle()
 
     FeedbackScreen(
         state = state,
         companyName = companyName,
-        priceAndStock = priceAndStock,
+        price = price,
+        stock = stock,
         date = date,
-        onClickedRetry = {},
-        onClickedBackPressed = {}
+        onRetryClick = {},
+        onRemoveClick = onRemoveClick
     )
 }
 
@@ -83,10 +86,11 @@ fun FeedbackRoute(
 private fun FeedbackScreen(
     state: AiFeedbackState,
     companyName: String,
-    priceAndStock: String,
+    price: Long,
+    stock: Int,
     date: String,
-    onClickedBackPressed: () -> Unit = {},
-    onClickedRetry: () -> Unit,
+    onRemoveClick: () -> Unit = {},
+    onRetryClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val tabs = listOf(
@@ -102,7 +106,7 @@ private fun FeedbackScreen(
     val scope = rememberCoroutineScope()
 
     if (state is AiFeedbackState.Failure || state is AiFeedbackState.Error) {
-        FeedbackError(onClickedRetry = onClickedRetry)
+        FeedbackError(onRetryClick = onRetryClick)
         return
     }
 
@@ -111,9 +115,12 @@ private fun FeedbackScreen(
             .background(HedgeColor.WHITE)
     ) {
         HedgeTopBar(
-            onClickBack = onClickedBackPressed,
+            onClickBack = {},
+            back = {},
             action = {
                 Text(
+                    modifier = Modifier
+                        .clickable(onClick = onRemoveClick),
                     text = stringResource(id = R.string.feedback_delete),
                     style = HedgeTypography.Body1.SemiBold,
                     color = HedgeColor.Text.Alternative
@@ -141,7 +148,7 @@ private fun FeedbackScreen(
         }
         Text(
             modifier = Modifier.padding(start = 20.dp, top = 4.dp),
-            text = priceAndStock,
+            text = stringResource(R.string.price_and_stock, price, stock),
             style = HedgeTypography.Headline1.SemiBold
         )
         Text(
@@ -414,7 +421,7 @@ private fun AIContent(
                 title = principle.title,
                 content = principle.content,
                 contentPadding = PaddingValues(top = topPadding, bottom = 22.dp),
-                onClickedAddButton = {}
+                onAddClick = {}
             )
 
             HorizontalDivider(
@@ -429,7 +436,7 @@ private fun AIContent(
 private fun PrincipleViewHolder(
     title: String,
     content: String,
-    onClickedAddButton: () -> Unit,
+    onAddClick: () -> Unit,
     contentPadding: PaddingValues = PaddingValues(0.dp),
     modifier: Modifier = Modifier
 ) {
@@ -452,7 +459,7 @@ private fun PrincipleViewHolder(
                 modifier = Modifier
                     .padding(start = 40.dp),
                 shape = RoundedCornerShape(8.dp),
-                onClick = onClickedAddButton,
+                onClick = onAddClick,
                 colors = ButtonDefaults.buttonColors(
                     containerColor = HedgeColor.Brand.Primary,
                     contentColor = HedgeColor.WHITE
@@ -516,7 +523,7 @@ private fun AiLoadingProgress(
 
 @Composable
 private fun FeedbackError(
-    onClickedRetry: () -> Unit = {}
+    onRetryClick: () -> Unit = {}
 ) {
     Box(
         modifier = Modifier
@@ -654,10 +661,11 @@ fun AiFeedBackScreenPreview() {
 
     FeedbackScreen(
         companyName = "삼성전자",
-        priceAndStock = "65,000원・3주 매도",
+        price = 65000,
+        stock = 3,
         date = "2025년 8월 25일",
         state = state,
-        onClickedBackPressed = {},
-        onClickedRetry = {}
+        onRemoveClick = {},
+        onRetryClick = {}
     )
 }

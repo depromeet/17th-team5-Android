@@ -6,6 +6,7 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class CreateRetrospectionParams(
     val symbol: String,
+    val companyName: String,
     val market: String,
     val currency: String,
     val orderDate: String,
@@ -22,6 +23,7 @@ data class CreateRetrospectionParams(
 
         val EMPTY = CreateRetrospectionParams(
             symbol = "",
+            companyName = "",
             volume = 0,
             market = "",
             currency = "",

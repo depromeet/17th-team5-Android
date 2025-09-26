@@ -48,7 +48,8 @@ fun SearchRoute(
             requestViewModel.request =
                 requestViewModel.request.copy(
                     symbol = it.symbol,
-                    market = it.market
+                    market = it.market,
+                    companyName = it.stockName
                 )
             onItemClick()
         },

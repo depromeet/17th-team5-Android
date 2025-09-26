@@ -17,9 +17,11 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.Stable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
@@ -37,22 +39,21 @@ import kotlin.time.Duration.Companion.seconds
 
 @Composable
 fun HedgeToast(
-    state: MutableState<HedgeState> = rememberHedgeToastState(),
+    state: HedgeToastState,
     message: @Composable () -> Unit,
     icon: @Composable () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val currentState = state.value
-
-    val visibleState = remember { MutableTransitionState(false) }
-        .apply { targetState = currentState.isShow }
-
-    LaunchedEffect(currentState.isShow) {
-        if (currentState.isShow) {
-            delay(currentState.duration)
-            state.value = currentState.copy(isShow = false)
+    LaunchedEffect(state.isShow) {
+        if (state.isShow) {
+            delay(state.duration)
+            state.dismiss()
         }
     }
+
+    val visibleState = remember { MutableTransitionState(false) }
+        .apply { targetState = state.isShow }
+
 
     if (visibleState.currentState || visibleState.targetState) {
         Popup(
@@ -92,31 +93,41 @@ fun HedgeToast(
 
 @Composable
 fun rememberHedgeToastState(
-    isShow: Boolean = false,
     duration: Duration = 5.seconds
-): MutableState<HedgeState> = remember {
-    mutableStateOf(
-        HedgeState(
-            isShow = isShow,
-            duration = duration
-        )
+): HedgeToastState = remember(duration) {
+    HedgeToastState(
+        initialIsShow = false,
+        duration = duration
     )
 }
 
-data class HedgeState(
-    val isShow: Boolean,
+@Stable
+class HedgeToastState(
+    initialIsShow: Boolean,
     val duration: Duration
-)
+) {
+
+    var isShow by mutableStateOf(initialIsShow)
+        private set
+
+    fun show() {
+        isShow = true
+    }
+
+    fun dismiss() {
+        isShow = false
+    }
+}
 
 
 @Preview
 @Composable
 private fun HedgeToastPreView() {
-    var state = rememberHedgeToastState(isShow = true)
+    val state = rememberHedgeToastState()
 
     LaunchedEffect(Unit) {
         delay(3000)
-        state.value = state.value.copy(isShow = true)
+        state.show()
     }
 
     Scaffold { contentPadding ->

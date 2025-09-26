@@ -73,7 +73,7 @@ fun FeedbackRoute(
     val stock by viewModel.stock.collectAsStateWithLifecycle()
     val date by viewModel.date.collectAsStateWithLifecycle()
 
-    var toastState = rememberHedgeToastState()
+    val toastState = rememberHedgeToastState()
 
     FeedbackScreen(
         state = state,
@@ -84,11 +84,11 @@ fun FeedbackRoute(
         onRetryClick = {},
         onRemoveClick = onRemoveClick,
         onAddClick = {
-            toastState.value = toastState.value.copy(isShow = true)
+            toastState.show()
         }
     )
 
-    if (toastState.value.isShow) {
+    if (toastState.isShow) {
         HedgeToast(
             modifier = Modifier.padding(top = 8.dp),
             state = toastState,
@@ -667,7 +667,7 @@ fun AiContentPreview() {
 @Preview
 fun AiFeedBackScreenPreview() {
     var state: AiFeedbackState by remember { mutableStateOf(AiFeedbackState.Loading) }
-    var toastState = rememberHedgeToastState()
+    val toastState = rememberHedgeToastState()
 
     LaunchedEffect(Unit) {
 
@@ -701,11 +701,11 @@ fun AiFeedBackScreenPreview() {
         onRemoveClick = {},
         onRetryClick = {},
         onAddClick = {
-            toastState.value = toastState.value.copy(isShow = true)
+            toastState.show()
         }
     )
 
-    if (toastState.value.isShow) {
+    if (toastState.isShow) {
         HedgeToast(
             modifier = Modifier.padding(top = 8.dp),
             state = toastState,

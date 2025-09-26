@@ -1,5 +1,6 @@
 package com.depromeet.team5.feature.reasons
 
+import android.util.Log
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.compose.runtime.Stable
@@ -8,15 +9,17 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.depromeet.team5.core.domain.usecase.CreateAnalysisUseCase
+import com.depromeet.team5.core.model.mapper.toPresentation
 import com.depromeet.team5.core.model.request.EmotionParams
 import com.depromeet.team5.core.model.request.PrincipleCheckParams
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import javax.inject.Inject
 
@@ -105,6 +108,7 @@ fun PrincipleCheckParams.toPrinciple(): Principle {
 @HiltViewModel
 class ReasonsViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
+    createAnalysisUseCase: CreateAnalysisUseCase,
 ) : ViewModel() {
 
     private val _selectedEmotion: MutableStateFlow<Emotion?> = MutableStateFlow(null)
@@ -117,14 +121,16 @@ class ReasonsViewModel @Inject constructor(
     val tradeInfo = _tradeInfo.asStateFlow()
 
     val analysisReport: StateFlow<String?> =
-        flow {
-            delay(5000)
-            emit(dummyAnalysisReport)
-        }.stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5000),
-            initialValue = null
-        )
+        createAnalysisUseCase()
+            .map { it.toPresentation().text }
+            .catch { e ->
+                Log.e("ReasonViewModel", ": $e")
+            }
+            .stateIn(
+                scope = viewModelScope,
+                started = SharingStarted.WhileSubscribed(5000),
+                initialValue = null
+            )
 
     private val _reason = MutableStateFlow(TextFieldValue(""))
     val reason = _reason.asStateFlow()

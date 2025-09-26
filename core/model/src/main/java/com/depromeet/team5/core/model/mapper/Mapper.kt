@@ -1,8 +1,10 @@
 package com.depromeet.team5.core.model.mapper
 
+import com.depromeet.team5.core.domain.model.AnalysisEntity
 import com.depromeet.team5.core.domain.model.FeedbackEntity
 import com.depromeet.team5.core.domain.model.PrincipleEntity
 import com.depromeet.team5.core.domain.model.RetrospectionEntity
+import com.depromeet.team5.core.model.Analysis
 import com.depromeet.team5.core.model.Feedback
 import com.depromeet.team5.core.model.FeedbackPrinciple
 import com.depromeet.team5.core.model.Retrospection
@@ -38,4 +40,10 @@ fun FeedbackEntity.toUi() = Feedback(
 fun PrincipleEntity.toUi(): FeedbackPrinciple = FeedbackPrinciple(
     title = title,
     content = content
+)
+
+fun AnalysisEntity.toPresentation(): Analysis = Analysis(
+    code = code,
+    text = text,
+    message = message
 )

@@ -11,7 +11,7 @@
     <string name="done">완료</string>
     <string name="selected_principle_count">지킨 원칙 %1$s개</string>
     <string name="write_reason_placeholder">자유롭게 회고를 작성해 보세요. (선택 사항)</string>
-    <string name="trade_info">%1$s・%2$s주 %3$s</string>
+    <string name="trade_info">%1$,d%2$s・%3$,d주 %4$s</string>
     <string name="buy">매수</string>
     <string name="sell">매도</string>
     <string name="loading_analyze">분석중...</string>

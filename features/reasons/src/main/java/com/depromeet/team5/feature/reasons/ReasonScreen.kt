@@ -27,6 +27,7 @@ import androidx.compose.material.ripple
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -75,7 +76,7 @@ fun ReasonRoute(
     onClickDone: () -> Unit,
     onClickEditTradeInfo: () -> Unit,
     modifier: Modifier = Modifier,
-    requestViewModel: RequestViewModel = hiltViewModel(),
+    requestViewModel: RequestViewModel,
     viewModel: ReasonsViewModel = hiltViewModel(),
 ) {
     val principles by viewModel.principles.collectAsStateWithLifecycle()
@@ -83,6 +84,27 @@ fun ReasonRoute(
     val tradeInfo by viewModel.tradeInfo.collectAsStateWithLifecycle()
     val reason by viewModel.reason.collectAsStateWithLifecycle()
     val analysisReport by viewModel.analysisReport.collectAsStateWithLifecycle()
+
+    LaunchedEffect(Unit) {
+        requestViewModel.request.principleChecks?.let { checkedPrinciples ->
+            val updatedPrinciples = principles.map { principle ->
+                val matched = checkedPrinciples.any { it.principleId == principle.id.toInt() && it.isFollowed }
+                principle.copy(checked = matched)
+            }
+            viewModel.onPrincipleCheckedChanged(updatedPrinciples)
+        }
+        viewModel.initTradeInfo(
+            TradeInfo(
+                logoDrawableRes = R.drawable.ic_company_logo,
+                stockName = requestViewModel.request.companyName,
+                orderType = OrderType.BUY,
+                price = requestViewModel.request.price.toLong(),
+                currency = requestViewModel.request.currency.toUiCurrency,
+                volume = requestViewModel.request.volume,
+                orderDate = requestViewModel.request.orderDate
+            )
+        )
+    }
 
     ReasonScreen(
         tradeInfo = tradeInfo,
@@ -92,7 +114,7 @@ fun ReasonRoute(
         analysisReport = analysisReport,
         onClickBack = onClickBack,
         onClickDone = {
-            requestViewModel.request.copy(
+            requestViewModel.request = requestViewModel.request.copy(
                 content = reason.text,
                 emotion = selectedEmotion?.toEmotionParams(),
                 principleChecks = principles.map { it.toPrincipleCheckParams() },
@@ -100,7 +122,7 @@ fun ReasonRoute(
             onClickDone()
         },
         onClickEditTradeInfo = {
-            requestViewModel.request.copy(
+            requestViewModel.request = requestViewModel.request.copy(
                 content = reason.text,
                 emotion = selectedEmotion?.toEmotionParams(),
                 principleChecks = principles.map { it.toPrincipleCheckParams() },
@@ -306,7 +328,7 @@ private fun TradeInfo(
                     .size(22.dp),
             )
             Text(
-                text = tradeInfo.companyName,
+                text = tradeInfo.stockName,
                 color = HedgeColor.Text.Title,
                 style = HedgeTypography.Body3.SemiBold,
             )
@@ -319,6 +341,7 @@ private fun TradeInfo(
                 text = stringResource(
                     R.string.trade_info,
                     tradeInfo.price,
+                    tradeInfo.currency,
                     tradeInfo.volume,
                     stringResource(if (tradeInfo.orderType == OrderType.BUY) R.string.buy else R.string.sell)
                 ),

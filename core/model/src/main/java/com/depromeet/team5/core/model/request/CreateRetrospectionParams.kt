@@ -48,6 +48,11 @@ enum class EmotionParams {
 }
 
 @Serializable
-enum class OrderTypeParams{
-    BUY, SELL
+enum class OrderTypeParams {
+    BUY, SELL;
+
+    fun toKorean(): String = when (this) {
+        BUY -> "매수"
+        SELL -> "매도"
+    }
 }

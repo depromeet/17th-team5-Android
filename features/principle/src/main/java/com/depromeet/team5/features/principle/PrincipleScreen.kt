@@ -59,6 +59,7 @@ fun PrincipleRoute(
     val hasAnyChecked by remember(principles) {
         derivedStateOf { principles.any(Principle::checked) }
     }
+    val orderType = requestViewModel.request.orderType
 
     val handleNext = remember(principles) {
         {
@@ -79,17 +80,19 @@ fun PrincipleRoute(
     }
 
     PrincipleScreen(
-        modifier = modifier,
+        orderType = orderType.toKorean(),
         onBackPressed = onBackPressed,
         onClickNext = handleNext,
         principles = principles,
         hasAnyChecked = hasAnyChecked,
-        onClickPrinciple = { id -> viewModel.toggle(id) }
+        onClickPrinciple = { id -> viewModel.toggle(id) },
+        modifier = modifier,
     )
 }
 
 @Composable
 private fun PrincipleScreen(
+    orderType: String,
     onBackPressed: () -> Unit,
     onClickNext: () -> Unit,
     principles: List<Principle>,
@@ -132,9 +135,10 @@ private fun PrincipleScreen(
                 text = if (hasAnyChecked)
                     stringResource(
                         R.string.principle_checked_title,
-                        principles.count { it.checked }
+                        principles.count { it.checked },
+                        orderType
                     )
-                else stringResource(R.string.principle_title),
+                else stringResource(R.string.principle_title, orderType),
                 color = HedgeColor.Text.Title,
                 style = HedgeTypography.Headline1.SemiBold,
                 modifier = Modifier.padding(horizontal = 20.dp, vertical = 10.dp)
@@ -234,6 +238,7 @@ private fun PrincipleScreenPreview() {
     }
 
     PrincipleScreen(
+        orderType = "",
         onBackPressed = {},
         onClickNext = {},
         principles = items,

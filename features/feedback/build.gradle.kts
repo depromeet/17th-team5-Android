@@ -1,11 +1,11 @@
 plugins {
     alias(libs.plugins.depromeet.team5.library)
+    alias(libs.plugins.depromeet.team5.library.compose)
     alias(libs.plugins.depromeet.team5.hilt)
-    alias(libs.plugins.kotlinx.serialization)
 }
 
 android {
-    namespace = "com.depromeet.team5.core.remotedatasource"
+    namespace = "com.depromeet.team5.features.feedback"
 
     defaultConfig {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
@@ -23,10 +23,13 @@ android {
 }
 
 dependencies {
-    implementation(projects.depromeet.core.data)
+    implementation(projects.core.domain)
+    implementation(projects.core.model)
+    implementation(projects.core.designsystem)
 
-    implementation(libs.org.jetbrains.kotlinx.kotlinx.serialization.json)
+    implementation("androidx.hilt:hilt-navigation-compose:1.3.0")
 
+    implementation(libs.material)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

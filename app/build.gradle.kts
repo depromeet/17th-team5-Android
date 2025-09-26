@@ -41,6 +41,7 @@ dependencies {
     implementation(projects.features.principle)
     implementation(projects.features.retrospect)
     implementation(projects.features.home)
+    implementation(projects.features.feedback)
 
     implementation(libs.androidx.core.ktx)
 

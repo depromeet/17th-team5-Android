@@ -4,6 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.rememberNavController
+import com.depromeet.team5.features.feedback.navigation.feedbackScreen
 import com.depromeet.team5.features.home.Home
 import com.depromeet.team5.features.home.homeScreen
 import com.depromeet.team5.features.search.TradeType
@@ -28,6 +29,10 @@ fun HedgeNavHost(
 
         searchScreen(
             onBackClick = { navController.popBackStack() }
+        )
+
+        feedbackScreen(
+            onRemoveClick = { navController.popBackStack(Home, inclusive = false) }
         )
     }
 }

@@ -4,7 +4,7 @@ import androidx.compose.runtime.Stable
 
 
 @Stable
-data class Principle(
+data class FeedbackPrinciple(
     val title: String,
     val content: String
 )

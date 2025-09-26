@@ -9,7 +9,7 @@ data class Feedback(
     val message: String,
     val summarize: String,
     val summarizeOfMarket: String,
-    val principles: List<Principle>
+    val principles: List<FeedbackPrinciple>
 ) {
 
 

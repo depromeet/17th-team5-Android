@@ -4,7 +4,7 @@ import com.depromeet.team5.core.domain.model.FeedbackEntity
 import com.depromeet.team5.core.domain.model.PrincipleEntity
 import com.depromeet.team5.core.domain.model.RetrospectionEntity
 import com.depromeet.team5.core.model.Feedback
-import com.depromeet.team5.core.model.Principle
+import com.depromeet.team5.core.model.FeedbackPrinciple
 import com.depromeet.team5.core.model.Retrospection
 
 
@@ -35,7 +35,7 @@ fun FeedbackEntity.toUi() = Feedback(
     principles = principles.map { it.toUi() }
 )
 
-fun PrincipleEntity.toUi(): Principle = Principle(
+fun PrincipleEntity.toUi(): FeedbackPrinciple = FeedbackPrinciple(
     title = title,
     content = content
 )

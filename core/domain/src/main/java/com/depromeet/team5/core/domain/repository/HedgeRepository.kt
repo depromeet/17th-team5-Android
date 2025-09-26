@@ -1,5 +1,6 @@
 package com.depromeet.team5.core.domain.repository
 
+import com.depromeet.team5.core.domain.model.AnalysisEntity
 import com.depromeet.team5.core.domain.model.FeedbackEntity
 import com.depromeet.team5.core.domain.model.RetrospectionEntity
 import com.depromeet.team5.core.domain.model.SearchEntity
@@ -15,4 +16,6 @@ interface HedgeRepository {
     fun createFeedback(
         retrospectionId: Int
     ): Flow<FeedbackEntity>
+
+    fun createAnalysis(body: Map<String, Any?>): Flow<AnalysisEntity>
 }

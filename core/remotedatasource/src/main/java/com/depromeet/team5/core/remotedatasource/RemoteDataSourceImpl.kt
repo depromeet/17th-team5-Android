@@ -1,6 +1,7 @@
 package com.depromeet.team5.core.remotedatasource
 
 import com.depromeet.team5.core.data.datasource.RemoteDataSource
+import com.depromeet.team5.core.data.model.AnalysisData
 import com.depromeet.team5.core.data.model.FeedbackData
 import com.depromeet.team5.core.data.model.RetrospectionData
 import com.depromeet.team5.core.data.model.SearchData
@@ -64,6 +65,9 @@ internal class RemoteDataSourceImpl @Inject constructor(
 
         return remoteData.toData()
     }
+
+    override suspend fun createAnalysis(body: Map<String, Any?>): AnalysisData =
+        hedgeApiSource.createAnalysis(body).toData()
 
 
     companion object {

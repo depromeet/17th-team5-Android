@@ -56,6 +56,7 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.depromeet.team5.core.designsystem.component.HedgeButton
 import com.depromeet.team5.core.designsystem.component.HedgeSegment
+import com.depromeet.team5.core.designsystem.component.HedgeTopBar
 import com.depromeet.team5.core.designsystem.foundation.HedgeColor
 import com.depromeet.team5.core.designsystem.foundation.HedgeTypography
 import com.depromeet.team5.core.model.request.CreateRetrospectionParams
@@ -174,7 +175,9 @@ private fun RetrospectScreen(
             .fillMaxSize()
             .background(color = colorResource(R.color.background_secondary))
     ) {
-        HedgeTopbar { }
+        HedgeTopBar(
+            onClickBack = onBackPressed
+        )
         CompanyTitle(
             requestParams = requestParams,
             modifier = Modifier.padding(start = 16.dp, top = 10.dp)

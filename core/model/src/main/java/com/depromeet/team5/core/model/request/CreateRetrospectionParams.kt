@@ -9,7 +9,7 @@ data class CreateRetrospectionParams(
     val market: String,
     val currency: String,
     val orderDate: String,
-    val orderType: String,
+    val orderType: OrderTypeParams,
     val price: Int,
     val volume: Int,
     val returnRate: Double?,
@@ -26,7 +26,7 @@ data class CreateRetrospectionParams(
             market = "",
             currency = "",
             orderDate = "",
-            orderType = "",
+            orderType = OrderTypeParams.BUY,
             price = 0,
             emotion = null,
             content = null,
@@ -45,4 +45,9 @@ data class PrincipleCheckParams(
 @Serializable
 enum class EmotionParams {
     ANXIETY, IMPULSE, MINDLESSNESS, CONFIDENCE, CONVICTION
+}
+
+@Serializable
+enum class OrderTypeParams{
+    BUY, SELL
 }

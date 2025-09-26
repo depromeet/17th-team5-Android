@@ -4,10 +4,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.rememberNavController
+import com.depromeet.team5.core.model.request.OrderTypeParams
 import com.depromeet.team5.features.feedback.navigation.feedbackScreen
 import com.depromeet.team5.features.home.Home
 import com.depromeet.team5.features.home.homeScreen
-import com.depromeet.team5.features.search.TradeType
 import com.depromeet.team5.features.search.navigateToSearch
 import com.depromeet.team5.features.search.searchScreen
 
@@ -23,8 +23,8 @@ fun HedgeNavHost(
         modifier = modifier
     ) {
         homeScreen(
-            onBuyClick = { navController.navigateToSearch(TradeType.BUY) },
-            onSellClick = { navController.navigateToSearch(TradeType.SELL) }
+            onBuyClick = { navController.navigateToSearch(OrderTypeParams.BUY) },
+            onSellClick = { navController.navigateToSearch(OrderTypeParams.SELL) }
         )
 
         searchScreen(

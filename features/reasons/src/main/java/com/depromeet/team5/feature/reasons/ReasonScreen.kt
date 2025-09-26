@@ -114,7 +114,7 @@ fun ReasonRoute(
         analysisReport = analysisReport,
         onClickBack = onClickBack,
         onClickDone = {
-            requestViewModel.request.copy(
+            requestViewModel.request = requestViewModel.request.copy(
                 content = reason.text,
                 emotion = selectedEmotion?.toEmotionParams(),
                 principleChecks = principles.map { it.toPrincipleCheckParams() },
@@ -122,7 +122,7 @@ fun ReasonRoute(
             onClickDone()
         },
         onClickEditTradeInfo = {
-            requestViewModel.request.copy(
+            requestViewModel.request = requestViewModel.request.copy(
                 content = reason.text,
                 emotion = selectedEmotion?.toEmotionParams(),
                 principleChecks = principles.map { it.toPrincipleCheckParams() },

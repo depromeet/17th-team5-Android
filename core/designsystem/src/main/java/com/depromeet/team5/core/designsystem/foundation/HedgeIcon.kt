@@ -62,4 +62,17 @@ object HedgeIcon {
     val Add: ImageVector
         @Composable
         get() = ImageVector.vectorResource(id = R.drawable.ic_add)
+
+    val Pencil: ImageVector
+        @Composable
+        get() = ImageVector.vectorResource(id = R.drawable.ic_pencil)
+
+    val Edit: ImageVector
+        @Composable
+        get() = ImageVector.vectorResource(id = R.drawable.ic_edit)
+
+    val Trash: ImageVector
+        @Composable
+        get() = ImageVector.vectorResource(id = R.drawable.ic_trash)
+
 }

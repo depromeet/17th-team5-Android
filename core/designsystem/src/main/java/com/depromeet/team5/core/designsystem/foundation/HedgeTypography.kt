@@ -58,7 +58,7 @@ object HedgeTypography {
     object Label1 {
         val Regular = Base.Regular.copy(fontSize = 14.sp, lineHeight = 1.42.em, letterSpacing = 0.0145.em)
         val Medium = Base.Medium.copy(fontSize = 14.sp, lineHeight = 1.42.em, letterSpacing = 0.0145.em)
-        val Bold = Base.Bold.copy(fontSize = 14.sp, lineHeight = 1.42.em, letterSpacing = 0.0145.em)
+        val SemiBold = Base.Semibold.copy(fontSize = 14.sp, lineHeight = 1.42.em, letterSpacing = 0.0145.em)
     }
 
     object Label2 {

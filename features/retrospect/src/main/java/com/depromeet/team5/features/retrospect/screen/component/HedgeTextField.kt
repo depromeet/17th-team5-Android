@@ -19,7 +19,6 @@ import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -39,6 +38,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.depromeet.team5.core.designsystem.foundation.HedgeColor
+import com.depromeet.team5.core.designsystem.foundation.HedgeTypography
 import com.depromeet.team5.features.retrospect.R
 import com.depromeet.team5.features.retrospect.screen.visualtransmation.KoreanCurrencyVisualTransformation
 import com.depromeet.team5.features.retrospect.screen.visualtransmation.USDCurrencyVisualTransformation
@@ -58,7 +59,7 @@ internal fun HedgeUnitTextField(
     enabled: Boolean = true,
     trailingIcon: @Composable () -> Unit = {}
 ) {
-    var borderColor by remember { mutableIntStateOf(R.color.brand500) }
+    var isFocused by remember { mutableStateOf(false) }
 
     Box(
         modifier = modifier
@@ -69,11 +70,17 @@ internal fun HedgeUnitTextField(
                 color = colorResource(R.color.white),
                 shape = RoundedCornerShape(16.dp)
             )
-            .border(1.5.dp, colorResource(borderColor), RoundedCornerShape(16.dp))
+            .border(
+                width = 1.5.dp,
+                color = if (isFocused) {
+                    HedgeColor.Brand.Darken
+                } else {
+                    HedgeColor.WHITE
+                },
+                shape = RoundedCornerShape(16.dp)
+            )
             .onFocusChanged { focusState ->
-                borderColor = if (focusState.hasFocus) R.color.gray900
-                else R.color.white
-
+                isFocused = focusState.hasFocus
             }
             .padding(start = 20.dp, top = 14.dp, end = 16.dp, bottom = 14.dp)
     ) {
@@ -88,16 +95,22 @@ internal fun HedgeUnitTextField(
                     .padding(top = 4.dp),
                 value = value,
                 onValueChange = onValueChange,
+                textStyle = HedgeTypography.Body1.SemiBold,
                 visualTransformation = visualTransformation,
                 label = {
                     Text(
+                        modifier = Modifier.padding(bottom = if (isFocused) 4.dp else 0.dp),
                         text = label,
-                        fontWeight = FontWeight.SemiBold,
-                        fontSize = 13.sp
+                        style = HedgeTypography.Label2.SemiBold
                     )
                 },
                 trailingIcon = trailingIcon,
-                placeholder = { Text(placeholder) },
+                placeholder = {
+                    Text(
+                        text = placeholder,
+                        style = HedgeTypography.Body1.Medium
+                    )
+                },
                 colors = TextFieldDefaults.colors(
                     focusedContainerColor = Color.Transparent,
                     unfocusedContainerColor = Color.Transparent,
@@ -108,14 +121,14 @@ internal fun HedgeUnitTextField(
                     disabledIndicatorColor = Color.Transparent,
                     errorIndicatorColor = Color.Transparent,
 
-                    focusedLabelColor = colorResource(R.color.gray900),
-                    unfocusedLabelColor = colorResource(R.color.gray500),
+                    focusedLabelColor = HedgeColor.Brand.Darken,
+                    unfocusedLabelColor = HedgeColor.Text.Assistive,
 
-                    focusedPlaceholderColor = colorResource(R.color.gray400),
+                    focusedPlaceholderColor = HedgeColor.Text.Assistive,
 
-                    focusedTextColor = colorResource(R.color.gray900),
+                    focusedTextColor = HedgeColor.Text.Title,
 
-                    cursorColor = Color.Transparent,
+                    cursorColor = HedgeColor.Brand.Darken,
                     errorCursorColor = Color.Transparent,
                 ),
                 keyboardActions = keyboardActions,
@@ -141,13 +154,8 @@ internal fun HedgeSimpleTextField(
     isError: Boolean = false,
     readOnly: Boolean = false
 ) {
-    var borderColor by remember(isError) {
-        if (isError) {
-            mutableIntStateOf(R.color.error)
-        } else {
-            mutableIntStateOf(R.color.white)
-        }
-    }
+
+    var isFocused by remember { mutableStateOf(false) }
 
     Box(
         modifier = modifier
@@ -158,14 +166,19 @@ internal fun HedgeSimpleTextField(
                 color = colorResource(R.color.white),
                 shape = RoundedCornerShape(16.dp)
             )
-            .border(1.5.dp, colorResource(borderColor), RoundedCornerShape(16.dp))
+            .border(
+                width = 1.5.dp,
+                color = if (isError) {
+                    HedgeColor.Feedback.Error
+                } else if (isFocused) {
+                    HedgeColor.Brand.Darken
+                } else {
+                    HedgeColor.WHITE
+                },
+                shape = RoundedCornerShape(16.dp)
+            )
             .onFocusChanged { focusState ->
-                if (isError) return@onFocusChanged
-
-                borderColor = when (focusState.hasFocus) {
-                    true -> R.color.gray900
-                    else -> R.color.white
-                }
+                isFocused = focusState.isFocused
             }
             .padding(start = 20.dp, top = 14.dp, end = 16.dp, bottom = 14.dp)
     ) {
@@ -180,21 +193,27 @@ internal fun HedgeSimpleTextField(
                     .padding(top = 4.dp),
                 value = value,
                 onValueChange = onValueChange,
+                textStyle = HedgeTypography.Body1.SemiBold,
                 visualTransformation = visualTransformation,
                 label = {
                     Text(
+                        modifier = Modifier.padding(bottom = if (isFocused) 4.dp else 0.dp),
                         text = label,
-                        fontWeight = FontWeight.SemiBold,
-                        fontSize = 13.sp
+                        style = HedgeTypography.Label2.SemiBold
                     )
                 },
-                placeholder = { Text(placeholder) },
+                placeholder = {
+                    Text(
+                        text = placeholder,
+                        style = HedgeTypography.Body1.Medium
+                    )
+                },
                 colors = TextFieldDefaults.colors(
                     focusedContainerColor = Color.Transparent,
                     unfocusedContainerColor = Color.Transparent,
                     disabledContainerColor = Color.Transparent,
 
-                    errorLabelColor = colorResource(R.color.error),
+                    errorLabelColor = HedgeColor.Feedback.Error,
                     errorTextColor = colorResource(R.color.gray900),
                     errorContainerColor = Color.Transparent,
 
@@ -203,14 +222,14 @@ internal fun HedgeSimpleTextField(
                     disabledIndicatorColor = Color.Transparent,
                     errorIndicatorColor = Color.Transparent,
 
-                    focusedLabelColor = colorResource(R.color.gray900),
-                    unfocusedLabelColor = colorResource(R.color.gray500),
+                    focusedLabelColor = HedgeColor.Brand.Darken,
+                    unfocusedLabelColor = HedgeColor.Text.Assistive,
 
-                    focusedPlaceholderColor = colorResource(R.color.gray400),
+                    focusedPlaceholderColor = HedgeColor.Text.Assistive,
 
-                    focusedTextColor = colorResource(R.color.gray900),
+                    focusedTextColor = HedgeColor.Text.Title,
 
-                    cursorColor = Color.Transparent,
+                    cursorColor = HedgeColor.Brand.Darken,
                     errorCursorColor = Color.Transparent,
                 ),
                 keyboardActions = keyboardActions,

@@ -24,6 +24,7 @@ android {
 }
 
 dependencies {
+    implementation(projects.core.designsystem)
 
     implementation(libs.material)
     implementation(projects.core.model)

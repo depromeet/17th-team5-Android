@@ -227,7 +227,7 @@ private fun FeedbackScreen(
                             contentAlignment = Alignment.Center
                         ) {
                             Text(
-                                text = "추후에 공개될 예정이에요.",
+                                text = stringResource(R.string.feedback_not_yet),
                                 style = HedgeTypography.Body3.Medium,
                                 color = HedgeColor.Text.Secondary
                             )
@@ -236,6 +236,22 @@ private fun FeedbackScreen(
                 }
             }
         }
+    }
+}
+
+@Composable
+private fun AiHeader(
+    icon: @Composable () -> Unit,
+    title: @Composable () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Row(
+        modifier = modifier,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        icon()
+        Spacer(modifier = Modifier.padding(start = 8.dp))
+        title()
     }
 }
 
@@ -410,22 +426,6 @@ private fun AIContent(
 }
 
 @Composable
-private fun AiHeader(
-    icon: @Composable () -> Unit,
-    title: @Composable () -> Unit,
-    modifier: Modifier = Modifier
-) {
-    Row(
-        modifier = modifier,
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        icon()
-        Spacer(modifier = Modifier.padding(start = 8.dp))
-        title()
-    }
-}
-
-@Composable
 private fun PrincipleViewHolder(
     title: String,
     content: String,
@@ -525,7 +525,7 @@ private fun FeedbackError(
         contentAlignment = Alignment.Center
     ) {
         Text(
-            text = "피드백 정보를 가져오는데 문제가 발생했어요.\n다시 시도해주세요.",
+            text = stringResource(R.string.feedback_error),
             style = HedgeTypography.Body3.Medium,
             color = HedgeColor.Text.Secondary,
             textAlign = TextAlign.Center

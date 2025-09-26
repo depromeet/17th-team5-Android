@@ -6,16 +6,18 @@ import androidx.lifecycle.viewModelScope
 import com.depromeet.team5.core.domain.usecase.CreateFeedbackUseCase
 import com.depromeet.team5.core.domain.usecase.CreateRetrospectionUseCase
 import com.depromeet.team5.core.model.Feedback
-import com.depromeet.team5.core.model.mapper.toUi
+import com.depromeet.team5.core.model.mapper.toPresentation
 import com.depromeet.team5.core.model.request.CreateRetrospectionParams
 import com.depromeet.team5.features.feedback.AiFeedbackUiState
 import com.depromeet.team5.features.feedback.PrincipleState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.flatMapConcat
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -28,27 +30,30 @@ class AiFeedbackViewModel @Inject constructor(
     private val createFeedbackUseCase: CreateFeedbackUseCase
 ) : ViewModel() {
 
-    private val _companyName = MutableStateFlow("")
-    val companyName: StateFlow<String> = _companyName.asStateFlow()
-
-    private val _price = MutableStateFlow(0L)
-    val price: StateFlow<Long> = _price.asStateFlow()
-
-    private val _stock = MutableStateFlow(0)
-    val stock: StateFlow<Int> = _stock.asStateFlow()
-
-    private val _date = MutableStateFlow("")
-    val date: StateFlow<String> = _date.asStateFlow()
-
     private val _feedbackStateFlow: MutableStateFlow<AiFeedbackUiState> =
         MutableStateFlow(AiFeedbackUiState.Loading)
     val feedbackStateFlow: StateFlow<AiFeedbackUiState> = _feedbackStateFlow
 
 
-    init {
+    fun createRetrospection(request: CreateRetrospectionParams) {
         viewModelScope.launch {
-            createFeedbackUseCase(0)
-                .map { it.toUi() }
+            createRetrospectionUseCase(
+                body = mapOf(
+                    "symbol" to request.symbol,
+                    "market" to request.market,
+                    "orderType" to request.orderType.name,
+                    "price" to request.price,
+                    "currency" to request.currency,
+                    "volume" to request.volume,
+                    "orderDate" to formatDate(request.orderDate),
+                    "returnRate" to request.returnRate,
+                    "content" to request.content,
+                    "principleChecks" to request.principleChecks,
+                    "emotion" to request.emotion?.name
+                )
+            )
+                .flatMapConcat { createFeedbackUseCase(it.id) }
+                .map { it.toPresentation() }
                 .map {
                     if (it != Feedback.EMPTY) {
                         AiFeedbackUiState.Success(
@@ -69,28 +74,15 @@ class AiFeedbackViewModel @Inject constructor(
                         )
                     }
                 }
-                .catch { emit(AiFeedbackUiState.Failure(it)) }
-                .collect { state ->
-                    _feedbackStateFlow.emit(state)
+                .catch {
+                    it.printStackTrace()
+                    emit(AiFeedbackUiState.Failure(it))
                 }
+                .onEach { _feedbackStateFlow.value = it }
+                .collect()
         }
     }
 
-    fun createRetrospection(request: CreateRetrospectionParams) = createRetrospectionUseCase(
-        body = mapOf(
-            "symbol" to request.symbol,
-            "market" to request.market,
-            "orderType" to request.orderType.name,
-            "price" to request.price,
-            "currency" to request.currency,
-            "volume" to request.volume,
-            "orderDate" to request.orderDate,
-            "returnRate" to request.returnRate,
-            "content" to request.content,
-            "principleChecks" to request.principleChecks,
-            "emotion" to request.emotion?.name
-        )
-    )
 
     fun updatePrinciple(title: String) {
         when (_feedbackStateFlow.value) {
@@ -116,7 +108,25 @@ class AiFeedbackViewModel @Inject constructor(
                 }
 
             }
+
             else -> {}
         }
+    }
+
+    private fun formatDate(date: String): String {
+        val regex = """(\d{4})년\s*(\d{1,2})월\s*(\d{1,2})일""".toRegex()
+
+        val matchResult = regex.find(date)
+
+        if (matchResult != null) {
+            val (year, month, day) = matchResult.destructured
+
+            val formattedMonth = month.padStart(2, '0')
+            val formattedDay = day.padStart(2, '0')
+
+            return "$year-$formattedMonth-$formattedDay"
+        }
+
+        error("잘못된 Date Format이 들어왔습니다. Params : { $date }")
     }
 }

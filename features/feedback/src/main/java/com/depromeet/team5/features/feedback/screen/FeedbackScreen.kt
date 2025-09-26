@@ -70,18 +70,19 @@ fun FeedbackRoute(
     viewModel: AiFeedbackViewModel = hiltViewModel()
 ) {
     val state by viewModel.feedbackStateFlow.collectAsStateWithLifecycle()
-    val companyName by viewModel.companyName.collectAsStateWithLifecycle()
-    val price by viewModel.price.collectAsStateWithLifecycle()
-    val stock by viewModel.stock.collectAsStateWithLifecycle()
-    val date by viewModel.date.collectAsStateWithLifecycle()
+
+    //todo ..안티패턴... 추후에 assistedInject로 변경하기
+    LaunchedEffect(Unit) {
+        viewModel.createRetrospection(requestViewModel.request)
+    }
 
     val toastState = rememberHedgeToastState()
     FeedbackScreen(
         state = state,
-        companyName = companyName,
-        price = price,
-        stock = stock,
-        date = date,
+        companyName = requestViewModel.request.companyName,
+        price = requestViewModel.request.price.toLong(),
+        stock = requestViewModel.request.volume,
+        date = requestViewModel.request.orderDate,
         onRetryClick = {},
         onRemoveClick = onRemoveClick,
         onAddClick = { title ->

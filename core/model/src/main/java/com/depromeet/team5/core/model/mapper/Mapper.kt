@@ -29,15 +29,15 @@ fun RetrospectionEntity.toPresentation(): Retrospection {
     )
 }
 
-fun FeedbackEntity.toUi() = Feedback(
+fun FeedbackEntity.toPresentation() = Feedback(
     code = code,
     message = message,
     summarize = summarize,
     summarizeOfMarket = summarizeOfMarket,
-    principles = principles.map { it.toUi() }
+    principles = principles.map { it.toPresentation() }
 )
 
-fun PrincipleEntity.toUi(): FeedbackPrinciple = FeedbackPrinciple(
+fun PrincipleEntity.toPresentation(): FeedbackPrinciple = FeedbackPrinciple(
     title = title,
     content = content
 )

@@ -1,8 +1,8 @@
 package com.depromeet.team5.core.retrofit.apisourceimpl
 
 import com.depromeet.team5.core.remotedatasource.apisource.HedgeApiSource
-import com.depromeet.team5.core.remotedatasource.model.SearchRemoteData
 import com.depromeet.team5.core.remotedatasource.model.AnalysisRemoteData
+import com.depromeet.team5.core.remotedatasource.model.SearchRemoteData
 import com.depromeet.team5.core.retrofit.api.HedgeApi
 import com.depromeet.team5.core.retrofit.toRequestBody
 import javax.inject.Inject
@@ -23,7 +23,7 @@ internal class HedgeApiSourceImpl @Inject constructor(
 
     override suspend fun createFeedback(retrospectionId: Int): String = hedgeApi
         .createFeedback(retrospectionId = retrospectionId)
-        .toString()
+        .string()
 
     override suspend fun createAnalysis(body: Map<String, Any?>): AnalysisRemoteData =
         hedgeApi

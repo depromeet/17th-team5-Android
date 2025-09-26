@@ -2,7 +2,7 @@ package com.depromeet.team5.core.model
 
 import androidx.compose.runtime.Stable
 import com.depromeet.team5.core.domain.model.RetrospectionEntity
-import com.depromeet.team5.core.model.mapper.DomainMapper
+import com.depromeet.team5.core.model.mapper.ModelMapper
 
 
 @Stable
@@ -21,7 +21,7 @@ data class Retrospection(
     val symbol: String,
     val updatedAt: String,
     val volume: Int
-) : DomainMapper<RetrospectionEntity> {
+) : ModelMapper<RetrospectionEntity> {
 
     override fun toDomain(): RetrospectionEntity {
         return RetrospectionEntity(

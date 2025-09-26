@@ -51,13 +51,14 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
-import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.depromeet.team5.core.designsystem.component.HedgeButton
 import com.depromeet.team5.core.designsystem.component.HedgeTopBar
 import com.depromeet.team5.core.designsystem.foundation.HedgeColor
 import com.depromeet.team5.core.designsystem.foundation.HedgeIcon
 import com.depromeet.team5.core.designsystem.foundation.HedgeTypography
+import com.depromeet.team5.core.model.request.RequestViewModel
 import com.depromeet.team5.feature.reasons.ui.AnalysisPip
 import com.depromeet.team5.feature.reasons.ui.AutoScrollTextField
 import com.depromeet.team5.feature.reasons.ui.EmotionBottomSheet
@@ -72,6 +73,7 @@ import com.depromeet.team5.feature.reasons.ui.PrincipleBottomSheet
 fun ReasonRoute(
     onClickBack: () -> Unit,
     modifier: Modifier = Modifier,
+    requestViewModel: RequestViewModel = hiltViewModel(),
     viewModel: ReasonsViewModel = hiltViewModel(),
 ) {
     val principles by viewModel.principles.collectAsStateWithLifecycle()

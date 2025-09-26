@@ -25,10 +25,9 @@ android {
 
 dependencies {
     implementation(projects.core.designsystem)
+    implementation(projects.core.model)
 
     implementation(libs.material)
-
-    implementation("androidx.hilt:hilt-navigation-compose:1.3.0")
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

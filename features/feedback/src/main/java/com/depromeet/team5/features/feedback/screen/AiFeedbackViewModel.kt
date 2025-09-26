@@ -4,8 +4,10 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.depromeet.team5.core.domain.usecase.CreateFeedbackUseCase
+import com.depromeet.team5.core.domain.usecase.CreateRetrospectionUseCase
 import com.depromeet.team5.core.model.Feedback
 import com.depromeet.team5.core.model.mapper.toUi
+import com.depromeet.team5.core.model.request.CreateRetrospectionParams
 import com.depromeet.team5.features.feedback.AiFeedbackUiState
 import com.depromeet.team5.features.feedback.PrincipleState
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -22,6 +24,7 @@ import javax.inject.Inject
 @HiltViewModel
 class AiFeedbackViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
+    private val createRetrospectionUseCase: CreateRetrospectionUseCase,
     private val createFeedbackUseCase: CreateFeedbackUseCase
 ) : ViewModel() {
 
@@ -72,6 +75,22 @@ class AiFeedbackViewModel @Inject constructor(
                 }
         }
     }
+
+    fun createRetrospection(request: CreateRetrospectionParams) = createRetrospectionUseCase(
+        body = mapOf(
+            "symbol" to request.symbol,
+            "market" to request.market,
+            "orderType" to request.orderType.name,
+            "price" to request.price,
+            "currency" to request.currency,
+            "volume" to request.volume,
+            "orderDate" to request.orderDate,
+            "returnRate" to request.returnRate,
+            "content" to request.content,
+            "principleChecks" to request.principleChecks,
+            "emotion" to request.emotion?.name
+        )
+    )
 
     fun updatePrinciple(title: String) {
         when (_feedbackStateFlow.value) {

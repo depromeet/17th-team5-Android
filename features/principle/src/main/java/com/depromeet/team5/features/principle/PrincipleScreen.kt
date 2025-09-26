@@ -37,6 +37,7 @@ import com.depromeet.team5.core.designsystem.component.HedgeButton
 import com.depromeet.team5.core.designsystem.component.HedgeTopBar
 import com.depromeet.team5.core.designsystem.foundation.HedgeColor
 import com.depromeet.team5.core.designsystem.foundation.HedgeTypography
+import com.depromeet.team5.core.model.request.RequestViewModel
 
 data class Principle(
     val id: Long,
@@ -49,6 +50,7 @@ data class Principle(
 fun PrincipleRoute(
     onBackPressed: () -> Unit,
     modifier: Modifier = Modifier,
+    requestViewModel: RequestViewModel = hiltViewModel(),
     viewModel: RetrospectViewModel = hiltViewModel(),
 ) {
     val principles by viewModel.principles.collectAsStateWithLifecycle()

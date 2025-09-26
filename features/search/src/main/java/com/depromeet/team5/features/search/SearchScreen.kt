@@ -24,6 +24,7 @@ import com.depromeet.team5.core.designsystem.component.HedgeTopBar
 import com.depromeet.team5.core.designsystem.foundation.HedgeColor
 import com.depromeet.team5.core.designsystem.foundation.HedgeIcon
 import com.depromeet.team5.core.designsystem.foundation.HedgeTypography
+import com.depromeet.team5.core.model.request.RequestViewModel
 import com.depromeet.team5.features.search.component.SearchListItem
 import com.depromeet.team5.features.search.model.StockData
 
@@ -31,6 +32,7 @@ import com.depromeet.team5.features.search.model.StockData
 fun SearchRoute(
     onBackClick: () -> Unit,
     modifier: Modifier = Modifier,
+    requestViewModel: RequestViewModel = hiltViewModel(),
     viewModel: SearchViewModel = hiltViewModel()
 ) {
     val searchText by viewModel.searchText.collectAsStateWithLifecycle()
@@ -267,7 +269,8 @@ private fun ResultsPreview() {
 @Composable
 private fun SearchPreview() {
     SearchRoute(
-        onBackClick = {}
+        onBackClick = {},
+
     )
 }
 

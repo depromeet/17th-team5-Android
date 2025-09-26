@@ -1,4 +1,4 @@
-package com.depromeet.team5.features.search
+package com.depromeet.team5.features.principle.navigation
 
 import androidx.compose.runtime.remember
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -6,29 +6,28 @@ import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import com.depromeet.team5.core.model.request.RequestViewModel
+import com.depromeet.team5.features.principle.PrincipleRoute
 import kotlinx.serialization.Serializable
 
-@Serializable
-object Search
 
-fun NavGraphBuilder.searchScreen(
-    navController: NavController,
-    onBackClick: () -> Unit
-) {
-    composable<Search> { backStackEntry ->
+@Serializable
+object Principle
+
+fun NavController.navigationPrinciple() {
+    navigate(route = Principle)
+}
+
+fun NavGraphBuilder.principleScreen(navController: NavController) {
+    composable<Principle> { backStackEntry ->
         val parentEntry = remember(backStackEntry) {
             navController.getBackStackEntry(navController.graph.startDestinationRoute!!)
         }
 
         val sharedViewModel: RequestViewModel = viewModel(viewModelStoreOwner = parentEntry)
 
-        SearchRoute(
-            onBackClick = onBackClick,
+        PrincipleRoute(
+            onBackPressed = {},
             requestViewModel = sharedViewModel
         )
     }
-}
-
-fun NavController.navigateToSearch() {
-    navigate(route = Search)
 }

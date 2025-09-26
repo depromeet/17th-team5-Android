@@ -128,6 +128,7 @@ fun RetrospectRoute(
                 price = viewModel.sellingTextFieldState.stateFlow.value.text.toInt(),
                 volume = viewModel.stockTextFieldState.stateFlow.value.text.toInt(),
                 orderDate = viewModel.dateTextFieldState.stateFlow.value.text,
+                currency = "KRW", //todo 나중에.. 수정하기
                 returnRate = try {
                     viewModel.returnTextFieldState.stateFlow.value.text.toDouble()
                 } catch (e: Exception) {

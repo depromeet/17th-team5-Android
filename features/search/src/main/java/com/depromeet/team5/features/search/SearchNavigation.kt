@@ -3,13 +3,14 @@ package com.depromeet.team5.features.search
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
+import com.depromeet.team5.core.model.request.CreateRetrospectionParams
+import com.depromeet.team5.core.model.request.OrderTypeParams
 import kotlinx.serialization.Serializable
 
 @Serializable
-enum class TradeType { BUY, SELL }
-
-@Serializable
-data class Search(val trade: TradeType)
+data class Search(
+    val params: CreateRetrospectionParams
+)
 
 fun NavGraphBuilder.searchScreen(
     onBackClick: () -> Unit
@@ -21,6 +22,14 @@ fun NavGraphBuilder.searchScreen(
     }
 }
 
-fun NavController.navigateToSearch(trade: TradeType) {
-    navigate(Search(trade))
+fun NavController.navigateToSearch(
+    orderType: OrderTypeParams,
+) {
+    navigate(
+        Search(
+            CreateRetrospectionParams.EMPTY.copy(
+                orderType = orderType
+            )
+        )
+    )
 }

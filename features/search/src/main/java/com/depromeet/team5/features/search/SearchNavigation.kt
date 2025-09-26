@@ -13,7 +13,8 @@ object Search
 
 fun NavGraphBuilder.searchScreen(
     navController: NavController,
-    onBackClick: () -> Unit
+    onBackClick: () -> Unit,
+    onItemClick: () -> Unit
 ) {
     composable<Search> { backStackEntry ->
         val parentEntry = remember(backStackEntry) {
@@ -24,7 +25,8 @@ fun NavGraphBuilder.searchScreen(
 
         SearchRoute(
             onBackClick = onBackClick,
-            requestViewModel = sharedViewModel
+            requestViewModel = sharedViewModel,
+            onItemClick = onItemClick
         )
     }
 }

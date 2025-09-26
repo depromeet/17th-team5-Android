@@ -59,6 +59,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.depromeet.team5.core.model.request.RequestViewModel
 import com.depromeet.team5.features.retrospect.R
 import com.depromeet.team5.features.retrospect.annotation.DATE
 import com.depromeet.team5.features.retrospect.annotation.RETURN
@@ -84,6 +85,7 @@ import java.util.Locale
 @Composable
 fun RetrospectRoute(
     onBackPressed: () -> Unit,
+    requestViewModel: RequestViewModel,
     modifier: Modifier = Modifier,
     viewModel: RetrospectViewModel = hiltViewModel(),
 ) {

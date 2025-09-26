@@ -1,37 +1,34 @@
 package com.depromeet.team5.features.retrospect.screen
 
+import androidx.compose.runtime.remember
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
-import com.depromeet.team5.core.model.request.CreateRetrospectionParams
-import com.depromeet.team5.core.model.request.OrderTypeParams
+import com.depromeet.team5.core.model.request.RequestViewModel
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class Retrospect(
-    val params: CreateRetrospectionParams
-)
+object Retrospect
 
-fun NavController.navigateToRetrospect(
-    symbol: String,
-    market: String,
-    orderType: OrderTypeParams,
-){
-    navigate(
-        CreateRetrospectionParams.EMPTY.copy(
-            symbol = symbol,
-            market = market,
-            orderType = orderType
-        )
-    )
+fun NavController.navigateToRetrospect(){
+    navigate(Retrospect)
 }
 
 fun NavGraphBuilder.retrospectScreen(
+    navController: NavController,
     onBackPressed: () -> Unit
 ){
-    composable<Retrospect>{
+    composable<Retrospect>{backStackEntry ->
+        val parentEntry = remember(backStackEntry) {
+            navController.getBackStackEntry(navController.graph.startDestinationRoute!!)
+        }
+
+        val sharedViewModel: RequestViewModel = viewModel(viewModelStoreOwner = parentEntry)
+
         RetrospectRoute(
-            onBackPressed = onBackPressed
+            onBackPressed = onBackPressed,
+            requestViewModel = sharedViewModel
         )
     }
 }

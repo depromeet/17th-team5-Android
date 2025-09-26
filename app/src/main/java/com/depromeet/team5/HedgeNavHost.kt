@@ -8,6 +8,8 @@ import com.depromeet.team5.features.feedback.navigation.feedbackScreen
 import com.depromeet.team5.features.home.Home
 import com.depromeet.team5.features.home.homeScreen
 import com.depromeet.team5.features.principle.navigation.principleScreen
+import com.depromeet.team5.features.retrospect.screen.navigateToRetrospect
+import com.depromeet.team5.features.retrospect.screen.retrospectScreen
 import com.depromeet.team5.features.search.navigateToSearch
 import com.depromeet.team5.features.search.searchScreen
 
@@ -30,7 +32,13 @@ fun HedgeNavHost(
 
         searchScreen(
             navController = navController,
-            onBackClick = { navController.popBackStack() }
+            onBackClick = { navController.popBackStack() },
+            onItemClick = { navController.navigateToRetrospect() }
+        )
+
+        retrospectScreen(
+            navController = navController,
+            onBackPressed = { navController.popBackStack() }
         )
 
         principleScreen(

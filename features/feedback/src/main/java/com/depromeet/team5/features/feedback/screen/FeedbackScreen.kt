@@ -55,6 +55,8 @@ import com.depromeet.team5.core.designsystem.foundation.HedgeTypography
 import com.depromeet.team5.core.model.Principle
 import com.depromeet.team5.features.feedback.AiFeedbackState
 import com.depromeet.team5.features.feedback.R
+import com.depromeet.team5.features.feedback.component.HedgeToast
+import com.depromeet.team5.features.feedback.component.rememberHedgeToastState
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -71,6 +73,8 @@ fun FeedbackRoute(
     val stock by viewModel.stock.collectAsStateWithLifecycle()
     val date by viewModel.date.collectAsStateWithLifecycle()
 
+    var toastState = rememberHedgeToastState()
+
     FeedbackScreen(
         state = state,
         companyName = companyName,
@@ -78,8 +82,28 @@ fun FeedbackRoute(
         stock = stock,
         date = date,
         onRetryClick = {},
-        onRemoveClick = onRemoveClick
+        onRemoveClick = onRemoveClick,
+        onAddClick = {
+            toastState.value = toastState.value.copy(isShow = true)
+        }
     )
+
+    if (toastState.value.isShow) {
+        HedgeToast(
+            modifier = Modifier.padding(top = 8.dp),
+            state = toastState,
+            message = {
+                Text(
+                    text = "내 투자 원칙에 추가되었습니닽",
+                    style = HedgeTypography.Body3.Medium,
+                    color = HedgeColor.Neutral.BackgroundSecondary
+                )
+            },
+            icon = {
+                Image(imageVector = HedgeIcon.Check, contentDescription = null)
+            }
+        )
+    }
 }
 
 @Composable
@@ -89,8 +113,9 @@ private fun FeedbackScreen(
     price: Long,
     stock: Int,
     date: String,
-    onRemoveClick: () -> Unit = {},
+    onRemoveClick: () -> Unit,
     onRetryClick: () -> Unit,
+    onAddClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val tabs = listOf(
@@ -225,7 +250,10 @@ private fun FeedbackScreen(
                     modifier = Modifier.fillMaxSize()
                 ) { page ->
                     if (page == 1) {
-                        AiFeedbackPage(state = state)
+                        AiFeedbackPage(
+                            state = state,
+                            onAddClick = onAddClick
+                        )
                     } else {
                         Box(
                             modifier = Modifier
@@ -265,6 +293,7 @@ private fun AiHeader(
 @Composable
 private fun AiFeedbackPage(
     state: AiFeedbackState,
+    onAddClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -281,6 +310,7 @@ private fun AiFeedbackPage(
                     Spacer(modifier = Modifier.padding(top = 22.dp))
                     AIContent(
                         state = state,
+                        onAddClick = onAddClick,
                         modifier = Modifier.padding(horizontal = 20.dp)
                     )
                 }
@@ -325,6 +355,7 @@ private fun AiNotice() {
 @Composable
 private fun AIContent(
     state: AiFeedbackState.Success,
+    onAddClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -421,7 +452,7 @@ private fun AIContent(
                 title = principle.title,
                 content = principle.content,
                 contentPadding = PaddingValues(top = topPadding, bottom = 22.dp),
-                onAddClick = {}
+                onAddClick = onAddClick
             )
 
             HorizontalDivider(
@@ -625,7 +656,8 @@ fun AiContentPreview() {
                     )
                 )
             ),
-            modifier = Modifier.padding(horizontal = 20.dp)
+            modifier = Modifier.padding(horizontal = 20.dp),
+            onAddClick = {}
         )
     }
 }
@@ -635,6 +667,7 @@ fun AiContentPreview() {
 @Preview
 fun AiFeedBackScreenPreview() {
     var state: AiFeedbackState by remember { mutableStateOf(AiFeedbackState.Loading) }
+    var toastState = rememberHedgeToastState()
 
     LaunchedEffect(Unit) {
 
@@ -666,6 +699,26 @@ fun AiFeedBackScreenPreview() {
         date = "2025년 8월 25일",
         state = state,
         onRemoveClick = {},
-        onRetryClick = {}
+        onRetryClick = {},
+        onAddClick = {
+            toastState.value = toastState.value.copy(isShow = true)
+        }
     )
+
+    if (toastState.value.isShow) {
+        HedgeToast(
+            modifier = Modifier.padding(top = 8.dp),
+            state = toastState,
+            message = {
+                Text(
+                    text = "회고가 삭제되었습니다",
+                    style = HedgeTypography.Body3.Medium,
+                    color = HedgeColor.Neutral.BackgroundSecondary
+                )
+            },
+            icon = {
+                Image(imageVector = HedgeIcon.Check, contentDescription = null)
+            }
+        )
+    }
 }

@@ -127,9 +127,7 @@ fun RetrospectRoute(
             requestViewModel.request = requestViewModel.request.copy(
                 price = viewModel.sellingTextFieldState.stateFlow.value.text.toInt(),
                 volume = viewModel.stockTextFieldState.stateFlow.value.text.toInt(),
-                orderDate = formatDate(
-                    viewModel.dateTextFieldState.stateFlow.value.text
-                ),
+                orderDate = viewModel.dateTextFieldState.stateFlow.value.text,
                 returnRate = try {
                     viewModel.returnTextFieldState.stateFlow.value.text.toDouble()
                 } catch (e: Exception) {

@@ -1,6 +1,10 @@
 package com.depromeet.team5.features.retrospect.screen
 
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.systemBars
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
@@ -28,6 +32,7 @@ fun NavGraphBuilder.retrospectScreen(
         val sharedViewModel: RequestViewModel = viewModel(viewModelStoreOwner = parentEntry)
 
         RetrospectRoute(
+            modifier = Modifier.windowInsetsPadding(WindowInsets.systemBars),
             onBackPressed = onBackPressed,
             onClickedConfirmButton = onClickedConfirmButton,
             requestViewModel = sharedViewModel

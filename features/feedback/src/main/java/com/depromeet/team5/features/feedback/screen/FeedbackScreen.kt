@@ -504,7 +504,17 @@ private fun PrincipleViewHolder(
                 Row(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Image(painter = painterResource(R.drawable.img_add), contentDescription = "")
+                    Image(
+                        modifier = Modifier.size(16.dp),
+                        imageVector =
+                            if (state.isAdd) {
+                                HedgeIcon.Check
+                            } else {
+                                HedgeIcon.Add
+                            },
+                        contentDescription = "",
+                        colorFilter = ColorFilter.tint(HedgeColor.WHITE)
+                    )
                     Text(
                         modifier = Modifier.padding(start = 3.2.dp),
                         text = if (state.isAdd) {

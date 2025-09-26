@@ -4,7 +4,7 @@ import com.depromeet.team5.core.domain.model.RetrospectionEntity
 import com.depromeet.team5.core.model.Retrospection
 
 
-fun RetrospectionEntity.toUi(): Retrospection {
+fun RetrospectionEntity.toPresentation(): Retrospection {
     return Retrospection(
         id = id,
         userId = userId,

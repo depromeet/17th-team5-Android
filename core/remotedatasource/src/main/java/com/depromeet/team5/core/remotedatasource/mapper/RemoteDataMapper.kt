@@ -1,7 +1,7 @@
 package com.depromeet.team5.core.remotedatasource.mapper
 
 
-interface DataMapper<out T> {
+interface RemoteDataMapper<out T> {
 
     fun toData(): T
 }

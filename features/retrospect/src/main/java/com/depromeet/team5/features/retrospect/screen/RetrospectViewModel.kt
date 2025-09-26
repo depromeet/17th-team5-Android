@@ -81,24 +81,20 @@ class RetrospectViewModel @Inject constructor(
             SELLING -> sellingTextFieldState.update {
                 it.copy(text = value, selection = selection, isError = isError)
             }
+
             STOCK -> stockTextFieldState.update {
                 it.copy(text = value, selection = selection, isError = isError)
             }
+
             DATE -> dateTextFieldState.update {
                 it.copy(text = value, selection = selection, isError = isError)
             }
+
             RETURN -> returnTextFieldState.update {
                 it.copy(text = value, selection = selection, isError = isError)
             }
         }
 
         savedStateHandle[key] = value
-    }
-
-
-    fun onClickedConfirmButton() {
-        if (!okButtonState.stateFlow.value) return
-
-        //todo 서버에 값 전달하는 코드 추가하기
     }
 }

@@ -12,7 +12,7 @@ class HedgeState<T : Any?>(
     private val initValue: T
 ) {
     private val _stateFlow: MutableStateFlow<T> = MutableStateFlow(initValue)
-    val stateFlow: StateFlow<T> by lazy { _stateFlow.asStateFlow() }
+    val stateFlow: StateFlow<T> = _stateFlow.asStateFlow()
 
 
     suspend fun emit(value: T) {
@@ -30,16 +30,11 @@ class HedgeStateLazy<T : Any?>(
     private val initValue: () -> T
 ) : ReadOnlyProperty<Any?, HedgeState<T>> {
 
-    var value: T? = null
-
-
-    override fun getValue(thisRef: Any?, property: KProperty<*>): HedgeState<T> {
-        if (value == null) {
-            value = initValue()
-        }
-
-        return HedgeState(value!!)
+    private val state: HedgeState<T> by lazy {
+        HedgeState(initValue())
     }
+
+    override fun getValue(thisRef: Any?, property: KProperty<*>): HedgeState<T> = state
 }
 
 

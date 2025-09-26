@@ -13,6 +13,8 @@
     <string name="retrospect_selling_price_placeholder">매도 가격</string>
     <string name="retrospect_unit_won">원</string>
     <string name="retrospect_unit_dollar">$</string>
+    <string name="retrospect_unit_plus">+</string>
+    <string name="retrospect_unit_minus">-</string>
     <string name="retrospect_transaction_date">거래 날짜</string>
     <string name="retrospect_company_name_temp">삼성전자</string>
     <string name="error_message_future_date">미래 날짜는 입력할 수 없어요</string>

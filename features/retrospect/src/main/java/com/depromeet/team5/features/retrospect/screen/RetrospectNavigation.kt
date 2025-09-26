@@ -1,6 +1,10 @@
 package com.depromeet.team5.features.retrospect.screen
 
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.systemBars
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
@@ -11,16 +15,16 @@ import kotlinx.serialization.Serializable
 @Serializable
 object Retrospect
 
-fun NavController.navigateToRetrospect(){
+fun NavController.navigateToRetrospect() {
     navigate(Retrospect)
 }
 
 fun NavGraphBuilder.retrospectScreen(
     navController: NavController,
-    onClick: ()-> Unit,
+    onClickedConfirmButton: () -> Unit,
     onBackPressed: () -> Unit
-){
-    composable<Retrospect>{backStackEntry ->
+) {
+    composable<Retrospect> { backStackEntry ->
         val parentEntry = remember(backStackEntry) {
             navController.getBackStackEntry(navController.graph.startDestinationRoute!!)
         }
@@ -28,9 +32,10 @@ fun NavGraphBuilder.retrospectScreen(
         val sharedViewModel: RequestViewModel = viewModel(viewModelStoreOwner = parentEntry)
 
         RetrospectRoute(
+            modifier = Modifier.windowInsetsPadding(WindowInsets.systemBars),
             onBackPressed = onBackPressed,
-            requestViewModel = sharedViewModel,
-            onClick = onClick
+            onClickedConfirmButton = onClickedConfirmButton,
+            requestViewModel = sharedViewModel
         )
     }
 }

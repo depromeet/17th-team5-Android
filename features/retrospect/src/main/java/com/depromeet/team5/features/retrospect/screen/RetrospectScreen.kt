@@ -1,5 +1,6 @@
 package com.depromeet.team5.features.retrospect.screen
 
+import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.tween
@@ -11,27 +12,24 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActionScope
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -48,17 +46,18 @@ import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextRange
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.input.VisualTransformation
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.depromeet.team5.core.designsystem.component.HedgeButton
+import com.depromeet.team5.core.designsystem.component.HedgeSegment
+import com.depromeet.team5.core.designsystem.foundation.HedgeColor
+import com.depromeet.team5.core.designsystem.foundation.HedgeTypography
 import com.depromeet.team5.core.model.request.RequestViewModel
 import com.depromeet.team5.features.retrospect.R
 import com.depromeet.team5.features.retrospect.annotation.DATE
@@ -67,7 +66,6 @@ import com.depromeet.team5.features.retrospect.annotation.SELLING
 import com.depromeet.team5.features.retrospect.annotation.STOCK
 import com.depromeet.team5.features.retrospect.screen.component.HedgeDatePickerDialog
 import com.depromeet.team5.features.retrospect.screen.component.HedgeSimpleTextField
-import com.depromeet.team5.features.retrospect.screen.component.HedgeSwitch
 import com.depromeet.team5.features.retrospect.screen.component.HedgeTopbar
 import com.depromeet.team5.features.retrospect.screen.component.HedgeUnitTextField
 import com.depromeet.team5.features.retrospect.screen.visualtransmation.KoreanCurrencyVisualTransformation
@@ -85,8 +83,8 @@ import java.util.Locale
 @Composable
 fun RetrospectRoute(
     onBackPressed: () -> Unit,
+    onClickedConfirmButton: () -> Unit,
     requestViewModel: RequestViewModel,
-    onClick: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: RetrospectViewModel = hiltViewModel(),
 ) {
@@ -121,14 +119,29 @@ fun RetrospectRoute(
             viewModel.updateState(RETURN, text, selection, true)
         },
         onClickedConfirmButton = {
-            viewModel::onClickedConfirmButton
-            onClick()
+            if (!viewModel.okButtonState.stateFlow.value) return@RetrospectScreen
 
+            requestViewModel.request = requestViewModel.request.copy(
+                price = viewModel.sellingTextFieldState.stateFlow.value.text.toInt(),
+                volume = viewModel.stockTextFieldState.stateFlow.value.text.toInt(),
+                orderDate = formatDate(
+                    viewModel.dateTextFieldState.stateFlow.value.text
+                ),
+                returnRate = try {
+                    viewModel.returnTextFieldState.stateFlow.value.text.toDouble()
+                } catch (e: Exception) {
+                    null
+                }
+            )
+
+            Log.e("requestViewModel", requestViewModel.request.toString())
+
+            onClickedConfirmButton()
         },
-        onUpdateReturnToggle = {
-            viewModel.returnToggleState.update { it }
+        onUpdateReturnToggle = { isToggled ->
+            viewModel.returnToggleState.update { isToggled }
         },
-        onBackPressed = onBackPressed,
+        onBackPressed = onBackPressed
     )
 }
 
@@ -166,9 +179,8 @@ private fun RetrospectScreen(
         Text(
             modifier = Modifier.padding(start = 16.dp, top = 8.dp),
             text = stringResource(id = R.string.retrospect_selling_price_title),
-            fontWeight = FontWeight.W600,
-            fontSize = 22.sp,
-            color = colorResource(R.color.primary)
+            style = HedgeTypography.Headline1.SemiBold,
+            color = HedgeColor.GREY_900
         )
 
         Column(
@@ -246,51 +258,37 @@ private fun RetrospectScreen(
                 Column {
                     Text(
                         text = stringResource(id = R.string.retrospect_enter_rate_of_return),
-                        color = colorResource(R.color.gray700),
-                        fontSize = 15.sp,
-                        letterSpacing = 0.14.sp,
-                        fontWeight = FontWeight.W600
+                        style = HedgeTypography.Body3.SemiBold,
+                        color = HedgeColor.GREY_700
                     )
                     Text(
+                        modifier = Modifier.padding(top = 1.dp),
                         text = stringResource(id = R.string.retrospect_ai_analysis_description),
-                        color = colorResource(R.color.alternative),
-                        fontSize = 13.sp,
-                        letterSpacing = 0.03.sp,
-                        fontWeight = FontWeight.W600
+                        style = HedgeTypography.Label2.SemiBold,
+                        color = HedgeColor.Text.Alternative
                     )
                 }
 
                 Switch(
                     checked = returnToggleState,
                     colors = SwitchDefaults.colors(
-                        checkedThumbColor = colorResource(R.color.white),
-                        uncheckedThumbColor = colorResource(R.color.white),
-                        checkedTrackColor = colorResource(R.color.gray300),
-                        uncheckedTrackColor = colorResource(R.color.gray300)
+                        checkedThumbColor = HedgeColor.WHITE,
+                        uncheckedThumbColor = HedgeColor.WHITE,
+                        checkedTrackColor = HedgeColor.Brand.Darken,
+                        uncheckedTrackColor = HedgeColor.GREY_OPACITY_300
                     ),
                     onCheckedChange = onUpdateReturnToggle
                 )
             }
 
-            TextButton(
+            HedgeButton.Action.Filled(
                 modifier = Modifier
-                    .padding(top = 24.dp, bottom = 10.dp)
                     .fillMaxWidth()
-                    .height(57.dp),
-                shape = RoundedCornerShape(18.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = colorResource(R.color.primary)
-                ),
+                    .padding(top = 24.dp),
                 enabled = buttonEnabled,
+                text = stringResource(id = R.string.retrospect_confirm),
                 onClick = onClickedConfirmButton
-            ) {
-                Text(
-                    text = stringResource(id = R.string.retrospect_confirm),
-                    color = colorResource(R.color.white),
-                    fontSize = 18.sp,
-                    fontWeight = FontWeight.W600
-                )
-            }
+            )
         }
     }
 }
@@ -304,13 +302,13 @@ private fun SellingTextField(
     val focusManager = LocalFocusManager.current
     val focusRequester = remember { FocusRequester() }
 
-    var isToggled by remember { mutableStateOf(false) }
+    var selectedIndex by remember { mutableIntStateOf(0) }
     val currentVisualTransformation =
-        if (isToggled) USDCurrencyVisualTransformation() else KoreanCurrencyVisualTransformation()
+        if (selectedIndex == 1) USDCurrencyVisualTransformation() else KoreanCurrencyVisualTransformation()
 
     HedgeUnitTextField(
         modifier = modifier.focusRequester(focusRequester),
-        label = state.label,
+        label = stringResource(R.string.retrospect_selling_price),
         placeholder = stringResource(id = R.string.retrospect_selling_price_placeholder),
         value = TextFieldValue(
             text = state.text,
@@ -334,11 +332,14 @@ private fun SellingTextField(
             }
         ),
         trailingIcon = {
-            CurrencySwitch(
-                isToggled = isToggled,
-                onToggleChanged = { newToggleState ->
-                    isToggled = newToggleState
-                    onUpdateSellingText("", 0)
+            HedgeSegment(
+                options = listOf(
+                    stringResource(id = R.string.retrospect_unit_won),
+                    stringResource(id = R.string.retrospect_unit_dollar)
+                ),
+                selectedIndex = selectedIndex,
+                onSelectedIndexChange = { index ->
+                    selectedIndex = index
                 }
             )
         },
@@ -369,7 +370,7 @@ private fun StockTextField(
 
             onUpdateStockText(digitsOnlyText, newCursorPosition)
         },
-        label = state.label,
+        label = stringResource(R.string.retrospect_volume),
         placeholder = stringResource(id = R.string.retrospect_volume_placeholder),
         visualTransformation = UnitTransformation(stringResource(id = R.string.retrospect_unit_stock)),
         onDone = {
@@ -431,7 +432,7 @@ private fun DateTextField(
                 isShowDatePicker = false
 
                 val date = datePickerState.selectedDateMillis?.let {
-                    formatDate(it)
+                    formatDate("YYYY년 MM월 dd일", it)
                 } ?: run {
                     focusManager.clearFocus()
                     return@HedgeDatePickerDialog
@@ -469,7 +470,11 @@ private fun DateTextField(
             .onFocusChanged { isShowDatePicker = it.isFocused },
         value = TextFieldValue(state.text, TextRange(state.selection)),
         onValueChange = {},
-        label = state.label,
+        label = if (state.isError) {
+            state.label
+        } else {
+            stringResource(R.string.retrospect_transaction_date)
+        },
         placeholder = stringResource(id = R.string.retrospect_transaction_date),
         isError = state.isError,
         readOnly = true
@@ -485,7 +490,9 @@ fun ReturnTextField(
     val focusManager = LocalFocusManager.current
     val focusRequester = remember { FocusRequester() }
 
-    SimpleNumberTextField(
+    var selectedIndex by remember { mutableIntStateOf(0) }
+
+    HedgeUnitTextField(
         modifier = Modifier
             .focusRequester(focusRequester)
             .padding(start = 20.dp, end = 20.dp, top = 12.dp),
@@ -500,58 +507,52 @@ fun ReturnTextField(
 
             onUpdateReturnText(digitsOnlyText, newCursorPosition)
         },
-        onDone = {
-            focusManager.clearFocus()
-            onChangedKeyboardVisibility(false)
+        keyboardOptions = KeyboardOptions(
+            keyboardType = KeyboardType.Number,
+            imeAction = ImeAction.Done
+        ),
+        keyboardActions = KeyboardActions(
+            onDone = {
+                focusManager.clearFocus()
+                onChangedKeyboardVisibility(false)
+            }
+        ),
+        trailingIcon = {
+            HedgeSegment(
+                options = listOf(
+                    stringResource(id = R.string.retrospect_unit_plus),
+                    stringResource(id = R.string.retrospect_unit_minus)
+                ),
+                selectedIndex = selectedIndex,
+                onSelectedIndexChange = { index ->
+                    selectedIndex = index
+                }
+            )
         },
         visualTransformation = UnitTransformation(stringResource(id = R.string.retrospect_unit_percent))
     )
 }
 
-private fun formatDate(milliseconds: Long): String {
-    val formatter = SimpleDateFormat("YYYY년 MM월 dd일", Locale.KOREA)
-    return formatter.format(Date(milliseconds))
+private fun formatDate(date: String): String {
+    val regex = """(\d{4})년\s*(\d{1,2})월\s*(\d{1,2})일""".toRegex()
+
+    val matchResult = regex.find(date)
+
+    if (matchResult != null) {
+        val (year, month, day) = matchResult.destructured
+
+        val formattedMonth = month.padStart(2, '0')
+        val formattedDay = day.padStart(2, '0')
+
+        return "$year-$formattedMonth-$formattedDay"
+    }
+
+    error("잘못된 Date Format이 들어왔습니다. Params : { $date }")
 }
 
-@Composable
-private fun CurrencySwitch(
-    isToggled: Boolean,
-    onToggleChanged: (Boolean) -> Unit
-) {
-    HedgeSwitch(
-        isToggled = isToggled,
-        onToggleChanged = onToggleChanged,
-        offContent = {
-            Box(
-                modifier = Modifier
-                    .fillMaxHeight(),
-                contentAlignment = Alignment.Center
-            ) {
-                Text(
-                    modifier = Modifier
-                        .padding(horizontal = 7.dp, vertical = 6.dp),
-                    text = stringResource(id = R.string.retrospect_unit_won),
-                    fontSize = 12.sp,
-                    fontWeight = FontWeight.W600
-                )
-            }
-        },
-        onContent = {
-            Box(
-                modifier = Modifier.fillMaxHeight(),
-                contentAlignment = Alignment.Center
-            ) {
-                Text(
-                    modifier = Modifier
-                        .padding(horizontal = 7.dp, vertical = 6.dp),
-                    text = stringResource(id = R.string.retrospect_unit_dollar),
-                    fontSize = 12.sp,
-                    fontWeight = FontWeight.W600,
-                    textAlign = TextAlign.Center
-                )
-            }
-        }
-    )
+private fun formatDate(format: String, milliseconds: Long): String {
+    val formatter = SimpleDateFormat(format, Locale.KOREA)
+    return formatter.format(Date(milliseconds))
 }
 
 @Composable
@@ -559,12 +560,13 @@ private fun CompanyTitle(
     modifier: Modifier = Modifier
 ) {
     Row(
-        modifier = modifier
+        modifier = modifier,
+        verticalAlignment = Alignment.CenterVertically
     ) {
 
         Box(
             modifier = Modifier
-                .size(24.dp)
+                .size(22.dp)
                 .background(Color.Gray, shape = RoundedCornerShape(20.dp))
         )
 

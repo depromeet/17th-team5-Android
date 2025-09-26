@@ -3,11 +3,13 @@ package com.depromeet.team5.features.principle
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
@@ -120,6 +122,7 @@ private fun PrincipleScreen(
                 text = stringResource(R.string.principle_next_button),
                 modifier = Modifier
                     .fillMaxWidth()
+                    .navigationBarsPadding()
                     .padding(horizontal = 20.dp, vertical = 10.dp),
                 buttonColors = HedgeButton.Action.Color.Filled.Primary,
                 enabled = hasAnyChecked,
@@ -172,8 +175,11 @@ fun PrincipleItem(
 ) {
     Row(
         modifier = modifier
-            .padding(horizontal = 24.dp, vertical = 24.dp)
-            .clickable { onClickItem() },
+            .clickable(
+                onClick = onClickItem,
+                interactionSource = remember { MutableInteractionSource() },
+            )
+            .padding(horizontal = 24.dp, vertical = 22.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Icon(

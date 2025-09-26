@@ -9,8 +9,10 @@
     <string name="feedback_market_status">당시 시장 현황</string>
     <string name="feedback_ai_recommended_principle">AI 추천 원칙</string>
     <string name="feedback_add">추가</string>
+    <string name="feedback_complete">완료</string>
     <string name="feedback_ai_feedback_in_progress">AI 피드백 작성중...</string>
     <string name="feedback_error">피드백 정보를 가져오는데 문제가 발생했어요.\n다시 시도해주세요.</string>
     <string name="feedback_not_yet">추후에 공개될 예정이에요.</string>
     <string name="price_and_stock">%,d원・%d주 매도</string>
+    <string name="feedback_add_principle">내 투자 원칙에 추가되었습니다</string>
 </resources>

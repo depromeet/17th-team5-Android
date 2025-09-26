@@ -52,8 +52,8 @@ import com.depromeet.team5.core.designsystem.component.HedgeTopBar
 import com.depromeet.team5.core.designsystem.foundation.HedgeColor
 import com.depromeet.team5.core.designsystem.foundation.HedgeIcon
 import com.depromeet.team5.core.designsystem.foundation.HedgeTypography
-import com.depromeet.team5.core.model.Principle
-import com.depromeet.team5.features.feedback.AiFeedbackState
+import com.depromeet.team5.features.feedback.AiFeedbackUiState
+import com.depromeet.team5.features.feedback.PrincipleState
 import com.depromeet.team5.features.feedback.R
 import com.depromeet.team5.features.feedback.component.HedgeToast
 import com.depromeet.team5.features.feedback.component.rememberHedgeToastState
@@ -83,7 +83,8 @@ fun FeedbackRoute(
         date = date,
         onRetryClick = {},
         onRemoveClick = onRemoveClick,
-        onAddClick = {
+        onAddClick = { title ->
+            viewModel.updatePrinciple(title)
             toastState.show()
         }
     )
@@ -94,7 +95,7 @@ fun FeedbackRoute(
             state = toastState,
             message = {
                 Text(
-                    text = "내 투자 원칙에 추가되었습니닽",
+                    text = stringResource(R.string.feedback_add_principle),
                     style = HedgeTypography.Body3.Medium,
                     color = HedgeColor.Neutral.BackgroundSecondary
                 )
@@ -108,14 +109,14 @@ fun FeedbackRoute(
 
 @Composable
 private fun FeedbackScreen(
-    state: AiFeedbackState,
+    state: AiFeedbackUiState,
     companyName: String,
     price: Long,
     stock: Int,
     date: String,
     onRemoveClick: () -> Unit,
     onRetryClick: () -> Unit,
-    onAddClick: () -> Unit,
+    onAddClick: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val tabs = listOf(
@@ -130,7 +131,7 @@ private fun FeedbackScreen(
 
     val scope = rememberCoroutineScope()
 
-    if (state is AiFeedbackState.Failure || state is AiFeedbackState.Error) {
+    if (state is AiFeedbackUiState.Failure || state is AiFeedbackUiState.Error) {
         FeedbackError(onRetryClick = onRetryClick)
         return
     }
@@ -292,19 +293,19 @@ private fun AiHeader(
 
 @Composable
 private fun AiFeedbackPage(
-    state: AiFeedbackState,
-    onAddClick: () -> Unit,
+    state: AiFeedbackUiState,
+    onAddClick: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(
         modifier = modifier.fillMaxSize()
     ) {
         when (state) {
-            AiFeedbackState.Loading -> {
+            AiFeedbackUiState.Loading -> {
                 AiLoadingProgress()
             }
 
-            is AiFeedbackState.Success -> {
+            is AiFeedbackUiState.Success -> {
                 Column {
                     AiNotice()
                     Spacer(modifier = Modifier.padding(top = 22.dp))
@@ -354,8 +355,8 @@ private fun AiNotice() {
 
 @Composable
 private fun AIContent(
-    state: AiFeedbackState.Success,
-    onAddClick: () -> Unit,
+    state: AiFeedbackUiState.Success,
+    onAddClick: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -449,8 +450,7 @@ private fun AIContent(
             val topPadding = if (index == 0) 16.dp else 22.dp
 
             PrincipleViewHolder(
-                title = principle.title,
-                content = principle.content,
+                state = principle,
                 contentPadding = PaddingValues(top = topPadding, bottom = 22.dp),
                 onAddClick = onAddClick
             )
@@ -465,9 +465,8 @@ private fun AIContent(
 
 @Composable
 private fun PrincipleViewHolder(
-    title: String,
-    content: String,
-    onAddClick: () -> Unit,
+    state: PrincipleState,
+    onAddClick: (String) -> Unit,
     contentPadding: PaddingValues = PaddingValues(0.dp),
     modifier: Modifier = Modifier
 ) {
@@ -480,7 +479,7 @@ private fun PrincipleViewHolder(
         ) {
             Text(
                 modifier = Modifier.weight(1f),
-                text = title,
+                text = state.title,
                 style = HedgeTypography.Body2.SemiBold,
                 color = HedgeColor.Text.Title,
                 maxLines = 2,
@@ -490,10 +489,15 @@ private fun PrincipleViewHolder(
                 modifier = Modifier
                     .padding(start = 40.dp),
                 shape = RoundedCornerShape(8.dp),
-                onClick = onAddClick,
+                onClick = {
+                    onAddClick(state.title)
+                },
+                enabled = !state.isAdd,
                 colors = ButtonDefaults.buttonColors(
                     containerColor = HedgeColor.Brand.Primary,
-                    contentColor = HedgeColor.WHITE
+                    contentColor = HedgeColor.WHITE,
+                    disabledContainerColor = HedgeColor.Text.Disabled,
+                    disabledContentColor = HedgeColor.Neutral.BackgroundDefault
                 ),
                 contentPadding = PaddingValues(start = 8.dp, top = 8.dp, end = 10.dp, bottom = 8.dp)
             ) {
@@ -503,7 +507,11 @@ private fun PrincipleViewHolder(
                     Image(painter = painterResource(R.drawable.img_add), contentDescription = "")
                     Text(
                         modifier = Modifier.padding(start = 3.2.dp),
-                        text = stringResource(id = R.string.feedback_add),
+                        text = if (state.isAdd) {
+                            stringResource(id = R.string.feedback_complete)
+                        } else {
+                            stringResource(id = R.string.feedback_add)
+                        },
                         style = HedgeTypography.Label2.SemiBold,
                         color = HedgeColor.Neutral.BackgroundDefault
                     )
@@ -513,7 +521,7 @@ private fun PrincipleViewHolder(
 
         Text(
             modifier = Modifier.padding(top = 8.dp),
-            text = content,
+            text = state.content,
             style = HedgeTypography.Label1.Regular
         )
     }
@@ -638,21 +646,24 @@ fun AiContentPreview() {
             .wrapContentSize()
     ) {
         AIContent(
-            state = AiFeedbackState.Success(
+            state = AiFeedbackUiState.Success(
                 summarize = "사실 몇 줄까지 나올지 모르겠음 최대 4~5줄 정도가 좋지 않을까? 최대 4~5줄 정도가 좋지 않을까? 최대 4~5줄 정도가 좋지 않을까? 최대 4~5줄 정도가 좋지 않을까? 최대 4~5줄 정도가 좋지 않을까? 최대 4~5줄 정도가 좋지 않을까? 최대 4~5줄 정도가 좋지 않을까? ",
                 summarizeOfMarket = "최대 3줄까지 설명 최대 3줄까지 설명 최대 3줄까지 설명 최대 3줄까지 설명 최대 3줄까지 설명 최대 3줄까지 설명 최대 3줄까지 설명 최대 3줄까지 ",
                 principles = listOf(
-                    Principle(
+                    PrincipleState(
                         title = "원칙 타이틀 최대 2줄까지 원칙 타이틀 최대 2줄까지 원칙 타이틀 최대 2줄까",
-                        content = "최대 3줄까지 최대 3줄까지 최대 3줄까지 최대 3줄까지 최대 3줄까지 최대 3줄까지 최대 3줄까지 최대 3줄까지 최대 3줄까지 최대 3줄까지 최대 3줄까지 최대 3줄까지 최대 3줄"
+                        content = "최대 3줄까지 최대 3줄까지 최대 3줄까지 최대 3줄까지 최대 3줄까지 최대 3줄까지 최대 3줄까지 최대 3줄까지 최대 3줄까지 최대 3줄까지 최대 3줄까지 최대 3줄까지 최대 3줄",
+                        isAdd = false
                     ),
-                    Principle(
+                    PrincipleState(
                         title = "원칙 타이틀 최대 2줄까지 원칙 타이틀 최대 2줄까지 원칙 타이틀 최대 2줄까",
-                        content = "최대 3줄까지 최대 3줄까지 최대 3줄까지 최대 3줄까지 최대 3줄까지 최대 3줄까지 최대 3줄까지 최대 3줄까지 최대 3줄까지 최대 3줄까지 최대 3줄까지 최대 3줄까지 최대 3줄"
+                        content = "최대 3줄까지 최대 3줄까지 최대 3줄까지 최대 3줄까지 최대 3줄까지 최대 3줄까지 최대 3줄까지 최대 3줄까지 최대 3줄까지 최대 3줄까지 최대 3줄까지 최대 3줄까지 최대 3줄",
+                        isAdd = false
                     ),
-                    Principle(
+                    PrincipleState(
                         title = "원칙 타이틀 최대 2줄까지 원칙 타이틀 최대 2줄까지 원칙 타이틀 최대 2줄까",
-                        content = "최대 3줄까지 최대 3줄까지 최대 3줄까지 최대 3줄까지 최대 3줄까지 최대 3줄까지 최대 3줄까지 최대 3줄까지 최대 3줄까지 최대 3줄까지 최대 3줄까지 최대 3줄까지 최대 3줄"
+                        content = "최대 3줄까지 최대 3줄까지 최대 3줄까지 최대 3줄까지 최대 3줄까지 최대 3줄까지 최대 3줄까지 최대 3줄까지 최대 3줄까지 최대 3줄까지 최대 3줄까지 최대 3줄까지 최대 3줄",
+                        isAdd = false
                     )
                 )
             ),
@@ -666,30 +677,58 @@ fun AiContentPreview() {
 @Composable
 @Preview
 fun AiFeedBackScreenPreview() {
-    var state: AiFeedbackState by remember { mutableStateOf(AiFeedbackState.Loading) }
+    var state: AiFeedbackUiState by remember { mutableStateOf(AiFeedbackUiState.Loading) }
     val toastState = rememberHedgeToastState()
 
     LaunchedEffect(Unit) {
-
         delay(4000)
-        state = AiFeedbackState.Success(
+        state = AiFeedbackUiState.Success(
             summarize = "사실 몇 줄까지 나올지 모르겠음 최대 4~5줄 정도가 좋지 않을까? 최대 4~5줄 정도가 좋지 않을까? 최대 4~5줄 정도가 좋지 않을까? 최대 4~5줄 정도가 좋지 않을까? 최대 4~5줄 정도가 좋지 않을까? 최대 4~5줄 정도가 좋지 않을까? 최대 4~5줄 정도가 좋지 않을까? ",
             summarizeOfMarket = "최대 3줄까지 설명 최대 3줄까지 설명 최대 3줄까지 설명 최대 3줄까지 설명 최대 3줄까지 설명 최대 3줄까지 설명 최대 3줄까지 설명 최대 3줄까지 ",
             principles = listOf(
-                Principle(
-                    title = "원칙 타이틀 최대 2줄까지 원칙 타이틀 최대 2줄까지 원칙 타이틀 최대 2줄까",
-                    content = "최대 3줄까지 최대 3줄까지 최대 3줄까지 최대 3줄까지 최대 3줄까지 최대 3줄까지 최대 3줄까지 최대 3줄까지 최대 3줄까지 최대 3줄까지 최대 3줄까지 최대 3줄까지 최대 3줄"
+                PrincipleState(
+                    title = "1원칙 타이틀 최대 2줄까지 원칙 타이틀 최대 2줄까지 원칙 타이틀 최대 2줄까",
+                    content = "최대 3줄까지 최대 3줄까지 최대 3줄까지 최대 3줄까지 최대 3줄까지 최대 3줄까지 최대 3줄까지 최대 3줄까지 최대 3줄까지 최대 3줄까지 최대 3줄까지 최대 3줄까지 최대 3줄",
+                    isAdd = false
                 ),
-                Principle(
-                    title = "원칙 타이틀 최대 2줄까지 원칙 타이틀 최대 2줄까지 원칙 타이틀 최대 2줄까",
-                    content = "최대 3줄까지 최대 3줄까지 최대 3줄까지 최대 3줄까지 최대 3줄까지 최대 3줄까지 최대 3줄까지 최대 3줄까지 최대 3줄까지 최대 3줄까지 최대 3줄까지 최대 3줄까지 최대 3줄"
+                PrincipleState(
+                    title = "2원칙 타이틀 최대 2줄까지 원칙 타이틀 최대 2줄까지 원칙 타이틀 최대 2줄까",
+                    content = "최대 3줄까지 최대 3줄까지 최대 3줄까지 최대 3줄까지 최대 3줄까지 최대 3줄까지 최대 3줄까지 최대 3줄까지 최대 3줄까지 최대 3줄까지 최대 3줄까지 최대 3줄까지 최대 3줄",
+                    isAdd = false
                 ),
-                Principle(
-                    title = "원칙 타이틀 최대 2줄까지 원칙 타이틀 최대 2줄까지 원칙 타이틀 최대 2줄까",
-                    content = "최대 3줄까지 최대 3줄까지 최대 3줄까지 최대 3줄까지 최대 3줄까지 최대 3줄까지 최대 3줄까지 최대 3줄까지 최대 3줄까지 최대 3줄까지 최대 3줄까지 최대 3줄까지 최대 3줄"
+                PrincipleState(
+                    title = "3원칙 타이틀 최대 2줄까지 원칙 타이틀 최대 2줄까지 원칙 타이틀 최대 2줄까",
+                    content = "최대 3줄까지 최대 3줄까지 최대 3줄까지 최대 3줄까지 최대 3줄까지 최대 3줄까지 최대 3줄까지 최대 3줄까지 최대 3줄까지 최대 3줄까지 최대 3줄까지 최대 3줄까지 최대 3줄",
+                    isAdd = false
                 )
             )
         )
+    }
+
+    fun updatePrinciple(title: String) {
+        when (state) {
+            is AiFeedbackUiState.Success -> {
+                val index =
+                    (state as AiFeedbackUiState.Success).principles.indexOfFirst { it.title == title }
+
+                if (index == -1) return
+
+                val principles = (state as AiFeedbackUiState.Success).principles
+                val target = principles[index]
+
+                val newPrinciple = target.copy(isAdd = !target.isAdd)
+
+                val newPrinciples = principles.toMutableList().apply {
+                    set(index, newPrinciple)
+                }
+
+                state = (state as AiFeedbackUiState.Success).copy(
+                    principles = newPrinciples
+                )
+            }
+
+            else -> {}
+        }
     }
 
     FeedbackScreen(
@@ -700,7 +739,8 @@ fun AiFeedBackScreenPreview() {
         state = state,
         onRemoveClick = {},
         onRetryClick = {},
-        onAddClick = {
+        onAddClick = { title ->
+            updatePrinciple(title)
             toastState.show()
         }
     )
@@ -711,7 +751,7 @@ fun AiFeedBackScreenPreview() {
             state = toastState,
             message = {
                 Text(
-                    text = "회고가 삭제되었습니다",
+                    text = stringResource(R.string.feedback_add_principle),
                     style = HedgeTypography.Body3.Medium,
                     color = HedgeColor.Neutral.BackgroundSecondary
                 )

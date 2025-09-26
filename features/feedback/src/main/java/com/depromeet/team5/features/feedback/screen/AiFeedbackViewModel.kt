@@ -7,16 +7,17 @@ import androidx.navigation.toRoute
 import com.depromeet.team5.core.domain.usecase.CreateFeedbackUseCase
 import com.depromeet.team5.core.model.Feedback
 import com.depromeet.team5.core.model.mapper.toUi
-import com.depromeet.team5.features.feedback.AiFeedbackState
+import com.depromeet.team5.features.feedback.AiFeedbackUiState
+import com.depromeet.team5.features.feedback.PrincipleState
 import com.depromeet.team5.features.feedback.navigation.FeedbackParams
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 
@@ -40,27 +41,67 @@ class AiFeedbackViewModel @Inject constructor(
     private val _date = MutableStateFlow(feedbackParams.date)
     val date: StateFlow<String> = _date.asStateFlow()
 
-    val feedbackStateFlow: StateFlow<AiFeedbackState> =
-        createFeedbackUseCase(feedbackParams.retrospectionId, mapOf())
-            .map { it.toUi() }
-            .map {
-                if (it != Feedback.EMPTY) {
-                    AiFeedbackState.Success(
-                        summarize = it.summarize,
-                        summarizeOfMarket = it.summarizeOfMarket,
-                        principles = it.principles
-                    )
-                } else {
-                    AiFeedbackState.Error(
-                        code = it.code,
-                        message = it.message
+    private val _feedbackStateFlow: MutableStateFlow<AiFeedbackUiState> =
+        MutableStateFlow(AiFeedbackUiState.Loading)
+    val feedbackStateFlow: StateFlow<AiFeedbackUiState> = _feedbackStateFlow
+
+
+    init {
+        viewModelScope.launch {
+            createFeedbackUseCase(feedbackParams.retrospectionId, mapOf())
+                .map { it.toUi() }
+                .map {
+                    if (it != Feedback.EMPTY) {
+                        AiFeedbackUiState.Success(
+                            summarize = it.summarize,
+                            summarizeOfMarket = it.summarizeOfMarket,
+                            principles = it.principles.map { principle ->
+                                PrincipleState(
+                                    title = principle.title,
+                                    content = principle.content,
+                                    isAdd = false
+                                )
+                            }
+                        )
+                    } else {
+                        AiFeedbackUiState.Error(
+                            code = it.code,
+                            message = it.message
+                        )
+                    }
+                }
+                .catch { emit(AiFeedbackUiState.Failure(it)) }
+                .collect { state ->
+                    _feedbackStateFlow.emit(state)
+                }
+        }
+    }
+
+    fun updatePrinciple(title: String) {
+        when (_feedbackStateFlow.value) {
+            is AiFeedbackUiState.Success -> {
+                val index =
+                    (_feedbackStateFlow.value as AiFeedbackUiState.Success).principles.indexOfFirst { it.title == title }
+
+                if (index == -1) return
+
+                val principles = (_feedbackStateFlow.value as AiFeedbackUiState.Success).principles
+                val target = principles[index]
+
+                val newPrinciple = target.copy(isAdd = !target.isAdd)
+
+                val newPrinciples = principles.toMutableList().apply {
+                    set(index, newPrinciple)
+                }
+
+                _feedbackStateFlow.update {
+                    (_feedbackStateFlow.value as AiFeedbackUiState.Success).copy(
+                        principles = newPrinciples
                     )
                 }
+
             }
-            .catch { emit(AiFeedbackState.Failure(it)) }
-            .stateIn(
-                scope = viewModelScope,
-                started = SharingStarted.WhileSubscribed(5000),
-                initialValue = AiFeedbackState.Loading
-            )
+            else -> {}
+        }
+    }
 }

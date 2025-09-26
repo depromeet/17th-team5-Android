@@ -41,6 +41,7 @@ import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -72,7 +73,9 @@ fun FeedbackRoute(
         state = state,
         companyName = companyName,
         priceAndStock = priceAndStock,
-        date = date
+        date = date,
+        onClickedRetry = {},
+        onClickedBackPressed = {}
     )
 }
 
@@ -82,7 +85,8 @@ private fun FeedbackScreen(
     companyName: String,
     priceAndStock: String,
     date: String,
-    onClickBackPressed: () -> Unit = {},
+    onClickedBackPressed: () -> Unit = {},
+    onClickedRetry: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val tabs = listOf(
@@ -98,7 +102,7 @@ private fun FeedbackScreen(
     val scope = rememberCoroutineScope()
 
     if (state is AiFeedbackState.Failure || state is AiFeedbackState.Error) {
-        //todo error 화면 오픈
+        FeedbackError(onClickedRetry = onClickedRetry)
         return
     }
 
@@ -107,7 +111,7 @@ private fun FeedbackScreen(
             .background(HedgeColor.WHITE)
     ) {
         HedgeTopBar(
-            onClickBack = onClickBackPressed,
+            onClickBack = onClickedBackPressed,
             action = {
                 Text(
                     text = stringResource(id = R.string.feedback_delete),
@@ -259,8 +263,7 @@ private fun AiFeedbackPage(
                 }
             }
 
-            is AiFeedbackState.Failure,
-            is AiFeedbackState.Error -> TODO()
+            else -> {}
         }
     }
 }
@@ -511,11 +514,36 @@ private fun AiLoadingProgress(
     }
 }
 
+@Composable
+private fun FeedbackError(
+    onClickedRetry: () -> Unit = {}
+) {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(HedgeColor.WHITE),
+        contentAlignment = Alignment.Center
+    ) {
+        Text(
+            text = "피드백 정보를 가져오는데 문제가 발생했어요.\n다시 시도해주세요.",
+            style = HedgeTypography.Body3.Medium,
+            color = HedgeColor.Text.Secondary,
+            textAlign = TextAlign.Center
+        )
+        //todo 추후에 Retry 관련 버튼 만들기
+    }
+}
+
+@Composable
+@Preview
+fun FeedbackErrorPreview() {
+    FeedbackError()
+}
 
 @Suppress("UnusedPrivateMember")
 @Composable
 @Preview
-fun AiNoticePreview() {
+private fun AiNoticePreview() {
     Box(
         modifier = Modifier
             .background(HedgeColor.WHITE),
@@ -628,7 +656,8 @@ fun AiFeedBackScreenPreview() {
         companyName = "삼성전자",
         priceAndStock = "65,000원・3주 매도",
         date = "2025년 8월 25일",
-        onClickBackPressed = {},
-        state = state
+        state = state,
+        onClickedBackPressed = {},
+        onClickedRetry = {}
     )
 }

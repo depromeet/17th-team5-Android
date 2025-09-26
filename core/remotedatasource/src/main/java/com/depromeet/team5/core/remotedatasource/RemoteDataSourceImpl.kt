@@ -4,8 +4,8 @@ import com.depromeet.team5.core.data.datasource.RemoteDataSource
 import com.depromeet.team5.core.data.model.FeedbackData
 import com.depromeet.team5.core.data.model.RetrospectionData
 import com.depromeet.team5.core.remotedatasource.apisource.HedgeApiSource
-import com.depromeet.team5.core.remotedatasource.model.FeedbackRemoteResponse
-import com.depromeet.team5.core.remotedatasource.model.PrincipleRemoteResponse
+import com.depromeet.team5.core.remotedatasource.model.FeedbackRemoteData
+import com.depromeet.team5.core.remotedatasource.model.PrincipleRemoteData
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.jsonArray
 import kotlinx.serialization.json.jsonObject
@@ -30,18 +30,18 @@ internal class RemoteDataSourceImpl @Inject constructor(
         val code = jsonObject.getValue(KEY_CODE).jsonPrimitive.content
         val message = jsonObject.getValue(KEY_MESSAGE).jsonPrimitive.content
 
-        val entity = jsonObject[KEY_DATA]?.jsonObject?.let { jsonObject ->
+        val remoteData = jsonObject[KEY_DATA]?.jsonObject?.let { jsonObject ->
             val summarize = jsonObject[KEY_SUMMARIZE]?.jsonPrimitive?.content ?: ""
             val summarizeForMarket =
                 jsonObject[KEY_SUMMARIZE_FOR_MARKET]?.jsonPrimitive?.content ?: ""
             val principlesJsonArray = jsonObject[KEY_PRINCIPLES]?.jsonArray
 
-            val principles = mutableListOf<PrincipleRemoteResponse>()
+            val principles = mutableListOf<PrincipleRemoteData>()
 
             principlesJsonArray?.forEach { jsonElement ->
                 for ((key, value) in jsonElement.jsonObject.entries) {
                     principles.add(
-                        PrincipleRemoteResponse(
+                        PrincipleRemoteData(
                             title = key,
                             content = value.jsonPrimitive.content
                         )
@@ -49,16 +49,16 @@ internal class RemoteDataSourceImpl @Inject constructor(
                 }
             }
 
-            FeedbackRemoteResponse(
+            FeedbackRemoteData(
                 code = code,
                 message = message,
                 summarize = summarize,
                 summarizeOfMarket = summarizeForMarket,
                 principles = principles
             )
-        } ?: FeedbackRemoteResponse.EMPTY
+        } ?: FeedbackRemoteData.EMPTY
 
-        return entity.toData()
+        return remoteData.toData()
     }
 
 

@@ -1,6 +1,6 @@
 package com.depromeet.team5.core.data.model
 
-import com.depromeet.team5.core.data.mapper.DomainMapper
+import com.depromeet.team5.core.data.mapper.DataMapper
 import com.depromeet.team5.core.domain.model.FeedbackEntity
 
 
@@ -10,7 +10,7 @@ data class FeedbackData(
     val summarize: String,
     val summarizeOfMarket: String,
     val principles: List<PrincipleData>
-) : DomainMapper<FeedbackEntity> {
+) : DataMapper<FeedbackEntity> {
 
     override fun toDomain(): FeedbackEntity = FeedbackEntity(
         code = code,

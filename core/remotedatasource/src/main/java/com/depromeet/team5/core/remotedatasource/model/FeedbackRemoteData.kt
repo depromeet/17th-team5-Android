@@ -1,16 +1,16 @@
 package com.depromeet.team5.core.remotedatasource.model
 
 import com.depromeet.team5.core.data.model.FeedbackData
-import com.depromeet.team5.core.remotedatasource.mapper.DataMapper
+import com.depromeet.team5.core.remotedatasource.mapper.RemoteDataMapper
 
 
-data class FeedbackRemoteResponse(
+data class FeedbackRemoteData(
     val code: String,
     val message: String,
     val summarize: String,
     val summarizeOfMarket: String,
-    val principles: List<PrincipleRemoteResponse>
-) : DataMapper<FeedbackData> {
+    val principles: List<PrincipleRemoteData>
+) : RemoteDataMapper<FeedbackData> {
 
     override fun toData(): FeedbackData = FeedbackData(
         code = code,
@@ -22,7 +22,7 @@ data class FeedbackRemoteResponse(
 
     companion object {
 
-        val EMPTY = FeedbackRemoteResponse(
+        val EMPTY = FeedbackRemoteData(
             code = "",
             message = "",
             summarize = "",

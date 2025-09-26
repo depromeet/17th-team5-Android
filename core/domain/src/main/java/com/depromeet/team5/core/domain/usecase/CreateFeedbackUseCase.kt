@@ -9,8 +9,7 @@ class CreateFeedbackUseCase @Inject constructor(
 ) {
 
     operator fun invoke(
-        retrospectionId: Int,
-        body: Map<String, Any?>
-    ) = repository.createFeedback(retrospectionId, body)
+        retrospectionId: Int
+    ) = repository.createFeedback(retrospectionId)
 
 }

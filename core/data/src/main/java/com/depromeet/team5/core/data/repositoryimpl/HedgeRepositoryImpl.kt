@@ -18,9 +18,8 @@ internal class HedgeRepositoryImpl @Inject constructor(
     }
 
     override fun createFeedback(
-        retrospectionId: Int,
-        body: Map<String, Any?>
+        retrospectionId: Int
     ): Flow<FeedbackEntity> = flow {
-        emit(remoteDataSource.createFeedback(retrospectionId, body).toDomain())
+        emit(remoteDataSource.createFeedback(retrospectionId).toDomain())
     }
 }

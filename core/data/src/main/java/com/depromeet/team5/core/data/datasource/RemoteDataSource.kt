@@ -8,8 +8,5 @@ interface RemoteDataSource {
 
     suspend fun createRetrospection(body: Map<String, Any?>): RetrospectionData
 
-    suspend fun createFeedback(
-        retrospectionId: Int,
-        body: Map<String, Any?>
-    ): FeedbackData
+    suspend fun createFeedback(retrospectionId: Int): FeedbackData
 }

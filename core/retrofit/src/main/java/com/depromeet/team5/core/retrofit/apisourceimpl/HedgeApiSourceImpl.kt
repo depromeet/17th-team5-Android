@@ -17,11 +17,7 @@ internal class HedgeApiSourceImpl @Inject constructor(
     ) = hedgeApi.createRetrospection(body.toRequestBody()).toRemoteData()
 
 
-    override suspend fun createFeedback(
-        retrospectionId: Int,
-        body: Map<String, Any?>
-    ): String = hedgeApi.createFeedback(
-        retrospectionId = retrospectionId,
-        body = body.toRequestBody()
-    ).toString()
+    override suspend fun createFeedback(retrospectionId: Int): String = hedgeApi
+        .createFeedback(retrospectionId = retrospectionId)
+        .toString()
 }

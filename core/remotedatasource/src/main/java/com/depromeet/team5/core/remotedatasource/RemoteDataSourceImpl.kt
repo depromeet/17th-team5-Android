@@ -22,11 +22,8 @@ internal class RemoteDataSourceImpl @Inject constructor(
     override suspend fun createRetrospection(body: Map<String, Any?>): RetrospectionData =
         hedgeApiSource.createRetrospection(body).toData()
 
-    override suspend fun createFeedback(
-        retrospectionId: Int,
-        body: Map<String, Any?>
-    ): FeedbackData {
-        val response = hedgeApiSource.createFeedback(retrospectionId, body)
+    override suspend fun createFeedback(retrospectionId: Int): FeedbackData {
+        val response = hedgeApiSource.createFeedback(retrospectionId)
 
         val jsonObject = Json.parseToJsonElement(response).jsonObject
 

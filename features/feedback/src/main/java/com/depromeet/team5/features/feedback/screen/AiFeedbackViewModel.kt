@@ -48,7 +48,7 @@ class AiFeedbackViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
-            createFeedbackUseCase(feedbackParams.retrospectionId, mapOf())
+            createFeedbackUseCase(feedbackParams.retrospectionId)
                 .map { it.toUi() }
                 .map {
                     if (it != Feedback.EMPTY) {

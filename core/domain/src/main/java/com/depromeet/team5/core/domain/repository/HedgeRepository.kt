@@ -10,7 +10,6 @@ interface HedgeRepository {
     fun createRetrospection(body: Map<String, Any?>): Flow<RetrospectionEntity>
 
     fun createFeedback(
-        retrospectionId: Int,
-        body: Map<String, Any?>
+        retrospectionId: Int
     ): Flow<FeedbackEntity>
 }

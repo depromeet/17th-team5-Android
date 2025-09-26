@@ -7,8 +7,5 @@ interface HedgeApiSource {
 
     suspend fun createRetrospection(body: Map<String, Any?>): RetrospectionRemoteData
 
-    suspend fun createFeedback(
-        retrospectionId: Int,
-        body: Map<String, Any?>
-    ): String
+    suspend fun createFeedback(retrospectionId: Int): String
 }

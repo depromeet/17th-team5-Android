@@ -15,7 +15,6 @@ interface HedgeApi {
 
     @POST("api/v1/reports/{retrospectionId}/feedback")
     suspend fun createFeedback(
-        @Path("retrospectionId") retrospectionId: Int,
-        @Body body: RequestBody
+        @Path("retrospectionId") retrospectionId: Int
     ): ResponseBody
 }

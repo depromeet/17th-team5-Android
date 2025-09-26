@@ -53,11 +53,11 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.depromeet.team5.core.model.request.RequestViewModel
 import com.depromeet.team5.core.designsystem.component.HedgeButton
 import com.depromeet.team5.core.designsystem.component.HedgeSegment
 import com.depromeet.team5.core.designsystem.foundation.HedgeColor
 import com.depromeet.team5.core.designsystem.foundation.HedgeTypography
+import com.depromeet.team5.core.model.request.RequestViewModel
 import com.depromeet.team5.features.retrospect.R
 import com.depromeet.team5.features.retrospect.annotation.DATE
 import com.depromeet.team5.features.retrospect.annotation.RETURN
@@ -82,8 +82,8 @@ import java.util.Locale
 @Composable
 fun RetrospectRoute(
     onBackPressed: () -> Unit,
+    onClickedConfirmButton: () -> Unit,
     requestViewModel: RequestViewModel,
-    onClick: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: RetrospectViewModel = hiltViewModel(),
 ) {
@@ -118,14 +118,14 @@ fun RetrospectRoute(
             viewModel.updateState(RETURN, text, selection, true)
         },
         onClickedConfirmButton = {
-            viewModel::onClickedConfirmButton
-            onClick()
+            if (!viewModel.okButtonState.stateFlow.value) return@RetrospectScreen
 
+            onClickedConfirmButton()
         },
-        onUpdateReturnToggle = {
-            viewModel.returnToggleState.update { it }
+        onUpdateReturnToggle = { isToggled ->
+            viewModel.returnToggleState.update { isToggled }
         },
-        onBackPressed = onBackPressed,
+        onBackPressed = onBackPressed
     )
 }
 
@@ -292,7 +292,7 @@ private fun SellingTextField(
 
     HedgeUnitTextField(
         modifier = modifier.focusRequester(focusRequester),
-        label = state.label,
+        label = stringResource(R.string.retrospect_selling_price),
         placeholder = stringResource(id = R.string.retrospect_selling_price_placeholder),
         value = TextFieldValue(
             text = state.text,
@@ -354,7 +354,7 @@ private fun StockTextField(
 
             onUpdateStockText(digitsOnlyText, newCursorPosition)
         },
-        label = state.label,
+        label = stringResource(R.string.retrospect_volume),
         placeholder = stringResource(id = R.string.retrospect_volume_placeholder),
         visualTransformation = UnitTransformation(stringResource(id = R.string.retrospect_unit_stock)),
         onDone = {
@@ -454,7 +454,11 @@ private fun DateTextField(
             .onFocusChanged { isShowDatePicker = it.isFocused },
         value = TextFieldValue(state.text, TextRange(state.selection)),
         onValueChange = {},
-        label = state.label,
+        label = if (state.isError) {
+            state.label
+        } else {
+            stringResource(R.string.retrospect_transaction_date)
+        },
         placeholder = stringResource(id = R.string.retrospect_transaction_date),
         isError = state.isError,
         readOnly = true
@@ -535,9 +539,7 @@ private fun CompanyTitle(
 
         Text(
             modifier = Modifier.padding(start = 7.dp),
-            text = stringResource(id = R.string.retrospect_company_name_temp),
-            style = HedgeTypography.Body3.Medium,
-            color = HedgeColor.GREY_900
+            text = stringResource(id = R.string.retrospect_company_name_temp)
         )
     }
 }

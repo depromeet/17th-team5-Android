@@ -112,24 +112,25 @@ internal fun HedgeUnitTextField(
                     )
                 },
                 colors = TextFieldDefaults.colors(
-                    focusedContainerColor = Color.Transparent,
-                    unfocusedContainerColor = Color.Transparent,
-                    disabledContainerColor = Color.Transparent,
+                    focusedContainerColor = HedgeColor.WHITE,
+                    unfocusedContainerColor = HedgeColor.WHITE,
 
-                    focusedIndicatorColor = Color.Transparent,
-                    unfocusedIndicatorColor = Color.Transparent,
-                    disabledIndicatorColor = Color.Transparent,
-                    errorIndicatorColor = Color.Transparent,
+                    focusedIndicatorColor = HedgeColor.Transparent,
+                    unfocusedIndicatorColor = HedgeColor.Transparent,
+                    disabledIndicatorColor = HedgeColor.Transparent,
+                    errorIndicatorColor = HedgeColor.Transparent,
 
                     focusedLabelColor = HedgeColor.Brand.Darken,
                     unfocusedLabelColor = HedgeColor.Text.Assistive,
 
                     focusedPlaceholderColor = HedgeColor.Text.Assistive,
+                    unfocusedPlaceholderColor = HedgeColor.Text.Assistive,
 
                     focusedTextColor = HedgeColor.Text.Title,
+                    unfocusedTextColor = HedgeColor.Text.Title,
 
                     cursorColor = HedgeColor.Brand.Darken,
-                    errorCursorColor = Color.Transparent,
+                    errorCursorColor = HedgeColor.Transparent,
                 ),
                 keyboardActions = keyboardActions,
                 keyboardOptions = keyboardOptions,
@@ -209,25 +210,27 @@ internal fun HedgeSimpleTextField(
                     )
                 },
                 colors = TextFieldDefaults.colors(
-                    focusedContainerColor = Color.Transparent,
-                    unfocusedContainerColor = Color.Transparent,
-                    disabledContainerColor = Color.Transparent,
+                    focusedContainerColor = HedgeColor.WHITE,
+                    unfocusedContainerColor = HedgeColor.WHITE,
+                    disabledContainerColor = HedgeColor.WHITE,
 
                     errorLabelColor = HedgeColor.Feedback.Error,
-                    errorTextColor = colorResource(R.color.gray900),
-                    errorContainerColor = Color.Transparent,
+                    errorTextColor = HedgeColor.Text.Title,
+                    errorContainerColor = HedgeColor.Transparent,
 
-                    focusedIndicatorColor = Color.Transparent,
-                    unfocusedIndicatorColor = Color.Transparent,
-                    disabledIndicatorColor = Color.Transparent,
-                    errorIndicatorColor = Color.Transparent,
+                    focusedIndicatorColor = HedgeColor.Transparent,
+                    unfocusedIndicatorColor = HedgeColor.Transparent,
+                    disabledIndicatorColor = HedgeColor.Transparent,
+                    errorIndicatorColor = HedgeColor.Transparent,
 
                     focusedLabelColor = HedgeColor.Brand.Darken,
                     unfocusedLabelColor = HedgeColor.Text.Assistive,
 
                     focusedPlaceholderColor = HedgeColor.Text.Assistive,
+                    unfocusedPlaceholderColor = HedgeColor.Text.Assistive,
 
                     focusedTextColor = HedgeColor.Text.Title,
+                    unfocusedTextColor = HedgeColor.Text.Title,
 
                     cursorColor = HedgeColor.Brand.Darken,
                     errorCursorColor = Color.Transparent,

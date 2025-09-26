@@ -11,16 +11,16 @@ import kotlinx.serialization.Serializable
 @Serializable
 object Retrospect
 
-fun NavController.navigateToRetrospect(){
+fun NavController.navigateToRetrospect() {
     navigate(Retrospect)
 }
 
 fun NavGraphBuilder.retrospectScreen(
     navController: NavController,
-    onClick: ()-> Unit,
+    onClickedConfirmButton: () -> Unit,
     onBackPressed: () -> Unit
-){
-    composable<Retrospect>{backStackEntry ->
+) {
+    composable<Retrospect> { backStackEntry ->
         val parentEntry = remember(backStackEntry) {
             navController.getBackStackEntry(navController.graph.startDestinationRoute!!)
         }
@@ -29,8 +29,8 @@ fun NavGraphBuilder.retrospectScreen(
 
         RetrospectRoute(
             onBackPressed = onBackPressed,
-            requestViewModel = sharedViewModel,
-            onClick = onClick
+            onClickedConfirmButton = onClickedConfirmButton,
+            requestViewModel = sharedViewModel
         )
     }
 }

@@ -84,7 +84,7 @@ import java.util.Locale
 @Composable
 fun RetrospectRoute(
     onBackPressed: () -> Unit,
-    modifier: Modifier,
+    modifier: Modifier = Modifier,
     viewModel: RetrospectViewModel = hiltViewModel(),
 ) {
     val sellingTextFieldState by viewModel.sellingTextFieldState.stateFlow.collectAsStateWithLifecycle()

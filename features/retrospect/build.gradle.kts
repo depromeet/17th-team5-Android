@@ -26,6 +26,7 @@ android {
 dependencies {
 
     implementation(libs.material)
+    implementation(projects.core.model)
 
     //버전카탈로그 파일에서 충돌나지 않기 위해 일단 여기서 선언
     implementation("androidx.hilt:hilt-navigation-compose:1.3.0")

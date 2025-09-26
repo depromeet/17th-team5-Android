@@ -31,6 +31,7 @@ import com.depromeet.team5.features.search.model.StockData
 @Composable
 fun SearchRoute(
     onBackClick: () -> Unit,
+    onItemClick: () -> Unit,
     modifier: Modifier = Modifier,
     requestViewModel: RequestViewModel = hiltViewModel(),
     viewModel: SearchViewModel = hiltViewModel()
@@ -43,6 +44,14 @@ fun SearchRoute(
         searchText = searchText,
         searchUiState = searchUiState,
         onSearchTextChange = viewModel::updateSearchText,
+        onItemClick = {
+            requestViewModel.request =
+                requestViewModel.request.copy(
+                    symbol = it.symbol,
+                    market = it.market
+                )
+            onItemClick()
+        },
         modifier = modifier
     )
 }
@@ -53,6 +62,7 @@ private fun SearchScreen(
     searchText: String,
     searchUiState: UiState<List<StockData>>,
     onSearchTextChange: (String) -> Unit,
+    onItemClick: (StockData) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val showHeader = when (searchUiState) {
@@ -68,8 +78,8 @@ private fun SearchScreen(
         onSearchTextChange = onSearchTextChange,
         content = {
             when (searchUiState) {
-                is UiState.Recents -> RecentsContent(searchUiState.data)
-                is UiState.Results -> ResultsContent(searchUiState.data)
+                is UiState.Recents -> RecentsContent(searchUiState.data, onItemClick)
+                is UiState.Results -> ResultsContent(searchUiState.data, onItemClick)
                 is UiState.Loading -> LoadingContent()
                 is UiState.Empty -> EmptyContent()
                 is UiState.Error -> ErrorContent()
@@ -114,7 +124,10 @@ private fun SearchLayout(
 }
 
 @Composable
-private fun RecentsContent(items: List<StockData>) {
+private fun RecentsContent(
+    items: List<StockData>,
+    onItemClick: (StockData) -> Unit
+) {
     LazyColumn(
         modifier = Modifier
             .fillMaxWidth()
@@ -129,16 +142,19 @@ private fun RecentsContent(items: List<StockData>) {
             )
         }
         items(items, key = { it.symbol }) { item ->
-            SearchListItem(stockData = item, onClick = {})
+            SearchListItem(stockData = item, onClick = { onItemClick(item) })
         }
     }
 }
 
 @Composable
-private fun ResultsContent(items: List<StockData>) {
+private fun ResultsContent(
+    items: List<StockData>,
+    onItemClick: (StockData) -> Unit
+) {
     LazyColumn(modifier = Modifier.fillMaxWidth()) {
         items(items, key = { it.symbol }) { item ->
-            SearchListItem(stockData = item, onClick = {})
+            SearchListItem(stockData = item, onClick = { onItemClick(item) })
         }
     }
 }
@@ -236,6 +252,7 @@ private fun RecentsPreview() {
         searchText = "",
         searchUiState = UiState.Recents(recent),
         onSearchTextChange = {},
+        onItemClick = {},
         modifier = Modifier
     )
 }
@@ -261,6 +278,7 @@ private fun ResultsPreview() {
         searchText = "카",
         searchUiState = UiState.Results(results),
         onSearchTextChange = {},
+        onItemClick = {},
         modifier = Modifier
     )
 }
@@ -270,7 +288,7 @@ private fun ResultsPreview() {
 private fun SearchPreview() {
     SearchRoute(
         onBackClick = {},
-
+        onItemClick = {}
     )
 }
 
@@ -281,7 +299,8 @@ private fun SearchEmptyPreview() {
         onBackClick = {},
         searchText = "",
         searchUiState = UiState.Empty,
-        onSearchTextChange = {}
+        onSearchTextChange = {},
+        onItemClick = {}
     )
 }
 
@@ -292,6 +311,7 @@ private fun SearchErrorPreview() {
         onBackClick = {},
         searchText = "",
         searchUiState = UiState.Error,
-        onSearchTextChange = {}
+        onSearchTextChange = {},
+        onItemClick = {}
     )
 }

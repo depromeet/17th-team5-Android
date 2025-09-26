@@ -67,9 +67,8 @@ fun AnalysisPip(
     onClickCancel: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    BackHandler(enabled = true) { onDismissRequest() }
-
     if (showAnalysisPip) {
+        BackHandler(enabled = true) { onDismissRequest() }
         val density = LocalDensity.current
         val imeVisible = WindowInsets.ime.getBottom(density) > 0
 

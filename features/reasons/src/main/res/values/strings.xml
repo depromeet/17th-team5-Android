@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="ask_emotion">당시 어떤 감정이었나요?</string>
+    <string name="emotion_anxious">불안</string>
+    <string name="emotion_impulse">충동</string>
+    <string name="emotion_neutral">무념무상</string>
+    <string name="emotion_confidence">자신감</string>
+    <string name="emotion_conviction">확신</string>
+    <string name="record">기록하기</string>
+    <string name="investment_principle">투자 원칙</string>
+    <string name="done">완료</string>
+    <string name="selected_principle_count">지킨 원칙 %1$s개</string>
+    <string name="write_reason_placeholder">자유롭게 회고를 작성해 보세요. (선택 사항)</string>
+    <string name="trade_info">%1$s・%2$s주 %3$s</string>
+    <string name="buy">매수</string>
+    <string name="sell">매도</string>
+    <string name="loading_analyze">분석중...</string>
+    <string name="market_condition">당시 시장 상황</string>
+</resources>

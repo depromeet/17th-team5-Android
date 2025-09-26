@@ -42,7 +42,7 @@ fun HedgeNavHost(
         retrospectScreen(
             navController = navController,
             onBackPressed = { navController.popBackStack() },
-            onClick = { navController.navigateToPrinciple() }
+            onClickedConfirmButton = { navController.navigateToPrinciple() }
         )
 
         principleScreen(

@@ -106,7 +106,7 @@ fun PrincipleContent(
                     modifier = Modifier.weight(1f)
                 )
                 Image(
-                    painter = painterResource(R.drawable.ic_close),
+                    painter = painterResource(R.drawable.ic_close_circle),
                     contentDescription = "close",
                     contentScale = ContentScale.None,
                     modifier = Modifier

@@ -60,6 +60,7 @@ enum class Emotion(
         R.drawable.ic_emotion_conviction_off,
         R.string.emotion_conviction,
     );
+
     fun toEmotionParams(): EmotionParams {
         return when (this) {
             Anxious -> EmotionParams.ANXIETY
@@ -78,9 +79,10 @@ enum class OrderType {
 data class TradeInfo(
     @DrawableRes
     val logoDrawableRes: Int,
-    val companyName: String,
+    val stockName: String,
     val orderType: OrderType,
     val price: Long,
+    val currency: String,
     val volume: Int,
     val orderDate: String,
 )
@@ -104,6 +106,9 @@ fun PrincipleCheckParams.toPrinciple(): Principle {
         checked = isFollowed
     )
 }
+
+val String.toUiCurrency: String
+    get() = if ("KRW" in this) "원" else "$"
 
 @HiltViewModel
 class ReasonsViewModel @Inject constructor(
@@ -147,6 +152,10 @@ class ReasonsViewModel @Inject constructor(
         _reason.value = reason
     }
 
+    fun initTradeInfo(tradeInfo: TradeInfo) {
+        _tradeInfo.value = tradeInfo
+    }
+
     companion object {
 
         val dummyPrinciples = listOf(
@@ -162,9 +171,10 @@ class ReasonsViewModel @Inject constructor(
 
         val dummyTradeInfo = TradeInfo(
             logoDrawableRes = R.drawable.ic_company_logo,
-            companyName = "Apple",
+            stockName = "Apple",
             orderType = OrderType.BUY,
             price = 65000,
+            currency = "$",
             volume = 3,
             orderDate = "2023년 8월 25일",
         )

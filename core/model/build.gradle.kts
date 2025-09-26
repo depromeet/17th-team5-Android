@@ -1,5 +1,6 @@
 plugins {
     alias(libs.plugins.depromeet.team5.library)
+    alias(libs.plugins.kotlinx.serialization)
 }
 
 android {
@@ -20,5 +21,6 @@ android {
 dependencies {
     implementation(projects.core.domain)
 
+    implementation(libs.org.jetbrains.kotlinx.kotlinx.serialization.json)
     implementation(libs.androidx.compose.runtime.annotation)
 }

@@ -34,7 +34,6 @@ class SearchViewModel @Inject constructor(
         _searchText
             .debounce(300)
             .map { it.trim() }
-            .distinctUntilChanged()
             .flatMapLatest { query ->
                 if (query.isBlank()) {
                     flowOf(UiState.Recents(items))

@@ -1,0 +1,48 @@
+package com.depromeet.team5.core.model.request
+
+import kotlinx.serialization.Serializable
+
+
+@Serializable
+data class CreateRetrospectionParams(
+    val symbol: String,
+    val market: String,
+    val currency: String,
+    val orderDate: String,
+    val orderType: String,
+    val price: Int,
+    val volume: Int,
+    val returnRate: Double?,
+    val content: String?,
+    val principleChecks: List<PrincipleCheckParams>?,
+    val emotion: EmotionParams?,
+) {
+
+    companion object {
+
+        val EMPTY = CreateRetrospectionParams(
+            symbol = "",
+            volume = 0,
+            market = "",
+            currency = "",
+            orderDate = "",
+            orderType = "",
+            price = 0,
+            emotion = null,
+            content = null,
+            principleChecks = null,
+            returnRate = null
+        )
+    }
+}
+
+@Serializable
+data class PrincipleCheckParams(
+    val isFollowed: Boolean,
+    val principleId: Int
+)
+
+@Serializable
+enum class EmotionParams {
+    ANXIETY, IMPULSE, MINDLESSNESS, CONFIDENCE, CONVICTION
+}

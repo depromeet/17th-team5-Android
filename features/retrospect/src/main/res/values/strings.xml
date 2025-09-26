@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="retrospect_selling_price_title">얼마에 매도하셨나요?</string>
+    <string name="retrospect_buy_price_title">얼마에 매수하셨나요?</string>
     <string name="retrospect_volume">거래량</string>
     <string name="retrospect_volume_placeholder">거래량 가격</string>
     <string name="retrospect_unit_stock">주</string>
@@ -10,7 +11,9 @@
     <string name="retrospect_ai_analysis_description">더 자세한 AI 분석이 가능해요</string>
     <string name="retrospect_confirm">다음</string>
     <string name="retrospect_selling_price">매도가</string>
+    <string name="retrospect_buy_price">매수가</string>
     <string name="retrospect_selling_price_placeholder">매도 가격</string>
+    <string name="retrospect_buy_price_placeholder">매수 가격</string>
     <string name="retrospect_unit_won">원</string>
     <string name="retrospect_unit_dollar">$</string>
     <string name="retrospect_unit_plus">+</string>

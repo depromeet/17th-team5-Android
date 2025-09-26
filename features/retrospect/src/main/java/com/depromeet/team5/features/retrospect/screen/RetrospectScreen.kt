@@ -58,6 +58,8 @@ import com.depromeet.team5.core.designsystem.component.HedgeButton
 import com.depromeet.team5.core.designsystem.component.HedgeSegment
 import com.depromeet.team5.core.designsystem.foundation.HedgeColor
 import com.depromeet.team5.core.designsystem.foundation.HedgeTypography
+import com.depromeet.team5.core.model.request.CreateRetrospectionParams
+import com.depromeet.team5.core.model.request.OrderTypeParams
 import com.depromeet.team5.core.model.request.RequestViewModel
 import com.depromeet.team5.features.retrospect.R
 import com.depromeet.team5.features.retrospect.annotation.DATE
@@ -103,6 +105,7 @@ fun RetrospectRoute(
         returnTextFieldState = returnTextFieldState,
         buttonEnabled = buttonState,
         returnToggleState = returnToggleState,
+        requestParams = requestViewModel.request,
         onUpdateSellingText = { text, selection ->
             viewModel.updateState(SELLING, text, selection)
         },
@@ -124,9 +127,7 @@ fun RetrospectRoute(
             requestViewModel.request = requestViewModel.request.copy(
                 price = viewModel.sellingTextFieldState.stateFlow.value.text.toInt(),
                 volume = viewModel.stockTextFieldState.stateFlow.value.text.toInt(),
-                orderDate = formatDate(
-                    viewModel.dateTextFieldState.stateFlow.value.text
-                ),
+                orderDate = viewModel.dateTextFieldState.stateFlow.value.text,
                 returnRate = try {
                     viewModel.returnTextFieldState.stateFlow.value.text.toDouble()
                 } catch (e: Exception) {
@@ -151,6 +152,7 @@ private fun RetrospectScreen(
     stockTextFieldState: TextFieldState,
     dateTextFieldState: TextFieldState,
     returnTextFieldState: TextFieldState,
+    requestParams: CreateRetrospectionParams,
     buttonEnabled: Boolean,
     returnToggleState: Boolean,
     onUpdateSellingText: (String, Int) -> Unit,
@@ -173,12 +175,17 @@ private fun RetrospectScreen(
     ) {
         HedgeTopbar { }
         CompanyTitle(
+            requestParams = requestParams,
             modifier = Modifier.padding(start = 16.dp, top = 10.dp)
         )
 
         Text(
             modifier = Modifier.padding(start = 16.dp, top = 8.dp),
-            text = stringResource(id = R.string.retrospect_selling_price_title),
+            text = if (requestParams.orderType == OrderTypeParams.SELL) {
+                stringResource(id = R.string.retrospect_selling_price_title)
+            } else {
+                stringResource(id = R.string.retrospect_buy_price_title)
+            },
             style = HedgeTypography.Headline1.SemiBold,
             color = HedgeColor.GREY_900
         )
@@ -193,6 +200,7 @@ private fun RetrospectScreen(
         ) {
             SellingTextField(
                 state = sellingTextFieldState,
+                requestParams = requestParams,
                 onUpdateSellingText = onUpdateSellingText
             )
             StockTextField(
@@ -251,34 +259,36 @@ private fun RetrospectScreen(
             modifier = Modifier.padding(horizontal = 20.dp),
             verticalArrangement = Arrangement.Bottom
         ) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                Column {
-                    Text(
-                        text = stringResource(id = R.string.retrospect_enter_rate_of_return),
-                        style = HedgeTypography.Body3.SemiBold,
-                        color = HedgeColor.GREY_700
-                    )
-                    Text(
-                        modifier = Modifier.padding(top = 1.dp),
-                        text = stringResource(id = R.string.retrospect_ai_analysis_description),
-                        style = HedgeTypography.Label2.SemiBold,
-                        color = HedgeColor.Text.Alternative
+            if (requestParams.orderType == OrderTypeParams.SELL) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Column {
+                        Text(
+                            text = stringResource(id = R.string.retrospect_enter_rate_of_return),
+                            style = HedgeTypography.Body3.SemiBold,
+                            color = HedgeColor.GREY_700
+                        )
+                        Text(
+                            modifier = Modifier.padding(top = 1.dp),
+                            text = stringResource(id = R.string.retrospect_ai_analysis_description),
+                            style = HedgeTypography.Label2.SemiBold,
+                            color = HedgeColor.Text.Alternative
+                        )
+                    }
+
+                    Switch(
+                        checked = returnToggleState,
+                        colors = SwitchDefaults.colors(
+                            checkedThumbColor = HedgeColor.WHITE,
+                            uncheckedThumbColor = HedgeColor.WHITE,
+                            checkedTrackColor = HedgeColor.Brand.Darken,
+                            uncheckedTrackColor = HedgeColor.GREY_OPACITY_300
+                        ),
+                        onCheckedChange = onUpdateReturnToggle
                     )
                 }
-
-                Switch(
-                    checked = returnToggleState,
-                    colors = SwitchDefaults.colors(
-                        checkedThumbColor = HedgeColor.WHITE,
-                        uncheckedThumbColor = HedgeColor.WHITE,
-                        checkedTrackColor = HedgeColor.Brand.Darken,
-                        uncheckedTrackColor = HedgeColor.GREY_OPACITY_300
-                    ),
-                    onCheckedChange = onUpdateReturnToggle
-                )
             }
 
             HedgeButton.Action.Filled(
@@ -296,6 +306,7 @@ private fun RetrospectScreen(
 @Composable
 private fun SellingTextField(
     state: TextFieldState,
+    requestParams: CreateRetrospectionParams,
     onUpdateSellingText: (String, Int) -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -308,8 +319,16 @@ private fun SellingTextField(
 
     HedgeUnitTextField(
         modifier = modifier.focusRequester(focusRequester),
-        label = stringResource(R.string.retrospect_selling_price),
-        placeholder = stringResource(id = R.string.retrospect_selling_price_placeholder),
+        label = if (requestParams.orderType == OrderTypeParams.SELL) {
+            stringResource(R.string.retrospect_selling_price)
+        } else {
+            stringResource(R.string.retrospect_buy_price)
+        },
+        placeholder = if (requestParams.orderType == OrderTypeParams.SELL) {
+            stringResource(R.string.retrospect_selling_price_placeholder)
+        } else {
+            stringResource(R.string.retrospect_buy_price_placeholder)
+        },
         value = TextFieldValue(
             text = state.text,
             selection = TextRange(state.selection)
@@ -557,6 +576,7 @@ private fun formatDate(format: String, milliseconds: Long): String {
 
 @Composable
 private fun CompanyTitle(
+    requestParams: CreateRetrospectionParams,
     modifier: Modifier = Modifier
 ) {
     Row(
@@ -572,7 +592,7 @@ private fun CompanyTitle(
 
         Text(
             modifier = Modifier.padding(start = 7.dp),
-            text = stringResource(id = R.string.retrospect_company_name_temp)
+            text = requestParams.companyName
         )
     }
 }
@@ -588,7 +608,9 @@ private fun RetrospectScreenPreview() {
 @Preview
 @Composable
 private fun CompanyTitlePreview() {
-    CompanyTitle()
+    CompanyTitle(
+        requestParams = CreateRetrospectionParams.EMPTY
+    )
 }
 
 @Preview
@@ -650,6 +672,7 @@ private fun RetrospectRoutePreview() {
             returnTextFieldState = returnTextFieldState,
             buttonEnabled = buttonState,
             returnToggleState = returnToggleState,
+            requestParams = CreateRetrospectionParams.EMPTY,
             onUpdateSellingText = { text, selection ->
                 sellingTextFieldState =
                     sellingTextFieldState.copy(text = text, selection = selection)

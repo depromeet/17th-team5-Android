@@ -44,7 +44,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.depromeet.team5.core.designsystem.component.HedgeTopBar
@@ -218,13 +217,15 @@ private fun FeedbackScreen(
                         AiFeedbackPage(state = state)
                     } else {
                         Box(
-                            modifier = Modifier.fillMaxSize(),
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .fillParentMaxHeight(0.5f),
                             contentAlignment = Alignment.Center
                         ) {
-
                             Text(
-                                "$page",
-                                fontSize = 24.sp
+                                text = "추후에 공개될 예정이에요.",
+                                style = HedgeTypography.Body3.Medium,
+                                color = HedgeColor.Text.Secondary
                             )
                         }
                     }
@@ -236,8 +237,8 @@ private fun FeedbackScreen(
 
 @Composable
 private fun AiFeedbackPage(
-    modifier: Modifier = Modifier,
-    state: AiFeedbackState
+    state: AiFeedbackState,
+    modifier: Modifier = Modifier
 ) {
     Column(
         modifier = modifier.fillMaxSize()

@@ -9,9 +9,9 @@ class CreateAnalysisUseCase @Inject constructor(
     private val repository: HedgeRepository
 ) {
     operator fun invoke(
-        market: String = "NASDAQ",
-        symbol: String = "AAPL",
-        time: String = "2025-09-19T09:00:00Z",
+        market: String,
+        symbol: String,
+        time: String,
     ): Flow<AnalysisEntity> = repository.createAnalysis(
         mapOf(
             "market" to market,

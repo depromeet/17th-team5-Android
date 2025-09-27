@@ -15,12 +15,16 @@ import com.depromeet.team5.core.model.request.EmotionParams
 import com.depromeet.team5.core.model.request.PrincipleCheckParams
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
+import java.time.LocalDate
+import java.time.LocalDateTime
+import java.time.LocalTime
+import java.time.ZoneOffset
+import java.time.format.DateTimeFormatter
 import javax.inject.Inject
 
 @Stable
@@ -110,6 +114,37 @@ fun PrincipleCheckParams.toPrinciple(): Principle {
 val String.toUiCurrency: String
     get() = if ("KRW" in this) "원" else "$"
 
+internal data class AnalysisRequest(
+    val market: String,
+    val symbol: String,
+    val time: String,
+)
+
+private fun formatDate(date: String): String {
+    val regex = """(\d{4})년\s*(\d{1,2})월\s*(\d{1,2})일""".toRegex()
+
+    val matchResult = regex.find(date)
+
+    if (matchResult != null) {
+        val (year, month, day) = matchResult.destructured
+
+        val formattedMonth = month.padStart(2, '0')
+        val formattedDay = day.padStart(2, '0')
+
+        return "$year-$formattedMonth-$formattedDay"
+    }
+
+    error("잘못된 Date Format이 들어왔습니다. Params : { $date }")
+}
+
+
+fun String.toIsoUtcString(hour: Int = 9): String {
+    val localDate = LocalDate.parse(this, DateTimeFormatter.ofPattern("yyyy-MM-dd"))
+    val localDateTime = LocalDateTime.of(localDate, LocalTime.of(hour, 0, 0))
+    return localDateTime.atOffset(ZoneOffset.UTC).format(DateTimeFormatter.ISO_OFFSET_DATE_TIME)
+}
+
+
 @HiltViewModel
 class ReasonsViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
@@ -125,20 +160,30 @@ class ReasonsViewModel @Inject constructor(
     private val _tradeInfo = MutableStateFlow(dummyTradeInfo)
     val tradeInfo = _tradeInfo.asStateFlow()
 
-    val analysisReport: StateFlow<String?> =
-        createAnalysisUseCase()
-            .map { it.toPresentation().text }
-            .catch { e ->
-                Log.e("ReasonViewModel", ": $e")
-            }
-            .stateIn(
-                scope = viewModelScope,
-                started = SharingStarted.WhileSubscribed(5000),
-                initialValue = null
-            )
+    private val createAnalysisRequest = MutableStateFlow<AnalysisRequest?>(null)
+
+    private val _analysisReport: MutableStateFlow<String?> = MutableStateFlow(null)
+    val analysisReport = _analysisReport.asStateFlow()
 
     private val _reason = MutableStateFlow(TextFieldValue(""))
     val reason = _reason.asStateFlow()
+
+    init {
+        createAnalysisRequest
+            .filterNotNull()
+            .onEach {
+                runCatching {
+                    _analysisReport.value = createAnalysisUseCase(
+                        market = it.market,
+                        symbol = it.symbol,
+                        time = formatDate(it.time).toIsoUtcString(),
+                    ).first().toPresentation().text
+                }.onFailure {
+                    Log.e("ReasonViewModel", "error : $it")
+                }
+            }
+            .launchIn(viewModelScope)
+    }
 
     fun onEmotionChanged(emotion: Emotion) {
         _selectedEmotion.value = emotion
@@ -154,6 +199,10 @@ class ReasonsViewModel @Inject constructor(
 
     fun initTradeInfo(tradeInfo: TradeInfo) {
         _tradeInfo.value = tradeInfo
+    }
+
+    internal fun initCreateAnalysisRequest(request: AnalysisRequest) {
+        createAnalysisRequest.value = request
     }
 
     companion object {
@@ -178,8 +227,5 @@ class ReasonsViewModel @Inject constructor(
             volume = 3,
             orderDate = "2023년 8월 25일",
         )
-
-        private val dummyAnalysisReport =
-            "오늘 국내외 증시는 미국 금리 인상 우려 완화와 반도체 업종 강세로 상승 마감했어요. 특히 코스피가 외국인 매수세에 힘입어 1%대 오름세를 보였어요 해당 종목은 최근 실적 개선 소식으로 거래량이 크게 늘며 주가가 단기 급등했어요. 다만 단기 과열 가능성이 있어 추세 확인이 필요해요.오늘 국내외 증시는 미국 금리 인상 우려 완화와 반도체 업종 강세로 상승 마감했어요. 특히 코스피가 외국인 매수세에 힘입어 1%대 오름세를 보였어요 해당 종목은 최근 실적 개선 소식으로 거래량이 크게 늘며 주가가 단기 급등했어요. 다만 단기 과열 가능성이 있어 추세 확인이 필요해요.오늘 국내외 증시는 미국 금리 인상 우려 완화와 반도체 업종 강세로 상승 마감했어요. 특히 코스피가 외국인 매수세에 힘입어 1%대 오름세를 보였어요 해당 종목은 최근 실적 개선 소식으로 거래량이 크게 늘며 주가가 단기 급등했어요. 다만 단기 과열 가능성이 있어 추세 확인이 필요해요.오늘 국내외 증시는 미국 금리 인상 우려 완화와 반도체 업종 강세로 상승 마감했어요. 특히 코스피가 외국인 매수세에 힘입어 1%대 오름세를 보였어요 해당 종목은 최근 실적 개선 소식으로 거래량이 크게 늘며 주가가 단기 급등했어요. 다만 단기 과열 가능성이 있어 추세 확인이 필요해요.오늘 국내외 증시는 미국 금리 인상 우려 완화와 반도체 업종 강세로 상승 마감했어요. 특히 코스피가 외국인 매수세에 힘입어 1%대 오름세를 보였어요 해당 종목은 최근 실적 개선 소식으로 거래량이 크게 늘며 주가가 단기 급등했어요. 다만 단기 과열 가능성이 있어 추세 확인이 필요해요.오늘 국내외 증시는 미국 금리 인상 우려 완화와 반도체 업종 강세로 상승 마감했어요. 특히 코스피가 외국인 매수세에 힘입어 1%대 오름세를 보였어요 해당 종목은 최근 실적 개선 소식으로 거래량이 크게 늘며 주가가 단기 급등했어요. 다만 단기 과열 가능성이 있어 추세 확인이 필요해요.오늘 국내외 증시는 미국 금리 인상 우려 완화와 반도체 업종 강세로 상승 마감했어요. 특히 코스피가 외국인 매수세에 힘입어 1%대 오름세를 보였어요 해당 종목은 최근 실적 개선 소식으로 거래량이 크게 늘며 주가가 단기 급등했어요. 다만 단기 과열 가능성이 있어 추세 확인이 필요해요.오늘 국내외 증시는 미국 금리 인상 우려 완화와 반도체 업종 강세로 상승 마감했어요. 특히 코스피가 외국인 매수세에 힘입어 1%대 오름세를 보였어요 해당 종목은 최근 실적 개선 소식으로 거래량이 크게 늘며 주가가 단기 급등했어요. 다만 단기 과열 가능성이 있어 추세 확인이 필요해요.e"
     }
 }

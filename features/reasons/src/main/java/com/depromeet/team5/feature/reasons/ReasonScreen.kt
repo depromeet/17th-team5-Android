@@ -86,6 +86,13 @@ fun ReasonRoute(
     val analysisReport by viewModel.analysisReport.collectAsStateWithLifecycle()
 
     LaunchedEffect(Unit) {
+        viewModel.initCreateAnalysisRequest(
+            AnalysisRequest(
+                market = requestViewModel.request.market,
+                symbol = requestViewModel.request.symbol,
+                time = requestViewModel.request.orderDate
+            )
+        )
         requestViewModel.request.principleChecks?.let { checkedPrinciples ->
             val updatedPrinciples = principles.map { principle ->
                 val matched = checkedPrinciples.any { it.principleId == principle.id.toInt() && it.isFollowed }

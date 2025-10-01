@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "335081118627",
+    "project_id": "hedge-dev",
+    "storage_bucket": "hedge-dev.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:335081118627:android:bed242ec9849531fcd9816",
+        "android_client_info": {
+          "package_name": "com.depromeet.team5.dev"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAoTUUJLvUN4G4UuA3l-GPBoa6ozjNjZHI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

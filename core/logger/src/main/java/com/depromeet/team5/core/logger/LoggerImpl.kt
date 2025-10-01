@@ -16,7 +16,7 @@ internal class LoggerImpl @Inject constructor(
     override fun plant(variant: BuildVariant) {
         when (variant) {
             BuildVariant.DEBUG -> Timber.plant(Timber.DebugTree())
-            BuildVariant.RELEASE -> {}//todo crashlytics와 연결하기
+            BuildVariant.RELEASE -> Timber.plant(CrashlyticsTree())
         }
     }
 
@@ -61,8 +61,6 @@ internal class LoggerImpl @Inject constructor(
     }
 
     override fun logAndToast(throwable: Throwable) {
-        //todo custom throwable을 구분하여 message 받아 처리하기
-
         e(throwable)
 
         Toast.makeText(

@@ -1,0 +1,28 @@
+plugins {
+    alias(libs.plugins.depromeet.team5.library)
+    alias(libs.plugins.depromeet.team5.hilt)
+}
+
+android {
+    namespace = "com.depromeet.team5.core.logger"
+
+    defaultConfig {
+
+        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+    }
+
+    buildTypes {
+        release {
+            isMinifyEnabled = false
+        }
+    }
+
+    hilt {
+        enableAggregatingTask = true
+    }
+}
+
+dependencies {
+
+    implementation(libs.timber)
+}

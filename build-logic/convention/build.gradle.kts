@@ -38,6 +38,11 @@ gradlePlugin {
             implementationClass = "AndroidApplicationConventionPlugin"
         }
 
+        register("AndroidFeature") {
+            id = libs.plugins.depromeet.team5.feature.get().pluginId
+            implementationClass = "AndroidFeatureConventionPlugin"
+        }
+
         register("AndroidApplicationCompose") {
             id = libs.plugins.depromeet.team5.application.compose.get().pluginId
             implementationClass = "AndroidApplicationComposeConventionPlugin"

@@ -3,6 +3,7 @@ plugins {
     alias(libs.plugins.depromeet.team5.application.compose)
     alias(libs.plugins.depromeet.team5.hilt)
     alias(libs.plugins.google.services)
+    alias(libs.plugins.firebase.crashlytics)
 }
 
 android {
@@ -48,12 +49,12 @@ dependencies {
     implementation(projects.core.retrofit)
     implementation(projects.core.designsystem)
     implementation(projects.core.model)
+    implementation(projects.core.logger)
     implementation(projects.features.search)
     implementation(projects.features.principle)
     implementation(projects.features.retrospect)
     implementation(projects.features.home)
     implementation(projects.features.feedback)
-
     implementation(projects.features.reasons)
 
     implementation(libs.androidx.core.ktx)

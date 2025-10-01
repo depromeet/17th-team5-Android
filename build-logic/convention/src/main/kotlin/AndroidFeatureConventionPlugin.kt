@@ -1,3 +1,4 @@
+import com.android.build.gradle.LibraryExtension
 import com.depromeet.team5.androidTestImplementation
 import com.depromeet.team5.configureAndroidCompose
 import com.depromeet.team5.configureKotlinAndroid
@@ -18,7 +19,7 @@ class AndroidFeatureConventionPlugin : Plugin<Project> {
             apply("org.jetbrains.kotlin.plugin.serialization")
         }
 
-        extensions.configure(com.android.build.gradle.LibraryExtension::class.java) {
+        extensions.configure(LibraryExtension::class.java) {
             configureKotlinAndroid(this)
             configureAndroidCompose(this)
             defaultConfig.targetSdk = 35

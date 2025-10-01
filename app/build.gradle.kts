@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.depromeet.team5.application)
     alias(libs.plugins.depromeet.team5.application.compose)
     alias(libs.plugins.depromeet.team5.hilt)
+    alias(libs.plugins.google.services)
 }
 
 android {
@@ -16,8 +17,18 @@ android {
     }
 
     buildTypes {
-        release {
+        debug {
+            applicationIdSuffix = ".dev"
+            isDebuggable = true
             isMinifyEnabled = false
+            isShrinkResources = false
+        }
+
+        release {
+            isDebuggable = false
+            isMinifyEnabled = true
+            isShrinkResources = true
+
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"

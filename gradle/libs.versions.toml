@@ -27,6 +27,7 @@ hiltNavigationCompose = "1.2.0"
 runtimeAnnotation = "1.9.0"
 timber = "5.0.1"
 firebaseCrashlytics = "20.0.2"
+googleService = "4.4.3"
 
 
 [libraries]
@@ -126,6 +127,7 @@ kotlin-jvm = {id = "org.jetbrains.kotlin.jvm",version.ref = "kotlin" }
 hilt = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 kotlinx-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlinxSerialization" }
+google-services = { id = "com.google.gms.google-services", version.ref = "googleService" }
 
 # Custom Plugins
 depromeet-team5-application = { id = "com.depromeet.team5.application", version = "unspecified" }

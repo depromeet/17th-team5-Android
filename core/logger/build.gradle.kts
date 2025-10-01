@@ -23,6 +23,6 @@ android {
 }
 
 dependencies {
-
     implementation(libs.timber)
+    implementation(libs.firebase.crashlytics)
 }

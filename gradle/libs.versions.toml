@@ -26,6 +26,7 @@ androidxComposeNavigation = "2.9.2"
 hiltNavigationCompose = "1.2.0"
 runtimeAnnotation = "1.9.0"
 timber = "5.0.1"
+firebaseCrashlytics = "20.0.2"
 
 
 [libraries]
@@ -75,6 +76,9 @@ com-squareup-okhttp3-logging-interceptor = { module = "com.squareup.okhttp3:logg
 
 #log
 timber = { module = "com.jakewharton.timber:timber", version.ref = "timber" }
+
+#firebase
+firebase-crashlytics = { module = "com.google.firebase:firebase-crashlytics", version.ref = "firebaseCrashlytics" }
 
 # Dependencies of the included build-logic
 android-gradlePlugin = { group = "com.android.tools.build", name = "gradle", version.ref = "agp" }

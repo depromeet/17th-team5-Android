@@ -14,11 +14,10 @@ android {
     buildTypes {
         debug {
             isMinifyEnabled = false
-            isShrinkResources = false
             buildConfigField("String", "BASE_URL", "\"http://13.209.109.151:8080/\"")
         }
         release {
-            isMinifyEnabled = false
+            isMinifyEnabled = true
         }
     }
 

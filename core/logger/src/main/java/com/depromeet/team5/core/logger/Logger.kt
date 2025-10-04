@@ -1,5 +1,6 @@
 package com.depromeet.team5.core.logger
 
+import androidx.compose.runtime.Composable
 import com.depromeet.team5.core.logger.annotation.BuildVariant
 
 
@@ -27,5 +28,6 @@ interface Logger {
 
     fun e(throwable: Throwable)
 
-    fun logAndToast(throwable: Throwable)
+    @Composable
+    fun LogAndToast(throwable: Throwable)
 }

@@ -2,6 +2,9 @@ package com.depromeet.team5.core.logger
 
 import android.content.Context
 import android.widget.Toast
+import androidx.compose.runtime.Composable
+import com.depromeet.team5.core.designsystem.component.HedgeToast
+import com.depromeet.team5.core.designsystem.foundation.HedgeIcon
 import com.depromeet.team5.core.logger.annotation.BuildVariant
 import dagger.hilt.android.qualifiers.ApplicationContext
 import timber.log.Timber
@@ -60,14 +63,14 @@ internal class LoggerImpl @Inject constructor(
         Timber.e(throwable)
     }
 
-    override fun logAndToast(throwable: Throwable) {
+    @Composable
+    override fun LogAndToast(throwable: Throwable) {
         e(throwable)
 
-        Toast.makeText(
-            context,
-            context.resources.getString(R.string.error_default_message),
-            Toast.LENGTH_SHORT
-        ).show()
+        HedgeToast(
+            text = context.resources.getString(R.string.error_default_message),
+            icon = HedgeIcon.Error,
+            duration = Toast.LENGTH_SHORT
+        )
     }
-
 }

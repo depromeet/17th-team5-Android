@@ -1,4 +1,4 @@
-package com.depromeet.team5.features.retrospect.extensions
+package com.depromeet.team5.core.ui.lazy
 
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -27,15 +27,15 @@ class HedgeState<T : Any?>(
 }
 
 class HedgeStateLazy<T : Any?>(
-    private val initValue: () -> T
+    private val initValue: T
 ) : ReadOnlyProperty<Any?, HedgeState<T>> {
 
     private val state: HedgeState<T> by lazy {
-        HedgeState(initValue())
+        HedgeState(initValue)
     }
 
     override fun getValue(thisRef: Any?, property: KProperty<*>): HedgeState<T> = state
 }
 
 
-fun <T> hedgeState(initValue: () -> T) = HedgeStateLazy(initValue)
+fun <T> hedgeState(initValue: T) = HedgeStateLazy(initValue)

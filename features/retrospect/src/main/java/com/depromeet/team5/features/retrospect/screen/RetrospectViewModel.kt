@@ -3,14 +3,14 @@ package com.depromeet.team5.features.retrospect.screen
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.depromeet.team5.core.ui.extensions.baseCollect
+import com.depromeet.team5.core.ui.lazy.HedgeState
+import com.depromeet.team5.core.ui.lazy.hedgeState
 import com.depromeet.team5.features.retrospect.annotation.DATE
 import com.depromeet.team5.features.retrospect.annotation.RETURN
 import com.depromeet.team5.features.retrospect.annotation.SELLING
 import com.depromeet.team5.features.retrospect.annotation.STOCK
 import com.depromeet.team5.features.retrospect.annotation.savedStateHandleKey
-import com.depromeet.team5.features.retrospect.extensions.HedgeState
-import com.depromeet.team5.features.retrospect.extensions.baseCollect
-import com.depromeet.team5.features.retrospect.extensions.hedgeState
 import com.depromeet.team5.features.retrospect.state.TextFieldState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.combine
@@ -24,23 +24,23 @@ class RetrospectViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
-    val sellingTextFieldState: HedgeState<TextFieldState> by hedgeState {
+    val sellingTextFieldState: HedgeState<TextFieldState> by hedgeState(
         TextFieldState.EMPTY.copy(text = savedStateHandle[SELLING] ?: "")
-    }
+    )
 
-    val stockTextFieldState: HedgeState<TextFieldState> by hedgeState {
+    val stockTextFieldState: HedgeState<TextFieldState> by hedgeState(
         TextFieldState.EMPTY.copy(text = savedStateHandle[STOCK] ?: "")
-    }
-    val dateTextFieldState: HedgeState<TextFieldState> by hedgeState {
+    )
+    val dateTextFieldState: HedgeState<TextFieldState> by hedgeState(
         TextFieldState.EMPTY.copy(text = savedStateHandle[DATE] ?: "")
-    }
-    val returnTextFieldState: HedgeState<TextFieldState> by hedgeState {
+    )
+    val returnTextFieldState: HedgeState<TextFieldState> by hedgeState(
         TextFieldState.EMPTY.copy(text = savedStateHandle[RETURN] ?: "")
-    }
+    )
 
-    val returnToggleState by hedgeState { false }
+    val returnToggleState by hedgeState(false)
 
-    val okButtonState: HedgeState<Boolean> by hedgeState { false }
+    val okButtonState: HedgeState<Boolean> by hedgeState(false)
 
 
     init {

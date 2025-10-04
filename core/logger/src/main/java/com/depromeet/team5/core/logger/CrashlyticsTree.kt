@@ -4,7 +4,7 @@ import android.util.Log
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import timber.log.Timber
 
-class CrashlyticsTree : Timber.Tree() {
+internal class CrashlyticsTree : Timber.Tree() {
 
     override fun log(
         priority: Int,

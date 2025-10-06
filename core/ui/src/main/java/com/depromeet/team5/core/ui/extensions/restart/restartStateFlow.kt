@@ -16,37 +16,37 @@ interface RestartableStateFlow<T> : StateFlow<T> {
     fun restart()
 }
 
-class RestartSharingStarted(
+private class RestartSharingStarted(
     private val sharingStarted: SharingStarted
 ) : SharingStarted {
 
-    private val retryFlow = MutableSharedFlow<SharingCommand>(extraBufferCapacity = 2)
+    private val restartFlow = MutableSharedFlow<SharingCommand>(extraBufferCapacity = 2)
 
 
     @OptIn(ExperimentalCoroutinesApi::class)
     override fun command(subscriptionCount: StateFlow<Int>): Flow<SharingCommand> =
-        merge(sharingStarted.command(subscriptionCount), retryFlow)
+        merge(sharingStarted.command(subscriptionCount), restartFlow)
 
 
-    fun retry() {
-        retryFlow.tryEmit(SharingCommand.STOP_AND_RESET_REPLAY_CACHE)
-        retryFlow.tryEmit(SharingCommand.START)
+    fun restart() {
+        restartFlow.tryEmit(SharingCommand.STOP_AND_RESET_REPLAY_CACHE)
+        restartFlow.tryEmit(SharingCommand.START)
     }
 }
 
 fun <T> Flow<T>.restartStateIn(
     scope: CoroutineScope,
-    sharedStarted: SharingStarted,
-    initValue: T
-): StateFlow<T> {
-    val restartSharingStarted = RestartSharingStarted(sharedStarted)
+    started: SharingStarted,
+    initialValue: T
+): RestartableStateFlow<T> {
+    val restartSharingStarted = RestartSharingStarted(started)
     val stateFlow = stateIn(
         scope = scope,
         started = restartSharingStarted,
-        initialValue = initValue
+        initialValue = initialValue
     )
 
     return object : RestartableStateFlow<T>, StateFlow<T> by stateFlow {
-        override fun restart() = restartSharingStarted.retry()
+        override fun restart() = restartSharingStarted.restart()
     }
 }

@@ -1,12 +1,14 @@
 plugins {
-    alias(libs.plugins.depromeet.team5.feature)
+    alias(libs.plugins.depromeet.team5.library)
+    alias(libs.plugins.depromeet.team5.library.compose)
     alias(libs.plugins.depromeet.team5.hilt)
 }
 
 android {
-    namespace = "com.depromeet.team5.features.search"
+    namespace = "com.depromeet.team5.core.logger"
 
     defaultConfig {
+
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
@@ -19,13 +21,16 @@ android {
         }
     }
 
-    hilt{
+    hilt {
         enableAggregatingTask = true
     }
 }
 
 dependencies {
-    implementation(projects.core.designsystem)
-    implementation(projects.core.model)
-    implementation(projects.core.domain)
+    implementation(projects.depromeet.core.designsystem)
+
+    implementation(libs.timber)
+    implementation(libs.firebase.crashlytics)
+
+    implementation(libs.androidx.ui)
 }

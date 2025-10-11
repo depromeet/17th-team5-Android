@@ -134,37 +134,3 @@ data class SearchInfoEntity(
     val title: String
 )
 ```
-
-#### Step 5: `:core:model`
-
--   **Purpose**: Define the presentation/UI model.
--   **Mapper**: Implement the `ModelMapper<T>` interface to map from the presentation model to a `Domain Entity`.
-
-**Example (`Search.kt`):**
-```kotlin
-data class Search(
-    val code: String,
-    val message: String,
-    val data: List<SearchInfo>
-) : ModelMapper<SearchEntity> {
-
-    override fun toDomain(): SearchEntity = SearchEntity(
-        code = code,
-        message = message,
-        data = data.map { it.toDomain() }
-    )
-}
-
-data class SearchInfo(
-    val market: String,
-    val symbol: String,
-    val title: String
-) : ModelMapper<SearchInfoEntity> {
-
-    override fun toDomain(): SearchInfoEntity = SearchInfoEntity(
-        market = market,
-        symbol = symbol,
-        title = title
-    )
-}
-```

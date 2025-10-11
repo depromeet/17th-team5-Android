@@ -54,7 +54,6 @@ graph TD
 
     subgraph Shared
         core_designsystem[core:designsystem]
-        core_model[core:model]
         core_retrofit[core:retrofit]
         core_logger[core:logger]
     end
@@ -108,7 +107,6 @@ graph TD
 - **`core:domain`**: 순수한 Kotlin 모듈로, 비즈니스 로직(UseCase)과 데이터 계층을 정의하는 Repository 인터페이스를 포함합니다. 안드로이드 프레임워크에 대한 의존성이 없습니다.
 - **`core:localdatasource`**: Room DB, DataStore 등 로컬 데이터 소스와의 통신을 담당합니다.
 - **`core:logger`**: Timber와 같은 로깅 관련 유틸리티를 포함합니다.
-- **`core:model`**: 여러 모듈에서 공통으로 사용되는 데이터 모델(DTO, Entity 등)을 정의합니다.
 - **`core:remotedatasource`**: Remote API 등 원격 데이터 소스와의 통신을 담당합니다.
 - **`core:retrofit`**: Retrofit 인스턴스 생성 및 네트워크 통신 관련 설정을 담당합니다.
 

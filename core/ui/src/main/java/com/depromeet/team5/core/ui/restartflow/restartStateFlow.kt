@@ -1,4 +1,4 @@
-package com.depromeet.team5.core.ui.extensions.restart
+package com.depromeet.team5.core.ui.restartflow
 
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi

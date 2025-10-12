@@ -1,4 +1,4 @@
-package com.depromeet.team5.core.model
+package com.depromeet.team5.core.navigation
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry

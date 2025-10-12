@@ -6,7 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.depromeet.team5.core.domain.model.Feedback
 import com.depromeet.team5.core.domain.usecase.CreateFeedbackUseCase
 import com.depromeet.team5.core.domain.usecase.CreateRetrospectionUseCase
-import com.depromeet.team5.core.model.request.CreateRetrospectionParams
+import com.depromeet.team5.core.navigation.request.CreateRetrospectionParams
 import com.depromeet.team5.features.feedback.AiFeedbackUiState
 import com.depromeet.team5.features.feedback.PrincipleState
 import dagger.hilt.android.lifecycle.HiltViewModel

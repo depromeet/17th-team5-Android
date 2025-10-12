@@ -5,7 +5,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
-import com.depromeet.team5.core.model.request.RequestViewModel
+import com.depromeet.team5.core.navigation.request.RequestViewModel
 import com.depromeet.team5.features.feedback.screen.FeedbackRoute
 import kotlinx.serialization.Serializable
 

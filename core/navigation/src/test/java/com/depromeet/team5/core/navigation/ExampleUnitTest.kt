@@ -1,4 +1,4 @@
-package com.depromeet.team5.core.model
+package com.depromeet.team5.core.navigation
 
 import org.junit.Assert.*
 import org.junit.Test

@@ -10,8 +10,8 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.depromeet.team5.core.domain.usecase.CreateAnalysisUseCase
-import com.depromeet.team5.core.model.request.EmotionParams
-import com.depromeet.team5.core.model.request.PrincipleCheckParams
+import com.depromeet.team5.core.navigation.request.EmotionParams
+import com.depromeet.team5.core.navigation.request.PrincipleCheckParams
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow

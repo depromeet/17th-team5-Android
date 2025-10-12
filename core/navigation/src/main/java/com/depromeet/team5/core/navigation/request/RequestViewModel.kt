@@ -1,4 +1,4 @@
-package com.depromeet.team5.core.model.request
+package com.depromeet.team5.core.navigation.request
 
 import androidx.lifecycle.ViewModel
 

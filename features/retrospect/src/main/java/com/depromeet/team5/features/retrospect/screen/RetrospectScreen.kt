@@ -59,9 +59,9 @@ import com.depromeet.team5.core.designsystem.component.HedgeSegment
 import com.depromeet.team5.core.designsystem.component.HedgeTopBar
 import com.depromeet.team5.core.designsystem.foundation.HedgeColor
 import com.depromeet.team5.core.designsystem.foundation.HedgeTypography
-import com.depromeet.team5.core.model.request.CreateRetrospectionParams
-import com.depromeet.team5.core.model.request.OrderTypeParams
-import com.depromeet.team5.core.model.request.RequestViewModel
+import com.depromeet.team5.core.navigation.request.CreateRetrospectionParams
+import com.depromeet.team5.core.navigation.request.OrderTypeParams
+import com.depromeet.team5.core.navigation.request.RequestViewModel
 import com.depromeet.team5.features.retrospect.R
 import com.depromeet.team5.features.retrospect.annotation.DATE
 import com.depromeet.team5.features.retrospect.annotation.RETURN

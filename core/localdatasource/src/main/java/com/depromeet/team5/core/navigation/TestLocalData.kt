@@ -1,4 +1,4 @@
-package com.depromeet.team5.core.model
+package com.depromeet.team5.core.navigation
 
 
 //data class TestLocalData(

@@ -39,8 +39,8 @@ import com.depromeet.team5.core.designsystem.component.HedgeButton
 import com.depromeet.team5.core.designsystem.component.HedgeTopBar
 import com.depromeet.team5.core.designsystem.foundation.HedgeColor
 import com.depromeet.team5.core.designsystem.foundation.HedgeTypography
-import com.depromeet.team5.core.model.request.PrincipleCheckParams
-import com.depromeet.team5.core.model.request.RequestViewModel
+import com.depromeet.team5.core.navigation.request.PrincipleCheckParams
+import com.depromeet.team5.core.navigation.request.RequestViewModel
 
 data class Principle(
     val id: Long,

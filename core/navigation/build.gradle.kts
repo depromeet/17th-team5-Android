@@ -4,7 +4,7 @@ plugins {
 }
 
 android {
-    namespace = "com.depromeet.team5.core.model"
+    namespace = "com.depromeet.team5.core.navigation"
 
     defaultConfig {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"

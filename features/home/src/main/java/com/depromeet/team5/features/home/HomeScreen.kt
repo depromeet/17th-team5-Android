@@ -11,8 +11,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.depromeet.team5.core.model.request.OrderTypeParams
-import com.depromeet.team5.core.model.request.RequestViewModel
+import com.depromeet.team5.core.navigation.request.OrderTypeParams
+import com.depromeet.team5.core.navigation.request.RequestViewModel
 import com.depromeet.team5.features.home.component.HomeFloatingActionButton
 
 @Composable

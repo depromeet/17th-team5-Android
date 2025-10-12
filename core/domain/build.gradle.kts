@@ -4,5 +4,5 @@ plugins {
 }
 
 dependencies {
-    implementation(libs.skydoves.compose.runtime)
+    compileOnly(libs.androidx.compose.runtime)
 }

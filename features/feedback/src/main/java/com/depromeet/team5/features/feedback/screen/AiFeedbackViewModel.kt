@@ -3,10 +3,9 @@ package com.depromeet.team5.features.feedback.screen
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.depromeet.team5.core.domain.model.Feedback
 import com.depromeet.team5.core.domain.usecase.CreateFeedbackUseCase
 import com.depromeet.team5.core.domain.usecase.CreateRetrospectionUseCase
-import com.depromeet.team5.core.model.Feedback
-import com.depromeet.team5.core.model.mapper.toPresentation
 import com.depromeet.team5.core.model.request.CreateRetrospectionParams
 import com.depromeet.team5.features.feedback.AiFeedbackUiState
 import com.depromeet.team5.features.feedback.PrincipleState
@@ -53,7 +52,6 @@ class AiFeedbackViewModel @Inject constructor(
                 )
             )
                 .flatMapConcat { createFeedbackUseCase(it.id) }
-                .map { it.toPresentation() }
                 .map {
                     if (it != Feedback.EMPTY) {
                         AiFeedbackUiState.Success(

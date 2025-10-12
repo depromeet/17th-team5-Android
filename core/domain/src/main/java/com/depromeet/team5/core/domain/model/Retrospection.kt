@@ -1,7 +1,7 @@
 package com.depromeet.team5.core.domain.model
 
 
-data class RetrospectionEntity(
+data class Retrospection(
     val id: Int,
     val userId: Int,
     val market: String,

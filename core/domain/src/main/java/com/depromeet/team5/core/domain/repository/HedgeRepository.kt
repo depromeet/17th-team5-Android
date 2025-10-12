@@ -1,21 +1,21 @@
 package com.depromeet.team5.core.domain.repository
 
-import com.depromeet.team5.core.domain.model.AnalysisEntity
-import com.depromeet.team5.core.domain.model.FeedbackEntity
-import com.depromeet.team5.core.domain.model.RetrospectionEntity
-import com.depromeet.team5.core.domain.model.SearchEntity
+import com.depromeet.team5.core.domain.model.Analysis
+import com.depromeet.team5.core.domain.model.Feedback
+import com.depromeet.team5.core.domain.model.Retrospection
+import com.depromeet.team5.core.domain.model.Search
 import kotlinx.coroutines.flow.Flow
 
 
 interface HedgeRepository {
 
-    fun search(query: String): Flow<SearchEntity>
+    fun search(query: String): Flow<Search>
 
-    fun createRetrospection(body: Map<String, Any?>): Flow<RetrospectionEntity>
+    fun createRetrospection(body: Map<String, Any?>): Flow<Retrospection>
 
     fun createFeedback(
         retrospectionId: Int
-    ): Flow<FeedbackEntity>
+    ): Flow<Feedback>
 
-    fun createAnalysis(body: Map<String, Any?>): Flow<AnalysisEntity>
+    fun createAnalysis(body: Map<String, Any?>): Flow<Analysis>
 }

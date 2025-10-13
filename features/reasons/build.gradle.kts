@@ -27,8 +27,7 @@ android {
 
 dependencies {
     implementation(projects.core.domain)
-    implementation(projects.core.model)
     implementation(projects.core.designsystem)
-    implementation(projects.core.model)
+    implementation(projects.core.navigation)
 
 }

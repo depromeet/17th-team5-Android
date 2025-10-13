@@ -59,7 +59,7 @@ import com.depromeet.team5.core.designsystem.component.HedgeTopBar
 import com.depromeet.team5.core.designsystem.foundation.HedgeColor
 import com.depromeet.team5.core.designsystem.foundation.HedgeIcon
 import com.depromeet.team5.core.designsystem.foundation.HedgeTypography
-import com.depromeet.team5.core.model.request.RequestViewModel
+import com.depromeet.team5.core.navigation.request.RequestViewModel
 import com.depromeet.team5.feature.reasons.ui.AnalysisPip
 import com.depromeet.team5.feature.reasons.ui.AutoScrollTextField
 import com.depromeet.team5.feature.reasons.ui.EmotionBottomSheet

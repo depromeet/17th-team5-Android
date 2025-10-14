@@ -10,7 +10,7 @@ import com.depromeet.team5.features.retrospect.annotation.DATE
 import com.depromeet.team5.features.retrospect.annotation.RETURN
 import com.depromeet.team5.features.retrospect.annotation.SELLING
 import com.depromeet.team5.features.retrospect.annotation.STOCK
-import com.depromeet.team5.features.retrospect.annotation.savedStateHandleKey
+import com.depromeet.team5.features.retrospect.annotation.SavedStateHandleKey
 import com.depromeet.team5.features.retrospect.state.TextFieldState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.combine
@@ -24,23 +24,23 @@ class RetrospectViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
-    val sellingTextFieldState: HedgeState<TextFieldState> by hedgeState(
+    val sellingTextFieldState: HedgeState<TextFieldState> by hedgeState {
         TextFieldState.EMPTY.copy(text = savedStateHandle[SELLING] ?: "")
-    )
+    }
 
-    val stockTextFieldState: HedgeState<TextFieldState> by hedgeState(
+    val stockTextFieldState: HedgeState<TextFieldState> by hedgeState {
         TextFieldState.EMPTY.copy(text = savedStateHandle[STOCK] ?: "")
-    )
-    val dateTextFieldState: HedgeState<TextFieldState> by hedgeState(
+    }
+    val dateTextFieldState: HedgeState<TextFieldState> by hedgeState {
         TextFieldState.EMPTY.copy(text = savedStateHandle[DATE] ?: "")
-    )
-    val returnTextFieldState: HedgeState<TextFieldState> by hedgeState(
+    }
+    val returnTextFieldState: HedgeState<TextFieldState> by hedgeState {
         TextFieldState.EMPTY.copy(text = savedStateHandle[RETURN] ?: "")
-    )
+    }
 
-    val returnToggleState by hedgeState(false)
+    val returnToggleState by hedgeState { false }
 
-    val okButtonState: HedgeState<Boolean> by hedgeState(false)
+    val okButtonState: HedgeState<Boolean> by hedgeState { false }
 
 
     init {
@@ -72,7 +72,7 @@ class RetrospectViewModel @Inject constructor(
     }
 
     fun updateState(
-        key: savedStateHandleKey,
+        key: SavedStateHandleKey,
         value: String,
         selection: Int,
         isError: Boolean = false

@@ -64,15 +64,16 @@ import com.depromeet.team5.core.navigation.request.OrderTypeParams
 import com.depromeet.team5.core.navigation.request.RequestViewModel
 import com.depromeet.team5.features.retrospect.R
 import com.depromeet.team5.features.retrospect.annotation.DATE
+import com.depromeet.team5.features.retrospect.annotation.KRW
 import com.depromeet.team5.features.retrospect.annotation.RETURN
 import com.depromeet.team5.features.retrospect.annotation.SELLING
 import com.depromeet.team5.features.retrospect.annotation.STOCK
+import com.depromeet.team5.features.retrospect.annotation.USD
 import com.depromeet.team5.features.retrospect.screen.component.HedgeDatePickerDialog
 import com.depromeet.team5.features.retrospect.screen.component.HedgeSimpleTextField
 import com.depromeet.team5.features.retrospect.screen.component.HedgeTopbar
 import com.depromeet.team5.features.retrospect.screen.component.HedgeUnitTextField
-import com.depromeet.team5.features.retrospect.screen.visualtransmation.KoreanCurrencyVisualTransformation
-import com.depromeet.team5.features.retrospect.screen.visualtransmation.USDCurrencyVisualTransformation
+import com.depromeet.team5.features.retrospect.screen.visualtransmation.CurrencyVisualTransformation
 import com.depromeet.team5.features.retrospect.screen.visualtransmation.UnitTransformation
 import com.depromeet.team5.features.retrospect.state.TextFieldState
 import java.text.SimpleDateFormat
@@ -318,8 +319,11 @@ private fun SellingTextField(
     val focusRequester = remember { FocusRequester() }
 
     var selectedIndex by remember { mutableIntStateOf(0) }
-    val currentVisualTransformation =
-        if (selectedIndex == 1) USDCurrencyVisualTransformation() else KoreanCurrencyVisualTransformation()
+    val currentVisualTransformation by remember(selectedIndex) {
+        mutableStateOf(
+            CurrencyVisualTransformation(if (selectedIndex == 0) KRW else USD)
+        )
+    }
 
     HedgeUnitTextField(
         modifier = modifier.focusRequester(focusRequester),

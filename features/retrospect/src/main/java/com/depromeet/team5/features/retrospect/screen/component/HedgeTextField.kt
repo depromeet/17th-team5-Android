@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -19,6 +18,7 @@ import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -28,21 +28,21 @@ import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextRange
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.input.VisualTransformation
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
+import com.depromeet.team5.core.designsystem.component.HedgeSegment
 import com.depromeet.team5.core.designsystem.foundation.HedgeColor
 import com.depromeet.team5.core.designsystem.foundation.HedgeTypography
 import com.depromeet.team5.features.retrospect.R
-import com.depromeet.team5.features.retrospect.screen.visualtransmation.KoreanCurrencyVisualTransformation
-import com.depromeet.team5.features.retrospect.screen.visualtransmation.USDCurrencyVisualTransformation
+import com.depromeet.team5.features.retrospect.annotation.KRW
+import com.depromeet.team5.features.retrospect.annotation.USD
+import com.depromeet.team5.features.retrospect.screen.visualtransmation.CurrencyVisualTransformation
 
 
 @Composable
@@ -251,8 +251,14 @@ internal fun HedgeSimpleTextField(
 private fun HedgeTextFieldPreview() {
     val keyboardController = LocalSoftwareKeyboardController.current
 
-    var isToggled by remember { mutableStateOf(false) }
+    var selectedIndex by remember { mutableIntStateOf(0) }
     var textFieldValue by remember { mutableStateOf(TextFieldValue("")) }
+
+    var currentVisualTransformation by remember(selectedIndex) {
+        mutableStateOf(
+            CurrencyVisualTransformation(if (selectedIndex == 0) KRW else USD)
+        )
+    }
 
     Column(
         modifier = Modifier
@@ -261,16 +267,19 @@ private fun HedgeTextFieldPreview() {
         verticalArrangement = Arrangement.Center
     ) {
         HedgeUnitTextField(
-            label = "매도가",
-            placeholder = "매도 가격",
-            value = textFieldValue,
+            label = stringResource(R.string.retrospect_selling_price),
+            placeholder = stringResource(R.string.retrospect_selling_price_placeholder),
+            value = TextFieldValue(
+                text = textFieldValue.text,
+                selection = textFieldValue.selection
+            ),
             onValueChange = { newValue ->
                 val digitsOnlyText = newValue.text.filter { it.isDigit() }
                 val newCursorPosition = newValue.selection.start.let { transformedOffset ->
                     newValue.text.substring(0, transformedOffset).count { it.isDigit() }
                 }.coerceIn(0, digitsOnlyText.length)
 
-                textFieldValue = TextFieldValue(
+                textFieldValue = textFieldValue.copy(
                     text = digitsOnlyText,
                     selection = TextRange(newCursorPosition)
                 )
@@ -279,55 +288,20 @@ private fun HedgeTextFieldPreview() {
                 keyboardType = KeyboardType.Number,
                 imeAction = ImeAction.Done
             ),
-            keyboardActions = KeyboardActions(
-                onDone = {
-                    keyboardController?.hide()
-                }
-            ),
+            keyboardActions = KeyboardActions(),
             trailingIcon = {
-                HedgeSwitch(
-                    isToggled = isToggled,
-                    onToggleChanged = { newToggleState ->
-                        isToggled = newToggleState
-                        textFieldValue = TextFieldValue("")
-                    },
-                    offContent = {
-                        Box(
-                            modifier = Modifier
-                                .fillMaxHeight(),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Text(
-                                modifier = Modifier
-                                    .padding(horizontal = 7.dp, vertical = 6.dp),
-                                text = "원",
-                                fontSize = 12.sp,
-                                fontWeight = FontWeight.W600
-                            )
-                        }
-                    },
-                    onContent = {
-                        Box(
-                            modifier = Modifier.fillMaxHeight(),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Text(
-                                modifier = Modifier
-                                    .padding(horizontal = 7.dp, vertical = 6.dp),
-                                text = "$",
-                                fontSize = 12.sp,
-                                fontWeight = FontWeight.W600,
-                                textAlign = TextAlign.Center
-                            )
-                        }
+                HedgeSegment(
+                    options = listOf(
+                        stringResource(id = R.string.retrospect_unit_won),
+                        stringResource(id = R.string.retrospect_unit_dollar)
+                    ),
+                    selectedIndex = selectedIndex,
+                    onSelectedIndexChange = { index ->
+                        selectedIndex = index
                     }
                 )
             },
-            visualTransformation = if (isToggled) {
-                USDCurrencyVisualTransformation()
-            } else {
-                KoreanCurrencyVisualTransformation()
-            }
+            visualTransformation = currentVisualTransformation
         )
     }
 }

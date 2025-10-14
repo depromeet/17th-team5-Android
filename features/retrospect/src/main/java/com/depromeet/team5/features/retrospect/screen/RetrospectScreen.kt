@@ -74,7 +74,7 @@ import com.depromeet.team5.features.retrospect.screen.component.HedgeSimpleTextF
 import com.depromeet.team5.features.retrospect.screen.component.HedgeTopbar
 import com.depromeet.team5.features.retrospect.screen.component.HedgeUnitTextField
 import com.depromeet.team5.features.retrospect.screen.visualtransmation.CurrencyVisualTransformation
-import com.depromeet.team5.features.retrospect.screen.visualtransmation.UnitTransformation
+import com.depromeet.team5.features.retrospect.screen.visualtransmation.UnitVisualTransformation
 import com.depromeet.team5.features.retrospect.state.TextFieldState
 import java.text.SimpleDateFormat
 import java.time.LocalDate
@@ -399,7 +399,7 @@ private fun StockTextField(
         },
         label = stringResource(R.string.retrospect_volume),
         placeholder = stringResource(id = R.string.retrospect_volume),
-        visualTransformation = UnitTransformation(stringResource(id = R.string.retrospect_unit_stock)),
+        visualTransformation = UnitVisualTransformation(unit = stringResource(id = R.string.retrospect_unit_stock)),
         onDone = {
             focusManager.moveFocus(FocusDirection.Down)
         }
@@ -514,10 +514,23 @@ fun ReturnTextField(
     onUpdateReturnText: (String, Int) -> Unit,
     onChangedKeyboardVisibility: (Boolean) -> Unit
 ) {
+    val context = LocalContext.current
     val focusManager = LocalFocusManager.current
     val focusRequester = remember { FocusRequester() }
 
     var selectedIndex by remember { mutableIntStateOf(0) }
+    var unitTransformation by remember(selectedIndex) {
+        mutableStateOf(
+            UnitVisualTransformation(
+                prefix = if (selectedIndex == 0) {
+                    context.getString(R.string.retrospect_unit_plus)
+                } else {
+                    context.getString(R.string.retrospect_unit_minus)
+                },
+                unit = context.getString(R.string.retrospect_unit_percent)
+            )
+        )
+    }
 
     HedgeUnitTextField(
         modifier = Modifier
@@ -556,7 +569,7 @@ fun ReturnTextField(
                 }
             )
         },
-        visualTransformation = UnitTransformation(stringResource(id = R.string.retrospect_unit_percent))
+        visualTransformation = unitTransformation
     )
 }
 

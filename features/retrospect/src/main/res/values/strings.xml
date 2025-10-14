@@ -3,7 +3,6 @@
     <string name="retrospect_selling_price_title">얼마에 매도하셨나요?</string>
     <string name="retrospect_buy_price_title">얼마에 매수하셨나요?</string>
     <string name="retrospect_volume">거래량</string>
-    <string name="retrospect_volume_placeholder">거래량 가격</string>
     <string name="retrospect_unit_stock">주</string>
     <string name="retrospect_rate_of_return">수익률</string>
     <string name="retrospect_unit_percent">%</string>

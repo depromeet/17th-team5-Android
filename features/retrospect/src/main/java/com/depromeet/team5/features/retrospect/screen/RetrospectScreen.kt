@@ -63,6 +63,7 @@ import com.depromeet.team5.core.navigation.request.CreateRetrospectionParams
 import com.depromeet.team5.core.navigation.request.OrderTypeParams
 import com.depromeet.team5.core.navigation.request.RequestViewModel
 import com.depromeet.team5.features.retrospect.R
+import com.depromeet.team5.features.retrospect.annotation.CurrencyType
 import com.depromeet.team5.features.retrospect.annotation.DATE
 import com.depromeet.team5.features.retrospect.annotation.KRW
 import com.depromeet.team5.features.retrospect.annotation.RETURN
@@ -98,6 +99,7 @@ fun RetrospectRoute(
     val returnTextFieldState by viewModel.returnTextFieldState.stateFlow.collectAsStateWithLifecycle()
     val buttonState by viewModel.okButtonState.stateFlow.collectAsStateWithLifecycle()
     val returnToggleState by viewModel.returnToggleState.stateFlow.collectAsStateWithLifecycle()
+    val currencyState by viewModel.currencyState.stateFlow.collectAsStateWithLifecycle()
 
     RetrospectScreen(
         modifier = modifier,
@@ -130,7 +132,7 @@ fun RetrospectRoute(
                 price = viewModel.sellingTextFieldState.stateFlow.value.text.toInt(),
                 volume = viewModel.stockTextFieldState.stateFlow.value.text.toInt(),
                 orderDate = viewModel.dateTextFieldState.stateFlow.value.text,
-                currency = "KRW", //todo 나중에.. 수정하기
+                currency = viewModel.currencyState.stateFlow.value,
                 returnRate = try {
                     viewModel.returnTextFieldState.stateFlow.value.text.toDouble()
                 } catch (e: Exception) {
@@ -144,6 +146,9 @@ fun RetrospectRoute(
         },
         onUpdateReturnToggle = { isToggled ->
             viewModel.returnToggleState.update { isToggled }
+        },
+        onUpdateCurrency = { currency ->
+            viewModel.currencyState.update { currency }
         },
         onBackPressed = onBackPressed
     )
@@ -165,6 +170,7 @@ private fun RetrospectScreen(
     onUpdateReturnText: (String, Int) -> Unit,
     onClickedConfirmButton: () -> Unit,
     onUpdateReturnToggle: (Boolean) -> Unit,
+    onUpdateCurrency: (CurrencyType) -> Unit,
     onBackPressed: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -206,7 +212,8 @@ private fun RetrospectScreen(
             SellingTextField(
                 state = sellingTextFieldState,
                 requestParams = requestParams,
-                onUpdateSellingText = onUpdateSellingText
+                onUpdateSellingText = onUpdateSellingText,
+                onUpdateCurrency = onUpdateCurrency
             )
             StockTextField(
                 state = stockTextFieldState,
@@ -313,6 +320,7 @@ private fun SellingTextField(
     state: TextFieldState,
     requestParams: CreateRetrospectionParams,
     onUpdateSellingText: (String, Int) -> Unit,
+    onUpdateCurrency: (CurrencyType) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val focusManager = LocalFocusManager.current
@@ -367,6 +375,7 @@ private fun SellingTextField(
                 selectedIndex = selectedIndex,
                 onSelectedIndexChange = { index ->
                     selectedIndex = index
+                    onUpdateCurrency(if (selectedIndex == 0) KRW else USD)
                 }
             )
         },
@@ -723,6 +732,7 @@ private fun RetrospectRoutePreview() {
             },
             onClickedConfirmButton = {},
             onUpdateReturnToggle = { returnToggleState = it },
+            onUpdateCurrency = {},
             onBackPressed = {}
         )
     }

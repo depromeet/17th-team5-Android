@@ -7,6 +7,7 @@ import com.depromeet.team5.core.ui.extensions.baseCollect
 import com.depromeet.team5.core.ui.lazy.HedgeState
 import com.depromeet.team5.core.ui.lazy.hedgeState
 import com.depromeet.team5.features.retrospect.annotation.DATE
+import com.depromeet.team5.features.retrospect.annotation.KRW
 import com.depromeet.team5.features.retrospect.annotation.RETURN
 import com.depromeet.team5.features.retrospect.annotation.SELLING
 import com.depromeet.team5.features.retrospect.annotation.STOCK
@@ -38,6 +39,7 @@ class RetrospectViewModel @Inject constructor(
         TextFieldState.EMPTY.copy(text = savedStateHandle[RETURN] ?: "")
     }
 
+    val currencyState by hedgeState { KRW }
     val returnToggleState by hedgeState { false }
 
     val okButtonState: HedgeState<Boolean> by hedgeState { false }

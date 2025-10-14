@@ -119,7 +119,7 @@ graph TD
 
 ## 4. 데이터 매핑 구조 (Data Mapping Structure)
 
-본 프로젝트는 각 레이어 간의 의존성을 분리하고 데이터 흐름을 명확히 하기 위해 계층별 데이터 모델과 Mapper 인터페이스를 사용합니다. 데이터는 `Retrofit(DTO)` -> `RemoteDataSource` -> `Data` -> `Domain(Entity)` -> `Feature(UI Model)` 순서로 흐르며, 각 단계에서 필요한 모델로 변환됩니다.
+본 프로젝트는 각 레이어 간의 의존성을 분리하고 데이터 흐름을 명확히 하기 위해 계층별 데이터 모델과 Mapper 인터페이스를 사용합니다. 데이터는 `Retrofit(DTO)` -> `RemoteDataSource` -> `Data` -> `Domain` -> `Feature(UI Model)` 순서로 흐르며, 각 단계에서 필요한 모델로 변환됩니다.
 
 ```mermaid
 graph LR
@@ -133,7 +133,7 @@ graph LR
         C[SearchData]
     end
     subgraph core:domain
-        D[SearchEntity]
+        D[Search]
     end
     subgraph features
         E[Search (UI Model)]
@@ -154,8 +154,8 @@ graph LR
     -   `RemoteDataMapper<T>`: `RemoteDataSource` 모델을 `Data` 모델로 변환합니다.
     -   `fun toData(): T`
 -   **`core:data`**
-    -   `DataMapper<T>`: `Data` 모델을 `Domain`의 Entity로 변환합니다.
+    -   `DataMapper<T>`: `Data` 모델을 `Domain`의 모델로 변환합니다.
     -   `fun toDomain(): T`
 -   **`core:domain`**
-    -   `EntityMapper<T>`: `Domain`의 Entity를 `Feature` 레이어에서 사용하는 UI 모델로 변환합니다.
+    -   `DomainMapper<T>`: `Domain`의 모델을 `Feature` 레이어에서 사용하는 UI 모델로 변환합니다.
     -   `fun toUiModel(): T`

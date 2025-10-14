@@ -8,6 +8,10 @@ Based on the JSON response provided, generate all necessary data models and mapp
 
 You will be given a JSON response. Your task is to create the corresponding data classes and mappers across 5 different modules, following the precise structure, naming conventions, and file paths shown in the examples below.
 
+**Important Rules**: The generated models must **exactly** follow the structure of the examples below.
+1.  Do not create generic wrapper classes like `BaseResponse<T>`. Each `...Response` DTO must directly include the `code`, `message`, and `data` fields, as shown in the `SearchResponse` example.
+2.  When implementing mappers, do not use the unnecessary `this` keyword.
+
 ---
 
 ### Generation Steps
@@ -85,7 +89,7 @@ data class SearchInfoRemoteData(
 #### Step 3: `:core:data:model`
 
 -   **Purpose**: Define the data model for the data repository layer.
--   **Mapper**: Implement the `DataMapper<T>` interface to convert the `Data` model to the `Domain Entity`.
+-   **Mapper**: Implement the `DataMapper<T>` interface to convert the `Data` model to the `Domain` model.
 
 **Example (`SearchData.kt`):**
 ```kotlin
@@ -93,9 +97,9 @@ data class SearchData(
     val code: String,
     val message: String,
     val data: List<SearchInfoData>
-) : DataMapper<SearchEntity> {
+) : DataMapper<Search> {
 
-    override fun toDomain(): SearchEntity = SearchEntity(
+    override fun toDomain(): Search = Search(
         code = code,
         message = message,
         data = data.map { it.toDomain() }
@@ -106,9 +110,9 @@ data class SearchInfoData(
     val market: String,
     val symbol: String,
     val title: String
-) : DataMapper<SearchInfoEntity> {
+) : DataMapper<SearchInfo> {
 
-    override fun toDomain(): SearchInfoEntity = SearchInfoEntity(
+    override fun toDomain(): SearchInfo = SearchInfo(
         market = market,
         symbol = symbol,
         title = title
@@ -118,17 +122,17 @@ data class SearchInfoData(
 
 #### Step 4: `:core:domain:model`
 
--   **Purpose**: Define the pure business model (Entity). This class should be clean and contain no Android framework dependencies or mapping logic.
+-   **Purpose**: Define the pure business model. This class should be clean and contain no Android framework dependencies or mapping logic.
 
-**Example (`SearchEntity.kt`):**
+**Example (`Search.kt`):**
 ```kotlin
-data class SearchEntity(
+data class Search(
     val code: String,
     val message: String,
-    val data: List<SearchInfoEntity>
+    val data: List<SearchInfo>
 )
 
-data class SearchInfoEntity(
+data class SearchInfo(
     val market: String,
     val symbol: String,
     val title: String

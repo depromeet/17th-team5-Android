@@ -43,3 +43,4 @@ include(":features:feedback")
 
 include(":features:reasons")
 include(":core:logger")
+include(":core:ui")

@@ -30,6 +30,7 @@ timber = "5.0.1"
 firebaseCrashlytics = "20.0.2"
 firebaseCrashlyticsPlugins = "3.0.6"
 googleService = "4.4.1"
+coroutineTest = "1.10.2"
 
 
 [libraries]
@@ -68,6 +69,7 @@ hilt-compiler = { module = "com.google.dagger:hilt-compiler", version.ref = "hil
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
 androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
+kotlinx-coroutine-test = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-test", version.ref = "coroutineTest" }
 
 #truth
 truth = { group = "com.google.truth", name = "truth", version.ref = "truth" }
@@ -127,7 +129,7 @@ android-application = { id = "com.android.application", version.ref = "agp" }
 android-library = { id = "com.android.library", version.ref = "agp" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
-kotlin-jvm = {id = "org.jetbrains.kotlin.jvm",version.ref = "kotlin" }
+kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 hilt = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 kotlinx-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlinxSerialization" }

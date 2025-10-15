@@ -1,11 +1,9 @@
-package com.depromeet.team5.features.retrospect.extensions
+package com.depromeet.team5.core.ui.lazy
 
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
-import kotlin.properties.ReadOnlyProperty
-import kotlin.reflect.KProperty
 
 
 class HedgeState<T : Any?>(
@@ -13,6 +11,10 @@ class HedgeState<T : Any?>(
 ) {
     private val _stateFlow: MutableStateFlow<T> = MutableStateFlow(initValue)
     val stateFlow: StateFlow<T> = _stateFlow.asStateFlow()
+
+    /** Shotcut property of [stateFlow.value] */
+    val value: T
+        get() = stateFlow.value
 
 
     suspend fun emit(value: T) {
@@ -25,17 +27,3 @@ class HedgeState<T : Any?>(
         _stateFlow.update(onUpdate)
     }
 }
-
-class HedgeStateLazy<T : Any?>(
-    private val initValue: () -> T
-) : ReadOnlyProperty<Any?, HedgeState<T>> {
-
-    private val state: HedgeState<T> by lazy {
-        HedgeState(initValue())
-    }
-
-    override fun getValue(thisRef: Any?, property: KProperty<*>): HedgeState<T> = state
-}
-
-
-fun <T> hedgeState(initValue: () -> T) = HedgeStateLazy(initValue)

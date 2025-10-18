@@ -1,5 +1,6 @@
 package com.depromeet.team5.features.retrospect.screen
 
+import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.tween
@@ -63,15 +64,8 @@ import com.depromeet.team5.core.navigation.request.OrderTypeParams
 import com.depromeet.team5.core.navigation.request.RequestViewModel
 import com.depromeet.team5.features.retrospect.R
 import com.depromeet.team5.features.retrospect.annotation.CurrencyType
-import com.depromeet.team5.features.retrospect.annotation.DATE
-import com.depromeet.team5.features.retrospect.annotation.KRW
-import com.depromeet.team5.features.retrospect.annotation.MINUS
-import com.depromeet.team5.features.retrospect.annotation.PLUS
-import com.depromeet.team5.features.retrospect.annotation.RETURN
 import com.depromeet.team5.features.retrospect.annotation.ReturnSignType
-import com.depromeet.team5.features.retrospect.annotation.SELLING
-import com.depromeet.team5.features.retrospect.annotation.STOCK
-import com.depromeet.team5.features.retrospect.annotation.USD
+import com.depromeet.team5.features.retrospect.annotation.TextFieldType
 import com.depromeet.team5.features.retrospect.screen.component.HedgeDatePickerDialog
 import com.depromeet.team5.features.retrospect.screen.component.HedgeSimpleTextField
 import com.depromeet.team5.features.retrospect.screen.component.HedgeTopbar
@@ -116,19 +110,19 @@ fun RetrospectRoute(
         buttonEnabled = buttonState,
         requestParams = requestViewModel.request,
         onUpdateSellingText = { text, selection ->
-            viewModel.updateState(SELLING, text, selection)
+            viewModel.updateState(TextFieldType.Selling, text, selection)
         },
         onUpdateStockText = { text, selection ->
-            viewModel.updateState(STOCK, text, selection)
+            viewModel.updateState(TextFieldType.Stock, text, selection)
         },
         onUpdateDateText = { text, selection ->
-            viewModel.updateState(DATE, text, selection)
+            viewModel.updateState(TextFieldType.Date, text, selection)
         },
         onUpdateReturnText = { text, selection ->
-            viewModel.updateState(RETURN, text, selection)
+            viewModel.updateState(TextFieldType.Return, text, selection)
         },
         onErrorDateText = { text, selection ->
-            viewModel.updateState(DATE, text, selection, true)
+            viewModel.updateState(TextFieldType.Date, text, selection, true)
         },
         onClickedConfirmButton = {
             if (!viewModel.okButtonState.stateFlow.value) return@RetrospectScreen
@@ -137,25 +131,24 @@ fun RetrospectRoute(
                 price = viewModel.sellingTextFieldState.stateFlow.value.text.toInt(),
                 volume = viewModel.stockTextFieldState.stateFlow.value.text.toInt(),
                 orderDate = viewModel.dateTextFieldState.stateFlow.value.text,
-                currency = viewModel.currencyState.stateFlow.value,
+                currency = CurrencyType.from(viewModel.currencyState.stateFlow.value),
                 returnRate = try {
                     when (viewModel.returnSignState.value) {
-                        PLUS -> {
+                        ReturnSignType.Plus -> {
                             viewModel.returnTextFieldState.stateFlow.value.text.toDouble()
                         }
 
-                        MINUS -> {
+                        ReturnSignType.Minus -> {
                             viewModel.returnTextFieldState.stateFlow.value.text.toDouble() * -1
-                        }
-
-                        else -> {
-                            0.0
                         }
                     }
                 } catch (e: Exception) {
                     null
                 }
             )
+
+
+            Log.d("RETROSPECT", requestViewModel.request.toString())
 
             onClickedConfirmButton()
         },
@@ -352,8 +345,8 @@ private fun SellingTextField(
     val focusRequester = remember { FocusRequester() }
     var selectedIndex by remember {
         val currency = when (currencyType) {
-            KRW -> 0
-            USD -> 1
+            CurrencyType.KRW -> 0
+            CurrencyType.USD -> 1
             else -> 0
         }
 
@@ -361,7 +354,9 @@ private fun SellingTextField(
     }
     val currentVisualTransformation by remember(selectedIndex) {
         mutableStateOf(
-            CurrencyVisualTransformation(if (selectedIndex == 0) KRW else USD)
+            CurrencyVisualTransformation(
+                if (selectedIndex == 0) CurrencyType.KRW else CurrencyType.USD
+            )
         )
     }
 
@@ -407,7 +402,7 @@ private fun SellingTextField(
                 selectedIndex = selectedIndex,
                 onSelectedIndexChange = { index ->
                     selectedIndex = index
-                    onUpdateCurrency(if (selectedIndex == 0) KRW else USD)
+                    onUpdateCurrency(if (selectedIndex == 0) CurrencyType.KRW else CurrencyType.USD)
                 }
             )
         },
@@ -561,7 +556,7 @@ fun ReturnTextField(
     val focusManager = LocalFocusManager.current
     val focusRequester = remember { FocusRequester() }
     var selectedIndex by remember {
-        mutableIntStateOf(if (returnSignType == PLUS) 0 else 1)
+        mutableIntStateOf(if (returnSignType == ReturnSignType.Plus) 0 else 1)
     }
     var unitTransformation by remember(selectedIndex) {
         mutableStateOf(
@@ -612,9 +607,9 @@ fun ReturnTextField(
                     selectedIndex = index
 
                     if (selectedIndex == 0) {
-                        onUpdateReturnSign(PLUS)
+                        onUpdateReturnSign(ReturnSignType.Plus)
                     } else {
-                        onUpdateReturnSign(MINUS)
+                        onUpdateReturnSign(ReturnSignType.Minus)
                     }
                 }
             )
@@ -721,8 +716,8 @@ private fun RetrospectRoutePreview() {
             returnTextFieldState = returnTextFieldState,
             returnToggleState = returnToggleState,
             buttonEnabled = buttonState,
-            currencyType = KRW,
-            returnSignType = PLUS,
+            currencyType = CurrencyType.KRW,
+            returnSignType = ReturnSignType.Plus,
             requestParams = CreateRetrospectionParams.EMPTY,
             onUpdateSellingText = { text, selection ->
                 sellingTextFieldState =

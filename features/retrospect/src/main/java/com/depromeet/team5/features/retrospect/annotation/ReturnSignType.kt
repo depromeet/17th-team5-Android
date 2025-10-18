@@ -1,23 +1,16 @@
 package com.depromeet.team5.features.retrospect.annotation
 
-import androidx.annotation.StringDef
+
+sealed class ReturnSignType {
+    object Plus : ReturnSignType()
+    object Minus : ReturnSignType()
 
 
-typealias ReturnSignType = @ReturnSignTypeKey String
+    companion object {
 
-
-const val PLUS = "+"
-
-const val MINUS = "-"
-
-
-@Target(AnnotationTarget.ANNOTATION_CLASS)
-@Retention(AnnotationRetention.SOURCE)
-@StringDef(PLUS, MINUS)
-annotation class ReturnSignTypeClass
-
-
-@ReturnSignTypeClass
-@Target(AnnotationTarget.TYPE)
-@Retention(AnnotationRetention.SOURCE)
-annotation class ReturnSignTypeKey
+        fun from(type: ReturnSignType) = when (type) {
+            is Plus -> "+"
+            is Minus -> "-"
+        }
+    }
+}

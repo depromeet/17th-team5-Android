@@ -40,8 +40,7 @@ import com.depromeet.team5.core.designsystem.component.HedgeSegment
 import com.depromeet.team5.core.designsystem.foundation.HedgeColor
 import com.depromeet.team5.core.designsystem.foundation.HedgeTypography
 import com.depromeet.team5.features.retrospect.R
-import com.depromeet.team5.features.retrospect.annotation.KRW
-import com.depromeet.team5.features.retrospect.annotation.USD
+import com.depromeet.team5.features.retrospect.annotation.CurrencyType
 import com.depromeet.team5.features.retrospect.screen.visualtransmation.CurrencyVisualTransformation
 
 
@@ -256,7 +255,7 @@ private fun HedgeTextFieldPreview() {
 
     var currentVisualTransformation by remember(selectedIndex) {
         mutableStateOf(
-            CurrencyVisualTransformation(if (selectedIndex == 0) KRW else USD)
+            CurrencyVisualTransformation(if (selectedIndex == 0) CurrencyType.KRW else CurrencyType.USD)
         )
     }
 

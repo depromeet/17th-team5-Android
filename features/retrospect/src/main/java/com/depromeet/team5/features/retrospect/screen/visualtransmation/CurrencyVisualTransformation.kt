@@ -5,8 +5,6 @@ import androidx.compose.ui.text.input.OffsetMapping
 import androidx.compose.ui.text.input.TransformedText
 import androidx.compose.ui.text.input.VisualTransformation
 import com.depromeet.team5.features.retrospect.annotation.CurrencyType
-import com.depromeet.team5.features.retrospect.annotation.KRW
-import com.depromeet.team5.features.retrospect.annotation.USD
 import java.text.DecimalFormat
 import kotlin.math.max
 
@@ -18,7 +16,7 @@ class CurrencyVisualTransformation(val unit: CurrencyType) : VisualTransformatio
 
     override fun filter(text: AnnotatedString): TransformedText {
         return when (unit) {
-            KRW -> {
+            CurrencyType.KRW -> {
                 if (text.text.isEmpty()) {
                     return TransformedText(text, OffsetMapping.Identity)
                 }
@@ -57,7 +55,7 @@ class CurrencyVisualTransformation(val unit: CurrencyType) : VisualTransformatio
                 )
             }
 
-            USD -> {
+            CurrencyType.USD -> {
                 val digitsOnly = text.text.filter { it.isDigit() }
                 if (digitsOnly.isEmpty()) {
                     return TransformedText(AnnotatedString(""), OffsetMapping.Identity)

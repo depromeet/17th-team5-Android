@@ -1,23 +1,20 @@
 package com.depromeet.team5.features.retrospect.annotation
 
-import androidx.annotation.StringDef
+
+sealed class CurrencyType {
+    object KRW : CurrencyType()
+    object USD : CurrencyType()
+    object EUR : CurrencyType()
+    object JPY : CurrencyType()
 
 
-typealias CurrencyType = @CurrencyTypeKey String
+    companion object {
 
-const val KRW = "KRW"
-const val USD = "USD"
-const val EUR = "EUR"
-const val JPY = "JPY"
-
-@Target(AnnotationTarget.ANNOTATION_CLASS)
-@Retention(AnnotationRetention.SOURCE)
-@StringDef(KRW, USD, EUR, JPY)
-private annotation class CurrencyTypeClass
-
-@CurrencyTypeClass
-@Target(AnnotationTarget.TYPE)
-@Retention(AnnotationRetention.SOURCE)
-private annotation class CurrencyTypeKey
-
-
+        fun from(type: CurrencyType) = when (type) {
+            is KRW -> "KRW"
+            is USD -> "USD"
+            is EUR -> "EUR"
+            is JPY -> "JPY"
+        }
+    }
+}

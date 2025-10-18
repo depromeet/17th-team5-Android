@@ -1,11 +1,15 @@
 package com.depromeet.team5.features.retrospect.annotation
 
+import android.os.Parcelable
+import kotlinx.parcelize.Parcelize
 
-sealed class TextFieldType {
-    object Selling : TextFieldType()
-    object Stock : TextFieldType()
-    object Date : TextFieldType()
-    object Return : TextFieldType()
+
+@Parcelize
+sealed class TextFieldType : Parcelable {
+    object Selling : TextFieldType(), Parcelable
+    object Stock : TextFieldType(), Parcelable
+    object Date : TextFieldType(), Parcelable
+    object Return : TextFieldType(), Parcelable
 
 
     companion object {

@@ -1,6 +1,7 @@
 plugins {
     alias(libs.plugins.depromeet.team5.feature)
     alias(libs.plugins.depromeet.team5.hilt)
+    id("kotlin-parcelize")
 }
 
 android {

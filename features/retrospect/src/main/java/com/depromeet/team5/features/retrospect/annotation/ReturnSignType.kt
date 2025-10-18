@@ -1,9 +1,13 @@
 package com.depromeet.team5.features.retrospect.annotation
 
+import android.os.Parcelable
+import kotlinx.parcelize.Parcelize
 
-sealed class ReturnSignType {
-    object Plus : ReturnSignType()
-    object Minus : ReturnSignType()
+
+@Parcelize
+sealed class ReturnSignType : Parcelable {
+    object Plus : ReturnSignType(), Parcelable
+    object Minus : ReturnSignType(), Parcelable
 
 
     companion object {

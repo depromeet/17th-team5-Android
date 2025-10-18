@@ -32,7 +32,9 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusDirection
@@ -52,8 +54,6 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.depromeet.team5.core.designsystem.component.HedgeButton
 import com.depromeet.team5.core.designsystem.component.HedgeSegment
 import com.depromeet.team5.core.designsystem.component.HedgeTopBar
@@ -65,7 +65,6 @@ import com.depromeet.team5.core.navigation.request.RequestViewModel
 import com.depromeet.team5.features.retrospect.R
 import com.depromeet.team5.features.retrospect.annotation.CurrencyType
 import com.depromeet.team5.features.retrospect.annotation.ReturnSignType
-import com.depromeet.team5.features.retrospect.annotation.TextFieldType
 import com.depromeet.team5.features.retrospect.screen.component.HedgeDatePickerDialog
 import com.depromeet.team5.features.retrospect.screen.component.HedgeSimpleTextField
 import com.depromeet.team5.features.retrospect.screen.component.HedgeTopbar
@@ -86,17 +85,53 @@ fun RetrospectRoute(
     onBackPressed: () -> Unit,
     onClickedConfirmButton: () -> Unit,
     requestViewModel: RequestViewModel,
-    modifier: Modifier = Modifier,
-    viewModel: RetrospectViewModel = hiltViewModel(),
+    modifier: Modifier = Modifier
 ) {
-    val sellingTextFieldState by viewModel.sellingTextFieldState.stateFlow.collectAsStateWithLifecycle()
-    val stockTextFieldState by viewModel.stockTextFieldState.stateFlow.collectAsStateWithLifecycle()
-    val dateTextFieldState by viewModel.dateTextFieldState.stateFlow.collectAsStateWithLifecycle()
-    val returnTextFieldState by viewModel.returnTextFieldState.stateFlow.collectAsStateWithLifecycle()
-    val currencyState by viewModel.currencyState.stateFlow.collectAsStateWithLifecycle()
-    val buttonState by viewModel.okButtonState.stateFlow.collectAsStateWithLifecycle()
-    val returnToggleState by viewModel.returnToggleState.stateFlow.collectAsStateWithLifecycle()
-    val returnSignState by viewModel.returnSignState.stateFlow.collectAsStateWithLifecycle()
+    val context = LocalContext.current
+
+    var sellingTextFieldState by rememberSaveable {
+        getTextFieldState(
+            label = if (requestViewModel.request.orderDate == "SELL") {
+                context.getString(R.string.retrospect_selling_price)
+            } else {
+                context.getString(R.string.retrospect_selling_price)
+            }
+        )
+    }
+    var stockTextFieldState by rememberSaveable {
+        getTextFieldState(label = context.getString(R.string.retrospect_volume))
+    }
+    var dateTextFieldState by rememberSaveable {
+        getTextFieldState(label = context.getString(R.string.retrospect_transaction_date))
+    }
+    var returnTextFieldState by rememberSaveable {
+        getTextFieldState(label = context.getString(R.string.retrospect_rate_of_return))
+    }
+    var buttonState by rememberSaveable { mutableStateOf(false) }
+    var returnToggleState by rememberSaveable { mutableStateOf(false) }
+    var currencyState: CurrencyType by rememberSaveable { mutableStateOf(CurrencyType.KRW) }
+    var returnSignState: ReturnSignType by rememberSaveable { mutableStateOf(ReturnSignType.Plus) }
+
+    LaunchedEffect(Unit) {
+        snapshotFlow {
+            arrayOf(
+                sellingTextFieldState,
+                stockTextFieldState,
+                dateTextFieldState
+            )
+                .all { it.text.isNotEmpty() && !it.isError }
+                .takeIf { it }
+                ?.let {
+                    when (returnToggleState) {
+                        true -> returnTextFieldState.text.isNotEmpty() && !returnTextFieldState.isError
+                        false -> true
+                    }
+                } ?: false
+        }
+            .collect { isOk ->
+                buttonState = isOk
+            }
+    }
 
     RetrospectScreen(
         modifier = modifier,
@@ -110,36 +145,48 @@ fun RetrospectRoute(
         buttonEnabled = buttonState,
         requestParams = requestViewModel.request,
         onUpdateSellingText = { text, selection ->
-            viewModel.updateState(TextFieldType.Selling, text, selection)
+            sellingTextFieldState = sellingTextFieldState.copy(text = text, selection = selection)
         },
         onUpdateStockText = { text, selection ->
-            viewModel.updateState(TextFieldType.Stock, text, selection)
+            stockTextFieldState = stockTextFieldState.copy(text = text, selection = selection)
         },
         onUpdateDateText = { text, selection ->
-            viewModel.updateState(TextFieldType.Date, text, selection)
+            dateTextFieldState = dateTextFieldState.copy(
+                text = text,
+                selection = selection,
+                isError = false
+            )
         },
         onUpdateReturnText = { text, selection ->
-            viewModel.updateState(TextFieldType.Return, text, selection)
+            returnTextFieldState = returnTextFieldState.copy(
+                text = text,
+                selection = selection
+            )
         },
         onErrorDateText = { text, selection ->
-            viewModel.updateState(TextFieldType.Date, text, selection, true)
+            dateTextFieldState = dateTextFieldState.copy(
+                label = context.getString(R.string.error_message_future_date),
+                text = text,
+                selection = selection,
+                isError = true
+            )
         },
         onClickedConfirmButton = {
-            if (!viewModel.okButtonState.stateFlow.value) return@RetrospectScreen
+            if (!buttonState) return@RetrospectScreen
 
             requestViewModel.request = requestViewModel.request.copy(
-                price = viewModel.sellingTextFieldState.stateFlow.value.text.toInt(),
-                volume = viewModel.stockTextFieldState.stateFlow.value.text.toInt(),
-                orderDate = viewModel.dateTextFieldState.stateFlow.value.text,
-                currency = CurrencyType.from(viewModel.currencyState.stateFlow.value),
+                price = sellingTextFieldState.text.toInt(),
+                volume = stockTextFieldState.text.toInt(),
+                orderDate = dateTextFieldState.text,
+                currency = CurrencyType.from(currencyState),
                 returnRate = try {
-                    when (viewModel.returnSignState.value) {
+                    when (returnSignState) {
                         ReturnSignType.Plus -> {
-                            viewModel.returnTextFieldState.stateFlow.value.text.toDouble()
+                            returnTextFieldState.text.toDouble()
                         }
 
                         ReturnSignType.Minus -> {
-                            viewModel.returnTextFieldState.stateFlow.value.text.toDouble() * -1
+                            returnTextFieldState.text.toDouble() * -1
                         }
                     }
                 } catch (e: Exception) {
@@ -147,20 +194,13 @@ fun RetrospectRoute(
                 }
             )
 
-
             Log.d("RETROSPECT", requestViewModel.request.toString())
 
             onClickedConfirmButton()
         },
-        onUpdateReturnToggle = { isToggled ->
-            viewModel.returnToggleState.update { isToggled }
-        },
-        onUpdateCurrency = { currency ->
-            viewModel.currencyState.update { currency }
-        },
-        onUpdateReturnSign = { returnSignType ->
-            viewModel.returnSignState.update { returnSignType }
-        },
+        onUpdateReturnToggle = { isToggled -> returnToggleState = isToggled },
+        onUpdateCurrency = { currency -> currencyState = currency },
+        onUpdateReturnSign = { returnSignType -> returnSignState = returnSignType },
         onBackPressed = onBackPressed
     )
 }
@@ -662,6 +702,21 @@ private fun CompanyTitle(
         )
     }
 }
+
+
+private fun getTextFieldState(
+    label: String = "",
+    text: String = "",
+    selection: Int = 0,
+    isError: Boolean = false
+) = mutableStateOf(
+    TextFieldState.EMPTY.copy(
+        label = label,
+        text = text,
+        selection = selection,
+        isError = isError
+    )
+)
 
 @Preview
 @Composable

@@ -5,12 +5,14 @@ import androidx.annotation.StringDef
 
 typealias CurrencyType = @CurrencyTypeKey String
 
-const val KRW = "원"
-const val USD = "$"
+const val KRW = "KRW"
+const val USD = "USD"
+const val EUR = "EUR"
+const val JPY = "JPY"
 
 @Target(AnnotationTarget.ANNOTATION_CLASS)
 @Retention(AnnotationRetention.SOURCE)
-@StringDef(KRW, USD)
+@StringDef(KRW, USD, EUR, JPY)
 private annotation class CurrencyTypeClass
 
 @CurrencyTypeClass

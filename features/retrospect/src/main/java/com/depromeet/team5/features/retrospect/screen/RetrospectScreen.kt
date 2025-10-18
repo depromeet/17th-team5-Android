@@ -66,7 +66,10 @@ import com.depromeet.team5.features.retrospect.R
 import com.depromeet.team5.features.retrospect.annotation.CurrencyType
 import com.depromeet.team5.features.retrospect.annotation.DATE
 import com.depromeet.team5.features.retrospect.annotation.KRW
+import com.depromeet.team5.features.retrospect.annotation.MINUS
+import com.depromeet.team5.features.retrospect.annotation.PLUS
 import com.depromeet.team5.features.retrospect.annotation.RETURN
+import com.depromeet.team5.features.retrospect.annotation.ReturnSignType
 import com.depromeet.team5.features.retrospect.annotation.SELLING
 import com.depromeet.team5.features.retrospect.annotation.STOCK
 import com.depromeet.team5.features.retrospect.annotation.USD
@@ -94,12 +97,13 @@ fun RetrospectRoute(
     viewModel: RetrospectViewModel = hiltViewModel(),
 ) {
     val sellingTextFieldState by viewModel.sellingTextFieldState.stateFlow.collectAsStateWithLifecycle()
+    val currencyState by viewModel.currencyState.stateFlow.collectAsStateWithLifecycle()
     val stockTextFieldState by viewModel.stockTextFieldState.stateFlow.collectAsStateWithLifecycle()
     val dateTextFieldState by viewModel.dateTextFieldState.stateFlow.collectAsStateWithLifecycle()
     val returnTextFieldState by viewModel.returnTextFieldState.stateFlow.collectAsStateWithLifecycle()
     val buttonState by viewModel.okButtonState.stateFlow.collectAsStateWithLifecycle()
     val returnToggleState by viewModel.returnToggleState.stateFlow.collectAsStateWithLifecycle()
-    val currencyState by viewModel.currencyState.stateFlow.collectAsStateWithLifecycle()
+    val returnSignState by viewModel.returnSignState.stateFlow.collectAsStateWithLifecycle()
 
     RetrospectScreen(
         modifier = modifier,
@@ -107,8 +111,10 @@ fun RetrospectRoute(
         stockTextFieldState = stockTextFieldState,
         dateTextFieldState = dateTextFieldState,
         returnTextFieldState = returnTextFieldState,
-        buttonEnabled = buttonState,
         returnToggleState = returnToggleState,
+        currencyType = currencyState,
+        returnSignType = returnSignState,
+        buttonEnabled = buttonState,
         requestParams = requestViewModel.request,
         onUpdateSellingText = { text, selection ->
             viewModel.updateState(SELLING, text, selection)
@@ -134,13 +140,25 @@ fun RetrospectRoute(
                 orderDate = viewModel.dateTextFieldState.stateFlow.value.text,
                 currency = viewModel.currencyState.stateFlow.value,
                 returnRate = try {
-                    viewModel.returnTextFieldState.stateFlow.value.text.toDouble()
+                    when (viewModel.returnSignState.value) {
+                        PLUS -> {
+                            viewModel.returnTextFieldState.stateFlow.value.text.toDouble()
+                        }
+
+                        MINUS -> {
+                            viewModel.returnTextFieldState.stateFlow.value.text.toDouble() * -1
+                        }
+
+                        else -> {
+                            0.0
+                        }
+                    }
                 } catch (e: Exception) {
                     null
                 }
             )
 
-            Log.e("requestViewModel", requestViewModel.request.toString())
+            Log.e("RETROSPECT", "onClickedConfirmButton: ${requestViewModel.request}")
 
             onClickedConfirmButton()
         },
@@ -149,6 +167,9 @@ fun RetrospectRoute(
         },
         onUpdateCurrency = { currency ->
             viewModel.currencyState.update { currency }
+        },
+        onUpdateReturnSign = { returnSignType ->
+            viewModel.returnSignState.update { returnSignType }
         },
         onBackPressed = onBackPressed
     )
@@ -161,8 +182,10 @@ private fun RetrospectScreen(
     dateTextFieldState: TextFieldState,
     returnTextFieldState: TextFieldState,
     requestParams: CreateRetrospectionParams,
-    buttonEnabled: Boolean,
     returnToggleState: Boolean,
+    currencyType: CurrencyType,
+    returnSignType: ReturnSignType,
+    buttonEnabled: Boolean,
     onUpdateSellingText: (String, Int) -> Unit,
     onUpdateStockText: (String, Int) -> Unit,
     onUpdateDateText: (String, Int) -> Unit,
@@ -171,6 +194,7 @@ private fun RetrospectScreen(
     onClickedConfirmButton: () -> Unit,
     onUpdateReturnToggle: (Boolean) -> Unit,
     onUpdateCurrency: (CurrencyType) -> Unit,
+    onUpdateReturnSign: (ReturnSignType) -> Unit,
     onBackPressed: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -212,6 +236,7 @@ private fun RetrospectScreen(
             SellingTextField(
                 state = sellingTextFieldState,
                 requestParams = requestParams,
+                currencyType = currencyType,
                 onUpdateSellingText = onUpdateSellingText,
                 onUpdateCurrency = onUpdateCurrency
             )
@@ -252,7 +277,9 @@ private fun RetrospectScreen(
         ) {
             ReturnTextField(
                 state = returnTextFieldState,
+                returnSignType = returnSignType,
                 onUpdateReturnText = onUpdateReturnText,
+                onUpdateReturnSign = onUpdateReturnSign,
                 onChangedKeyboardVisibility = {
                     if (it) {
                         keyboardController?.show()
@@ -319,14 +346,22 @@ private fun RetrospectScreen(
 private fun SellingTextField(
     state: TextFieldState,
     requestParams: CreateRetrospectionParams,
+    currencyType: CurrencyType,
     onUpdateSellingText: (String, Int) -> Unit,
     onUpdateCurrency: (CurrencyType) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val focusManager = LocalFocusManager.current
     val focusRequester = remember { FocusRequester() }
+    var selectedIndex by remember {
+        val currency = when (currencyType) {
+            KRW -> 0
+            USD -> 1
+            else -> 0
+        }
 
-    var selectedIndex by remember { mutableIntStateOf(0) }
+        mutableIntStateOf(currency)
+    }
     val currentVisualTransformation by remember(selectedIndex) {
         mutableStateOf(
             CurrencyVisualTransformation(if (selectedIndex == 0) KRW else USD)
@@ -520,14 +555,17 @@ private fun DateTextField(
 @Composable
 fun ReturnTextField(
     state: TextFieldState,
+    returnSignType: ReturnSignType,
     onUpdateReturnText: (String, Int) -> Unit,
+    onUpdateReturnSign: (ReturnSignType) -> Unit,
     onChangedKeyboardVisibility: (Boolean) -> Unit
 ) {
     val context = LocalContext.current
     val focusManager = LocalFocusManager.current
     val focusRequester = remember { FocusRequester() }
-
-    var selectedIndex by remember { mutableIntStateOf(0) }
+    var selectedIndex by remember {
+        mutableIntStateOf(if (returnSignType == PLUS) 0 else 1)
+    }
     var unitTransformation by remember(selectedIndex) {
         mutableStateOf(
             UnitVisualTransformation(
@@ -575,6 +613,12 @@ fun ReturnTextField(
                 selectedIndex = selectedIndex,
                 onSelectedIndexChange = { index ->
                     selectedIndex = index
+
+                    if (selectedIndex == 0) {
+                        onUpdateReturnSign(PLUS)
+                    } else {
+                        onUpdateReturnSign(MINUS)
+                    }
                 }
             )
         },
@@ -700,8 +744,10 @@ private fun RetrospectRoutePreview() {
             stockTextFieldState = stockTextFieldState,
             dateTextFieldState = dateTextFieldState,
             returnTextFieldState = returnTextFieldState,
-            buttonEnabled = buttonState,
             returnToggleState = returnToggleState,
+            buttonEnabled = buttonState,
+            currencyType = KRW,
+            returnSignType = PLUS,
             requestParams = CreateRetrospectionParams.EMPTY,
             onUpdateSellingText = { text, selection ->
                 sellingTextFieldState =
@@ -733,6 +779,7 @@ private fun RetrospectRoutePreview() {
             onClickedConfirmButton = {},
             onUpdateReturnToggle = { returnToggleState = it },
             onUpdateCurrency = {},
+            onUpdateReturnSign = {},
             onBackPressed = {}
         )
     }

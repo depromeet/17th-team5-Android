@@ -25,24 +25,24 @@ class RetrospectViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
-    val sellingTextFieldState: HedgeState<TextFieldState> by hedgeState {
+    val sellingTextFieldState: HedgeState<TextFieldState> by hedgeState(
         TextFieldState.EMPTY.copy(text = savedStateHandle[SELLING] ?: "")
-    }
+    )
 
-    val stockTextFieldState: HedgeState<TextFieldState> by hedgeState {
+    val stockTextFieldState: HedgeState<TextFieldState> by hedgeState(
         TextFieldState.EMPTY.copy(text = savedStateHandle[STOCK] ?: "")
-    }
-    val dateTextFieldState: HedgeState<TextFieldState> by hedgeState {
+    )
+    val dateTextFieldState: HedgeState<TextFieldState> by hedgeState(
         TextFieldState.EMPTY.copy(text = savedStateHandle[DATE] ?: "")
-    }
-    val returnTextFieldState: HedgeState<TextFieldState> by hedgeState {
+    )
+    val returnTextFieldState: HedgeState<TextFieldState> by hedgeState(
         TextFieldState.EMPTY.copy(text = savedStateHandle[RETURN] ?: "")
-    }
+    )
 
-    val currencyState by hedgeState { KRW }
-    val returnToggleState by hedgeState { false }
+    val currencyState by hedgeState(KRW)
+    val returnToggleState by hedgeState(false)
 
-    val okButtonState: HedgeState<Boolean> by hedgeState { false }
+    val okButtonState: HedgeState<Boolean> by hedgeState(false)
 
 
     init {

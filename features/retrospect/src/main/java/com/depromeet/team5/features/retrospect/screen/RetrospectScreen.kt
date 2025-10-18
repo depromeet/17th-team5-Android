@@ -1,6 +1,5 @@
 package com.depromeet.team5.features.retrospect.screen
 
-import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.tween
@@ -97,10 +96,10 @@ fun RetrospectRoute(
     viewModel: RetrospectViewModel = hiltViewModel(),
 ) {
     val sellingTextFieldState by viewModel.sellingTextFieldState.stateFlow.collectAsStateWithLifecycle()
-    val currencyState by viewModel.currencyState.stateFlow.collectAsStateWithLifecycle()
     val stockTextFieldState by viewModel.stockTextFieldState.stateFlow.collectAsStateWithLifecycle()
     val dateTextFieldState by viewModel.dateTextFieldState.stateFlow.collectAsStateWithLifecycle()
     val returnTextFieldState by viewModel.returnTextFieldState.stateFlow.collectAsStateWithLifecycle()
+    val currencyState by viewModel.currencyState.stateFlow.collectAsStateWithLifecycle()
     val buttonState by viewModel.okButtonState.stateFlow.collectAsStateWithLifecycle()
     val returnToggleState by viewModel.returnToggleState.stateFlow.collectAsStateWithLifecycle()
     val returnSignState by viewModel.returnSignState.stateFlow.collectAsStateWithLifecycle()
@@ -129,7 +128,7 @@ fun RetrospectRoute(
             viewModel.updateState(RETURN, text, selection)
         },
         onErrorDateText = { text, selection ->
-            viewModel.updateState(RETURN, text, selection, true)
+            viewModel.updateState(DATE, text, selection, true)
         },
         onClickedConfirmButton = {
             if (!viewModel.okButtonState.stateFlow.value) return@RetrospectScreen
@@ -157,8 +156,6 @@ fun RetrospectRoute(
                     null
                 }
             )
-
-            Log.e("RETROSPECT", "onClickedConfirmButton: ${requestViewModel.request}")
 
             onClickedConfirmButton()
         },
@@ -542,7 +539,7 @@ private fun DateTextField(
         value = TextFieldValue(state.text, TextRange(state.selection)),
         onValueChange = {},
         label = if (state.isError) {
-            state.label
+            stringResource(R.string.error_message_future_date)
         } else {
             stringResource(R.string.retrospect_transaction_date)
         },
@@ -690,34 +687,12 @@ private fun CompanyTitlePreview() {
 @Preview
 @Composable
 private fun RetrospectRoutePreview() {
-    val context = LocalContext.current
-
     var buttonState by remember { mutableStateOf(false) }
-
     var returnToggleState by remember { mutableStateOf(false) }
-
-    var sellingTextFieldState by remember {
-        mutableStateOf(
-            TextFieldState.EMPTY.copy(
-                label = context.getString(
-                    R.string.retrospect_selling_price
-                )
-            )
-        )
-    }
-    var stockTextFieldState by remember {
-        mutableStateOf(
-            TextFieldState.EMPTY.copy(label = context.getString(R.string.retrospect_volume))
-        )
-    }
-    var dateTextFieldState by remember {
-        mutableStateOf(
-            TextFieldState.EMPTY.copy(label = context.getString(R.string.retrospect_transaction_date))
-        )
-    }
-    var returnTextFieldState by remember {
-        mutableStateOf(TextFieldState.EMPTY.copy(label = context.getString(R.string.retrospect_rate_of_return)))
-    }
+    var sellingTextFieldState by remember { mutableStateOf(TextFieldState.EMPTY) }
+    var stockTextFieldState by remember { mutableStateOf(TextFieldState.EMPTY) }
+    var dateTextFieldState by remember { mutableStateOf(TextFieldState.EMPTY) }
+    var returnTextFieldState by remember { mutableStateOf(TextFieldState.EMPTY) }
 
     LaunchedEffect(
         returnToggleState,
@@ -758,7 +733,6 @@ private fun RetrospectRoutePreview() {
             },
             onUpdateDateText = { text, selection ->
                 dateTextFieldState = dateTextFieldState.copy(
-                    label = context.getString(R.string.retrospect_transaction_date),
                     text = text,
                     selection = selection,
                     isError = false
@@ -770,7 +744,6 @@ private fun RetrospectRoutePreview() {
             },
             onErrorDateText = { text, selection ->
                 dateTextFieldState = dateTextFieldState.copy(
-                    label = context.getString(R.string.error_message_future_date),
                     text = text,
                     selection = selection,
                     isError = true

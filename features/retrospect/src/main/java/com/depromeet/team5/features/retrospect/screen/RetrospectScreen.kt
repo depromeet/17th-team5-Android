@@ -1,6 +1,6 @@
 package com.depromeet.team5.features.retrospect.screen
 
-import android.util.Log
+import android.content.Context
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.tween
@@ -27,14 +27,15 @@ import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.State
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
-import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusDirection
@@ -71,6 +72,7 @@ import com.depromeet.team5.features.retrospect.screen.component.HedgeTopbar
 import com.depromeet.team5.features.retrospect.screen.component.HedgeUnitTextField
 import com.depromeet.team5.features.retrospect.screen.visualtransmation.CurrencyVisualTransformation
 import com.depromeet.team5.features.retrospect.screen.visualtransmation.UnitVisualTransformation
+import com.depromeet.team5.features.retrospect.state.RetrospectionState
 import com.depromeet.team5.features.retrospect.state.TextFieldState
 import java.text.SimpleDateFormat
 import java.time.LocalDate
@@ -88,133 +90,169 @@ fun RetrospectRoute(
     modifier: Modifier = Modifier
 ) {
     val context = LocalContext.current
+    val retrospectionState = rememberRetrospectionState(
+        requestParams = requestViewModel.request
+    )
 
-    var sellingTextFieldState by rememberSaveable {
+    val isButtonEnabled by remember {
+        derivedStateOf {
+            arrayOf(
+                retrospectionState.sellingTextFieldState.value,
+                retrospectionState.stockTextFieldState.value,
+                retrospectionState.dateTextFieldState.value
+            )
+                .all { it.text.isNotEmpty() && !it.isError }
+                .takeIf { it }
+                ?.let {
+                    when (retrospectionState.returnToggleState.value) {
+                        true -> retrospectionState.returnTextFieldState.value.text.isNotEmpty() &&
+                                !retrospectionState.returnTextFieldState.value.isError
+
+                        false -> true
+                    }
+                } ?: false
+        }
+    }
+
+    RetrospectScreen(
+        modifier = modifier,
+        retrospectionState = retrospectionState,
+        requestParams = requestViewModel.request,
+        buttonEnabled = isButtonEnabled,
+        onUpdateSellingText = { text, selection ->
+            retrospectionState.sellingTextFieldState.value =
+                retrospectionState.sellingTextFieldState.value.copy(
+                    text = text,
+                    selection = selection
+                )
+        },
+        onUpdateStockText = { text, selection ->
+            retrospectionState.stockTextFieldState.value =
+                retrospectionState.stockTextFieldState.value.copy(
+                    text = text,
+                    selection = selection
+                )
+        },
+        onUpdateDateText = { text, selection ->
+            retrospectionState.dateTextFieldState.value =
+                retrospectionState.dateTextFieldState.value.copy(
+                    text = text,
+                    selection = selection,
+                    isError = false
+                )
+        },
+        onUpdateReturnText = { text, selection ->
+            retrospectionState.returnTextFieldState.value =
+                retrospectionState.returnTextFieldState.value.copy(
+                    text = text,
+                    selection = selection
+                )
+        },
+        onErrorDateText = { text, selection ->
+            retrospectionState.dateTextFieldState.value =
+                retrospectionState.dateTextFieldState.value.copy(
+                    label = context.getString(R.string.error_message_future_date),
+                    text = text,
+                    selection = selection,
+                    isError = true
+                )
+        },
+        onClickedConfirmButton = {
+            if (!isButtonEnabled) return@RetrospectScreen
+
+            with(retrospectionState) {
+                requestViewModel.request = requestViewModel.request.copy(
+                    price = sellingTextFieldState.value.text.toInt(),
+                    volume = stockTextFieldState.value.text.toInt(),
+                    orderDate = dateTextFieldState.value.text,
+                    currency = CurrencyType.from(currencyType.value),
+                    returnRate = try {
+                        when (returnSignType.value) {
+                            ReturnSignType.Plus -> {
+                                returnTextFieldState.value.text.toDouble()
+                            }
+
+                            ReturnSignType.Minus -> {
+                                returnTextFieldState.value.text.toDouble() * -1
+                            }
+                        }
+                    } catch (e: Exception) {
+                        null
+                    }
+                )
+            }
+
+            onClickedConfirmButton()
+        },
+        onUpdateReturnToggle = { isToggled ->
+            retrospectionState.returnToggleState.value = isToggled
+        },
+        onUpdateCurrency = { currency ->
+            retrospectionState.currencyType.value = currency
+        },
+        onUpdateReturnSign = { returnSignType ->
+            retrospectionState.returnSignType.value = returnSignType
+        },
+        onBackPressed = onBackPressed
+    )
+}
+
+@Composable
+private fun rememberRetrospectionState(
+    requestParams: CreateRetrospectionParams,
+    context: Context = LocalContext.current
+): RetrospectionState {
+    val sellingTextFieldState = rememberSaveable {
         getTextFieldState(
-            label = if (requestViewModel.request.orderDate == "SELL") {
+            label = if (requestParams.orderDate == "SELL") {
                 context.getString(R.string.retrospect_selling_price)
             } else {
                 context.getString(R.string.retrospect_selling_price)
             }
         )
     }
-    var stockTextFieldState by rememberSaveable {
+    val stockTextFieldState = rememberSaveable {
         getTextFieldState(label = context.getString(R.string.retrospect_volume))
     }
-    var dateTextFieldState by rememberSaveable {
+    val dateTextFieldState = rememberSaveable {
         getTextFieldState(label = context.getString(R.string.retrospect_transaction_date))
     }
-    var returnTextFieldState by rememberSaveable {
+    val returnTextFieldState = rememberSaveable {
         getTextFieldState(label = context.getString(R.string.retrospect_rate_of_return))
     }
-    var buttonState by rememberSaveable { mutableStateOf(false) }
-    var returnToggleState by rememberSaveable { mutableStateOf(false) }
-    var currencyState: CurrencyType by rememberSaveable { mutableStateOf(CurrencyType.KRW) }
-    var returnSignState: ReturnSignType by rememberSaveable { mutableStateOf(ReturnSignType.Plus) }
+    val buttonState = rememberSaveable { mutableStateOf(false) }
+    val returnToggleState = rememberSaveable { mutableStateOf(false) }
+    val currencyState: MutableState<CurrencyType> =
+        rememberSaveable { mutableStateOf(CurrencyType.KRW) }
+    val returnSignState: MutableState<ReturnSignType> =
+        rememberSaveable { mutableStateOf(ReturnSignType.Plus) }
 
-    LaunchedEffect(Unit) {
-        snapshotFlow {
-            arrayOf(
-                sellingTextFieldState,
-                stockTextFieldState,
-                dateTextFieldState
-            )
-                .all { it.text.isNotEmpty() && !it.isError }
-                .takeIf { it }
-                ?.let {
-                    when (returnToggleState) {
-                        true -> returnTextFieldState.text.isNotEmpty() && !returnTextFieldState.isError
-                        false -> true
-                    }
-                } ?: false
-        }
-            .collect { isOk ->
-                buttonState = isOk
-            }
+    return remember(
+        sellingTextFieldState,
+        stockTextFieldState,
+        dateTextFieldState,
+        returnTextFieldState,
+        buttonState,
+        returnToggleState,
+        currencyState,
+        returnSignState
+    ) {
+        RetrospectionState(
+            sellingTextFieldState = sellingTextFieldState,
+            stockTextFieldState = stockTextFieldState,
+            dateTextFieldState = dateTextFieldState,
+            returnTextFieldState = returnTextFieldState,
+            returnToggleState = returnToggleState,
+            currencyType = currencyState,
+            returnSignType = returnSignState
+        )
     }
-
-    RetrospectScreen(
-        modifier = modifier,
-        sellingTextFieldState = sellingTextFieldState,
-        stockTextFieldState = stockTextFieldState,
-        dateTextFieldState = dateTextFieldState,
-        returnTextFieldState = returnTextFieldState,
-        returnToggleState = returnToggleState,
-        currencyType = currencyState,
-        returnSignType = returnSignState,
-        buttonEnabled = buttonState,
-        requestParams = requestViewModel.request,
-        onUpdateSellingText = { text, selection ->
-            sellingTextFieldState = sellingTextFieldState.copy(text = text, selection = selection)
-        },
-        onUpdateStockText = { text, selection ->
-            stockTextFieldState = stockTextFieldState.copy(text = text, selection = selection)
-        },
-        onUpdateDateText = { text, selection ->
-            dateTextFieldState = dateTextFieldState.copy(
-                text = text,
-                selection = selection,
-                isError = false
-            )
-        },
-        onUpdateReturnText = { text, selection ->
-            returnTextFieldState = returnTextFieldState.copy(
-                text = text,
-                selection = selection
-            )
-        },
-        onErrorDateText = { text, selection ->
-            dateTextFieldState = dateTextFieldState.copy(
-                label = context.getString(R.string.error_message_future_date),
-                text = text,
-                selection = selection,
-                isError = true
-            )
-        },
-        onClickedConfirmButton = {
-            if (!buttonState) return@RetrospectScreen
-
-            requestViewModel.request = requestViewModel.request.copy(
-                price = sellingTextFieldState.text.toInt(),
-                volume = stockTextFieldState.text.toInt(),
-                orderDate = dateTextFieldState.text,
-                currency = CurrencyType.from(currencyState),
-                returnRate = try {
-                    when (returnSignState) {
-                        ReturnSignType.Plus -> {
-                            returnTextFieldState.text.toDouble()
-                        }
-
-                        ReturnSignType.Minus -> {
-                            returnTextFieldState.text.toDouble() * -1
-                        }
-                    }
-                } catch (e: Exception) {
-                    null
-                }
-            )
-
-            Log.d("RETROSPECT", requestViewModel.request.toString())
-
-            onClickedConfirmButton()
-        },
-        onUpdateReturnToggle = { isToggled -> returnToggleState = isToggled },
-        onUpdateCurrency = { currency -> currencyState = currency },
-        onUpdateReturnSign = { returnSignType -> returnSignState = returnSignType },
-        onBackPressed = onBackPressed
-    )
 }
 
 @Composable
 private fun RetrospectScreen(
-    sellingTextFieldState: TextFieldState,
-    stockTextFieldState: TextFieldState,
-    dateTextFieldState: TextFieldState,
-    returnTextFieldState: TextFieldState,
+    retrospectionState: RetrospectionState,
     requestParams: CreateRetrospectionParams,
-    returnToggleState: Boolean,
-    currencyType: CurrencyType,
-    returnSignType: ReturnSignType,
     buttonEnabled: Boolean,
     onUpdateSellingText: (String, Int) -> Unit,
     onUpdateStockText: (String, Int) -> Unit,
@@ -264,22 +302,22 @@ private fun RetrospectScreen(
                 )
         ) {
             SellingTextField(
-                state = sellingTextFieldState,
+                state = retrospectionState.sellingTextFieldState,
                 requestParams = requestParams,
-                currencyType = currencyType,
+                currencyTypeState = retrospectionState.currencyType,
                 onUpdateSellingText = onUpdateSellingText,
                 onUpdateCurrency = onUpdateCurrency
             )
             StockTextField(
-                state = stockTextFieldState,
+                state = retrospectionState.stockTextFieldState,
                 onUpdateStockText = onUpdateStockText
             )
             DateTextField(
-                state = dateTextFieldState,
+                state = retrospectionState.dateTextFieldState,
                 onUpdateDateText = onUpdateDateText,
                 onErrorDateText = onErrorDateText,
                 onFocusChanged = {
-                    if (returnToggleState) {
+                    if (retrospectionState.returnToggleState.value) {
                         focusManager.moveFocus(FocusDirection.Down)
                     } else {
                         focusManager.clearFocus()
@@ -289,7 +327,7 @@ private fun RetrospectScreen(
         }
 
         AnimatedVisibility(
-            visible = returnToggleState,
+            visible = retrospectionState.returnToggleState.value,
             enter = fadeIn(
                 animationSpec = tween(
                     durationMillis = 300,
@@ -306,8 +344,8 @@ private fun RetrospectScreen(
             )
         ) {
             ReturnTextField(
-                state = returnTextFieldState,
-                returnSignType = returnSignType,
+                state = retrospectionState.returnTextFieldState,
+                returnSignTypeState = retrospectionState.returnSignType,
                 onUpdateReturnText = onUpdateReturnText,
                 onUpdateReturnSign = onUpdateReturnSign,
                 onChangedKeyboardVisibility = {
@@ -348,7 +386,7 @@ private fun RetrospectScreen(
                     }
 
                     Switch(
-                        checked = returnToggleState,
+                        checked = retrospectionState.returnToggleState.value,
                         colors = SwitchDefaults.colors(
                             checkedThumbColor = HedgeColor.WHITE,
                             uncheckedThumbColor = HedgeColor.WHITE,
@@ -374,9 +412,9 @@ private fun RetrospectScreen(
 
 @Composable
 private fun SellingTextField(
-    state: TextFieldState,
+    state: State<TextFieldState>,
+    currencyTypeState: State<CurrencyType>,
     requestParams: CreateRetrospectionParams,
-    currencyType: CurrencyType,
     onUpdateSellingText: (String, Int) -> Unit,
     onUpdateCurrency: (CurrencyType) -> Unit,
     modifier: Modifier = Modifier
@@ -384,7 +422,7 @@ private fun SellingTextField(
     val focusManager = LocalFocusManager.current
     val focusRequester = remember { FocusRequester() }
     var selectedIndex by remember {
-        val currency = when (currencyType) {
+        val currency = when (currencyTypeState.value) {
             CurrencyType.KRW -> 0
             CurrencyType.USD -> 1
             else -> 0
@@ -413,8 +451,8 @@ private fun SellingTextField(
             stringResource(R.string.retrospect_buy_price_placeholder)
         },
         value = TextFieldValue(
-            text = state.text,
-            selection = TextRange(state.selection)
+            text = state.value.text,
+            selection = TextRange(state.value.selection)
         ),
         onValueChange = { newValue ->
             val digitsOnlyText = newValue.text.filter { it.isDigit() }
@@ -452,7 +490,7 @@ private fun SellingTextField(
 
 @Composable
 private fun StockTextField(
-    state: TextFieldState,
+    state: State<TextFieldState>,
     onUpdateStockText: (String, Int) -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -462,8 +500,8 @@ private fun StockTextField(
     SimpleNumberTextField(
         modifier = modifier.focusRequester(focusRequester),
         value = TextFieldValue(
-            text = state.text,
-            selection = TextRange(state.selection)
+            text = state.value.text,
+            selection = TextRange(state.value.selection)
         ),
         onValueChange = { newValue ->
             val digitsOnlyText = newValue.text.filter { it.isDigit() }
@@ -512,7 +550,7 @@ private fun SimpleNumberTextField(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun DateTextField(
-    state: TextFieldState,
+    state: State<TextFieldState>,
     onUpdateDateText: (String, Int) -> Unit,
     onErrorDateText: (String, Int) -> Unit,
     onFocusChanged: () -> Unit,
@@ -571,23 +609,26 @@ private fun DateTextField(
         modifier = modifier
             .focusRequester(focusRequester)
             .onFocusChanged { isShowDatePicker = it.isFocused },
-        value = TextFieldValue(state.text, TextRange(state.selection)),
+        value = TextFieldValue(
+            text = state.value.text,
+            selection = TextRange(state.value.selection)
+        ),
         onValueChange = {},
-        label = if (state.isError) {
+        label = if (state.value.isError) {
             stringResource(R.string.error_message_future_date)
         } else {
             stringResource(R.string.retrospect_transaction_date)
         },
         placeholder = stringResource(id = R.string.retrospect_transaction_date),
-        isError = state.isError,
+        isError = state.value.isError,
         readOnly = true
     )
 }
 
 @Composable
 fun ReturnTextField(
-    state: TextFieldState,
-    returnSignType: ReturnSignType,
+    state: State<TextFieldState>,
+    returnSignTypeState: State<ReturnSignType>,
     onUpdateReturnText: (String, Int) -> Unit,
     onUpdateReturnSign: (ReturnSignType) -> Unit,
     onChangedKeyboardVisibility: (Boolean) -> Unit
@@ -596,7 +637,7 @@ fun ReturnTextField(
     val focusManager = LocalFocusManager.current
     val focusRequester = remember { FocusRequester() }
     var selectedIndex by remember {
-        mutableIntStateOf(if (returnSignType == ReturnSignType.Plus) 0 else 1)
+        mutableIntStateOf(if (returnSignTypeState.value == ReturnSignType.Plus) 0 else 1)
     }
     var unitTransformation by remember(selectedIndex) {
         mutableStateOf(
@@ -617,7 +658,10 @@ fun ReturnTextField(
             .padding(start = 20.dp, end = 20.dp, top = 12.dp),
         label = stringResource(id = R.string.retrospect_rate_of_return),
         placeholder = stringResource(id = R.string.retrospect_unit_percent),
-        value = TextFieldValue(state.text, TextRange(state.selection)),
+        value = TextFieldValue(
+            text = state.value.text,
+            selection = TextRange(state.value.selection)
+        ),
         onValueChange = { newValue ->
             val digitsOnlyText = newValue.text.filter { it.isDigit() }
             val newCursorPosition = newValue.selection.start.let { transformedOffset ->
@@ -737,72 +781,76 @@ private fun CompanyTitlePreview() {
 @Preview
 @Composable
 private fun RetrospectRoutePreview() {
-    var buttonState by remember { mutableStateOf(false) }
-    var returnToggleState by remember { mutableStateOf(false) }
-    var sellingTextFieldState by remember { mutableStateOf(TextFieldState.EMPTY) }
-    var stockTextFieldState by remember { mutableStateOf(TextFieldState.EMPTY) }
-    var dateTextFieldState by remember { mutableStateOf(TextFieldState.EMPTY) }
-    var returnTextFieldState by remember { mutableStateOf(TextFieldState.EMPTY) }
+    val retrospectionState = rememberRetrospectionState(
+        requestParams = CreateRetrospectionParams.EMPTY
+    )
+    val isButtonEnabled by remember {
+        derivedStateOf {
+            arrayOf(
+                retrospectionState.sellingTextFieldState.value,
+                retrospectionState.stockTextFieldState.value,
+                retrospectionState.dateTextFieldState.value
+            )
+                .all { it.text.isNotEmpty() && !it.isError }
+                .takeIf { it }
+                ?.let {
+                    when (retrospectionState.returnToggleState.value) {
+                        true -> retrospectionState.returnTextFieldState.value.text.isNotEmpty() &&
+                                !retrospectionState.returnTextFieldState.value.isError
 
-    LaunchedEffect(
-        returnToggleState,
-        sellingTextFieldState,
-        stockTextFieldState,
-        dateTextFieldState,
-        returnTextFieldState
-    ) {
-        val array = arrayOf(sellingTextFieldState, stockTextFieldState, dateTextFieldState)
-
-        val isResult = array.all { it.text.isNotEmpty() && !it.isError }
-
-        buttonState = if (returnToggleState) {
-            isResult && (returnTextFieldState.text.isNotEmpty() && !returnTextFieldState.isError)
-        } else {
-            isResult
+                        false -> true
+                    }
+                } ?: false
         }
     }
 
     Scaffold { paddingValues ->
         RetrospectScreen(
             modifier = Modifier.padding(paddingValues),
-            sellingTextFieldState = sellingTextFieldState,
-            stockTextFieldState = stockTextFieldState,
-            dateTextFieldState = dateTextFieldState,
-            returnTextFieldState = returnTextFieldState,
-            returnToggleState = returnToggleState,
-            buttonEnabled = buttonState,
-            currencyType = CurrencyType.KRW,
-            returnSignType = ReturnSignType.Plus,
-            requestParams = CreateRetrospectionParams.EMPTY,
+            retrospectionState = retrospectionState,
+            buttonEnabled = isButtonEnabled,
+            requestParams = CreateRetrospectionParams.EMPTY.copy(orderType = OrderTypeParams.SELL),
             onUpdateSellingText = { text, selection ->
-                sellingTextFieldState =
-                    sellingTextFieldState.copy(text = text, selection = selection)
+                retrospectionState.sellingTextFieldState.value =
+                    retrospectionState.sellingTextFieldState.value.copy(
+                        text = text,
+                        selection = selection
+                    )
             },
             onUpdateStockText = { text, selection ->
-                stockTextFieldState = stockTextFieldState.copy(text = text, selection = selection)
+                retrospectionState.stockTextFieldState.value =
+                    retrospectionState.stockTextFieldState.value.copy(
+                        text = text,
+                        selection = selection
+                    )
             },
             onUpdateDateText = { text, selection ->
-                dateTextFieldState = dateTextFieldState.copy(
-                    text = text,
-                    selection = selection,
-                    isError = false
-                )
+                retrospectionState.dateTextFieldState.value =
+                    retrospectionState.dateTextFieldState.value.copy(
+                        text = text,
+                        selection = selection,
+                        isError = false
+                    )
             },
             onUpdateReturnText = { text, selection ->
-                returnTextFieldState =
-                    returnTextFieldState.copy(text = text, selection = selection)
+                retrospectionState.returnTextFieldState.value =
+                    retrospectionState.returnTextFieldState.value.copy(
+                        text = text,
+                        selection = selection
+                    )
             },
             onErrorDateText = { text, selection ->
-                dateTextFieldState = dateTextFieldState.copy(
-                    text = text,
-                    selection = selection,
-                    isError = true
-                )
+                retrospectionState.dateTextFieldState.value =
+                    retrospectionState.dateTextFieldState.value.copy(
+                        text = text,
+                        selection = selection,
+                        isError = true
+                    )
             },
             onClickedConfirmButton = {},
-            onUpdateReturnToggle = { returnToggleState = it },
-            onUpdateCurrency = {},
-            onUpdateReturnSign = {},
+            onUpdateReturnToggle = { retrospectionState.returnToggleState.value = it },
+            onUpdateCurrency = { retrospectionState.currencyType.value = it },
+            onUpdateReturnSign = { retrospectionState.returnSignType.value = it },
             onBackPressed = {}
         )
     }

@@ -46,7 +46,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
-import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.ImeAction
@@ -273,7 +272,7 @@ private fun RetrospectScreen(
     Column(
         modifier = modifier
             .fillMaxSize()
-            .background(color = colorResource(R.color.background_secondary))
+            .background(color = HedgeColor.Neutral.BackgroundSecondary)
     ) {
         HedgeTopBar(
             onClickBack = onBackPressed
@@ -298,7 +297,7 @@ private fun RetrospectScreen(
             modifier = Modifier
                 .padding(start = 20.dp, top = 26.dp, end = 20.dp)
                 .background(
-                    color = colorResource(R.color.white),
+                    color = HedgeColor.WHITE,
                     shape = RoundedCornerShape(16.dp)
                 )
         ) {

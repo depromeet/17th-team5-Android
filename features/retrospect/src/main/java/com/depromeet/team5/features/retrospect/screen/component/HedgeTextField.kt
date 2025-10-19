@@ -27,7 +27,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
-import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.ImeAction
@@ -66,7 +65,7 @@ internal fun HedgeUnitTextField(
             .fillMaxWidth()
             .wrapContentHeight()
             .background(
-                color = colorResource(R.color.white),
+                color = HedgeColor.WHITE,
                 shape = RoundedCornerShape(16.dp)
             )
             .border(
@@ -163,7 +162,7 @@ internal fun HedgeSimpleTextField(
             .fillMaxWidth()
             .wrapContentHeight()
             .background(
-                color = colorResource(R.color.white),
+                color = HedgeColor.WHITE,
                 shape = RoundedCornerShape(16.dp)
             )
             .border(
@@ -262,7 +261,7 @@ private fun HedgeTextFieldPreview() {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(colorResource(R.color.gray200)),
+            .background(HedgeColor.GREY_200),
         verticalArrangement = Arrangement.Center
     ) {
         HedgeUnitTextField(

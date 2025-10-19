@@ -136,16 +136,10 @@ fun RetrospectRoute(
         onUpdateDateText = { text, selection ->
             retrospectionState.dateTextFieldState.value =
                 retrospectionState.dateTextFieldState.value.copy(
+                    label = context.getString(R.string.retrospect_transaction_date),
                     text = text,
                     selection = selection,
                     isError = false
-                )
-        },
-        onUpdateReturnText = { text, selection ->
-            retrospectionState.returnTextFieldState.value =
-                retrospectionState.returnTextFieldState.value.copy(
-                    text = text,
-                    selection = selection
                 )
         },
         onErrorDateText = { text, selection ->
@@ -155,6 +149,13 @@ fun RetrospectRoute(
                     text = text,
                     selection = selection,
                     isError = true
+                )
+        },
+        onUpdateReturnText = { text, selection ->
+            retrospectionState.returnTextFieldState.value =
+                retrospectionState.returnTextFieldState.value.copy(
+                    text = text,
+                    selection = selection
                 )
         },
         onClickedConfirmButton = {
@@ -440,11 +441,7 @@ private fun SellingTextField(
 
     HedgeUnitTextField(
         modifier = modifier.focusRequester(focusRequester),
-        label = if (requestParams.orderType == OrderTypeParams.SELL) {
-            stringResource(R.string.retrospect_selling_price)
-        } else {
-            stringResource(R.string.retrospect_buy_price)
-        },
+        label = state.value.label,
         placeholder = if (requestParams.orderType == OrderTypeParams.SELL) {
             stringResource(R.string.retrospect_selling_price_placeholder)
         } else {
@@ -511,7 +508,7 @@ private fun StockTextField(
 
             onUpdateStockText(digitsOnlyText, newCursorPosition)
         },
-        label = stringResource(R.string.retrospect_volume),
+        label = state.value.label,
         placeholder = stringResource(id = R.string.retrospect_volume),
         visualTransformation = UnitVisualTransformation(unit = stringResource(id = R.string.retrospect_unit_stock)),
         onDone = {
@@ -614,11 +611,7 @@ private fun DateTextField(
             selection = TextRange(state.value.selection)
         ),
         onValueChange = {},
-        label = if (state.value.isError) {
-            stringResource(R.string.error_message_future_date)
-        } else {
-            stringResource(R.string.retrospect_transaction_date)
-        },
+        label = state.value.label,
         placeholder = stringResource(id = R.string.retrospect_transaction_date),
         isError = state.value.isError,
         readOnly = true
@@ -656,7 +649,7 @@ fun ReturnTextField(
         modifier = Modifier
             .focusRequester(focusRequester)
             .padding(start = 20.dp, end = 20.dp, top = 12.dp),
-        label = stringResource(id = R.string.retrospect_rate_of_return),
+        label = state.value.label,
         placeholder = stringResource(id = R.string.retrospect_unit_percent),
         value = TextFieldValue(
             text = state.value.text,

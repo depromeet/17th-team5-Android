@@ -45,12 +45,12 @@ private fun Modifier.topBarBackground(color: Color?): Modifier =
 
 @Composable
 fun HedgeTopBar(
-    onClickBack: () -> Unit,
     modifier: Modifier = Modifier,
     backgroundColor: Color? = null,
     back: @Composable () -> Unit = { HedgeTopBarBackDefault() },
     title: (@Composable () -> Unit)? = null,
     action: (@Composable () -> Unit)? = null,
+    onClickBack: () -> Unit
 ) {
     val interaction = remember { MutableInteractionSource() }
 

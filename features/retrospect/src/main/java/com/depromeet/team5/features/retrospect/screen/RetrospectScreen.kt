@@ -89,10 +89,10 @@ import java.util.Locale
 
 @Composable
 fun RetrospectRoute(
-    onBackPressed: () -> Unit,
-    onClickedConfirmButton: () -> Unit,
     requestViewModel: RequestViewModel,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onClickedConfirmButton: () -> Unit,
+    onBackPressed: () -> Unit
 ) {
     val context = LocalContext.current
     val retrospectionState = rememberRetrospectionState(requestParams = requestViewModel.request)
@@ -257,7 +257,8 @@ private fun rememberRetrospectionState(
 private fun RetrospectScreen(
     retrospectionState: RetrospectionState,
     requestParams: CreateRetrospectionParams,
-    buttonEnabled: Boolean,
+    modifier: Modifier = Modifier,
+    buttonEnabled: Boolean = false,
     onUpdateSellingText: (String, Int) -> Unit,
     onUpdateStockText: (String, Int) -> Unit,
     onUpdateDateText: (String, Int) -> Unit,
@@ -267,8 +268,7 @@ private fun RetrospectScreen(
     onUpdateReturnToggle: (Boolean) -> Unit,
     onUpdateCurrency: (CurrencyType) -> Unit,
     onUpdateReturnSign: (ReturnSignType) -> Unit,
-    onBackPressed: () -> Unit,
-    modifier: Modifier = Modifier
+    onBackPressed: () -> Unit
 ) {
     val focusManager = LocalFocusManager.current
     val keyboardController = LocalSoftwareKeyboardController.current
@@ -432,9 +432,9 @@ private fun SellingTextField(
     state: State<TextFieldState>,
     currencyTypeState: State<CurrencyType>,
     requestParams: CreateRetrospectionParams,
+    modifier: Modifier = Modifier,
     onUpdateSellingText: (String, Int) -> Unit,
-    onUpdateCurrency: (CurrencyType) -> Unit,
-    modifier: Modifier = Modifier
+    onUpdateCurrency: (CurrencyType) -> Unit
 ) {
     val focusManager = LocalFocusManager.current
     val focusRequester = remember { FocusRequester() }
@@ -504,8 +504,8 @@ private fun SellingTextField(
 @Composable
 private fun StockTextField(
     state: State<TextFieldState>,
-    onUpdateStockText: (String, Int) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onUpdateStockText: (String, Int) -> Unit
 ) {
     val focusManager = LocalFocusManager.current
     val focusRequester = remember { FocusRequester() }
@@ -538,9 +538,9 @@ private fun SimpleNumberTextField(
     value: TextFieldValue,
     label: String,
     placeholder: String,
-    onValueChange: (TextFieldValue) -> Unit,
     modifier: Modifier = Modifier,
     visualTransformation: VisualTransformation = VisualTransformation.None,
+    onValueChange: (TextFieldValue) -> Unit,
     onDone: KeyboardActionScope.() -> Unit = {}
 ) {
     HedgeSimpleTextField(
@@ -564,10 +564,10 @@ private fun SimpleNumberTextField(
 @Composable
 private fun DateTextField(
     state: State<TextFieldState>,
+    modifier: Modifier = Modifier,
     onUpdateDateText: (String, Int) -> Unit,
     onErrorDateText: (String, Int) -> Unit,
-    onFocusChanged: () -> Unit,
-    modifier: Modifier = Modifier
+    onFocusChanged: () -> Unit
 ) {
     val focusManager = LocalFocusManager.current
     val focusRequester = remember { FocusRequester() }
@@ -636,9 +636,9 @@ private fun DateTextField(
 
 @Composable
 fun ReturnTextField(
-    modifier: Modifier = Modifier,
     state: State<TextFieldState>,
     returnSignTypeState: State<ReturnSignType>,
+    modifier: Modifier = Modifier,
     onUpdateReturnText: (String, Int) -> Unit,
     onUpdateReturnSign: (ReturnSignType) -> Unit,
     onChangedKeyboardVisibility: (Boolean) -> Unit

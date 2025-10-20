@@ -45,16 +45,16 @@ import com.depromeet.team5.features.retrospect.screen.visualtransmation.Currency
 
 @Composable
 internal fun HedgeUnitTextField(
-    modifier: Modifier = Modifier,
-    label: String,
     value: TextFieldValue,
-    onValueChange: (TextFieldValue) -> Unit,
-    placeholder: String,
-    keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
-    keyboardActions: KeyboardActions = KeyboardActions.Default,
-    visualTransformation: VisualTransformation,
+    label: String,
+    modifier: Modifier = Modifier,
+    placeholder: String = "",
     singleLine: Boolean = true,
     enabled: Boolean = true,
+    keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
+    keyboardActions: KeyboardActions = KeyboardActions.Default,
+    visualTransformation: VisualTransformation = VisualTransformation.None,
+    onValueChange: (TextFieldValue) -> Unit,
     trailingIcon: @Composable () -> Unit = {}
 ) {
     var isFocused by remember { mutableStateOf(false) }
@@ -141,17 +141,17 @@ internal fun HedgeUnitTextField(
 
 @Composable
 internal fun HedgeSimpleTextField(
-    modifier: Modifier = Modifier,
     value: TextFieldValue,
-    onValueChange: (TextFieldValue) -> Unit,
     label: String,
-    placeholder: String,
+    modifier: Modifier = Modifier,
+    placeholder: String = "",
+    singleLine: Boolean = true,
+    isError: Boolean = false,
+    readOnly: Boolean = false,
     keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
     keyboardActions: KeyboardActions = KeyboardActions.Default,
     visualTransformation: VisualTransformation = VisualTransformation.None,
-    singleLine: Boolean = true,
-    isError: Boolean = false,
-    readOnly: Boolean = false
+    onValueChange: (TextFieldValue) -> Unit,
 ) {
 
     var isFocused by remember { mutableStateOf(false) }

@@ -11,18 +11,15 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.relocation.BringIntoViewRequester
-import androidx.compose.foundation.relocation.bringIntoViewRequester
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActionScope
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Switch
@@ -37,7 +34,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -77,8 +73,6 @@ import com.depromeet.team5.features.retrospect.screen.visualtransmation.Currency
 import com.depromeet.team5.features.retrospect.screen.visualtransmation.UnitVisualTransformation
 import com.depromeet.team5.features.retrospect.state.RetrospectionState
 import com.depromeet.team5.features.retrospect.state.TextFieldState
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
@@ -95,7 +89,9 @@ fun RetrospectRoute(
     onBackPressed: () -> Unit
 ) {
     val context = LocalContext.current
-    val retrospectionState = rememberRetrospectionState(requestParams = requestViewModel.request)
+    val retrospectionState = rememberRetrospectionState(
+        requestParams = requestViewModel.request
+    )
 
     val isButtonEnabled by remember {
         derivedStateOf {
@@ -272,157 +268,144 @@ private fun RetrospectScreen(
 ) {
     val focusManager = LocalFocusManager.current
     val keyboardController = LocalSoftwareKeyboardController.current
-    val scrollState = rememberScrollState()
 
-    Scaffold(
-        containerColor = HedgeColor.Neutral.BackgroundSecondary,
-        topBar = {
-            Column(
-                modifier = Modifier.background(HedgeColor.Neutral.BackgroundSecondary)
-            ) {
-                HedgeTopBar(
-                    onClickBack = onBackPressed
-                )
-                CompanyTitle(
-                    requestParams = requestParams,
-                    modifier = Modifier.padding(start = 16.dp, top = 10.dp)
-                )
+    Column(
+        modifier = modifier
+            .fillMaxSize()
+            .background(color = HedgeColor.Neutral.BackgroundSecondary)
+    ) {
+        HedgeTopBar(
+            onClickBack = onBackPressed
+        )
+        CompanyTitle(
+            requestParams = requestParams,
+            modifier = Modifier.padding(start = 16.dp, top = 10.dp)
+        )
 
-                Text(
-                    modifier = Modifier.padding(start = 16.dp, top = 8.dp),
-                    text = if (requestParams.orderType == OrderTypeParams.SELL) {
-                        stringResource(id = R.string.retrospect_selling_price_title)
-                    } else {
-                        stringResource(id = R.string.retrospect_buy_price_title)
-                    },
-                    style = HedgeTypography.Headline1.SemiBold,
-                    color = HedgeColor.GREY_900
-                )
-            }
-        },
-        bottomBar = {
-            Column(
-                modifier = Modifier
-                    .background(HedgeColor.Neutral.BackgroundSecondary)
-                    .padding(horizontal = 20.dp)
-                    .padding(bottom = 24.dp, top = 12.dp),
-                verticalArrangement = Arrangement.Bottom
-            ) {
-                if (requestParams.orderType == OrderTypeParams.SELL) {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ) {
-                        Column {
-                            Text(
-                                text = stringResource(id = R.string.retrospect_enter_rate_of_return),
-                                style = HedgeTypography.Body3.SemiBold,
-                                color = HedgeColor.GREY_700
-                            )
-                            Text(
-                                modifier = Modifier.padding(top = 1.dp),
-                                text = stringResource(id = R.string.retrospect_ai_analysis_description),
-                                style = HedgeTypography.Label2.SemiBold,
-                                color = HedgeColor.Text.Alternative
-                            )
-                        }
+        Text(
+            modifier = Modifier.padding(start = 16.dp, top = 8.dp),
+            text = if (requestParams.orderType == OrderTypeParams.SELL) {
+                stringResource(id = R.string.retrospect_selling_price_title)
+            } else {
+                stringResource(id = R.string.retrospect_buy_price_title)
+            },
+            style = HedgeTypography.Headline1.SemiBold,
+            color = HedgeColor.GREY_900
+        )
 
-                        Switch(
-                            checked = retrospectionState.returnToggleState.value,
-                            colors = SwitchDefaults.colors(
-                                checkedThumbColor = HedgeColor.WHITE,
-                                uncheckedThumbColor = HedgeColor.WHITE,
-                                checkedTrackColor = HedgeColor.Brand.Darken,
-                                uncheckedTrackColor = HedgeColor.GREY_OPACITY_300
-                            ),
-                            onCheckedChange = onUpdateReturnToggle
-                        )
-                    }
-                }
-
-                HedgeButton.Action.Filled(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = 24.dp),
-                    enabled = buttonEnabled,
-                    text = stringResource(id = R.string.retrospect_confirm),
-                    onClick = onClickedConfirmButton
-                )
-            }
-        }
-    ) { innerPadding ->
         Column(
             modifier = Modifier
-                .padding(innerPadding)
-                .background(color = HedgeColor.Neutral.BackgroundSecondary)
-                .imePadding()
-                .verticalScroll(scrollState)
+                .padding(start = 20.dp, top = 26.dp, end = 20.dp)
+                .background(
+                    color = HedgeColor.WHITE,
+                    shape = RoundedCornerShape(16.dp)
+                )
         ) {
-            Column(
+            SellingTextField(
+                state = retrospectionState.sellingTextFieldState,
+                requestParams = requestParams,
+                currencyTypeState = retrospectionState.currencyType,
+                onUpdateSellingText = onUpdateSellingText,
+                onUpdateCurrency = onUpdateCurrency
+            )
+            StockTextField(
+                state = retrospectionState.stockTextFieldState,
+                onUpdateStockText = onUpdateStockText
+            )
+            DateTextField(
+                state = retrospectionState.dateTextFieldState,
+                onUpdateDateText = onUpdateDateText,
+                onErrorDateText = onErrorDateText,
+                onFocusChanged = {
+                    if (retrospectionState.returnToggleState.value) {
+                        focusManager.moveFocus(FocusDirection.Down)
+                    } else {
+                        focusManager.clearFocus()
+                    }
+                }
+            )
+        }
+
+        AnimatedVisibility(
+            visible = retrospectionState.returnToggleState.value,
+            enter = fadeIn(
+                animationSpec = tween(
+                    durationMillis = 300,
+                    delayMillis = 0,
+                    easing = FastOutSlowInEasing
+                )
+            ),
+            exit = fadeOut(
+                animationSpec = tween(
+                    durationMillis = 200,
+                    delayMillis = 0,
+                    easing = FastOutSlowInEasing
+                )
+            )
+        ) {
+            ReturnTextField(
+                state = retrospectionState.returnTextFieldState,
+                returnSignTypeState = retrospectionState.returnSignType,
+                onUpdateReturnText = onUpdateReturnText,
+                onUpdateReturnSign = onUpdateReturnSign,
+                onChangedKeyboardVisibility = {
+                    if (it) {
+                        keyboardController?.show()
+                    } else {
+                        keyboardController?.hide()
+                    }
+                }
+            )
+        }
+
+        Spacer(
+            modifier = Modifier.weight(1f)
+        )
+
+        Column(
+            modifier = Modifier.padding(horizontal = 20.dp),
+            verticalArrangement = Arrangement.Bottom
+        ) {
+            if (requestParams.orderType == OrderTypeParams.SELL) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Column {
+                        Text(
+                            text = stringResource(id = R.string.retrospect_enter_rate_of_return),
+                            style = HedgeTypography.Body3.SemiBold,
+                            color = HedgeColor.GREY_700
+                        )
+                        Text(
+                            modifier = Modifier.padding(top = 1.dp),
+                            text = stringResource(id = R.string.retrospect_ai_analysis_description),
+                            style = HedgeTypography.Label2.SemiBold,
+                            color = HedgeColor.Text.Alternative
+                        )
+                    }
+
+                    Switch(
+                        checked = retrospectionState.returnToggleState.value,
+                        colors = SwitchDefaults.colors(
+                            checkedThumbColor = HedgeColor.WHITE,
+                            uncheckedThumbColor = HedgeColor.WHITE,
+                            checkedTrackColor = HedgeColor.Brand.Darken,
+                            uncheckedTrackColor = HedgeColor.GREY_OPACITY_300
+                        ),
+                        onCheckedChange = onUpdateReturnToggle
+                    )
+                }
+            }
+
+            HedgeButton.Action.Filled(
                 modifier = Modifier
-                    .padding(start = 20.dp, top = 26.dp, end = 20.dp)
-                    .background(
-                        color = HedgeColor.WHITE,
-                        shape = RoundedCornerShape(16.dp)
-                    )
-
-            ) {
-                SellingTextField(
-                    state = retrospectionState.sellingTextFieldState,
-                    requestParams = requestParams,
-                    currencyTypeState = retrospectionState.currencyType,
-                    onUpdateSellingText = onUpdateSellingText,
-                    onUpdateCurrency = onUpdateCurrency
-                )
-                StockTextField(
-                    state = retrospectionState.stockTextFieldState,
-                    onUpdateStockText = onUpdateStockText
-                )
-                DateTextField(
-                    state = retrospectionState.dateTextFieldState,
-                    onUpdateDateText = onUpdateDateText,
-                    onErrorDateText = onErrorDateText,
-                    onFocusChanged = {
-                        if (retrospectionState.returnToggleState.value) {
-                            focusManager.moveFocus(FocusDirection.Down)
-                        } else {
-                            focusManager.clearFocus()
-                        }
-                    }
-                )
-            }
-
-            AnimatedVisibility(
-                visible = retrospectionState.returnToggleState.value,
-                enter = fadeIn(
-                    animationSpec = tween(
-                        durationMillis = 300,
-                        delayMillis = 0,
-                        easing = FastOutSlowInEasing
-                    )
-                ),
-                exit = fadeOut(
-                    animationSpec = tween(
-                        durationMillis = 200,
-                        delayMillis = 0,
-                        easing = FastOutSlowInEasing
-                    )
-                )
-            ) {
-                ReturnTextField(
-                    state = retrospectionState.returnTextFieldState,
-                    returnSignTypeState = retrospectionState.returnSignType,
-                    onUpdateReturnText = onUpdateReturnText,
-                    onUpdateReturnSign = onUpdateReturnSign,
-                    onChangedKeyboardVisibility = {
-                        if (it) {
-                            keyboardController?.show()
-                        } else {
-                            keyboardController?.hide()
-                        }
-                    }
-                )
-            }
+                    .fillMaxWidth()
+                    .padding(top = 24.dp),
+                enabled = buttonEnabled,
+                text = stringResource(id = R.string.retrospect_confirm),
+                onClick = onClickedConfirmButton
+            )
         }
     }
 }
@@ -643,11 +626,9 @@ fun ReturnTextField(
     onUpdateReturnSign: (ReturnSignType) -> Unit,
     onChangedKeyboardVisibility: (Boolean) -> Unit
 ) {
-    val scope = rememberCoroutineScope()
     val context = LocalContext.current
     val focusManager = LocalFocusManager.current
     val focusRequester = remember { FocusRequester() }
-    val bringIntoViewRequester = remember { BringIntoViewRequester() }
     var selectedIndex by remember {
         mutableIntStateOf(if (returnSignTypeState.value == ReturnSignType.Plus) 0 else 1)
     }
@@ -665,16 +646,7 @@ fun ReturnTextField(
     }
 
     HedgeUnitTextField(
-        modifier = modifier
-            .bringIntoViewRequester(bringIntoViewRequester)
-            .onFocusChanged { focusState ->
-                if (focusState.isFocused) {
-                    scope.launch {
-                        delay(300)
-                        bringIntoViewRequester.bringIntoView()
-                    }
-                }
-            }
+        modifier = Modifier
             .focusRequester(focusRequester)
             .padding(start = 20.dp, end = 20.dp, top = 12.dp),
         label = state.value.label,
@@ -763,9 +735,7 @@ private fun CompanyTitle(
 
         Text(
             modifier = Modifier.padding(start = 7.dp),
-            text = requestParams.companyName,
-            style = HedgeTypography.Body3.Medium,
-            color = HedgeColor.GREY_900
+            text = requestParams.companyName
         )
     }
 }

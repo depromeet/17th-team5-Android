@@ -60,6 +60,8 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.depromeet.team5.core.designsystem.component.HedgeButton
 import com.depromeet.team5.core.designsystem.component.HedgeSegment
 import com.depromeet.team5.core.designsystem.component.HedgeTopBar
@@ -93,8 +95,12 @@ fun RetrospectRoute(
     requestViewModel: RequestViewModel,
     modifier: Modifier = Modifier,
     onClickedConfirmButton: () -> Unit,
-    onBackPressed: () -> Unit
+    onBackPressed: () -> Unit,
+    viewModel: RetrospectionViewModel = hiltViewModel()
 ) {
+    val myPrinciple by viewModel.principleUiState.collectAsStateWithLifecycle()
+
+
     val context = LocalContext.current
     val retrospectionState = rememberRetrospectionState(
         requestParams = requestViewModel.request

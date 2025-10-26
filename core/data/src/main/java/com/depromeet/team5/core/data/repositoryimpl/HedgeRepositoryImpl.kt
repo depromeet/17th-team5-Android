@@ -3,6 +3,7 @@ package com.depromeet.team5.core.data.repositoryimpl
 import com.depromeet.team5.core.data.datasource.RemoteDataSource
 import com.depromeet.team5.core.domain.model.Analysis
 import com.depromeet.team5.core.domain.model.Feedback
+import com.depromeet.team5.core.domain.model.MyPrinciple
 import com.depromeet.team5.core.domain.model.Retrospection
 import com.depromeet.team5.core.domain.model.Search
 import com.depromeet.team5.core.domain.repository.HedgeRepository
@@ -33,5 +34,9 @@ internal class HedgeRepositoryImpl @Inject constructor(
         return flow {
             emit(remoteDataSource.createAnalysis(body).toDomain())
         }
+    }
+
+    override fun getPrinciples(): Flow<Map<Int, List<MyPrinciple>>> = flow {
+        emit(remoteDataSource.getPrinciples().toDomain())
     }
 }

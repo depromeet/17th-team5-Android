@@ -1,5 +1,8 @@
 package com.depromeet.team5.features.feedback.screen
 
+import androidx.annotation.DrawableRes
+import androidx.annotation.StringRes
+import androidx.compose.runtime.Stable
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -9,6 +12,7 @@ import com.depromeet.team5.core.domain.usecase.CreateRetrospectionUseCase
 import com.depromeet.team5.core.navigation.request.CreateRetrospectionParams
 import com.depromeet.team5.features.feedback.AiFeedbackUiState
 import com.depromeet.team5.features.feedback.PrincipleState
+import com.depromeet.team5.features.feedback.R
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -17,10 +21,45 @@ import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.flatMapConcat
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+@Stable
+enum class Grade(
+    @DrawableRes val iconRes: Int,
+    @StringRes val descriptionRes: Int
+) {
+    BRONZE(
+        iconRes = R.drawable.img_badge_bronze,
+        descriptionRes = R.string.feedback_grade_description_bronze
+    ),
+    SILVER(
+        iconRes = R.drawable.img_badge_silver,
+        descriptionRes = R.string.feedback_grade_description_silver
+    ),
+    GOLD(
+        iconRes = R.drawable.img_badge_gold,
+        descriptionRes = R.string.feedback_grade_description_gold
+    ),
+    PLATINUM(
+        iconRes = R.drawable.img_badge_platinum,
+        descriptionRes = R.string.feedback_grade_description_platinum
+    );
+
+    companion object {
+        fun fromBadge(badge: String): Grade = when (badge) {
+            "아쉬운 매도" -> BRONZE
+            "아쉬운 매수" -> BRONZE
+            "실버급 매도" -> SILVER
+            "실버급 매수" -> SILVER
+            "골드급 매도" -> GOLD
+            "골드급 매수" -> GOLD
+            "플레급 매도" -> PLATINUM
+            "플레급 매수" -> PLATINUM
+            else -> BRONZE
+        }
+    }
+}
 
 @HiltViewModel
 class AiFeedbackViewModel @Inject constructor(
@@ -53,17 +92,17 @@ class AiFeedbackViewModel @Inject constructor(
             )
                 .flatMapConcat { createFeedbackUseCase(it.id) }
                 .map {
-                    if (it != Feedback.EMPTY) {
+                    if (it.data != null) {
                         AiFeedbackUiState.Success(
-                            summarize = it.summarize,
-                            summarizeOfMarket = it.summarizeOfMarket,
-                            principles = it.principles.map { principle ->
-                                PrincipleState(
-                                    title = principle.title,
-                                    content = principle.content,
-                                    isAdd = false
-                                )
-                            }
+                            badge = it.data!!.badge,
+                            principleCheckSummary = PrincipleState(
+                                keptCount = it.data!!.principleCheckSummary.keptCount,
+                                neutralCount = it.data!!.principleCheckSummary.neutralCount,
+                                notKeptCount = it.data!!.principleCheckSummary.notKeptCount
+                            ),
+                            keep = it.data!!.keep,
+                            fix = it.data!!.fix,
+                            next = it.data!!.next
                         )
                     } else {
                         AiFeedbackUiState.Error(
@@ -85,25 +124,25 @@ class AiFeedbackViewModel @Inject constructor(
     fun updatePrinciple(title: String) {
         when (_feedbackStateFlow.value) {
             is AiFeedbackUiState.Success -> {
-                val index =
-                    (_feedbackStateFlow.value as AiFeedbackUiState.Success).principles.indexOfFirst { it.title == title }
-
-                if (index == -1) return
-
-                val principles = (_feedbackStateFlow.value as AiFeedbackUiState.Success).principles
-                val target = principles[index]
-
-                val newPrinciple = target.copy(isAdd = !target.isAdd)
-
-                val newPrinciples = principles.toMutableList().apply {
-                    set(index, newPrinciple)
-                }
-
-                _feedbackStateFlow.update {
-                    (_feedbackStateFlow.value as AiFeedbackUiState.Success).copy(
-                        principles = newPrinciples
-                    )
-                }
+//                val index =
+//                    (_feedbackStateFlow.value as AiFeedbackUiState.Success).principles.indexOfFirst { it.title == title }
+//
+//                if (index == -1) return
+//
+//                val principles = (_feedbackStateFlow.value as AiFeedbackUiState.Success).principles
+//                val target = principles[index]
+//
+//                val newPrinciple = target.copy(isAdd = !target.isAdd)
+//
+//                val newPrinciples = principles.toMutableList().apply {
+//                    set(index, newPrinciple)
+//                }
+//
+//                _feedbackStateFlow.update {
+//                    (_feedbackStateFlow.value as AiFeedbackUiState.Success).copy(
+//                        principles = newPrinciples
+//                    )
+//                }
 
             }
 

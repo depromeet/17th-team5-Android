@@ -6,7 +6,7 @@ import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import com.depromeet.team5.core.navigation.request.RequestViewModel
-import com.depromeet.team5.features.feedback.screen.FeedbackRoute
+import com.depromeet.team5.features.feedback.screen.AiFeedbackRoute
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -24,9 +24,9 @@ fun NavGraphBuilder.feedbackScreen(
 
         val sharedViewModel: RequestViewModel = viewModel(viewModelStoreOwner = parentEntry)
 
-        FeedbackRoute(
+        AiFeedbackRoute(
             requestViewModel = sharedViewModel,
-            onRemoveClick = onRemoveClick
+//            onRemoveClick = onRemoveClick
         )
     }
 }

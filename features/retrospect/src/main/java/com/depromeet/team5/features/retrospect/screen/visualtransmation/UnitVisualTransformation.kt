@@ -6,7 +6,10 @@ import androidx.compose.ui.text.input.TransformedText
 import androidx.compose.ui.text.input.VisualTransformation
 
 
-class UnitTransformation(private val unit: String) : VisualTransformation {
+class UnitVisualTransformation(
+    private var prefix: String = "",
+    private val unit: String
+) : VisualTransformation {
 
     override fun filter(text: AnnotatedString): TransformedText {
         val originalText = text.text
@@ -15,15 +18,15 @@ class UnitTransformation(private val unit: String) : VisualTransformation {
             return TransformedText(text, OffsetMapping.Identity)
         }
 
-        val formattedText = "${originalText}${unit}"
+        val formattedText = "$prefix${originalText}${unit}"
 
         val offsetMapping = object : OffsetMapping {
             override fun originalToTransformed(offset: Int): Int {
-                return offset
+                return offset + prefix.length
             }
 
             override fun transformedToOriginal(offset: Int): Int {
-                return minOf(offset, originalText.length)
+                return minOf(offset, originalText.length - prefix.length)
             }
         }
 

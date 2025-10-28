@@ -24,12 +24,14 @@ data class MyPrincipleResponse(
 data class MyPrincipleInfoResponse(
     val id: Int,
     val groupId: Int,
+    val groupName: String,
     val principle: String,
     val displayOrder: Int
 ) : RetrofitMapper<MyPrincipleInfoRemoteData> {
     override fun toRemoteData(): MyPrincipleInfoRemoteData = MyPrincipleInfoRemoteData(
         id = id,
         groupId = groupId,
+        groupName = groupName,
         principle = principle,
         displayOrder = displayOrder
     )

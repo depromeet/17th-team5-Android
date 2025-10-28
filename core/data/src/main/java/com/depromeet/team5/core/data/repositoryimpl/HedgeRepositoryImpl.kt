@@ -36,7 +36,7 @@ internal class HedgeRepositoryImpl @Inject constructor(
         }
     }
 
-    override fun getPrinciples(): Flow<Map<Int, List<MyPrinciple>>> = flow {
-        emit(remoteDataSource.getPrinciples().toDomain())
+    override fun getPrinciples(orderType: String): Flow<Map<String, List<MyPrinciple>>> = flow {
+        emit(remoteDataSource.getPrinciples(orderType).toDomain())
     }
 }

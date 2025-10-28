@@ -17,5 +17,5 @@ interface RemoteDataSource {
 
     suspend fun createAnalysis(body: Map<String, Any?>): AnalysisData
 
-    suspend fun getPrinciples(): MyPrincipleData
+    suspend fun getPrinciples(orderType: String): MyPrincipleData
 }

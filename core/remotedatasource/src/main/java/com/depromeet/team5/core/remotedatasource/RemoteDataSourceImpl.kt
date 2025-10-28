@@ -30,4 +30,6 @@ internal class RemoteDataSourceImpl @Inject constructor(
 
     override suspend fun getPrinciples(): MyPrincipleData =
         hedgeApiSource.getPrinciples().toData()
+    override suspend fun getPrinciples(orderType: String): MyPrincipleData =
+        hedgeApiSource.getPrinciples(orderType).toData()
 }

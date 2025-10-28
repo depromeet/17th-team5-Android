@@ -17,5 +17,5 @@ interface HedgeApiSource {
 
     suspend fun createAnalysis(body: Map<String, Any?>): AnalysisRemoteData
 
-    suspend fun getPrinciples(): MyPrincipleRemoteData
+    suspend fun getPrinciples(orderType: String): MyPrincipleRemoteData
 }

@@ -8,9 +8,9 @@ data class MyPrincipleData(
     val code: String,
     val message: String,
     val data: List<MyPrincipleInfoData>
-) : DataMapper<Map<Int, List<MyPrinciple>>> {
+) : DataMapper<Map<String, List<MyPrinciple>>> {
 
-    override fun toDomain(): Map<Int, List<MyPrinciple>> = data.groupBy { it.groupId }
+    override fun toDomain(): Map<String, List<MyPrinciple>> = data.groupBy { it.groupName }
         .mapValues { entries ->
             entries.value
                 .sortedBy { it.displayOrder }
@@ -21,6 +21,7 @@ data class MyPrincipleData(
 data class MyPrincipleInfoData(
     val id: Int,
     val groupId: Int,
+    val groupName: String,
     val principle: String,
     val displayOrder: Int
 ) : DataMapper<MyPrinciple> {

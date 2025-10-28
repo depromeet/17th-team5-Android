@@ -32,6 +32,6 @@ internal class HedgeApiSourceImpl @Inject constructor(
             .createAnalysis(body.mapValues { it.value?.toString() ?: "" })
             .toRemoteData()
 
-    override suspend fun getPrinciples(): MyPrincipleRemoteData =
-        hedgeApi.getPrinciples().toRemoteData()
+    override suspend fun getPrinciples(orderType: String): MyPrincipleRemoteData =
+        hedgeApi.getPrinciples(orderType = orderType).toRemoteData()
 }

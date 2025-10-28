@@ -31,6 +31,9 @@ interface HedgeApi {
     suspend fun createAnalysis(@QueryMap query: Map<String, String>): AnalysisResponse
 
     @GET("api/v1/investment-principles")
-    suspend fun getPrinciples(): MyPrincipleResponse
+    suspend fun getPrinciples(
+        @Query("type")
+        orderType: String
+    ): MyPrincipleResponse
 
 }

@@ -20,5 +20,5 @@ interface HedgeRepository {
 
     fun createAnalysis(body: Map<String, Any?>): Flow<Analysis>
 
-    fun getPrinciples(): Flow<Map<Int, List<MyPrinciple>>>
+    fun getPrinciples(orderType: String): Flow<Map<String, List<MyPrinciple>>>
 }

@@ -21,6 +21,7 @@ data class MyPrincipleRemoteData(
 data class MyPrincipleInfoRemoteData(
     val id: Int,
     val groupId: Int,
+    val groupName: String,
     val principle: String,
     val displayOrder: Int
 ) : RemoteDataMapper<MyPrincipleInfoData> {
@@ -28,6 +29,7 @@ data class MyPrincipleInfoRemoteData(
     override fun toData(): MyPrincipleInfoData = MyPrincipleInfoData(
         id = id,
         groupId = groupId,
+        groupName = groupName,
         principle = principle,
         displayOrder = displayOrder
     )

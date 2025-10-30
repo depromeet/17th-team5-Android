@@ -1,6 +1,7 @@
 package com.depromeet.team5.core.navigation.request
 
 import com.depromeet.team5.core.domain.model.MyPrinciple
+import com.depromeet.team5.core.domain.model.OrderType
 import kotlinx.serialization.Serializable
 
 
@@ -10,7 +11,7 @@ data class CreateRetrospectionParams(
     val market: String,
     val currency: String,
     val orderDate: String,
-    val orderType: OrderTypeParams,
+    val orderType: OrderType,
     val price: Int,
     val volume: Int,
     val returnRate: Double?,
@@ -29,7 +30,7 @@ data class CreateRetrospectionParams(
             market = "",
             currency = "",
             orderDate = "",
-            orderType = OrderTypeParams.BUY,
+            orderType = OrderType.BUY,
             price = 0,
             emotion = null,
             content = null,
@@ -48,13 +49,4 @@ data class PrincipleCheckParams(
 
 enum class EmotionParams {
     ANXIETY, IMPULSE, MINDLESSNESS, CONFIDENCE, CONVICTION
-}
-
-enum class OrderTypeParams {
-    BUY, SELL;
-
-    fun toKorean(): String = when (this) {
-        BUY -> "매수"
-        SELL -> "매도"
-    }
 }

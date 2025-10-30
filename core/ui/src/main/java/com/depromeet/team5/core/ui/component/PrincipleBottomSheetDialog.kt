@@ -1,4 +1,4 @@
-package com.depromeet.team5.features.retrospect.screen.component
+package com.depromeet.team5.core.ui.component
 
 import android.annotation.SuppressLint
 import androidx.compose.animation.AnimatedVisibility
@@ -45,6 +45,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.stringResource
@@ -57,18 +58,18 @@ import com.depromeet.team5.core.designsystem.foundation.HedgeColor
 import com.depromeet.team5.core.designsystem.foundation.HedgeIcon
 import com.depromeet.team5.core.designsystem.foundation.HedgeTypography
 import com.depromeet.team5.core.domain.model.MyPrinciple
-import com.depromeet.team5.core.navigation.request.OrderTypeParams
-import com.depromeet.team5.features.retrospect.R
+import com.depromeet.team5.core.domain.model.OrderType
+import com.depromeet.team5.core.ui.R
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HedgeModalBottomSheet(
+fun PrincipleBottomSheetDialog(
     title: String,
     map: Map<String, List<MyPrinciple>>,
-    orderType: OrderTypeParams,
+    orderType: OrderType,
     modifier: Modifier = Modifier,
     onClickedClose: () -> Unit,
     onClickedConfirmButton: (List<MyPrinciple>) -> Unit
@@ -117,7 +118,7 @@ fun HedgeModalBottomSheet(
 private fun HedgeModalBottomSheetScreen(
     title: String,
     map: Map<String, List<MyPrinciple>>,
-    orderType: OrderTypeParams,
+    orderType: OrderType,
     modifier: Modifier = Modifier,
     onClickedClose: () -> Unit,
     onClickedConfirmButton: (List<MyPrinciple>) -> Unit
@@ -192,13 +193,14 @@ private fun HedgeModalBottomSheetScreen(
                 Spacer(modifier = Modifier.size(4.dp))
 
                 when (orderType) {
-                    OrderTypeParams.BUY -> {
+                    OrderType.BUY -> {
                         HedgePrincipleListItem(
                             icon = {},
                             title = "초보자를 위한 매수 원칙"
                         )
                     }
-                    OrderTypeParams.SELL -> {
+
+                    OrderType.SELL -> {
                         HedgePrincipleListItem(
                             selected = false,
                             icon = {},
@@ -389,9 +391,9 @@ fun HedgeModalBottomSheetPreview() {
     )
 
     HedgeModalBottomSheetScreen(
-        title = stringResource(R.string.principle_bottom_sheet_dialog_title),
+        title = stringResource(R.string.principle_bottom_sheet_dialog_button_text),
         map = myPrincipleMap,
-        orderType = OrderTypeParams.BUY,
+        orderType = OrderType.BUY,
         onClickedClose = {},
         onClickedConfirmButton = {}
     )
@@ -447,7 +449,8 @@ fun SelectedMyPrincipleItemPreview() {
     )
 
     Box(
-        modifier = Modifier.background(HedgeColor.WHITE)
+        modifier = Modifier
+            .background(HedgeColor.WHITE)
     ) {
         SelectedMyPrincipleItem(myPrinciple)
     }

@@ -68,15 +68,15 @@ import com.depromeet.team5.core.designsystem.component.HedgeTopBar
 import com.depromeet.team5.core.designsystem.foundation.HedgeColor
 import com.depromeet.team5.core.designsystem.foundation.HedgeTypography
 import com.depromeet.team5.core.domain.model.MyPrinciple
+import com.depromeet.team5.core.domain.model.OrderType
 import com.depromeet.team5.core.domain.monad.HedgeUiState
 import com.depromeet.team5.core.navigation.request.CreateRetrospectionParams
-import com.depromeet.team5.core.navigation.request.OrderTypeParams
 import com.depromeet.team5.core.navigation.request.RequestViewModel
+import com.depromeet.team5.core.ui.component.PrincipleBottomSheetDialog
 import com.depromeet.team5.features.retrospect.R
 import com.depromeet.team5.features.retrospect.annotation.CurrencyType
 import com.depromeet.team5.features.retrospect.annotation.ReturnSignType
 import com.depromeet.team5.features.retrospect.screen.component.HedgeDatePickerDialog
-import com.depromeet.team5.features.retrospect.screen.component.HedgeModalBottomSheet
 import com.depromeet.team5.features.retrospect.screen.component.HedgeSimpleTextField
 import com.depromeet.team5.features.retrospect.screen.component.HedgeTopbar
 import com.depromeet.team5.features.retrospect.screen.component.HedgeUnitTextField
@@ -139,7 +139,7 @@ fun RetrospectRoute(
         val map =
             (myPrincipleState as HedgeUiState.Success<Map<String, List<MyPrinciple>>>).data
 
-        HedgeModalBottomSheet(
+        PrincipleBottomSheetDialog(
             title = stringResource(R.string.principle_bottom_sheet_dialog_title),
             map = map,
             orderType = requestViewModel.request.orderType,
@@ -336,7 +336,7 @@ private fun RetrospectScreen(
 
         Text(
             modifier = Modifier.padding(start = 20.dp, top = 8.dp),
-            text = if (requestParams.orderType == OrderTypeParams.SELL) {
+            text = if (requestParams.orderType == OrderType.SELL) {
                 stringResource(id = R.string.retrospect_selling_price_title)
             } else {
                 stringResource(id = R.string.retrospect_buy_price_title)
@@ -418,7 +418,7 @@ private fun RetrospectScreen(
             modifier = Modifier.padding(horizontal = 20.dp),
             verticalArrangement = Arrangement.Bottom
         ) {
-            if (requestParams.orderType == OrderTypeParams.SELL) {
+            if (requestParams.orderType == OrderType.SELL) {
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween
@@ -493,7 +493,7 @@ private fun SellingTextField(
     HedgeUnitTextField(
         modifier = modifier.focusRequester(focusRequester),
         label = state.value.label,
-        placeholder = if (requestParams.orderType == OrderTypeParams.SELL) {
+        placeholder = if (requestParams.orderType == OrderType.SELL) {
             stringResource(R.string.retrospect_selling_price_placeholder)
         } else {
             stringResource(R.string.retrospect_buy_price_placeholder)
@@ -832,7 +832,7 @@ private fun RetrospectRoutePreview() {
             modifier = Modifier.padding(paddingValues),
             retrospectionState = retrospectionState,
             buttonEnabled = isButtonEnabled,
-            requestParams = CreateRetrospectionParams.EMPTY.copy(orderType = OrderTypeParams.SELL),
+            requestParams = CreateRetrospectionParams.EMPTY.copy(orderType = OrderType.SELL),
             onUpdateSellingText = { text, selection ->
                 retrospectionState.sellingTextFieldState.value =
                     retrospectionState.sellingTextFieldState.value.copy(

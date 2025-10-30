@@ -58,6 +58,7 @@ import com.depromeet.team5.core.designsystem.foundation.HedgeIcon
 import com.depromeet.team5.core.designsystem.foundation.HedgeTypography
 import com.depromeet.team5.core.domain.model.MyPrinciple
 import com.depromeet.team5.features.retrospect.R
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 
@@ -65,9 +66,10 @@ import kotlinx.coroutines.launch
 @Composable
 fun HedgeModalBottomSheet(
     myPrincipleMap: Map<String, List<MyPrinciple>>,
+    orderType: String,
+    modifier: Modifier = Modifier,
     onClickedClose: () -> Unit,
-    onClickedConfirmButton: (List<MyPrinciple>) -> Unit,
-    modifier: Modifier = Modifier
+    onClickedConfirmButton: (List<MyPrinciple>) -> Unit
 ) {
     val scope = rememberCoroutineScope()
     val sheetState = rememberModalBottomSheetState(
@@ -94,13 +96,14 @@ fun HedgeModalBottomSheet(
         ) {
             HedgeModalBottomSheetScreen(
                 myPrincipleMap = myPrincipleMap,
+                orderType = orderType,
                 onClickedClose = onClickedClose,
                 onClickedConfirmButton = { list ->
                     scope.launch {
                         sheetState.hide()
+                        delay(100)
+                        onClickedConfirmButton(list)
                     }
-
-                    onClickedConfirmButton(list)
                 }
             )
         }
@@ -110,9 +113,10 @@ fun HedgeModalBottomSheet(
 @Composable
 private fun HedgeModalBottomSheetScreen(
     myPrincipleMap: Map<String, List<MyPrinciple>>,
+    orderType: String,
+    modifier: Modifier = Modifier,
     onClickedClose: () -> Unit,
-    onClickedConfirmButton: (List<MyPrinciple>) -> Unit,
-    modifier: Modifier = Modifier
+    onClickedConfirmButton: (List<MyPrinciple>) -> Unit
 ) {
     var selectedMyPrincipleItem by remember { mutableStateOf("") }
 
@@ -183,16 +187,18 @@ private fun HedgeModalBottomSheetScreen(
 
                 Spacer(modifier = Modifier.size(4.dp))
 
-                HedgePrincipleListItem(
-                    selected = false,
-                    icon = {},
-                    title = "초보자를 위한 매도 원칙"
-                )
-
-                HedgePrincipleListItem(
-                    icon = {},
-                    title = "초보자를 위한 매수 원칙"
-                )
+                if (orderType == "SELL") {
+                    HedgePrincipleListItem(
+                        selected = false,
+                        icon = {},
+                        title = "초보자를 위한 매도 원칙"
+                    )
+                } else {
+                    HedgePrincipleListItem(
+                        icon = {},
+                        title = "초보자를 위한 매수 원칙"
+                    )
+                }
             }
 
             Text(
@@ -377,6 +383,7 @@ fun HedgeModalBottomSheetPreview() {
 
     HedgeModalBottomSheetScreen(
         myPrincipleMap = myPrincipleMap,
+        orderType = "SELL",
         onClickedClose = {},
         onClickedConfirmButton = {}
     )

@@ -57,6 +57,7 @@ import com.depromeet.team5.core.designsystem.foundation.HedgeColor
 import com.depromeet.team5.core.designsystem.foundation.HedgeIcon
 import com.depromeet.team5.core.designsystem.foundation.HedgeTypography
 import com.depromeet.team5.core.domain.model.MyPrinciple
+import com.depromeet.team5.core.navigation.request.OrderTypeParams
 import com.depromeet.team5.features.retrospect.R
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -65,8 +66,9 @@ import kotlinx.coroutines.launch
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HedgeModalBottomSheet(
-    myPrincipleMap: Map<String, List<MyPrinciple>>,
-    orderType: String,
+    title: String,
+    map: Map<String, List<MyPrinciple>>,
+    orderType: OrderTypeParams,
     modifier: Modifier = Modifier,
     onClickedClose: () -> Unit,
     onClickedConfirmButton: (List<MyPrinciple>) -> Unit
@@ -95,7 +97,8 @@ fun HedgeModalBottomSheet(
                 .heightIn(max = (screenHeight * 0.85f))
         ) {
             HedgeModalBottomSheetScreen(
-                myPrincipleMap = myPrincipleMap,
+                title = title,
+                map = map,
                 orderType = orderType,
                 onClickedClose = onClickedClose,
                 onClickedConfirmButton = { list ->
@@ -112,8 +115,9 @@ fun HedgeModalBottomSheet(
 
 @Composable
 private fun HedgeModalBottomSheetScreen(
-    myPrincipleMap: Map<String, List<MyPrinciple>>,
-    orderType: String,
+    title: String,
+    map: Map<String, List<MyPrinciple>>,
+    orderType: OrderTypeParams,
     modifier: Modifier = Modifier,
     onClickedClose: () -> Unit,
     onClickedConfirmButton: (List<MyPrinciple>) -> Unit
@@ -149,7 +153,7 @@ private fun HedgeModalBottomSheetScreen(
                 Text(
                     modifier = Modifier
                         .padding(start = 20.dp, top = 23.5.dp, bottom = 19.5.dp),
-                    text = stringResource(R.string.principle_bottom_sheet_dialog_title),
+                    text = title,
                     style = HedgeTypography.Body1.SemiBold,
                     color = HedgeColor.GREY_900
                 )
@@ -187,17 +191,20 @@ private fun HedgeModalBottomSheetScreen(
 
                 Spacer(modifier = Modifier.size(4.dp))
 
-                if (orderType == "SELL") {
-                    HedgePrincipleListItem(
-                        selected = false,
-                        icon = {},
-                        title = "초보자를 위한 매도 원칙"
-                    )
-                } else {
-                    HedgePrincipleListItem(
-                        icon = {},
-                        title = "초보자를 위한 매수 원칙"
-                    )
+                when (orderType) {
+                    OrderTypeParams.BUY -> {
+                        HedgePrincipleListItem(
+                            icon = {},
+                            title = "초보자를 위한 매수 원칙"
+                        )
+                    }
+                    OrderTypeParams.SELL -> {
+                        HedgePrincipleListItem(
+                            selected = false,
+                            icon = {},
+                            title = "초보자를 위한 매도 원칙"
+                        )
+                    }
                 }
             }
 
@@ -214,7 +221,7 @@ private fun HedgeModalBottomSheetScreen(
                 modifier = Modifier.weight(1f)
             ) {
                 items(
-                    items = myPrincipleMap.keys.toList(),
+                    items = map.keys.toList(),
                     key = { it }
                 ) { key ->
                     HedgePrincipleListItem(
@@ -257,7 +264,7 @@ private fun HedgeModalBottomSheetScreen(
                                 Spacer(modifier = Modifier.size(24.dp))
 
                                 Column {
-                                    val list = myPrincipleMap.getValue(key)
+                                    val list = map.getValue(key)
 
                                     list.forEachIndexed { index, item ->
                                         SelectedMyPrincipleItem(item)
@@ -283,7 +290,7 @@ private fun HedgeModalBottomSheetScreen(
                     text = stringResource(id = R.string.principle_bottom_sheet_dialog_button_text),
                     onClick = {
                         onClickedConfirmButton(
-                            myPrincipleMap.getValue(selectedMyPrincipleItem)
+                            map.getValue(selectedMyPrincipleItem)
                         )
                     }
                 )
@@ -382,8 +389,9 @@ fun HedgeModalBottomSheetPreview() {
     )
 
     HedgeModalBottomSheetScreen(
-        myPrincipleMap = myPrincipleMap,
-        orderType = "SELL",
+        title = stringResource(R.string.principle_bottom_sheet_dialog_title),
+        map = myPrincipleMap,
+        orderType = OrderTypeParams.BUY,
         onClickedClose = {},
         onClickedConfirmButton = {}
     )

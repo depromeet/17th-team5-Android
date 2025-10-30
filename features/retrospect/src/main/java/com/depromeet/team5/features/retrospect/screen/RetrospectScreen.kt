@@ -140,8 +140,9 @@ fun RetrospectRoute(
             (myPrincipleState as HedgeUiState.Success<Map<String, List<MyPrinciple>>>).data
 
         HedgeModalBottomSheet(
-            myPrincipleMap = map,
-            orderType = requestViewModel.request.orderType.name,
+            title = stringResource(R.string.principle_bottom_sheet_dialog_title),
+            map = map,
+            orderType = requestViewModel.request.orderType,
             onClickedClose = { isOpenBottomSheetDialog = false },
             onClickedConfirmButton = { principles ->
                 with(retrospectionState) {

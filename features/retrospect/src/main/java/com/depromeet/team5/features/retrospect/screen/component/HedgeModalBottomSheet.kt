@@ -2,9 +2,18 @@ package com.depromeet.team5.features.retrospect.screen.component
 
 import android.annotation.SuppressLint
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.spring
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -32,6 +41,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -40,6 +50,7 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import com.depromeet.team5.core.designsystem.component.HedgeButton
 import com.depromeet.team5.core.designsystem.foundation.HedgeColor
@@ -47,6 +58,7 @@ import com.depromeet.team5.core.designsystem.foundation.HedgeIcon
 import com.depromeet.team5.core.designsystem.foundation.HedgeTypography
 import com.depromeet.team5.core.domain.model.MyPrinciple
 import com.depromeet.team5.features.retrospect.R
+import kotlinx.coroutines.launch
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -57,6 +69,7 @@ fun HedgeModalBottomSheet(
     onClickedConfirmButton: (List<MyPrinciple>) -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val scope = rememberCoroutineScope()
     val sheetState = rememberModalBottomSheetState(
         skipPartiallyExpanded = true
     )
@@ -82,7 +95,13 @@ fun HedgeModalBottomSheet(
             HedgeModalBottomSheetScreen(
                 myPrincipleMap = myPrincipleMap,
                 onClickedClose = onClickedClose,
-                onClickedConfirmButton = onClickedConfirmButton
+                onClickedConfirmButton = { list ->
+                    scope.launch {
+                        sheetState.hide()
+                    }
+
+                    onClickedConfirmButton(list)
+                }
             )
         }
     }
@@ -97,10 +116,23 @@ private fun HedgeModalBottomSheetScreen(
 ) {
     var selectedMyPrincipleItem by remember { mutableStateOf("") }
 
+    val springSpec = spring<IntSize>(
+        dampingRatio = Spring.DampingRatioLowBouncy,
+        stiffness = Spring.StiffnessLow
+    )
+
+    val interactionSource = remember { MutableInteractionSource() }
+
     Box(
         modifier = modifier
             .fillMaxSize()
             .background(HedgeColor.WHITE)
+            .animateContentSize(
+                animationSpec = spring(
+                    dampingRatio = Spring.DampingRatioMediumBouncy,
+                    stiffness = Spring.StiffnessLow
+                )
+            )
     ) {
         Column(
             modifier = Modifier.fillMaxSize()
@@ -181,13 +213,28 @@ private fun HedgeModalBottomSheetScreen(
                 ) { key ->
                     HedgePrincipleListItem(
                         modifier = Modifier
-                            .clickable(true) { selectedMyPrincipleItem = key },
+                            .clickable(
+                                enabled = true,
+                                indication = null,
+                                interactionSource = interactionSource
+                            ) { selectedMyPrincipleItem = key },
                         title = key,
                         icon = {},
                         selected = key == selectedMyPrincipleItem
                     )
 
-                    AnimatedVisibility(key == selectedMyPrincipleItem) {
+                    AnimatedVisibility(
+                        key == selectedMyPrincipleItem,
+                        enter = expandVertically(
+                            animationSpec = springSpec,
+                            expandFrom = Alignment.Top
+                        ) + fadeIn(animationSpec = tween(durationMillis = 300)),
+                        // 사라질 때: 아래에서 위로 줄어들며 서서히 사라짐
+                        exit = shrinkVertically(
+                            animationSpec = springSpec,
+                            shrinkTowards = Alignment.Top
+                        ) + fadeOut(animationSpec = tween(durationMillis = 300))
+                    ) {
                         Row {
                             Spacer(modifier = Modifier.size(36.dp))
 

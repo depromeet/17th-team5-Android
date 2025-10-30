@@ -11,7 +11,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.depromeet.team5.core.navigation.request.OrderTypeParams
+import com.depromeet.team5.core.domain.model.OrderType
 import com.depromeet.team5.core.navigation.request.RequestViewModel
 import com.depromeet.team5.features.home.component.HomeFloatingActionButton
 
@@ -25,12 +25,12 @@ fun HomeRoute(
     HomeScreen(
         onBuyClick = {
             requestViewModel.request =
-                requestViewModel.request.copy(orderType = OrderTypeParams.BUY)
+                requestViewModel.request.copy(orderType = OrderType.BUY)
             onBuyClick()
         },
         onSellClick = {
             requestViewModel.request =
-                requestViewModel.request.copy(orderType = OrderTypeParams.SELL)
+                requestViewModel.request.copy(orderType = OrderType.SELL)
             onSellClick()
         },
         modifier = modifier

@@ -1,9 +1,9 @@
 package com.depromeet.team5.core.navigation.request
 
+import com.depromeet.team5.core.domain.model.MyPrinciple
 import kotlinx.serialization.Serializable
 
 
-@Serializable
 data class CreateRetrospectionParams(
     val symbol: String,
     val companyName: String,
@@ -15,6 +15,7 @@ data class CreateRetrospectionParams(
     val volume: Int,
     val returnRate: Double?,
     val content: String?,
+    val principles: List<MyPrinciple>,
     val principleChecks: List<PrincipleCheckParams>?,
     val emotion: EmotionParams?,
 ) {
@@ -32,6 +33,7 @@ data class CreateRetrospectionParams(
             price = 0,
             emotion = null,
             content = null,
+            principles = emptyList(),
             principleChecks = null,
             returnRate = null
         )

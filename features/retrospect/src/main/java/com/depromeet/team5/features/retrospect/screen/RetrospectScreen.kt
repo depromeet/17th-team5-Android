@@ -67,6 +67,8 @@ import com.depromeet.team5.core.designsystem.component.HedgeSegment
 import com.depromeet.team5.core.designsystem.component.HedgeTopBar
 import com.depromeet.team5.core.designsystem.foundation.HedgeColor
 import com.depromeet.team5.core.designsystem.foundation.HedgeTypography
+import com.depromeet.team5.core.domain.model.MyPrinciple
+import com.depromeet.team5.core.domain.monad.HedgeUiState
 import com.depromeet.team5.core.navigation.request.CreateRetrospectionParams
 import com.depromeet.team5.core.navigation.request.OrderTypeParams
 import com.depromeet.team5.core.navigation.request.RequestViewModel
@@ -74,6 +76,7 @@ import com.depromeet.team5.features.retrospect.R
 import com.depromeet.team5.features.retrospect.annotation.CurrencyType
 import com.depromeet.team5.features.retrospect.annotation.ReturnSignType
 import com.depromeet.team5.features.retrospect.screen.component.HedgeDatePickerDialog
+import com.depromeet.team5.features.retrospect.screen.component.HedgeModalBottomSheet
 import com.depromeet.team5.features.retrospect.screen.component.HedgeSimpleTextField
 import com.depromeet.team5.features.retrospect.screen.component.HedgeTopbar
 import com.depromeet.team5.features.retrospect.screen.component.HedgeUnitTextField
@@ -95,16 +98,22 @@ fun RetrospectRoute(
     requestViewModel: RequestViewModel,
     modifier: Modifier = Modifier,
     onClickedConfirmButton: () -> Unit,
-    onBackPressed: () -> Unit,
-    viewModel: RetrospectionViewModel = hiltViewModel()
+    onBackPressed: () -> Unit
 ) {
-    val myPrinciple by viewModel.principleUiState.collectAsStateWithLifecycle()
+    val viewModel: RetrospectionViewModel = hiltViewModel(
+        creationCallback = { factory: RetrospectionViewModel.Factory ->
+            factory.create(requestViewModel.request.orderType.name)
+        }
+    )
 
+    val myPrincipleState by viewModel.principleUiState.collectAsStateWithLifecycle()
 
     val context = LocalContext.current
     val retrospectionState = rememberRetrospectionState(
         requestParams = requestViewModel.request
     )
+
+    var isOpenBottomSheetDialog by remember { mutableStateOf(false) }
 
     val isButtonEnabled by remember {
         derivedStateOf {
@@ -118,12 +127,48 @@ fun RetrospectRoute(
                 ?.let {
                     when (retrospectionState.returnToggleState.value) {
                         true -> retrospectionState.returnTextFieldState.value.text.isNotEmpty() &&
-                                !retrospectionState.returnTextFieldState.value.isError
+                            !retrospectionState.returnTextFieldState.value.isError
 
                         false -> true
                     }
                 } ?: false
         }
+    }
+
+    if (isOpenBottomSheetDialog) {
+        val map =
+            (myPrincipleState as HedgeUiState.Success<Map<String, List<MyPrinciple>>>).data
+
+        HedgeModalBottomSheet(
+            myPrincipleMap = map,
+            onClickedClose = { isOpenBottomSheetDialog = false },
+            onClickedConfirmButton = { principles ->
+                with(retrospectionState) {
+                    requestViewModel.request = requestViewModel.request.copy(
+                        price = sellingTextFieldState.value.text.toInt(),
+                        volume = stockTextFieldState.value.text.toInt(),
+                        orderDate = dateTextFieldState.value.text,
+                        currency = CurrencyType.from(currencyType.value),
+                        principles = principles,
+                        returnRate = try {
+                            when (returnSignType.value) {
+                                ReturnSignType.Plus -> {
+                                    returnTextFieldState.value.text.toDouble()
+                                }
+
+                                ReturnSignType.Minus -> {
+                                    returnTextFieldState.value.text.toDouble() * -1
+                                }
+                            }
+                        } catch (e: Exception) {
+                            null
+                        }
+                    )
+                }
+
+                onClickedConfirmButton()
+            }
+        )
     }
 
     RetrospectScreen(
@@ -172,30 +217,7 @@ fun RetrospectRoute(
         },
         onClickedConfirmButton = {
             if (!isButtonEnabled) return@RetrospectScreen
-
-            with(retrospectionState) {
-                requestViewModel.request = requestViewModel.request.copy(
-                    price = sellingTextFieldState.value.text.toInt(),
-                    volume = stockTextFieldState.value.text.toInt(),
-                    orderDate = dateTextFieldState.value.text,
-                    currency = CurrencyType.from(currencyType.value),
-                    returnRate = try {
-                        when (returnSignType.value) {
-                            ReturnSignType.Plus -> {
-                                returnTextFieldState.value.text.toDouble()
-                            }
-
-                            ReturnSignType.Minus -> {
-                                returnTextFieldState.value.text.toDouble() * -1
-                            }
-                        }
-                    } catch (e: Exception) {
-                        null
-                    }
-                )
-            }
-
-            onClickedConfirmButton()
+            isOpenBottomSheetDialog = true
         },
         onUpdateReturnToggle = { isToggled ->
             retrospectionState.returnToggleState.value = isToggled
@@ -795,7 +817,7 @@ private fun RetrospectRoutePreview() {
                 ?.let {
                     when (retrospectionState.returnToggleState.value) {
                         true -> retrospectionState.returnTextFieldState.value.text.isNotEmpty() &&
-                                !retrospectionState.returnTextFieldState.value.isError
+                            !retrospectionState.returnTextFieldState.value.isError
 
                         false -> true
                     }

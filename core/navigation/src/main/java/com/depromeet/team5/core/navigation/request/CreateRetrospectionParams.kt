@@ -46,12 +46,10 @@ data class PrincipleCheckParams(
     val principleId: Int
 )
 
-@Serializable
 enum class EmotionParams {
     ANXIETY, IMPULSE, MINDLESSNESS, CONFIDENCE, CONVICTION
 }
 
-@Serializable
 enum class OrderTypeParams {
     BUY, SELL;
 

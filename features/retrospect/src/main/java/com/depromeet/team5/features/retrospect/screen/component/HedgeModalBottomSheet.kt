@@ -54,7 +54,7 @@ import com.depromeet.team5.features.retrospect.R
 fun HedgeModalBottomSheet(
     myPrincipleMap: Map<String, List<MyPrinciple>>,
     onClickedClose: () -> Unit,
-    onClickedConfirmButton: () -> Unit,
+    onClickedConfirmButton: (List<MyPrinciple>) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val sheetState = rememberModalBottomSheetState(
@@ -92,7 +92,7 @@ fun HedgeModalBottomSheet(
 private fun HedgeModalBottomSheetScreen(
     myPrincipleMap: Map<String, List<MyPrinciple>>,
     onClickedClose: () -> Unit,
-    onClickedConfirmButton: () -> Unit,
+    onClickedConfirmButton: (List<MyPrinciple>) -> Unit,
     modifier: Modifier = Modifier
 ) {
     var selectedMyPrincipleItem by remember { mutableStateOf("") }
@@ -221,10 +221,6 @@ private fun HedgeModalBottomSheetScreen(
                 }
             }
 
-//            Spacer(
-//                modifier = Modifier.weight(1f)
-//            )
-
             if (selectedMyPrincipleItem.isNotEmpty()) {
                 HedgeButton.Action.Filled(
                     modifier = Modifier
@@ -232,7 +228,11 @@ private fun HedgeModalBottomSheetScreen(
                         .padding(start = 20.dp, end = 20.dp, bottom = 31.dp),
                     enabled = selectedMyPrincipleItem.isNotEmpty(),
                     text = stringResource(id = R.string.principle_bottom_sheet_dialog_button_text),
-                    onClick = onClickedConfirmButton
+                    onClick = {
+                        onClickedConfirmButton(
+                            myPrincipleMap.getValue(selectedMyPrincipleItem)
+                        )
+                    }
                 )
             }
         }

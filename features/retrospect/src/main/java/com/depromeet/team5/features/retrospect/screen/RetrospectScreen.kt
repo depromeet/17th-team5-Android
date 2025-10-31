@@ -169,6 +169,10 @@ fun RetrospectRoute(
                 }
 
                 onClickedConfirmButton()
+            },
+            onClickedAddButton = {
+                //todo 다른 화면으로 교체
+                onClickedConfirmButton()
             }
         )
     }

@@ -45,7 +45,6 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.stringResource
@@ -72,7 +71,8 @@ fun PrincipleBottomSheetDialog(
     orderType: OrderType,
     modifier: Modifier = Modifier,
     onClickedClose: () -> Unit,
-    onClickedConfirmButton: (List<MyPrinciple>) -> Unit
+    onClickedConfirmButton: (List<MyPrinciple>) -> Unit,
+    onClickedAddButton: () -> Unit
 ) {
     val scope = rememberCoroutineScope()
     val sheetState = rememberModalBottomSheetState(
@@ -108,7 +108,8 @@ fun PrincipleBottomSheetDialog(
                         delay(100)
                         onClickedConfirmButton(list)
                     }
-                }
+                },
+                onClickedAddButton = onClickedAddButton
             )
         }
     }
@@ -121,7 +122,8 @@ private fun HedgeModalBottomSheetScreen(
     orderType: OrderType,
     modifier: Modifier = Modifier,
     onClickedClose: () -> Unit,
-    onClickedConfirmButton: (List<MyPrinciple>) -> Unit
+    onClickedConfirmButton: (List<MyPrinciple>) -> Unit,
+    onClickedAddButton: () -> Unit
 ) {
     var selectedMyPrincipleItem by remember { mutableStateOf("") }
 
@@ -129,8 +131,6 @@ private fun HedgeModalBottomSheetScreen(
         dampingRatio = Spring.DampingRatioLowBouncy,
         stiffness = Spring.StiffnessLow
     )
-
-    val interactionSource = remember { MutableInteractionSource() }
 
     Box(
         modifier = modifier
@@ -231,7 +231,7 @@ private fun HedgeModalBottomSheetScreen(
                             .clickable(
                                 enabled = true,
                                 indication = null,
-                                interactionSource = interactionSource
+                                interactionSource = remember { MutableInteractionSource() }
                             ) { selectedMyPrincipleItem = key },
                         title = key,
                         icon = {},
@@ -269,7 +269,7 @@ private fun HedgeModalBottomSheetScreen(
                                     val list = map.getValue(key)
 
                                     list.forEachIndexed { index, item ->
-                                        SelectedMyPrincipleItem(item)
+                                        SelectedMyPrincipleItem(index + 1, item)
 
                                         if (index != list.size - 1)
                                             Spacer(modifier = Modifier.size(12.dp))
@@ -279,6 +279,48 @@ private fun HedgeModalBottomSheetScreen(
                         }
 
                         Spacer(modifier = Modifier.size(16.dp))
+                    }
+                }
+
+                item {
+                    Row(
+                        modifier = Modifier
+                            .padding(start = 20.dp, top = 12.dp)
+                            .clickable(
+                                enabled = true,
+                                indication = null,
+                                interactionSource = remember { MutableInteractionSource() }
+                            ) {
+                                onClickedAddButton()
+                            },
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Box(
+                            modifier = Modifier
+                                .background(
+                                    color = HedgeColor.Brand.Primary,
+                                    shape = RoundedCornerShape(16.dp)
+                                )
+                                .padding(horizontal = 10.dp, vertical = 9.dp)
+                        ) {
+
+                            Image(
+                                modifier = Modifier
+                                    .size(12.dp),
+                                imageVector = HedgeIcon.Add,
+                                contentDescription = null,
+                                colorFilter = ColorFilter.tint(color = HedgeColor.WHITE)
+                            )
+                        }
+
+                        Text(
+                            modifier = Modifier.padding(
+                                start = 12.dp
+                            ),
+                            text = stringResource(R.string.principle_bottom_sheet_dialog_add_button_text),
+                            style = HedgeTypography.Body3.Medium,
+                            color = HedgeColor.Text.Title
+                        )
                     }
                 }
             }
@@ -395,18 +437,20 @@ fun HedgeModalBottomSheetPreview() {
         map = myPrincipleMap,
         orderType = OrderType.BUY,
         onClickedClose = {},
-        onClickedConfirmButton = {}
+        onClickedConfirmButton = {},
+        onClickedAddButton = {}
     )
 }
 
 
 @Composable
 fun SelectedMyPrincipleItem(
+    index: Int,
     item: MyPrinciple
 ) {
     Row {
         Text(
-            text = item.id.toString(),
+            text = index.toString(),
             color = HedgeColor.Brand.Primary,
             style = HedgeTypography.Body3.SemiBold
         )
@@ -452,6 +496,6 @@ fun SelectedMyPrincipleItemPreview() {
         modifier = Modifier
             .background(HedgeColor.WHITE)
     ) {
-        SelectedMyPrincipleItem(myPrinciple)
+        SelectedMyPrincipleItem(1, myPrinciple)
     }
 }

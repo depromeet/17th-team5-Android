@@ -10,6 +10,7 @@
     <string name="badge_description_platinum">시장의 흐름을 넓고 깊게 이해하며,\n 스스로의 기준으로 움직였어요</string>
 
     <string name="principle_bottom_sheet_dialog_button_text">이 원칙으로 회고하기</string>
+    <string name="principle_bottom_sheet_dialog_add_button_text">새로운 원칙 그룹 추가</string>
     <string name="principle_myself">내가 만든</string>
 
     <string name="standard">기본</string>

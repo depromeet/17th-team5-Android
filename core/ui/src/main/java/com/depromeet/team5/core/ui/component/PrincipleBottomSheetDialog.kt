@@ -70,9 +70,10 @@ fun PrincipleBottomSheetDialog(
     map: Map<String, List<MyPrinciple>>,
     orderType: OrderType,
     modifier: Modifier = Modifier,
+    isShowAddButton: Boolean = false,
     onClickedClose: () -> Unit,
     onClickedConfirmButton: (List<MyPrinciple>) -> Unit,
-    onClickedAddButton: () -> Unit
+    onClickedAddButton: () -> Unit = {}
 ) {
     val scope = rememberCoroutineScope()
     val sheetState = rememberModalBottomSheetState(
@@ -90,17 +91,19 @@ fun PrincipleBottomSheetDialog(
         sheetState = sheetState,
         onDismissRequest = { onClickedClose() },
         containerColor = HedgeColor.WHITE,
-        contentWindowInsets = { WindowInsets(0, 0, 0, 0) }
+        contentWindowInsets = { WindowInsets(0, 0, 0, 0) },
+        dragHandle = null
 
     ) {
         Box(
             modifier = Modifier
-                .heightIn(max = (screenHeight * 0.85f))
+                .heightIn(max = (screenHeight * 0.76f))
         ) {
             HedgeModalBottomSheetScreen(
                 title = title,
                 map = map,
                 orderType = orderType,
+                isShowAddButton = isShowAddButton,
                 onClickedClose = onClickedClose,
                 onClickedConfirmButton = { list ->
                     scope.launch {
@@ -121,6 +124,7 @@ private fun HedgeModalBottomSheetScreen(
     map: Map<String, List<MyPrinciple>>,
     orderType: OrderType,
     modifier: Modifier = Modifier,
+    isShowAddButton: Boolean = false,
     onClickedClose: () -> Unit,
     onClickedConfirmButton: (List<MyPrinciple>) -> Unit,
     onClickedAddButton: () -> Unit
@@ -282,45 +286,46 @@ private fun HedgeModalBottomSheetScreen(
                     }
                 }
 
-                item {
-                    Row(
-                        modifier = Modifier
-                            .padding(start = 20.dp, top = 12.dp)
-                            .clickable(
-                                enabled = true,
-                                indication = null,
-                                interactionSource = remember { MutableInteractionSource() }
-                            ) {
-                                onClickedAddButton()
-                            },
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Box(
+                if (isShowAddButton) {
+                    item {
+                        Row(
                             modifier = Modifier
-                                .background(
-                                    color = HedgeColor.Brand.Primary,
-                                    shape = RoundedCornerShape(16.dp)
-                                )
-                                .padding(horizontal = 10.dp, vertical = 9.dp)
+                                .padding(start = 20.dp, top = 12.dp)
+                                .clickable(
+                                    enabled = true,
+                                    indication = null,
+                                    interactionSource = remember { MutableInteractionSource() }
+                                ) {
+                                    onClickedAddButton()
+                                },
+                            verticalAlignment = Alignment.CenterVertically
                         ) {
-
-                            Image(
+                            Box(
                                 modifier = Modifier
-                                    .size(12.dp),
-                                imageVector = HedgeIcon.Add,
-                                contentDescription = null,
-                                colorFilter = ColorFilter.tint(color = HedgeColor.WHITE)
+                                    .background(
+                                        color = HedgeColor.Brand.Primary,
+                                        shape = RoundedCornerShape(16.dp)
+                                    )
+                                    .padding(horizontal = 10.dp, vertical = 9.dp)
+                            ) {
+
+                                Image(
+                                    modifier = Modifier
+                                        .size(12.dp),
+                                    imageVector = HedgeIcon.Add,
+                                    contentDescription = null,
+                                    colorFilter = ColorFilter.tint(color = HedgeColor.WHITE)
+                                )
+                            }
+                            Text(
+                                modifier = Modifier.padding(
+                                    start = 12.dp
+                                ),
+                                text = stringResource(R.string.principle_bottom_sheet_dialog_add_button_text),
+                                style = HedgeTypography.Body3.Medium,
+                                color = HedgeColor.Text.Title
                             )
                         }
-
-                        Text(
-                            modifier = Modifier.padding(
-                                start = 12.dp
-                            ),
-                            text = stringResource(R.string.principle_bottom_sheet_dialog_add_button_text),
-                            style = HedgeTypography.Body3.Medium,
-                            color = HedgeColor.Text.Title
-                        )
                     }
                 }
             }

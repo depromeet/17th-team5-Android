@@ -73,6 +73,7 @@ dependencies {
     implementation(projects.features.home)
     implementation(projects.features.feedback)
     implementation(projects.features.reasons)
+    implementation(projects.features.principledetail)
 
     implementation(libs.androidx.core.ktx)
 

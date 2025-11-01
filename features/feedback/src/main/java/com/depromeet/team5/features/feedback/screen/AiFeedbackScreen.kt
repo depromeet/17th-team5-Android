@@ -59,9 +59,12 @@ fun AiFeedbackRoute(
             AiFeedbackScreen(
                 state = state,
                 grade = HedgeBadge.fromBadge(state.badge),
-                companyName = requestViewModel.request.companyName,
-                price = requestViewModel.request.price.toLong(),
-                stock = requestViewModel.request.volume,
+//                companyName = requestViewModel.request.companyName,
+//                price = requestViewModel.request.price.toLong(),
+//                stock = requestViewModel.request.volume,
+                companyName = "삼성전자",
+                price = 65000,
+                stock = 3,
                 modifier = modifier
             )
         }

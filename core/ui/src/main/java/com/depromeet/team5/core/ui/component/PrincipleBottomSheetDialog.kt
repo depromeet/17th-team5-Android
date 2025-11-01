@@ -45,6 +45,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.stringResource
@@ -147,209 +148,270 @@ private fun HedgeModalBottomSheetScreen(
                 )
             )
     ) {
-        Column(
-            modifier = Modifier.fillMaxSize()
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(top = 70.dp)
         ) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.Absolute.SpaceBetween
-            ) {
+            item {
                 Text(
-                    modifier = Modifier
-                        .padding(start = 20.dp, top = 23.5.dp, bottom = 19.5.dp),
-                    text = title,
-                    style = HedgeTypography.Body1.SemiBold,
-                    color = HedgeColor.GREY_900
+                    text = stringResource(R.string.standard),
+                    modifier = Modifier.padding(start = 20.dp),
+                    style = HedgeTypography.Label2.Medium,
+                    color = HedgeColor.Text.Alternative
                 )
 
-                Box(
-                    modifier = Modifier
-                        .padding(end = 20.dp)
-                        .size(28.dp)
-                        .background(
-                            color = HedgeColor.Neutral.BackgroundSecondary,
-                            shape = RoundedCornerShape(39.dp)
+                Spacer(modifier = Modifier.size(4.dp))
+            }
+
+            item {
+                when (orderType) {
+                    OrderType.BUY -> {
+                        HedgePrincipleListItem(
+                            icon = {},
+                            title = "초보자를 위한 매수 원칙"
                         )
-                        .clickable(true) { onClickedClose() },
-                    contentAlignment = Alignment.Center
-                ) {
-                    Image(
-                        modifier = Modifier.size(14.dp),
-                        imageVector = HedgeIcon.CloseThick,
-                        contentDescription = null,
-                        colorFilter = ColorFilter.tint(color = HedgeColor.Text.Assistive)
-                    )
+                    }
+
+                    OrderType.SELL -> {
+                        HedgePrincipleListItem(
+                            selected = false,
+                            icon = {},
+                            title = "초보자를 위한 매도 원칙"
+                        )
+                    }
                 }
             }
 
-            LazyColumn(
-                modifier = Modifier.weight(1f)
-            ) {
+            item {
+                Text(
+                    text = stringResource(R.string.principle_myself),
+                    modifier = Modifier.padding(start = 20.dp, top = 12.dp),
+                    style = HedgeTypography.Label2.Medium,
+                    color = HedgeColor.Text.Alternative
+                )
+
+                Spacer(modifier = Modifier.size(4.dp))
+            }
+
+            if (isShowAddButton) {
                 item {
-                    Text(
-                        text = stringResource(R.string.standard),
-                        modifier = Modifier.padding(start = 20.dp),
-                        style = HedgeTypography.Label2.Medium,
-                        color = HedgeColor.Text.Alternative
-                    )
-
-                    Spacer(modifier = Modifier.size(4.dp))
-                }
-
-                item {
-                    when (orderType) {
-                        OrderType.BUY -> {
-                            HedgePrincipleListItem(
-                                icon = {},
-                                title = "초보자를 위한 매수 원칙"
-                            )
-                        }
-
-                        OrderType.SELL -> {
-                            HedgePrincipleListItem(
-                                selected = false,
-                                icon = {},
-                                title = "초보자를 위한 매도 원칙"
-                            )
-                        }
-                    }
-                }
-
-                item {
-                    Text(
-                        text = stringResource(R.string.principle_myself),
-                        modifier = Modifier.padding(start = 20.dp, top = 12.dp),
-                        style = HedgeTypography.Label2.Medium,
-                        color = HedgeColor.Text.Alternative
-                    )
-
-                    Spacer(modifier = Modifier.size(4.dp))
-                }
-
-                if (isShowAddButton) {
-                    item {
-                        Row(
-                            modifier = Modifier
-                                .padding(start = 20.dp, top = 12.dp, bottom = 12.dp, end = 12.dp)
-                                .clickable(
-                                    enabled = true,
-                                    indication = null,
-                                    interactionSource = remember { MutableInteractionSource() }
-                                ) {
-                                    onClickedAddButton()
-                                },
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Box(
-                                modifier = Modifier
-                                    .background(
-                                        color = HedgeColor.Brand.Primary,
-                                        shape = RoundedCornerShape(16.dp)
-                                    )
-                                    .padding(horizontal = 10.dp, vertical = 9.dp)
-                            ) {
-
-                                Image(
-                                    modifier = Modifier
-                                        .size(12.dp),
-                                    imageVector = HedgeIcon.Add,
-                                    contentDescription = null,
-                                    colorFilter = ColorFilter.tint(color = HedgeColor.WHITE)
-                                )
-                            }
-                            Text(
-                                modifier = Modifier.padding(
-                                    start = 12.dp
-                                ),
-                                text = stringResource(R.string.principle_bottom_sheet_dialog_add_button_text),
-                                style = HedgeTypography.Body3.Medium,
-                                color = HedgeColor.Text.Title
-                            )
-                        }
-                    }
-                }
-
-                items(
-                    items = map.keys.toList(),
-                    key = { it }
-                ) { key ->
-
-                    HedgePrincipleListItem(
+                    Row(
                         modifier = Modifier
+                            .padding(start = 20.dp, top = 12.dp, bottom = 12.dp, end = 12.dp)
                             .clickable(
                                 enabled = true,
                                 indication = null,
                                 interactionSource = remember { MutableInteractionSource() }
-                            ) { selectedMyPrincipleItem = key },
-                        title = key,
-                        icon = {},
-                        selected = key == selectedMyPrincipleItem
-                    )
-
-                    AnimatedVisibility(
-                        key == selectedMyPrincipleItem,
-                        enter = expandVertically(
-                            animationSpec = springSpec,
-                            expandFrom = Alignment.Top
-                        ) + fadeIn(animationSpec = tween(durationMillis = 300)),
-                        // 사라질 때: 아래에서 위로 줄어들며 서서히 사라짐
-                        exit = shrinkVertically(
-                            animationSpec = springSpec,
-                            shrinkTowards = Alignment.Top
-                        ) + fadeOut(animationSpec = tween(durationMillis = 300))
-                    ) {
-                        Row {
-                            Spacer(modifier = Modifier.size(36.dp))
-
-                            Row(
-                                modifier = Modifier.height(IntrinsicSize.Min)
                             ) {
-                                Box(
-                                    modifier = Modifier
-                                        .width(3.dp)
-                                        .fillMaxHeight()
-                                        .background(HedgeColor.Neutral.BackgroundSecondary)
+                                onClickedAddButton()
+                            },
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Box(
+                            modifier = Modifier
+                                .background(
+                                    color = HedgeColor.Brand.Primary,
+                                    shape = RoundedCornerShape(16.dp)
                                 )
+                                .padding(horizontal = 10.dp, vertical = 9.dp)
+                        ) {
 
-                                Spacer(modifier = Modifier.size(24.dp))
-
-                                Column {
-                                    val list = map.getValue(key)
-
-                                    list.forEachIndexed { index, item ->
-                                        SelectedMyPrincipleItem(index + 1, item)
-
-                                        if (index != list.size - 1)
-                                            Spacer(modifier = Modifier.size(12.dp))
-                                    }
-                                }
-                            }
+                            Image(
+                                modifier = Modifier
+                                    .size(12.dp),
+                                imageVector = HedgeIcon.Add,
+                                contentDescription = null,
+                                colorFilter = ColorFilter.tint(color = HedgeColor.WHITE)
+                            )
                         }
-
-                        Spacer(modifier = Modifier.size(16.dp))
+                        Text(
+                            modifier = Modifier.padding(
+                                start = 12.dp
+                            ),
+                            text = stringResource(R.string.principle_bottom_sheet_dialog_add_button_text),
+                            style = HedgeTypography.Body3.Medium,
+                            color = HedgeColor.Text.Title
+                        )
                     }
                 }
             }
 
-            if (selectedMyPrincipleItem.isNotEmpty()) {
-                HedgeButton.Action.Filled(
+            items(
+                items = map.keys.toList(),
+                key = { it }
+            ) { key ->
+
+                HedgePrincipleListItem(
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(start = 20.dp, end = 20.dp, bottom = 31.dp),
-                    enabled = selectedMyPrincipleItem.isNotEmpty(),
-                    text = stringResource(id = R.string.principle_bottom_sheet_dialog_button_text),
-                    onClick = {
-                        onClickedConfirmButton(
-                            map.getValue(selectedMyPrincipleItem)
-                        )
+                        .clickable(
+                            enabled = true,
+                            indication = null,
+                            interactionSource = remember { MutableInteractionSource() }
+                        ) { selectedMyPrincipleItem = key },
+                    title = key,
+                    icon = {},
+                    selected = key == selectedMyPrincipleItem
+                )
+
+                AnimatedVisibility(
+                    key == selectedMyPrincipleItem,
+                    enter = expandVertically(
+                        animationSpec = springSpec,
+                        expandFrom = Alignment.Top
+                    ) + fadeIn(animationSpec = tween(durationMillis = 300)),
+                    // 사라질 때: 아래에서 위로 줄어들며 서서히 사라짐
+                    exit = shrinkVertically(
+                        animationSpec = springSpec,
+                        shrinkTowards = Alignment.Top
+                    ) + fadeOut(animationSpec = tween(durationMillis = 300))
+                ) {
+                    Row {
+                        Spacer(modifier = Modifier.size(36.dp))
+
+                        Row(
+                            modifier = Modifier.height(IntrinsicSize.Min)
+                        ) {
+                            Box(
+                                modifier = Modifier
+                                    .width(3.dp)
+                                    .fillMaxHeight()
+                                    .background(HedgeColor.Neutral.BackgroundSecondary)
+                            )
+
+                            Spacer(modifier = Modifier.size(24.dp))
+
+                            Column {
+                                val list = map.getValue(key)
+
+                                list.forEachIndexed { index, item ->
+                                    SelectedMyPrincipleItem(index + 1, item)
+
+                                    if (index != list.size - 1)
+                                        Spacer(modifier = Modifier.size(12.dp))
+                                }
+                            }
+                        }
                     }
+
+                    Spacer(modifier = Modifier.size(16.dp))
+                }
+            }
+        }
+
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(68.dp)
+                .fillMaxWidth()
+                .align(Alignment.TopCenter)
+                .background(HedgeColor.WHITE),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Absolute.SpaceBetween
+        ) {
+            Text(
+                modifier = Modifier
+                    .padding(start = 20.dp, end = 10.dp),
+                text = title,
+                style = HedgeTypography.Body1.SemiBold,
+                color = HedgeColor.GREY_900
+            )
+
+            Box(
+                modifier = Modifier
+                    .padding(end = 20.dp)
+                    .size(28.dp)
+                    .background(
+                        color = HedgeColor.Neutral.BackgroundSecondary,
+                        shape = RoundedCornerShape(39.dp)
+                    )
+                    .clickable(true) { onClickedClose() },
+                contentAlignment = Alignment.Center
+            ) {
+                Image(
+                    modifier = Modifier.size(14.dp),
+                    imageVector = HedgeIcon.CloseThick,
+                    contentDescription = null,
+                    colorFilter = ColorFilter.tint(color = HedgeColor.Text.Assistive)
                 )
             }
         }
+
+        if (selectedMyPrincipleItem.isNotEmpty()) {
+            ConfirmButton(
+                modifier = Modifier.align(Alignment.BottomCenter),
+                enabled = selectedMyPrincipleItem.isNotEmpty(),
+                onClickedConfirmButton = {
+                    onClickedConfirmButton(
+                        map.getValue(selectedMyPrincipleItem)
+                    )
+                }
+            )
+        }
+
     }
 }
 
+@Composable
+private fun ConfirmButton(
+    enabled: Boolean,
+    modifier: Modifier = Modifier,
+    isShowAddButton: Boolean = false,
+    onClickedConfirmButton: () -> Unit
+) {
+    Box(
+        modifier = modifier
+    ) {
+        Column(
+            modifier = Modifier
+                .padding(top = 24.dp)
+                .fillMaxWidth()
+                .background(HedgeColor.WHITE),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+
+            if (isShowAddButton) {
+                Text(
+                    text = stringResource(R.string.principle_limit_size),
+                    style = HedgeTypography.Body3.Medium,
+                    color = HedgeColor.Text.Assistive
+                )
+            }
+
+            Spacer(modifier = Modifier.size(12.dp))
+
+            HedgeButton.Action.Filled(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(start = 20.dp, end = 20.dp, bottom = 31.dp),
+                enabled = enabled,
+                text = if (isShowAddButton) {
+                    stringResource(id = R.string.select)
+                } else {
+                    stringResource(id = R.string.principle_bottom_sheet_dialog_button_text)
+                },
+                onClick = onClickedConfirmButton
+            )
+        }
+
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(24.dp)
+                .background(
+                    brush = Brush.verticalGradient(
+                        colorStops = arrayOf(
+                            0f to HedgeColor.WHITE.copy(alpha = 0f),
+                            1f to HedgeColor.WHITE.copy(alpha = 0.7f)
+                        ),
+                        startY = 0f,
+                        endY = 24.dp.value
+                    )
+                )
+                .align(Alignment.TopCenter)
+        )
+    }
+}
 
 @Composable
 private fun HedgePrincipleListItem(
@@ -491,5 +553,21 @@ fun SelectedMyPrincipleItemPreview() {
             .background(HedgeColor.WHITE)
     ) {
         SelectedMyPrincipleItem(1, myPrinciple)
+    }
+}
+
+@Preview
+@Composable
+fun ConfirmButtonPreview() {
+    Box(
+        modifier = Modifier.background(
+            color = HedgeColor.WHITE
+        ),
+        contentAlignment = Alignment.Center
+    ) {
+        ConfirmButton(
+            enabled = true,
+            onClickedConfirmButton = {}
+        )
     }
 }

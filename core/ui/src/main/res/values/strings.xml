@@ -12,6 +12,8 @@
     <string name="principle_bottom_sheet_dialog_button_text">이 원칙으로 회고하기</string>
     <string name="principle_bottom_sheet_dialog_add_button_text">새로운 원칙 그룹 추가</string>
     <string name="principle_myself">내가 만든</string>
+    <string name="principle_limit_size">한 템플릿 당 최대 5개를 추가할 수 있어요</string>
 
     <string name="standard">기본</string>
+    <string name="select">선택</string>
 </resources>

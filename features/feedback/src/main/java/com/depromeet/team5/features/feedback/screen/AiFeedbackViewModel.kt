@@ -14,6 +14,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.flatMapConcat
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
@@ -30,30 +31,24 @@ class AiFeedbackViewModel @Inject constructor(
         MutableStateFlow(AiFeedbackUiState.Loading)
     val feedbackStateFlow: StateFlow<AiFeedbackUiState> = _feedbackStateFlow
 
-    init {
-        createRetrospection(
-            request =
-                CreateRetrospectionParams(
-                    symbol = "TSLA",
-                    market = "NASDAQ",
-                    orderType = OrderTypeParams.BUY,
-                    price = 65000,
-                    currency = "USD",
-                    volume = 3,
-                    companyName = "뿡뿡",
-                    orderDate = "",
-                    returnRate = 10.0,
-                    content = "테스트",
-                    principleChecks = null,
-                    emotion = null
-                )
-        )
-    }
-
-
     fun createRetrospection(request: CreateRetrospectionParams) {
         viewModelScope.launch {
-            createFeedbackUseCase(21)
+            createRetrospectionUseCase(
+                body = mapOf(
+                    "symbol" to request.symbol,
+                    "market" to request.market,
+                    "orderType" to request.orderType.name,
+                    "price" to request.price,
+                    "currency" to request.currency,
+                    "volume" to request.volume,
+                    "orderDate" to formatDate(request.orderDate),
+                    "returnRate" to request.returnRate,
+                    "content" to request.content,
+                    "principleChecks" to request.principleChecks,
+                    "emotion" to request.emotion?.name
+                )
+            )
+                .flatMapConcat { createFeedbackUseCase(it.id) }
                 .map {
                     if (it.data != null) {
                         AiFeedbackUiState.Success(
@@ -80,50 +75,6 @@ class AiFeedbackViewModel @Inject constructor(
                 }
                 .onEach { _feedbackStateFlow.value = it }
                 .collect()
-
-
-//            createRetrospectionUseCase(
-//                body = mapOf(
-//                    "symbol" to request.symbol,
-//                    "market" to request.market,
-//                    "orderType" to request.orderType.name,
-//                    "price" to request.price,
-//                    "currency" to request.currency,
-//                    "volume" to request.volume,
-//                    "orderDate" to formatDate(request.orderDate),
-//                    "returnRate" to request.returnRate,
-//                    "content" to request.content,
-//                    "principleChecks" to request.principleChecks,
-//                    "emotion" to request.emotion?.name
-//                )
-//            )
-//                .flatMapConcat { createFeedbackUseCase(it.id) }
-//                .map {
-//                    if (it.data != null) {
-//                        AiFeedbackUiState.Success(
-//                            badge = it.data!!.badge,
-//                            principleCheckSummary = PrincipleState(
-//                                keptCount = it.data!!.keptCount,
-//                                neutralCount = it.data!!.neutralCount,
-//                                notKeptCount = it.data!!.notKeptCount
-//                            ),
-//                            keep = it.data!!.keep,
-//                            fix = it.data!!.fix,
-//                            next = it.data!!.next
-//                        )
-//                    } else {
-//                        AiFeedbackUiState.Error(
-//                            code = it.code,
-//                            message = it.message
-//                        )
-//                    }
-//                }
-//                .catch {
-//                    it.printStackTrace()
-//                    emit(AiFeedbackUiState.Failure(it))
-//                }
-//                .onEach { _feedbackStateFlow.value = it }
-//                .collect()
     }
 }
 

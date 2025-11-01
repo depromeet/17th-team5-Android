@@ -20,6 +20,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Icon
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -37,6 +38,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.depromeet.team5.core.designsystem.component.HedgeButton
 import com.depromeet.team5.core.designsystem.foundation.HedgeColor
 import com.depromeet.team5.core.designsystem.foundation.HedgeTypography
 import com.depromeet.team5.core.navigation.request.RequestViewModel
@@ -54,17 +56,18 @@ fun AiFeedbackRoute(
 ) {
     val uiState by viewModel.feedbackStateFlow.collectAsStateWithLifecycle()
 
+    LaunchedEffect(Unit) {
+        viewModel.createRetrospection(requestViewModel.request)
+    }
+
     when (val state = uiState) {
         is AiFeedbackUiState.Success -> {
             AiFeedbackScreen(
                 state = state,
                 grade = HedgeBadge.fromBadge(state.badge),
-//                companyName = requestViewModel.request.companyName,
-//                price = requestViewModel.request.price.toLong(),
-//                stock = requestViewModel.request.volume,
-                companyName = "삼성전자",
-                price = 65000,
-                stock = 3,
+                companyName = requestViewModel.request.companyName,
+                price = requestViewModel.request.price.toLong(),
+                stock = requestViewModel.request.volume,
                 modifier = modifier
             )
         }
@@ -377,24 +380,15 @@ private fun AiFeedbackScreen(
                         )
                     }
 
-                    Box(
+                    HedgeButton.Action.Filled(
+                        text = stringResource(R.string.feedback_add_principle_button),
+                        buttonColors = HedgeButton.Action.Color.Filled.Primary,
+                        size = HedgeButton.Action.Size.Small,
                         modifier = Modifier
-                            .fillMaxWidth()
                             .padding(top = 20.dp)
-                            .background(
-                                color = HedgeColor.Brand.Primary,
-                                shape = RoundedCornerShape(12.dp)
-                            )
-                            .padding(vertical = 10.dp)
-                            .clickable {}
-                    ) {
-                        Text(
-                            text = stringResource(R.string.feedback_add_principle_button),
-                            style = HedgeTypography.Body3.SemiBold,
-                            color = HedgeColor.WHITE,
-                            modifier = Modifier.align(Alignment.Center)
-                        )
-                    }
+                            .fillMaxWidth(),
+                        onClick = {}
+                    )
                 }
             }
 

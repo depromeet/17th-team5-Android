@@ -19,6 +19,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Icon
 import androidx.compose.material.Text
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -29,6 +30,7 @@ import androidx.compose.ui.draw.drawWithCache
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -72,9 +74,45 @@ fun AiFeedbackRoute(
             )
         }
 
-        is AiFeedbackUiState.Loading -> {}
+        is AiFeedbackUiState.Loading -> {
+            AiLoadingProgress()
+        }
+
         is AiFeedbackUiState.Error -> {}
         is AiFeedbackUiState.Failure -> {}
+    }
+}
+
+@Composable
+private fun AiLoadingProgress(
+    modifier: Modifier = Modifier
+) {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(
+                color = HedgeColor.Feedback.AI.copy(alpha = 0.05f)
+            )
+            .padding(start = 20.dp, end = 20.dp, bottom = 22.dp),
+    ) {
+        Row(
+            modifier = modifier.padding(top = 22.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            CircularProgressIndicator(
+                modifier = Modifier.size(20.dp),
+                strokeWidth = 2.5.dp,
+                color = HedgeColor.Feedback.AI,
+                strokeCap = StrokeCap.Round,
+                trackColor = HedgeColor.Feedback.AI.copy(alpha = 0.1f),
+            )
+            Text(
+                modifier = Modifier.padding(start = 12.dp),
+                text = stringResource(id = R.string.feedback_ai_feedback_in_progress),
+                style = HedgeTypography.Body3.Medium,
+                color = HedgeColor.Feedback.AI
+            )
+        }
     }
 }
 

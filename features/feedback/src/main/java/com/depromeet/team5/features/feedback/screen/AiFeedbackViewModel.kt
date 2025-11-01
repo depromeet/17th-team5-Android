@@ -2,11 +2,11 @@ package com.depromeet.team5.features.feedback.screen
 
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
+import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.Stable
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.depromeet.team5.core.domain.model.Feedback
 import com.depromeet.team5.core.domain.usecase.CreateFeedbackUseCase
 import com.depromeet.team5.core.domain.usecase.CreateRetrospectionUseCase
 import com.depromeet.team5.core.navigation.request.CreateRetrospectionParams
@@ -24,38 +24,39 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-@Stable
+@Immutable
 enum class Grade(
     @DrawableRes val iconRes: Int,
+    @StringRes val titleRes: Int,
     @StringRes val descriptionRes: Int
 ) {
     BRONZE(
         iconRes = R.drawable.img_badge_bronze,
+        titleRes = R.string.feedback_grade_title_bronze,
         descriptionRes = R.string.feedback_grade_description_bronze
     ),
     SILVER(
         iconRes = R.drawable.img_badge_silver,
+        titleRes = R.string.feedback_grade_title_silver,
         descriptionRes = R.string.feedback_grade_description_silver
     ),
     GOLD(
         iconRes = R.drawable.img_badge_gold,
+        titleRes = R.string.feedback_grade_title_gold,
         descriptionRes = R.string.feedback_grade_description_gold
     ),
     PLATINUM(
         iconRes = R.drawable.img_badge_platinum,
+        titleRes = R.string.feedback_grade_title_platinum,
         descriptionRes = R.string.feedback_grade_description_platinum
     );
 
     companion object {
         fun fromBadge(badge: String): Grade = when (badge) {
-            "아쉬운 매도" -> BRONZE
-            "아쉬운 매수" -> BRONZE
-            "실버급 매도" -> SILVER
-            "실버급 매수" -> SILVER
-            "골드급 매도" -> GOLD
-            "골드급 매수" -> GOLD
-            "플레급 매도" -> PLATINUM
-            "플레급 매수" -> PLATINUM
+            BRONZE.name.lowercase() -> BRONZE
+            SILVER.name.lowercase() -> SILVER
+            GOLD.name.lowercase() -> GOLD
+            PLATINUM.name.lowercase() -> PLATINUM
             else -> BRONZE
         }
     }
@@ -96,9 +97,9 @@ class AiFeedbackViewModel @Inject constructor(
                         AiFeedbackUiState.Success(
                             badge = it.data!!.badge,
                             principleCheckSummary = PrincipleState(
-                                keptCount = it.data!!.principleCheckSummary.keptCount,
-                                neutralCount = it.data!!.principleCheckSummary.neutralCount,
-                                notKeptCount = it.data!!.principleCheckSummary.notKeptCount
+                                keptCount = it.data!!.keptCount,
+                                neutralCount = it.data!!.neutralCount,
+                                notKeptCount = it.data!!.notKeptCount
                             ),
                             keep = it.data!!.keep,
                             fix = it.data!!.fix,

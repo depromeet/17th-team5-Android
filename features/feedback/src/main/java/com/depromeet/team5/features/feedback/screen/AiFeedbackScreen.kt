@@ -185,7 +185,7 @@ private fun AiFeedbackScreen(
                     )
 
                     Text(
-                        text = state.badge,
+                        text = stringResource(grade.titleRes),
                         style = HedgeTypography.Headline1.SemiBold.copy(
                             brush = gradientGreenBlue
                         ),
@@ -421,7 +421,7 @@ private fun AiFeedbackScreen(
 private fun AiFeedbackScreenPreview() {
     AiFeedbackScreen(
         state = AiFeedbackUiState.Success(
-            badge = "아쉬운 매도",
+            badge = "platinum",
             principleCheckSummary = PrincipleState(
                 keptCount = 1,
                 neutralCount = 0,
@@ -438,7 +438,7 @@ private fun AiFeedbackScreenPreview() {
                 "전기차 시장 성장 잠재력을 감안하면 장기 투자가 유망해요."
             )
         ),
-        grade = Grade.fromBadge(badge = "아쉬운 매도"),
+        grade = Grade.fromBadge(badge = "platinum"),
         companyName = "삼성전자",
         price = 65000,
         stock = 3

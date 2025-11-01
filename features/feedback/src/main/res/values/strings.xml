@@ -17,10 +17,14 @@
 
     // new
     <string name="feedback_complete">완료</string>
-    <string name="feedback_grade_description_bronze">원칙을 잘 지키지는 않았지만,\n시장 상황에 잘 대처한 투자였어요</string>
-    <string name="feedback_grade_description_silver">원칙을 잘 지키지는 않았지만,\n실버급 투자였어요</string>
-    <string name="feedback_grade_description_gold">원칙을 잘 지키지는 않았지만,\n골드급 투자였어요</string>
-    <string name="feedback_grade_description_platinum">원칙을 잘 지키지는 않았지만,\n플레급 투자였어요</string>
+    <string name="feedback_grade_title_bronze">성찰의 시간기</string>
+    <string name="feedback_grade_title_silver">유연의 구간</string>
+    <string name="feedback_grade_title_gold">안정의 흐름</string>
+    <string name="feedback_grade_title_platinum">감각의 전성기</string>
+    <string name="feedback_grade_description_bronze">기대와 다른 결과였지만,\n 이번 회고로 배움을 쌓고 있어요</string>
+    <string name="feedback_grade_description_silver">계획과는 조금 달랐지만\n 상황에 맞게 판단을 잘 조정했어요</string>
+    <string name="feedback_grade_description_gold">근거 있는 판단으로\n 흔들림 없이 결정했어요</string>
+    <string name="feedback_grade_description_platinum">시장의 흐름을 넓고 깊게 이해하며,\n 스스로의 기준으로 움직였어요</string>
     <string name="feedback_count">%d개</string>
     <string name="feedback_keep_title">앞으로도 유지해보세요</string>
     <string name="feedback_fix_title">고쳐보면 좋아요</string>

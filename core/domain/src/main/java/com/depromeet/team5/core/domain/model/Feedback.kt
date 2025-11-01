@@ -7,19 +7,15 @@ data class Feedback(
 )
 
 data class FeedbackInfo(
-    val badge: String,
     val symbol: String,
-    val orderType: String,
-    val volume: Int,
     val price: Long,
-    val principleCheckSummary: PrincipleCheckSummary,
-    val keep: List<String>,
-    val fix: List<String>,
-    val next: List<String>,
-)
-
-data class PrincipleCheckSummary(
+    val volume: Int,
+    val orderType: String,
     val keptCount: Int,
     val neutralCount: Int,
     val notKeptCount: Int,
+    val badge: String,
+    val keep: List<String>,
+    val fix: List<String>,
+    val next: List<String>,
 )

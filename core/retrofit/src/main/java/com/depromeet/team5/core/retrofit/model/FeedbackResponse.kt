@@ -2,7 +2,6 @@ package com.depromeet.team5.core.retrofit.model
 
 import com.depromeet.team5.core.remotedatasource.model.FeedbackInfoRemoteData
 import com.depromeet.team5.core.remotedatasource.model.FeedbackRemoteData
-import com.depromeet.team5.core.remotedatasource.model.PrincipleCheckSummaryRemoteData
 import com.depromeet.team5.core.retrofit.mapper.RetrofitMapper
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
@@ -23,14 +22,15 @@ data class FeedbackResponse(
 
 @Serializable
 data class FeedbackInfoResponse(
+    val symbol: String,
+    val price: Long,
+    val volume: Int,
+    val orderType: String,
+    val keptCount: Int,
+    val neutralCount: Int,
+    val notKeptCount: Int,
     @SerialName("뱃지")
     val badge: String,
-    val symbol: String,
-    val orderType: String,
-    @SerialName("volume")
-    val volume: Int,
-    val price: Long,
-    val principleCheckSummary: PrincipleCheckSummaryResponse,
     @SerialName("앞으로도 유지해보세요")
     val keep: List<String>,
     @SerialName("고쳐보면 좋아요")
@@ -45,23 +45,11 @@ data class FeedbackInfoResponse(
             orderType = orderType,
             volume = volume,
             price = price,
-            principleCheckSummary = principleCheckSummary.toRemoteData(),
+            keptCount = keptCount,
+            neutralCount = neutralCount,
+            notKeptCount = notKeptCount,
             keep = keep,
             fix = fix,
             next = next
-        )
-}
-
-@Serializable
-data class PrincipleCheckSummaryResponse(
-    val keptCount: Int,
-    val neutralCount: Int,
-    val notKeptCount: Int,
-) : RetrofitMapper<PrincipleCheckSummaryRemoteData> {
-    override fun toRemoteData(): PrincipleCheckSummaryRemoteData =
-        PrincipleCheckSummaryRemoteData(
-            keptCount = keptCount,
-            neutralCount = neutralCount,
-            notKeptCount = notKeptCount
         )
 }

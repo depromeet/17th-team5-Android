@@ -3,7 +3,6 @@ package com.depromeet.team5.core.data.model
 import com.depromeet.team5.core.data.mapper.DataMapper
 import com.depromeet.team5.core.domain.model.Feedback
 import com.depromeet.team5.core.domain.model.FeedbackInfo
-import com.depromeet.team5.core.domain.model.PrincipleCheckSummary
 
 data class FeedbackData(
     val code: String,
@@ -19,12 +18,14 @@ data class FeedbackData(
 }
 
 data class FeedbackInfoData(
-    val badge: String,
     val symbol: String,
-    val orderType: String,
-    val volume: Int,
     val price: Long,
-    val principleCheckSummary: PrincipleCheckSummaryData,
+    val volume: Int,
+    val orderType: String,
+    val keptCount: Int,
+    val neutralCount: Int,
+    val notKeptCount: Int,
+    val badge: String,
     val keep: List<String>,
     val fix: List<String>,
     val next: List<String>,
@@ -36,22 +37,11 @@ data class FeedbackInfoData(
             orderType = orderType,
             volume = volume,
             price = price,
-            principleCheckSummary = principleCheckSummary.toDomain(),
+            keptCount = keptCount,
+            neutralCount = neutralCount,
+            notKeptCount = notKeptCount,
             keep = keep,
             fix = fix,
             next = next
-        )
-}
-
-data class PrincipleCheckSummaryData(
-    val keptCount: Int,
-    val neutralCount: Int,
-    val notKeptCount: Int,
-) : DataMapper<PrincipleCheckSummary> {
-    override fun toDomain(): PrincipleCheckSummary =
-        PrincipleCheckSummary(
-            keptCount = keptCount,
-            neutralCount = neutralCount,
-            notKeptCount = notKeptCount
         )
 }

@@ -28,4 +28,6 @@ dependencies {
     implementation(projects.core.domain)
     implementation(projects.core.navigation)
     implementation(projects.core.designsystem)
+    implementation(projects.core.ui)
+
 }

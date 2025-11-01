@@ -1,9 +1,5 @@
 package com.depromeet.team5.features.feedback.screen
 
-import androidx.annotation.DrawableRes
-import androidx.annotation.StringRes
-import androidx.compose.runtime.Immutable
-import androidx.compose.runtime.Stable
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -12,7 +8,6 @@ import com.depromeet.team5.core.domain.usecase.CreateRetrospectionUseCase
 import com.depromeet.team5.core.navigation.request.CreateRetrospectionParams
 import com.depromeet.team5.features.feedback.AiFeedbackUiState
 import com.depromeet.team5.features.feedback.PrincipleState
-import com.depromeet.team5.features.feedback.R
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -23,44 +18,6 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import javax.inject.Inject
-
-@Immutable
-enum class Grade(
-    @DrawableRes val iconRes: Int,
-    @StringRes val titleRes: Int,
-    @StringRes val descriptionRes: Int
-) {
-    BRONZE(
-        iconRes = R.drawable.img_badge_bronze,
-        titleRes = R.string.feedback_grade_title_bronze,
-        descriptionRes = R.string.feedback_grade_description_bronze
-    ),
-    SILVER(
-        iconRes = R.drawable.img_badge_silver,
-        titleRes = R.string.feedback_grade_title_silver,
-        descriptionRes = R.string.feedback_grade_description_silver
-    ),
-    GOLD(
-        iconRes = R.drawable.img_badge_gold,
-        titleRes = R.string.feedback_grade_title_gold,
-        descriptionRes = R.string.feedback_grade_description_gold
-    ),
-    PLATINUM(
-        iconRes = R.drawable.img_badge_platinum,
-        titleRes = R.string.feedback_grade_title_platinum,
-        descriptionRes = R.string.feedback_grade_description_platinum
-    );
-
-    companion object {
-        fun fromBadge(badge: String): Grade = when (badge) {
-            BRONZE.name.lowercase() -> BRONZE
-            SILVER.name.lowercase() -> SILVER
-            GOLD.name.lowercase() -> GOLD
-            PLATINUM.name.lowercase() -> PLATINUM
-            else -> BRONZE
-        }
-    }
-}
 
 @HiltViewModel
 class AiFeedbackViewModel @Inject constructor(

@@ -40,6 +40,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.depromeet.team5.core.designsystem.foundation.HedgeColor
 import com.depromeet.team5.core.designsystem.foundation.HedgeTypography
 import com.depromeet.team5.core.navigation.request.RequestViewModel
+import com.depromeet.team5.core.ui.model.HedgeBadge
 import com.depromeet.team5.features.feedback.AiFeedbackUiState
 import com.depromeet.team5.features.feedback.PrincipleState
 import com.depromeet.team5.features.feedback.R
@@ -57,7 +58,7 @@ fun AiFeedbackRoute(
         is AiFeedbackUiState.Success -> {
             AiFeedbackScreen(
                 state = state,
-                grade = Grade.fromBadge(state.badge),
+                grade = HedgeBadge.fromBadge(state.badge),
                 companyName = requestViewModel.request.companyName,
                 price = requestViewModel.request.price.toLong(),
                 stock = requestViewModel.request.volume,
@@ -74,7 +75,7 @@ fun AiFeedbackRoute(
 @Composable
 private fun AiFeedbackScreen(
     state: AiFeedbackUiState.Success,
-    grade: Grade,
+    grade: HedgeBadge,
     companyName: String,
     price: Long,
     stock: Int,
@@ -438,7 +439,7 @@ private fun AiFeedbackScreenPreview() {
                 "전기차 시장 성장 잠재력을 감안하면 장기 투자가 유망해요."
             )
         ),
-        grade = Grade.fromBadge(badge = "platinum"),
+        grade = HedgeBadge.fromBadge(badge = "platinum"),
         companyName = "삼성전자",
         price = 65000,
         stock = 3

@@ -183,53 +183,98 @@ private fun HedgeModalBottomSheetScreen(
                 }
             }
 
-            Column(
-                modifier = Modifier.fillMaxWidth()
-            ) {
-
-                Text(
-                    text = stringResource(R.string.standard),
-                    modifier = Modifier.padding(start = 20.dp),
-                    style = HedgeTypography.Label2.Medium,
-                    color = HedgeColor.Text.Alternative
-                )
-
-                Spacer(modifier = Modifier.size(4.dp))
-
-                when (orderType) {
-                    OrderType.BUY -> {
-                        HedgePrincipleListItem(
-                            icon = {},
-                            title = "초보자를 위한 매수 원칙"
-                        )
-                    }
-
-                    OrderType.SELL -> {
-                        HedgePrincipleListItem(
-                            selected = false,
-                            icon = {},
-                            title = "초보자를 위한 매도 원칙"
-                        )
-                    }
-                }
-            }
-
-            Text(
-                text = stringResource(R.string.principle_myself),
-                modifier = Modifier.padding(start = 20.dp, top = 12.dp),
-                style = HedgeTypography.Label2.Medium,
-                color = HedgeColor.Text.Alternative
-            )
-
-            Spacer(modifier = Modifier.size(4.dp))
-
             LazyColumn(
                 modifier = Modifier.weight(1f)
             ) {
+                item {
+                    Text(
+                        text = stringResource(R.string.standard),
+                        modifier = Modifier.padding(start = 20.dp),
+                        style = HedgeTypography.Label2.Medium,
+                        color = HedgeColor.Text.Alternative
+                    )
+
+                    Spacer(modifier = Modifier.size(4.dp))
+                }
+
+                item {
+                    when (orderType) {
+                        OrderType.BUY -> {
+                            HedgePrincipleListItem(
+                                icon = {},
+                                title = "초보자를 위한 매수 원칙"
+                            )
+                        }
+
+                        OrderType.SELL -> {
+                            HedgePrincipleListItem(
+                                selected = false,
+                                icon = {},
+                                title = "초보자를 위한 매도 원칙"
+                            )
+                        }
+                    }
+                }
+
+                item {
+                    Text(
+                        text = stringResource(R.string.principle_myself),
+                        modifier = Modifier.padding(start = 20.dp, top = 12.dp),
+                        style = HedgeTypography.Label2.Medium,
+                        color = HedgeColor.Text.Alternative
+                    )
+
+                    Spacer(modifier = Modifier.size(4.dp))
+                }
+
+                if (isShowAddButton) {
+                    item {
+                        Row(
+                            modifier = Modifier
+                                .padding(start = 20.dp, top = 12.dp, bottom = 12.dp, end = 12.dp)
+                                .clickable(
+                                    enabled = true,
+                                    indication = null,
+                                    interactionSource = remember { MutableInteractionSource() }
+                                ) {
+                                    onClickedAddButton()
+                                },
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Box(
+                                modifier = Modifier
+                                    .background(
+                                        color = HedgeColor.Brand.Primary,
+                                        shape = RoundedCornerShape(16.dp)
+                                    )
+                                    .padding(horizontal = 10.dp, vertical = 9.dp)
+                            ) {
+
+                                Image(
+                                    modifier = Modifier
+                                        .size(12.dp),
+                                    imageVector = HedgeIcon.Add,
+                                    contentDescription = null,
+                                    colorFilter = ColorFilter.tint(color = HedgeColor.WHITE)
+                                )
+                            }
+                            Text(
+                                modifier = Modifier.padding(
+                                    start = 12.dp
+                                ),
+                                text = stringResource(R.string.principle_bottom_sheet_dialog_add_button_text),
+                                style = HedgeTypography.Body3.Medium,
+                                color = HedgeColor.Text.Title
+                            )
+                        }
+                    }
+                }
+
                 items(
                     items = map.keys.toList(),
                     key = { it }
                 ) { key ->
+
                     HedgePrincipleListItem(
                         modifier = Modifier
                             .clickable(
@@ -283,49 +328,6 @@ private fun HedgeModalBottomSheetScreen(
                         }
 
                         Spacer(modifier = Modifier.size(16.dp))
-                    }
-                }
-
-                if (isShowAddButton) {
-                    item {
-                        Row(
-                            modifier = Modifier
-                                .padding(start = 20.dp, top = 12.dp)
-                                .clickable(
-                                    enabled = true,
-                                    indication = null,
-                                    interactionSource = remember { MutableInteractionSource() }
-                                ) {
-                                    onClickedAddButton()
-                                },
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Box(
-                                modifier = Modifier
-                                    .background(
-                                        color = HedgeColor.Brand.Primary,
-                                        shape = RoundedCornerShape(16.dp)
-                                    )
-                                    .padding(horizontal = 10.dp, vertical = 9.dp)
-                            ) {
-
-                                Image(
-                                    modifier = Modifier
-                                        .size(12.dp),
-                                    imageVector = HedgeIcon.Add,
-                                    contentDescription = null,
-                                    colorFilter = ColorFilter.tint(color = HedgeColor.WHITE)
-                                )
-                            }
-                            Text(
-                                modifier = Modifier.padding(
-                                    start = 12.dp
-                                ),
-                                text = stringResource(R.string.principle_bottom_sheet_dialog_add_button_text),
-                                style = HedgeTypography.Body3.Medium,
-                                color = HedgeColor.Text.Title
-                            )
-                        }
                     }
                 }
             }
@@ -400,8 +402,11 @@ private fun HedgePrincipleListItem(
 @Preview
 @Composable
 fun HedgeModalBottomSheetPreview() {
-    val myPrincipleMap: Map<String, List<MyPrinciple>> = mapOf(
-        "이건 좀 지키자 제발" to listOf(
+    val myPrincipleMap: HashMap<String, List<MyPrinciple>> = hashMapOf()
+
+    for (i in 0 until 30) {
+        val key = "이건 좀 지키자 제발$i"
+        myPrincipleMap[key] = listOf(
             MyPrinciple(
                 id = 1,
                 groupId = 1,
@@ -416,31 +421,15 @@ fun HedgeModalBottomSheetPreview() {
                 id = 3,
                 groupId = 1,
                 principle = "정책 민감도가 높은 주식은 정책 잘 살펴보고 매매"
-            ),
-        ),
-        "이건 좀 지키자 제발2" to listOf(
-            MyPrinciple(
-                id = 1,
-                groupId = 2,
-                principle = "안전마진을 확보하라"
-            ),
-            MyPrinciple(
-                id = 2,
-                groupId = 2,
-                principle = "기업의 본질 가치보다 낮게 거래되는 주식을 찾아 장기 보유하기"
-            ),
-            MyPrinciple(
-                id = 3,
-                groupId = 2,
-                principle = "정책 민감도가 높은 주식은 정책 잘 살펴보고 매매"
-            ),
+            )
         )
-    )
+    }
 
     HedgeModalBottomSheetScreen(
         title = stringResource(R.string.principle_bottom_sheet_dialog_button_text),
         map = myPrincipleMap,
         orderType = OrderType.BUY,
+        isShowAddButton = true,
         onClickedClose = {},
         onClickedConfirmButton = {},
         onClickedAddButton = {}

@@ -1,28 +1,20 @@
 package com.depromeet.team5.feature.reasons
 
-import android.util.Log
 import androidx.annotation.DrawableRes
-import androidx.annotation.StringRes
-import androidx.compose.runtime.Stable
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.depromeet.team5.core.domain.usecase.CreateAnalysisUseCase
 import com.depromeet.team5.core.navigation.request.OrderTypeParams
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.filterNotNull
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
-import java.time.LocalDate
-import java.time.LocalDateTime
-import java.time.LocalTime
-import java.time.ZoneOffset
-import java.time.format.DateTimeFormatter
+import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import org.jsoup.Jsoup
+import java.net.URI
 import javax.inject.Inject
 
 data class TradeInfo(
@@ -139,80 +131,92 @@ data class Article(
 @HiltViewModel
 class ReasonsViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
-    createAnalysisUseCase: CreateAnalysisUseCase,
 ) : ViewModel() {
-
-    private val _selectedEmotion: MutableStateFlow<Emotion?> = MutableStateFlow(null)
-    val selectedEmotion = _selectedEmotion.asStateFlow()
-
-    private val _principles = MutableStateFlow(dummyPrinciples)
-    val principles = _principles.asStateFlow()
 
     private val _tradeInfo = MutableStateFlow(dummyTradeInfo)
     val tradeInfo = _tradeInfo.asStateFlow()
 
-    private val createAnalysisRequest = MutableStateFlow<AnalysisRequest?>(null)
+    val initialPrincipleTemplate = PrincipleTemplate.RETROSPECT_ENTRY
 
-    private val _analysisReport: MutableStateFlow<String?> = MutableStateFlow(null)
-    val analysisReport = _analysisReport.asStateFlow()
-
-    private val _reason = MutableStateFlow(TextFieldValue(""))
-    val reason = _reason.asStateFlow()
-
-    init {
-        createAnalysisRequest
-            .filterNotNull()
-            .onEach {
-                runCatching {
-                    _analysisReport.value = createAnalysisUseCase(
-                        market = it.market,
-                        symbol = it.symbol,
-                        time = formatDate(it.time).toIsoUtcString(),
-                    ).first().text
-                }.onFailure {
-                    Log.e("ReasonViewModel", "error : $it")
-                }
-            }
-            .launchIn(viewModelScope)
-    }
-
-    fun onEmotionChanged(emotion: Emotion) {
-        _selectedEmotion.value = emotion
-    }
-
-    fun onPrincipleCheckedChanged(principles: List<Principle>) {
-        _principles.value = principles
-    }
-
-    fun onReasonChanged(reason: TextFieldValue) {
-        _reason.value = reason
-    }
+    private val _principleTemplate: MutableStateFlow<PrincipleTemplate> = MutableStateFlow(initialPrincipleTemplate)
+    val principleTemplate = _principleTemplate.asStateFlow()
 
     fun initTradeInfo(tradeInfo: TradeInfo) {
         _tradeInfo.value = tradeInfo
     }
 
-    internal fun initCreateAnalysisRequest(request: AnalysisRequest) {
-        createAnalysisRequest.value = request
+    fun onAdherenceChanged(id: Int, value: PrincipleAdherence) = updatePrincipleTemplate(id) { it.copy(adherence = value) }
+
+    fun onNoteChanged(id: Int, value: TextFieldValue) = updatePrincipleTemplate(id) { it.copy(note = value) }
+
+    fun onAddImages(id: Int, url: List<String>) = updatePrincipleTemplate(id) { it.copy(images = it.images + url) }
+
+    fun onRemoveImage(id: Int, index: Int) = updatePrincipleTemplate(id) {
+        it.copy(images = it.images.toMutableList().apply { if (index in indices) removeAt(index) })
+    }
+
+    fun onAddArticle(id: Int, link: String) {
+        viewModelScope.launch {
+            val article = fetchHtmlAndParse(link)
+            updatePrincipleTemplate(id) {
+                it.copy(
+                    articles = it.articles + article
+                )
+            }
+        }
+    }
+
+    fun onRemoveArticle(id: Int, index: Int) = updatePrincipleTemplate(id) {
+        it.copy(articles = it.articles.toMutableList().apply { if (index in indices) removeAt(index) })
+    }
+
+    private suspend fun fetchHtmlAndParse(url: String): Article = withContext(Dispatchers.IO) {
+        val doc = kotlin.runCatching { Jsoup.connect(url).get() }.getOrNull() ?: return@withContext Article(url, null, null, null)
+
+        val title = doc.selectFirst("meta[property=og:title]")?.attr("content")
+            ?: doc.title()
+
+        val ogImage = doc.selectFirst("meta[property=og:image]")?.attr("content")
+        val twitterImage = doc.selectFirst("meta[name=twitter:image]")?.attr("content")
+        val thumbnail = ogImage ?: twitterImage
+
+        val source = doc.selectFirst("meta[property=og:site_name]")?.attr("content")
+            ?: doc.selectFirst("meta[name=author]")?.attr("content")
+            ?: URI(url).host
+
+        Article(
+            originUrl = url,
+            title = title,
+            thumbnail = thumbnail,
+            source = source
+        )
+    }
+
+    private inline fun updatePrincipleTemplate(
+        id: Int,
+        crossinline transform: (Principle) -> Principle
+    ) {
+        _principleTemplate.update { template ->
+            val idx = template.principles.indexOfFirst { it.id == id }
+            if (idx < 0) template else {
+                val old = template.principles[idx]
+                val newItem = transform(old)
+                val newList = template.principles.toMutableList().apply { set(idx, newItem) }
+                template.copy(
+                    principles = newList,
+                )
+            }
+        }
     }
 
     companion object {
 
-        val dummyPrinciples = listOf(
-            Principle(1, "안전마진을 확보하라"),
-            Principle(2, "분산하되 너무 넓지 않게"),
-            Principle(3, "정책 민가몯가 높은 주식은\n 정책 잘 살펴보고 매매"),
-            Principle(4, "정보 완전성 기준 세우기"),
-            Principle(5, "기업의 본질 가치보다 낮게 거래되는\n주식을 찾아 장기 보유하기"),
-            Principle(6, "유행주를 추격하지 않는다."),
-            Principle(7, "주가가 오르는 흐름이면 매수,\n하락흐름이면 매도하기"),
-            Principle(8, "단기 등락에 흔들리지 말고 기업의 장기\n성장성에 집중하기"),
-        )
+        const val PRINCIPLE_ATTACHMENT_LIMIT = 3
 
         val dummyTradeInfo = TradeInfo(
             logoDrawableRes = R.drawable.ic_company_logo,
             stockName = "Apple",
-            orderType = OrderType.BUY,
+            orderType = OrderTypeParams.BUY,
             price = 65000,
             currency = "$",
             volume = 3,

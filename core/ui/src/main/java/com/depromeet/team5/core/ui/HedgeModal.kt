@@ -15,7 +15,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.text.AnnotatedString
@@ -67,7 +66,7 @@ fun HedgeModal(
                     Icon(
                         painter = it,
                         contentDescription = null,
-                        tint = Color.Unspecified,
+                        tint = HedgeColor.Brand.Disabled,
                         modifier = Modifier.size(32.dp)
                     )
                     Spacer(Modifier.size(8.dp))

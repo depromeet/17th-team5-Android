@@ -1,6 +1,5 @@
 package com.depromeet.team5.core.remotedatasource.apisource
 
-import com.depromeet.team5.core.remotedatasource.model.AnalysisRemoteData
 import com.depromeet.team5.core.remotedatasource.model.FeedbackRemoteData
 import com.depromeet.team5.core.remotedatasource.model.MyPrincipleRemoteData
 import com.depromeet.team5.core.remotedatasource.model.RetrospectionRemoteData
@@ -14,8 +13,6 @@ interface HedgeApiSource {
     suspend fun createRetrospection(body: Map<String, Any?>): RetrospectionRemoteData
 
     suspend fun createFeedback(retrospectionId: Int): FeedbackRemoteData
-
-    suspend fun createAnalysis(body: Map<String, Any?>): AnalysisRemoteData
 
     suspend fun getPrinciples(orderType: String): MyPrincipleRemoteData
 }

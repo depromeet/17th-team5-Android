@@ -1,7 +1,6 @@
 package com.depromeet.team5.core.retrofit.apisourceimpl
 
 import com.depromeet.team5.core.remotedatasource.apisource.HedgeApiSource
-import com.depromeet.team5.core.remotedatasource.model.AnalysisRemoteData
 import com.depromeet.team5.core.remotedatasource.model.FeedbackRemoteData
 import com.depromeet.team5.core.remotedatasource.model.MyPrincipleRemoteData
 import com.depromeet.team5.core.remotedatasource.model.SearchRemoteData
@@ -26,11 +25,6 @@ internal class HedgeApiSourceImpl @Inject constructor(
     override suspend fun createFeedback(retrospectionId: Int): FeedbackRemoteData = hedgeApi
         .createFeedback(retrospectionId = retrospectionId)
         .toRemoteData()
-
-    override suspend fun createAnalysis(body: Map<String, Any?>): AnalysisRemoteData =
-        hedgeApi
-            .createAnalysis(body.mapValues { it.value?.toString() ?: "" })
-            .toRemoteData()
 
     override suspend fun getPrinciples(orderType: String): MyPrincipleRemoteData =
         hedgeApi.getPrinciples(orderType = orderType).toRemoteData()

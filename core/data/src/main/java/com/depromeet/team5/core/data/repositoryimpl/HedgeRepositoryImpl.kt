@@ -1,7 +1,6 @@
 package com.depromeet.team5.core.data.repositoryimpl
 
 import com.depromeet.team5.core.data.datasource.RemoteDataSource
-import com.depromeet.team5.core.domain.model.Analysis
 import com.depromeet.team5.core.domain.model.Feedback
 import com.depromeet.team5.core.domain.model.MyPrincipleGroup
 import com.depromeet.team5.core.domain.model.Retrospection
@@ -28,12 +27,6 @@ internal class HedgeRepositoryImpl @Inject constructor(
         retrospectionId: Int
     ): Flow<Feedback> = flow {
         emit(remoteDataSource.createFeedback(retrospectionId).toDomain())
-    }
-
-    override fun createAnalysis(body: Map<String, Any?>): Flow<Analysis> {
-        return flow {
-            emit(remoteDataSource.createAnalysis(body).toDomain())
-        }
     }
 
     override fun getPrincipleGroups(orderType: String): Flow<List<MyPrincipleGroup>> = flow {

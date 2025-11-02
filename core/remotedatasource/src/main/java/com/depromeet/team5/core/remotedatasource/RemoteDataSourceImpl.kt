@@ -1,7 +1,6 @@
 package com.depromeet.team5.core.remotedatasource
 
 import com.depromeet.team5.core.data.datasource.RemoteDataSource
-import com.depromeet.team5.core.data.model.AnalysisData
 import com.depromeet.team5.core.data.model.FeedbackData
 import com.depromeet.team5.core.data.model.MyPrincipleData
 import com.depromeet.team5.core.data.model.RetrospectionData
@@ -24,9 +23,6 @@ internal class RemoteDataSourceImpl @Inject constructor(
 
     override suspend fun createFeedback(retrospectionId: Int): FeedbackData =
         hedgeApiSource.createFeedback(retrospectionId).toData()
-
-    override suspend fun createAnalysis(body: Map<String, Any?>): AnalysisData =
-        hedgeApiSource.createAnalysis(body).toData()
 
     override suspend fun getPrinciples(orderType: String): MyPrincipleData =
         hedgeApiSource.getPrinciples(orderType).toData()

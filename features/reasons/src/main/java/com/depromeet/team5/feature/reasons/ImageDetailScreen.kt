@@ -52,7 +52,7 @@ fun ImageDetailRoute(
     principleIndex: Int,
     imageIndex: Int,
     onClickBack: () -> Unit,
-    viewModel: ReasonsViewModel = hiltViewModel(),
+    viewModel: ReasonViewModel = hiltViewModel(),
     modifier: Modifier = Modifier,
 ) {
     val principleTemplate by viewModel.principleTemplate.collectAsStateWithLifecycle()

@@ -129,7 +129,7 @@ data class Article(
 )
 
 @HiltViewModel
-class ReasonsViewModel @Inject constructor(
+class ReasonViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
 

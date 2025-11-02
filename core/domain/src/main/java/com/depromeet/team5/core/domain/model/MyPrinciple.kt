@@ -7,5 +7,6 @@ import androidx.compose.runtime.Immutable
 data class MyPrinciple(
     val id: Int,
     val groupId: Int,
-    val principle: String
+    val principle: String,
+    val description: String
 )

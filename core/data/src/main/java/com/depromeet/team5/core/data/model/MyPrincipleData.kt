@@ -23,12 +23,14 @@ data class MyPrincipleInfoData(
     val groupId: Int,
     val groupName: String,
     val principle: String,
+    val description: String,
     val displayOrder: Int
 ) : DataMapper<MyPrinciple> {
 
     override fun toDomain(): MyPrinciple = MyPrinciple(
         id = id,
         groupId = groupId,
-        principle = principle
+        principle = principle,
+        description = description
     )
 }

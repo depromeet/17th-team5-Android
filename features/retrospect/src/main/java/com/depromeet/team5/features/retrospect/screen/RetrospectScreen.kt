@@ -68,6 +68,7 @@ import com.depromeet.team5.core.designsystem.component.HedgeTopBar
 import com.depromeet.team5.core.designsystem.foundation.HedgeColor
 import com.depromeet.team5.core.designsystem.foundation.HedgeTypography
 import com.depromeet.team5.core.domain.model.MyPrinciple
+import com.depromeet.team5.core.domain.model.MyPrincipleGroup
 import com.depromeet.team5.core.domain.model.OrderType
 import com.depromeet.team5.core.domain.monad.HedgeUiState
 import com.depromeet.team5.core.navigation.request.CreateRetrospectionParams
@@ -98,20 +99,22 @@ fun RetrospectRoute(
     requestViewModel: RequestViewModel,
     modifier: Modifier = Modifier,
     onClickedConfirmButton: () -> Unit,
-    onBackPressed: () -> Unit
+    onBackPressed: () -> Unit,
+    onShowErrorToast: @Composable (Throwable) -> Unit
 ) {
+    val context = LocalContext.current
+
     val viewModel: RetrospectionViewModel = hiltViewModel(
         creationCallback = { factory: RetrospectionViewModel.Factory ->
             factory.create(requestViewModel.request.orderType.name)
         }
     )
 
-    val myPrincipleState by viewModel.principleUiState.collectAsStateWithLifecycle()
-
-    val context = LocalContext.current
     val retrospectionState = rememberRetrospectionState(
         requestParams = requestViewModel.request
     )
+
+    val myPrincipleState by viewModel.principleUiState.collectAsStateWithLifecycle()
 
     var isOpenBottomSheetDialog by remember { mutableStateOf(false) }
 
@@ -127,54 +130,12 @@ fun RetrospectRoute(
                 ?.let {
                     when (retrospectionState.returnToggleState.value) {
                         true -> retrospectionState.returnTextFieldState.value.text.isNotEmpty() &&
-                            !retrospectionState.returnTextFieldState.value.isError
+                                !retrospectionState.returnTextFieldState.value.isError
 
                         false -> true
                     }
                 } ?: false
         }
-    }
-
-    if (isOpenBottomSheetDialog) {
-        val map =
-            (myPrincipleState as HedgeUiState.Success<Map<String, List<MyPrinciple>>>).data
-
-        PrincipleBottomSheetDialog(
-            title = stringResource(R.string.principle_bottom_sheet_dialog_title),
-            map = map,
-            orderType = requestViewModel.request.orderType,
-            onClickedClose = { isOpenBottomSheetDialog = false },
-            onClickedConfirmButton = { principles ->
-                with(retrospectionState) {
-                    requestViewModel.request = requestViewModel.request.copy(
-                        price = sellingTextFieldState.value.text.toInt(),
-                        volume = stockTextFieldState.value.text.toInt(),
-                        orderDate = dateTextFieldState.value.text,
-                        currency = CurrencyType.from(currencyType.value),
-                        principles = principles,
-                        returnRate = try {
-                            when (returnSignType.value) {
-                                ReturnSignType.Plus -> {
-                                    returnTextFieldState.value.text.toDouble()
-                                }
-
-                                ReturnSignType.Minus -> {
-                                    returnTextFieldState.value.text.toDouble() * -1
-                                }
-                            }
-                        } catch (e: Exception) {
-                            null
-                        }
-                    )
-                }
-
-                onClickedConfirmButton()
-            },
-            onClickedAddButton = {
-                //todo 다른 화면으로 교체
-                onClickedConfirmButton()
-            }
-        )
     }
 
     RetrospectScreen(
@@ -236,6 +197,43 @@ fun RetrospectRoute(
         },
         onBackPressed = onBackPressed
     )
+
+    if (isOpenBottomSheetDialog) {
+        PrincipleDialog(
+            uiState = myPrincipleState,
+            orderType = requestViewModel.request.orderType,
+            onClickedClose = { isOpenBottomSheetDialog = false },
+            onClickedConfirmButton = { principles ->
+                with(retrospectionState) {
+                    requestViewModel.request = requestViewModel.request.copy(
+                        price = sellingTextFieldState.value.text.toInt(),
+                        volume = stockTextFieldState.value.text.toInt(),
+                        orderDate = dateTextFieldState.value.text,
+                        currency = CurrencyType.from(currencyType.value),
+                        principles = principles,
+                        returnRate = try {
+                            when (returnSignType.value) {
+                                ReturnSignType.Plus -> {
+                                    returnTextFieldState.value.text.toDouble()
+                                }
+
+                                ReturnSignType.Minus -> {
+                                    returnTextFieldState.value.text.toDouble() * -1
+                                }
+                            }
+                        } catch (e: Exception) {
+                            null
+                        }
+                    )
+                }
+
+                onClickedConfirmButton()
+            },
+            onShowErrorToast = {
+                onShowErrorToast(it)
+            }
+        )
+    }
 }
 
 @Composable
@@ -463,6 +461,36 @@ private fun RetrospectScreen(
                 onClick = onClickedConfirmButton
             )
         }
+    }
+}
+
+@Composable
+private fun PrincipleDialog(
+    uiState: HedgeUiState<List<MyPrincipleGroup>>,
+    orderType: OrderType,
+    onClickedClose: () -> Unit,
+    onClickedConfirmButton: (List<MyPrinciple>) -> Unit,
+    onShowErrorToast: @Composable (Throwable) -> Unit
+) {
+    when (val state = uiState) {
+        is HedgeUiState.Success<List<MyPrincipleGroup>> -> {
+            PrincipleBottomSheetDialog(
+                title = stringResource(R.string.principle_bottom_sheet_dialog_title),
+                groups = state.data,
+                orderType = orderType,
+                isShowAddButton = false,
+                onClickedClose = onClickedClose,
+                onClickedConfirmButton = onClickedConfirmButton
+            )
+        }
+
+        is HedgeUiState.Error -> {
+            state.throwable?.let {
+                onShowErrorToast(it)
+            }
+        }
+
+        else -> {}
     }
 }
 
@@ -823,7 +851,7 @@ private fun RetrospectRoutePreview() {
                 ?.let {
                     when (retrospectionState.returnToggleState.value) {
                         true -> retrospectionState.returnTextFieldState.value.text.isNotEmpty() &&
-                            !retrospectionState.returnTextFieldState.value.isError
+                                !retrospectionState.returnTextFieldState.value.isError
 
                         false -> true
                     }

@@ -24,7 +24,7 @@ class RetrospectionViewModel @AssistedInject constructor(
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5_000),
-            initialValue = HedgeUiState.Loading(emptyMap())
+            initialValue = HedgeUiState.Loading(emptyList())
         )
 
     @AssistedFactory

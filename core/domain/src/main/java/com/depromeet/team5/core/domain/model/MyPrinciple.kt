@@ -4,6 +4,15 @@ import androidx.compose.runtime.Immutable
 
 
 @Immutable
+data class MyPrincipleGroup(
+    val id: Int,
+    val groupName: String,
+    val thumbnail: String,
+    val displayOrder: Int,
+    val principles: List<MyPrinciple>
+)
+
+@Immutable
 data class MyPrinciple(
     val id: Int,
     val groupId: Int,

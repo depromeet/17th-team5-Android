@@ -39,7 +39,7 @@ import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
@@ -58,6 +58,7 @@ import com.depromeet.team5.core.designsystem.foundation.HedgeColor
 import com.depromeet.team5.core.designsystem.foundation.HedgeIcon
 import com.depromeet.team5.core.designsystem.foundation.HedgeTypography
 import com.depromeet.team5.core.domain.model.MyPrinciple
+import com.depromeet.team5.core.domain.model.MyPrincipleGroup
 import com.depromeet.team5.core.domain.model.OrderType
 import com.depromeet.team5.core.ui.R
 import kotlinx.coroutines.delay
@@ -68,7 +69,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun PrincipleBottomSheetDialog(
     title: String,
-    map: Map<String, List<MyPrinciple>>,
+    groups: List<MyPrincipleGroup>,
     orderType: OrderType,
     modifier: Modifier = Modifier,
     isShowAddButton: Boolean = false,
@@ -102,7 +103,7 @@ fun PrincipleBottomSheetDialog(
         ) {
             HedgeModalBottomSheetScreen(
                 title = title,
-                map = map,
+                groups = groups,
                 orderType = orderType,
                 isShowAddButton = isShowAddButton,
                 onClickedClose = onClickedClose,
@@ -122,7 +123,7 @@ fun PrincipleBottomSheetDialog(
 @Composable
 private fun HedgeModalBottomSheetScreen(
     title: String,
-    map: Map<String, List<MyPrinciple>>,
+    groups: List<MyPrincipleGroup>,
     orderType: OrderType,
     modifier: Modifier = Modifier,
     isShowAddButton: Boolean = false,
@@ -130,7 +131,7 @@ private fun HedgeModalBottomSheetScreen(
     onClickedConfirmButton: (List<MyPrinciple>) -> Unit,
     onClickedAddButton: () -> Unit
 ) {
-    var selectedMyPrincipleItem by remember { mutableStateOf("") }
+    var selectedMyPrincipleItem by remember { mutableIntStateOf(-1) }
 
     val springSpec = spring<IntSize>(
         dampingRatio = Spring.DampingRatioLowBouncy,
@@ -167,14 +168,14 @@ private fun HedgeModalBottomSheetScreen(
             item {
                 when (orderType) {
                     OrderType.BUY -> {
-                        HedgePrincipleListItem(
+                        PrincipleGroupItem(
                             icon = {},
                             title = "초보자를 위한 매수 원칙"
                         )
                     }
 
                     OrderType.SELL -> {
-                        HedgePrincipleListItem(
+                        PrincipleGroupItem(
                             selected = false,
                             icon = {},
                             title = "초보자를 위한 매도 원칙"
@@ -238,24 +239,24 @@ private fun HedgeModalBottomSheetScreen(
             }
 
             items(
-                items = map.keys.toList(),
-                key = { it }
-            ) { key ->
+                items = groups.filter { it.principles.isNotEmpty() },
+                key = { it.id }
+            ) { item ->
 
-                HedgePrincipleListItem(
+                PrincipleGroupItem(
                     modifier = Modifier
                         .clickable(
                             enabled = true,
                             indication = null,
                             interactionSource = remember { MutableInteractionSource() }
-                        ) { selectedMyPrincipleItem = key },
-                    title = key,
+                        ) { selectedMyPrincipleItem = item.id },
+                    title = item.groupName,
                     icon = {},
-                    selected = key == selectedMyPrincipleItem
+                    selected = item.id == selectedMyPrincipleItem
                 )
 
                 AnimatedVisibility(
-                    key == selectedMyPrincipleItem,
+                    item.id == selectedMyPrincipleItem,
                     enter = expandVertically(
                         animationSpec = springSpec,
                         expandFrom = Alignment.Top
@@ -282,10 +283,10 @@ private fun HedgeModalBottomSheetScreen(
                             Spacer(modifier = Modifier.size(24.dp))
 
                             Column {
-                                val list = map.getValue(key)
+                                val list = item.principles
 
                                 list.forEachIndexed { index, item ->
-                                    SelectedMyPrincipleItem(index + 1, item)
+                                    MyPrincipleItem(index + 1, item)
 
                                     if (index != list.size - 1)
                                         Spacer(modifier = Modifier.size(12.dp))
@@ -337,18 +338,17 @@ private fun HedgeModalBottomSheetScreen(
             }
         }
 
-        if (selectedMyPrincipleItem.isNotEmpty()) {
+        if (selectedMyPrincipleItem != -1) {
+            val target = groups.find { it.id == selectedMyPrincipleItem }?.principles ?: return
+
             ConfirmButton(
                 modifier = Modifier.align(Alignment.BottomCenter),
-                enabled = selectedMyPrincipleItem.isNotEmpty(),
+                enabled = selectedMyPrincipleItem != -1,
                 onClickedConfirmButton = {
-                    onClickedConfirmButton(
-                        map.getValue(selectedMyPrincipleItem)
-                    )
+                    onClickedConfirmButton(target)
                 }
             )
         }
-
     }
 }
 
@@ -414,7 +414,7 @@ private fun ConfirmButton(
 }
 
 @Composable
-private fun HedgePrincipleListItem(
+private fun PrincipleGroupItem(
     title: String,
     icon: @Composable () -> Unit,
     modifier: Modifier = Modifier,
@@ -464,35 +464,40 @@ private fun HedgePrincipleListItem(
 @Preview
 @Composable
 fun HedgeModalBottomSheetPreview() {
-    val myPrincipleMap: HashMap<String, List<MyPrinciple>> = hashMapOf()
+    val groups: List<MyPrincipleGroup> = mutableListOf()
 
     for (i in 0 until 30) {
-        val key = "이건 좀 지키자 제발$i"
-        myPrincipleMap[key] = listOf(
-            MyPrinciple(
-                id = 1,
-                groupId = 1,
-                principle = "안전마진을 확보하라",
-                description = "안전마진을 확보하라 content"
-            ),
-            MyPrinciple(
-                id = 2,
-                groupId = 1,
-                principle = "기업의 본질 가치보다 낮게 거래되는 주식을 찾아 장기 보유하기",
-                description = "안전마진을 확보하라 content"
-            ),
-            MyPrinciple(
-                id = 3,
-                groupId = 1,
-                principle = "정책 민감도가 높은 주식은 정책 잘 살펴보고 매매",
-                description = "안전마진을 확보하라 content"
+        MyPrincipleGroup(
+            id = i,
+            groupName = "이건 좀 지키자 제발$i",
+            thumbnail = "\uD83D\uDCC8",
+            displayOrder = 0,
+            principles = listOf(
+                MyPrinciple(
+                    id = 1,
+                    groupId = 1,
+                    principle = "안전마진을 확보하라",
+                    description = "안전마진을 확보하라 content"
+                ),
+                MyPrinciple(
+                    id = 2,
+                    groupId = 1,
+                    principle = "기업의 본질 가치보다 낮게 거래되는 주식을 찾아 장기 보유하기",
+                    description = "안전마진을 확보하라 content"
+                ),
+                MyPrinciple(
+                    id = 3,
+                    groupId = 1,
+                    principle = "정책 민감도가 높은 주식은 정책 잘 살펴보고 매매",
+                    description = "안전마진을 확보하라 content"
+                )
             )
         )
     }
 
     HedgeModalBottomSheetScreen(
         title = stringResource(R.string.principle_bottom_sheet_dialog_button_text),
-        map = myPrincipleMap,
+        groups = groups,
         orderType = OrderType.BUY,
         isShowAddButton = true,
         onClickedClose = {},
@@ -503,7 +508,7 @@ fun HedgeModalBottomSheetPreview() {
 
 
 @Composable
-fun SelectedMyPrincipleItem(
+fun MyPrincipleItem(
     index: Int,
     item: MyPrinciple
 ) {
@@ -533,7 +538,7 @@ fun HedgePrincipleListItemPreview() {
             .fillMaxWidth()
             .background(HedgeColor.WHITE)
     ) {
-        HedgePrincipleListItem(
+        PrincipleGroupItem(
             title = "초보자를 위한 매도 원칙",
             icon = {
 
@@ -556,7 +561,7 @@ fun SelectedMyPrincipleItemPreview() {
         modifier = Modifier
             .background(HedgeColor.WHITE)
     ) {
-        SelectedMyPrincipleItem(1, myPrinciple)
+        MyPrincipleItem(1, myPrinciple)
     }
 }
 

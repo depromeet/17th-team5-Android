@@ -2,20 +2,34 @@ package com.depromeet.team5.core.data.model
 
 import com.depromeet.team5.core.data.mapper.DataMapper
 import com.depromeet.team5.core.domain.model.MyPrinciple
+import com.depromeet.team5.core.domain.model.MyPrincipleGroup
 
 
 data class MyPrincipleData(
     val code: String,
     val message: String,
-    val data: List<MyPrincipleInfoData>
-) : DataMapper<Map<String, List<MyPrinciple>>> {
+    val data: List<MyPrincipleGroupData>
+) : DataMapper<List<MyPrincipleGroup>> {
 
-    override fun toDomain(): Map<String, List<MyPrinciple>> = data.groupBy { it.groupName }
-        .mapValues { entries ->
-            entries.value
-                .sortedBy { it.displayOrder }
-                .map { it.toDomain() }
-        }
+    override fun toDomain(): List<MyPrincipleGroup> = data.map { it.toDomain() }
+}
+
+data class MyPrincipleGroupData(
+    val id: Int,
+    val groupName: String,
+    val thumbnail: String,
+    val displayOrder: Int,
+    val principles: List<MyPrincipleInfoData>
+) : DataMapper<MyPrincipleGroup> {
+
+    override fun toDomain(): MyPrincipleGroup = MyPrincipleGroup(
+        id = id,
+        groupName = groupName,
+        thumbnail = thumbnail,
+        displayOrder = displayOrder,
+        principles = principles.map { it.toDomain() }
+    )
+
 }
 
 data class MyPrincipleInfoData(

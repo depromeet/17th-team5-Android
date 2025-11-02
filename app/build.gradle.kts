@@ -64,7 +64,6 @@ dependencies {
     implementation(projects.core.localdatasource)
     implementation(projects.core.remotedatasource)
     implementation(projects.core.retrofit)
-    implementation(projects.core.designsystem)
     implementation(projects.core.navigation)
     implementation(projects.core.logger)
     implementation(projects.core.ui)

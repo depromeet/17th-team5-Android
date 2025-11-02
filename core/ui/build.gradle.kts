@@ -23,7 +23,7 @@ android {
 
 dependencies {
     implementation(projects.core.domain)
-    implementation(projects.core.designsystem)
+    api(projects.core.designsystem)
 
     implementation(libs.coil.compose)
     implementation(libs.coil.network.okhttp)

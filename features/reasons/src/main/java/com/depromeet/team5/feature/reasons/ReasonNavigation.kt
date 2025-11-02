@@ -34,7 +34,7 @@ fun NavGraphBuilder.reasonGraph(
             ReasonRoute(
                 onClickBack = onClickBack,
                 onClickDone = onClickDone,
-                onClickImageDetail = { navController.navigateToImageDetail(it) },
+                onClickImage = { navController.navigateToImageDetail(it) },
                 viewModel = backStackEntry.getReasonViewModel(navController),
                 requestViewModel = backStackEntry.getRequestViewModel(navController)
             )

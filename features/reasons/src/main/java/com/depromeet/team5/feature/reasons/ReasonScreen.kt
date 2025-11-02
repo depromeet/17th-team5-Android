@@ -74,7 +74,7 @@ import kotlinx.coroutines.launch
 fun ReasonRoute(
     onClickBack: () -> Unit,
     onClickDone: () -> Unit,
-    onClickImageDetail: (ImageDetail) -> Unit,
+    onClickImage: (ImageDetail) -> Unit,
     modifier: Modifier = Modifier,
     requestViewModel: RequestViewModel,
     viewModel: ReasonsViewModel = hiltViewModel(),
@@ -88,8 +88,8 @@ fun ReasonRoute(
     var showLimitedAttachmentModal by remember { mutableStateOf(false) }
     var showCompleteModal by remember { mutableStateOf(false) }
     var showBackModal by remember { mutableStateOf(false) }
-    var showLinkModal by remember { mutableStateOf(false) }
-    var showMentionModal by remember { mutableStateOf(false) }
+    var showAddLinkModal by remember { mutableStateOf(false) }
+    var showAddMentionModal by remember { mutableStateOf(false) }
     val pagerState = rememberPagerState(initialPage = 0) { principleTemplate.principles.size }
 
     val pickMultipleMedia =
@@ -183,32 +183,32 @@ fun ReasonRoute(
     )
 
     HedgeModal(
-        showModal = showMentionModal,
+        showModal = showAddMentionModal,
         icon = null,
         title = stringResource(id = R.string.mention_modal_title),
         description = stringResource(id = R.string.mention_modal_description),
         submitButton = stringResource(R.string.excited) to {
-            showMentionModal = false
+            showAddMentionModal = false
         },
         cancelButton = stringResource(R.string.not_needed) to {
-            showMentionModal = false
+            showAddMentionModal = false
         },
         onDismissRequest = {
-            showMentionModal = false
+            showAddMentionModal = false
         },
     )
 
     LinkModal(
-        showDialog = showLinkModal,
+        showDialog = showAddLinkModal,
         onClickSubmit = { link ->
             viewModel.onAddArticle(pagerState.currentPage, link)
-            showLinkModal = false
+            showAddLinkModal = false
         },
         onClickCancel = {
-            showLinkModal = false
+            showAddLinkModal = false
         },
         onDismissRequest = {
-            showLinkModal = false
+            showAddLinkModal = false
         },
     )
 
@@ -229,15 +229,15 @@ fun ReasonRoute(
                 toastMessage = context.getString(R.string.cannot_complete_restriction)
             }
         },
-        onClickImage = { pickMultipleMedia.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageAndVideo)) },
-        onClickImageDetail = { onClickImageDetail(ImageDetail(pagerState.currentPage, it)) },
-        onClickLink = {
+        onClickAddImage = { pickMultipleMedia.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageAndVideo)) },
+        onClickAddLink = {
             if (principleTemplate.principles[pagerState.currentPage].articles.size >= 3) limitedAttachmentType = RestrictionAttachment.LINK
-            else showLinkModal = true
+            else showAddLinkModal = true
         },
-        onClickMention = { showMentionModal = true },
-        onClickDeleteLink = { viewModel.onRemoveArticle(pagerState.currentPage, it) },
+        onClickAddMention = { showAddMentionModal = true },
+        onClickImage = { onClickImage(ImageDetail(pagerState.currentPage, it)) },
         onClickDeleteImage = { viewModel.onRemoveImage(pagerState.currentPage, it) },
+        onClickDeleteLink = { viewModel.onRemoveArticle(pagerState.currentPage, it) },
         onReasonChanged = { viewModel.onNoteChanged(pagerState.currentPage, it) },
         onAdherenceChanged = { viewModel.onAdherenceChanged(pagerState.currentPage, it) },
         modifier = modifier
@@ -251,12 +251,12 @@ private fun ReasonsScreen(
     pagerState: PagerState,
     onClickBack: () -> Unit,
     onClickDone: () -> Unit,
-    onClickImage: () -> Unit,
-    onClickImageDetail: (Int) -> Unit,
-    onClickLink: () -> Unit,
-    onClickMention: () -> Unit,
-    onClickDeleteLink: (Int) -> Unit,
+    onClickAddImage: () -> Unit,
+    onClickAddLink: () -> Unit,
+    onClickAddMention: () -> Unit,
+    onClickImage: (Int) -> Unit,
     onClickDeleteImage: (Int) -> Unit,
+    onClickDeleteLink: (Int) -> Unit,
     onAdherenceChanged: (PrincipleAdherence) -> Unit,
     onReasonChanged: (TextFieldValue) -> Unit,
     modifier: Modifier = Modifier,
@@ -309,12 +309,12 @@ private fun ReasonsScreen(
                     principle = principleTemplate.principles[page],
                     isImeVisible = isImeVisible,
                     onClickDone = onClickDone,
+                    onClickAddImage = onClickAddImage,
+                    onClickAddLink = onClickAddLink,
+                    onClickAddMention = onClickAddMention,
                     onClickImage = onClickImage,
-                    onClickImageDetail = onClickImageDetail,
-                    onClickLink = onClickLink,
-                    onClickMention = onClickMention,
-                    onClickDeleteLink = onClickDeleteLink,
                     onClickDeleteImage = onClickDeleteImage,
+                    onClickDeleteLink = onClickDeleteLink,
                     onAdherenceChanged = onAdherenceChanged,
                     onReasonChanged = onReasonChanged,
                 )
@@ -372,12 +372,12 @@ private fun ReasonsPage(
     principle: Principle,
     isImeVisible: Boolean,
     onClickDone: () -> Unit,
-    onClickImage: () -> Unit,
-    onClickImageDetail: (Int) -> Unit,
-    onClickLink: () -> Unit,
-    onClickMention: () -> Unit,
-    onClickDeleteLink: (Int) -> Unit,
+    onClickAddImage: () -> Unit,
+    onClickAddLink: () -> Unit,
+    onClickAddMention: () -> Unit,
+    onClickImage: (Int) -> Unit,
     onClickDeleteImage: (Int) -> Unit,
+    onClickDeleteLink: (Int) -> Unit,
     onAdherenceChanged: (PrincipleAdherence) -> Unit,
     onReasonChanged: (TextFieldValue) -> Unit,
     modifier: Modifier = Modifier,
@@ -418,7 +418,7 @@ private fun ReasonsPage(
             ImageThumbnailContainer(
                 images = principle.images.map { it.toUri() },
                 onClickDeleteImage = onClickDeleteImage,
-                onClickImageDetail = onClickImageDetail,
+                onClickImage = onClickImage,
             )
             LinkThumbnailContainer(
                 articles = principle.articles,
@@ -428,9 +428,9 @@ private fun ReasonsPage(
                 InputToolBar(
                     hasImages = principle.images.isNotEmpty(),
                     hasLinks = principle.articles.isNotEmpty(),
-                    onClickImage = onClickImage,
-                    onClickLink = onClickLink,
-                    onClickMention = onClickMention,
+                    onClickAddImage = onClickAddImage,
+                    onClickAddLink = onClickAddLink,
+                    onClickAddMention = onClickAddMention,
                     modifier = Modifier
                         .padding(horizontal = 20.dp)
                 )
@@ -442,9 +442,9 @@ private fun ReasonsPage(
                     .imePadding(),
                 hasImages = principle.images.isNotEmpty(),
                 hasLinks = principle.articles.isNotEmpty(),
-                onClickImage = onClickImage,
-                onClickLink = onClickLink,
-                onClickMention = onClickMention,
+                onClickAddImage = onClickAddImage,
+                onClickAddLink = onClickAddLink,
+                onClickAddMention = onClickAddMention,
                 onClickRemain = onClickDone,
             )
         }
@@ -587,12 +587,12 @@ private fun ReasonScreenPreview() {
         modifier = Modifier.background(HedgeColor.Neutral.BackgroundDefault),
         onClickBack = {},
         onClickDone = {},
+        onClickAddImage = {},
+        onClickAddLink = {},
+        onClickAddMention = {},
         onClickImage = {},
-        onClickImageDetail = {},
-        onClickLink = {},
-        onClickMention = {},
-        onClickDeleteLink = {},
         onClickDeleteImage = {},
+        onClickDeleteLink = {},
         onAdherenceChanged = {},
         onReasonChanged = { reason = it },
     )

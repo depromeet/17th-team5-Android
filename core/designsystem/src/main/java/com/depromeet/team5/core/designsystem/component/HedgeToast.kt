@@ -62,7 +62,10 @@ fun HedgeToast(
         visibleState.targetState = true
         delay(durationMillis)
         visibleState.targetState = false
-        onDismiss?.invoke()
+    }
+
+    LaunchedEffect(visibleState.currentState, visibleState.isIdle) {
+        if (!visibleState.currentState && visibleState.isIdle) onDismiss?.invoke()
     }
 
     AnimatedVisibility(

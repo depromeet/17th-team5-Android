@@ -74,6 +74,7 @@ import kotlinx.coroutines.launch
 fun ReasonRoute(
     onClickBack: () -> Unit,
     onClickDone: () -> Unit,
+    onClickImageDetail: (ImageDetail) -> Unit,
     modifier: Modifier = Modifier,
     requestViewModel: RequestViewModel,
     viewModel: ReasonsViewModel = hiltViewModel(),
@@ -229,6 +230,7 @@ fun ReasonRoute(
             }
         },
         onClickImage = { pickMultipleMedia.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageAndVideo)) },
+        onClickImageDetail = { onClickImageDetail(ImageDetail(pagerState.currentPage, it)) },
         onClickLink = {
             if (principleTemplate.principles[pagerState.currentPage].articles.size >= 3) limitedAttachmentType = RestrictionAttachment.LINK
             else showLinkModal = true
@@ -250,6 +252,7 @@ private fun ReasonsScreen(
     onClickBack: () -> Unit,
     onClickDone: () -> Unit,
     onClickImage: () -> Unit,
+    onClickImageDetail: (Int) -> Unit,
     onClickLink: () -> Unit,
     onClickMention: () -> Unit,
     onClickDeleteLink: (Int) -> Unit,
@@ -307,6 +310,7 @@ private fun ReasonsScreen(
                     isImeVisible = isImeVisible,
                     onClickDone = onClickDone,
                     onClickImage = onClickImage,
+                    onClickImageDetail = onClickImageDetail,
                     onClickLink = onClickLink,
                     onClickMention = onClickMention,
                     onClickDeleteLink = onClickDeleteLink,
@@ -369,6 +373,7 @@ private fun ReasonsPage(
     isImeVisible: Boolean,
     onClickDone: () -> Unit,
     onClickImage: () -> Unit,
+    onClickImageDetail: (Int) -> Unit,
     onClickLink: () -> Unit,
     onClickMention: () -> Unit,
     onClickDeleteLink: (Int) -> Unit,
@@ -413,6 +418,7 @@ private fun ReasonsPage(
             ImageThumbnailContainer(
                 images = principle.images.map { it.toUri() },
                 onClickDeleteImage = onClickDeleteImage,
+                onClickImageDetail = onClickImageDetail,
             )
             LinkThumbnailContainer(
                 articles = principle.articles,
@@ -582,6 +588,7 @@ private fun ReasonScreenPreview() {
         onClickBack = {},
         onClickDone = {},
         onClickImage = {},
+        onClickImageDetail = {},
         onClickLink = {},
         onClickMention = {},
         onClickDeleteLink = {},

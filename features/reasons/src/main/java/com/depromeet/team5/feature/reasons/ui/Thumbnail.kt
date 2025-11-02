@@ -49,6 +49,7 @@ fun ImageThumbnailContainer(
     images: List<Uri>,
     modifier: Modifier = Modifier,
     onClickDeleteImage: (Int) -> Unit,
+    onClickImageDetail: (Int) -> Unit,
 ) {
     Row(
         modifier = modifier
@@ -64,7 +65,8 @@ fun ImageThumbnailContainer(
         images.forEachIndexed { idx, uri ->
             ImageThumbnail(
                 uri = uri,
-                onClickDeleteImage = { onClickDeleteImage(idx) }
+                onClickDeleteImage = { onClickDeleteImage(idx) },
+                onClickImageDetail = { onClickImageDetail(idx) },
             )
         }
     }
@@ -101,6 +103,7 @@ private fun ImageThumbnail(
     uri: Uri,
     modifier: Modifier = Modifier,
     onClickDeleteImage: () -> Unit,
+    onClickImageDetail: () -> Unit,
 ) {
     val context = LocalContext.current
     Box(
@@ -108,6 +111,10 @@ private fun ImageThumbnail(
             .size(120.dp)
             .clip(RoundedCornerShape(18.dp))
             .background(color = HedgeColor.Neutral.BackgroundSecondary)
+            .clickable(
+                interactionSource = remember { MutableInteractionSource() },
+                onClick = onClickImageDetail
+            ),
     ) {
         Image(
             painter = rememberAsyncImagePainter(

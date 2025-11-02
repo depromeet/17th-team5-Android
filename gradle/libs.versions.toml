@@ -31,7 +31,7 @@ firebaseCrashlytics = "20.0.2"
 firebaseCrashlyticsPlugins = "3.0.6"
 googleService = "4.4.1"
 coroutineTest = "1.10.2"
-
+jsoup = "1.21.2"
 
 [libraries]
 #androidx
@@ -53,6 +53,7 @@ androidx-material = { group = "androidx.compose.material", name = "material" }
 androidx-compose-navigation = { group = "androidx.navigation", name = "navigation-compose", version.ref = "androidxComposeNavigation" }
 hilt-navigation-compose = { group = "androidx.hilt", name = "hilt-navigation-compose", version.ref = "hiltNavigationCompose" }
 androidx-compose-runtime = { group = "androidx.compose.runtime", name = "runtime", version.ref = "composeRuntime" }
+org-jsoup-jsoup = { module = "org.jsoup:jsoup", version.ref = "jsoup" }
 
 #kotlin
 kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinxCoroutinesCore" }

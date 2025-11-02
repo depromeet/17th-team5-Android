@@ -29,5 +29,6 @@ dependencies {
     implementation(projects.core.ui)
     implementation(projects.core.domain)
     implementation(projects.core.navigation)
-
+    implementation(libs.org.jsoup.jsoup)
+    implementation(libs.coil)
 }

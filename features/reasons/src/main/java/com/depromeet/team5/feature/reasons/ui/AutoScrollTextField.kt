@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.ime
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.relocation.BringIntoViewRequester
 import androidx.compose.foundation.relocation.bringIntoViewRequester
 import androidx.compose.foundation.text.BasicTextField
@@ -21,6 +20,7 @@ import androidx.compose.runtime.withFrameNanos
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.geometry.Rect
+import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextLayoutResult
@@ -31,10 +31,6 @@ import com.depromeet.team5.core.designsystem.foundation.HedgeColor
 import com.depromeet.team5.core.designsystem.foundation.HedgeTypography
 import com.depromeet.team5.feature.reasons.R
 
-/*
-* todo
-*  textField 터치 영역이 wrap으로 되는 이슈 해결
-* */
 @Composable
 fun AutoScrollTextField(
     content: TextFieldValue,
@@ -99,11 +95,11 @@ fun AutoScrollTextField(
                 .fillMaxWidth()
                 .heightIn(maxHeight)
                 .onFocusChanged { isFocused = it.isFocused }
-                .padding(horizontal = 20.dp)
                 .bringIntoViewRequester(viewRequester),
             textStyle = HedgeTypography.Body3.Regular.copy(
                 color = HedgeColor.Text.Title,
             ),
+            cursorBrush = SolidColor(HedgeColor.Brand.Primary),
             onTextLayout = { lastLayout = it },
         ) { innerTextField ->
             if (content.text.isEmpty()) {
@@ -112,7 +108,6 @@ fun AutoScrollTextField(
                     color = HedgeColor.Text.Assistive,
                     style = HedgeTypography.Body3.Medium,
                     modifier = Modifier
-                        .fillMaxSize()
                 )
             }
             innerTextField()

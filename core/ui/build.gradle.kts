@@ -22,9 +22,8 @@ android {
 }
 
 dependencies {
+    api(projects.core.designsystem)
     implementation(projects.core.domain)
-    implementation(projects.core.designsystem)
-
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

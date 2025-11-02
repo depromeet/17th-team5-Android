@@ -19,13 +19,13 @@ android {
         }
     }
 
-    hilt{
+    hilt {
         enableAggregatingTask = true
     }
 }
 
 dependencies {
-    implementation(projects.core.designsystem)
+    implementation(projects.core.ui)
     implementation(projects.core.navigation)
     implementation(projects.core.domain)
 }

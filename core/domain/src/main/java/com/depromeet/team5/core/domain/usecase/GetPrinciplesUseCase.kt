@@ -8,5 +8,5 @@ class GetPrinciplesUseCase @Inject constructor(
     private val hedgeRepository: HedgeRepository
 ) {
 
-    operator fun invoke(orderType: String) = hedgeRepository.getPrinciples(orderType)
+    operator fun invoke(orderType: String) = hedgeRepository.getPrincipleGroups(orderType)
 }

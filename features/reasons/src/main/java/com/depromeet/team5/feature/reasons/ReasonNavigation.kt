@@ -61,7 +61,7 @@ private fun NavBackStackEntry.getRequestViewModel(navController: NavController):
 }
 
 @Composable
-private fun NavBackStackEntry.getReasonViewModel(navController: NavController): ReasonsViewModel {
+private fun NavBackStackEntry.getReasonViewModel(navController: NavController): ReasonViewModel {
     val parentEntry = remember(this) {
         navController.getBackStackEntry<ReasonGraph>()
     }

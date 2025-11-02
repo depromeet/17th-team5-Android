@@ -77,7 +77,7 @@ fun ReasonRoute(
     onClickImage: (ImageDetail) -> Unit,
     modifier: Modifier = Modifier,
     requestViewModel: RequestViewModel,
-    viewModel: ReasonsViewModel = hiltViewModel(),
+    viewModel: ReasonViewModel = hiltViewModel(),
 ) {
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
@@ -96,8 +96,8 @@ fun ReasonRoute(
         rememberLauncherForActivityResult(ActivityResultContracts.PickMultipleVisualMedia(3)) { uris ->
             if (uris.isNotEmpty()) {
                 val remainCount =
-                    ReasonsViewModel.PRINCIPLE_ATTACHMENT_LIMIT - principleTemplate.principles[pagerState.currentPage].images.size
-                if (remainCount == ReasonsViewModel.PRINCIPLE_ATTACHMENT_LIMIT) {
+                    ReasonViewModel.PRINCIPLE_ATTACHMENT_LIMIT - principleTemplate.principles[pagerState.currentPage].images.size
+                if (remainCount == ReasonViewModel.PRINCIPLE_ATTACHMENT_LIMIT) {
                     viewModel.onAddImages(pagerState.currentPage, uris.map { it.toString() })
                 } else {
                     if (remainCount > 0) {
@@ -577,7 +577,7 @@ private fun CompactPrincipleHeader(
 @Preview
 private fun ReasonScreenPreview() {
     val principleTemplate by remember { mutableStateOf(PrincipleTemplate.RETROSPECT_ENTRY) }
-    val tradeInfo by remember { mutableStateOf(ReasonsViewModel.dummyTradeInfo) }
+    val tradeInfo by remember { mutableStateOf(ReasonViewModel.dummyTradeInfo) }
     var reason by remember { mutableStateOf(TextFieldValue("")) }
     val pagerState = rememberPagerState(initialPage = 0) { principleTemplate.principles.size }
     ReasonsScreen(

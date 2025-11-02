@@ -1,6 +1,5 @@
 package com.depromeet.team5.core.domain.repository
 
-import com.depromeet.team5.core.domain.model.Analysis
 import com.depromeet.team5.core.domain.model.Feedback
 import com.depromeet.team5.core.domain.model.MyPrincipleGroup
 import com.depromeet.team5.core.domain.model.Retrospection
@@ -17,8 +16,6 @@ interface HedgeRepository {
     fun createFeedback(
         retrospectionId: Int
     ): Flow<Feedback>
-
-    fun createAnalysis(body: Map<String, Any?>): Flow<Analysis>
 
     fun getPrincipleGroups(orderType: String): Flow<List<MyPrincipleGroup>>
 }

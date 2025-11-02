@@ -30,9 +30,9 @@ import com.depromeet.team5.feature.reasons.R
 fun InputToolBar(
     hasImages: Boolean,
     hasLinks: Boolean,
-    onClickImage: () -> Unit,
-    onClickLink: () -> Unit,
-    onClickMention: () -> Unit,
+    onClickAddImage: () -> Unit,
+    onClickAddLink: () -> Unit,
+    onClickAddMention: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Row(
@@ -46,7 +46,7 @@ fun InputToolBar(
             modifier = Modifier
                 .clip(CircleShape)
                 .clickable(
-                    onClick = onClickImage,
+                    onClick = onClickAddImage,
                     interactionSource = remember { MutableInteractionSource() },
                 )
                 .padding(4.dp)
@@ -59,7 +59,7 @@ fun InputToolBar(
             modifier = Modifier
                 .clip(CircleShape)
                 .clickable(
-                    onClick = onClickLink,
+                    onClick = onClickAddLink,
                     interactionSource = remember { MutableInteractionSource() },
                 )
                 .padding(4.dp)
@@ -72,7 +72,7 @@ fun InputToolBar(
             modifier = Modifier
                 .clip(CircleShape)
                 .clickable(
-                    onClick = onClickMention,
+                    onClick = onClickAddMention,
                     interactionSource = remember { MutableInteractionSource() },
                 )
                 .padding(4.dp)
@@ -85,9 +85,9 @@ fun InputToolBar(
 fun InputToolBar(
     hasImages: Boolean,
     hasLinks: Boolean,
-    onClickImage: () -> Unit,
-    onClickLink: () -> Unit,
-    onClickMention: () -> Unit,
+    onClickAddImage: () -> Unit,
+    onClickAddLink: () -> Unit,
+    onClickAddMention: () -> Unit,
     onClickRemain: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -109,7 +109,7 @@ fun InputToolBar(
                 modifier = Modifier
                     .clip(CircleShape)
                     .clickable(
-                        onClick = onClickImage,
+                        onClick = onClickAddImage,
                         interactionSource = remember { MutableInteractionSource() },
                     )
                     .padding(5.dp)
@@ -123,7 +123,7 @@ fun InputToolBar(
                 modifier = Modifier
                     .clip(CircleShape)
                     .clickable(
-                        onClick = onClickLink,
+                        onClick = onClickAddLink,
                         interactionSource = remember { MutableInteractionSource() },
                     )
                     .padding(5.dp)
@@ -137,7 +137,7 @@ fun InputToolBar(
                 modifier = Modifier
                     .clip(CircleShape)
                     .clickable(
-                        onClick = onClickMention,
+                        onClick = onClickAddMention,
                         interactionSource = remember { MutableInteractionSource() },
                     )
                     .padding(5.dp)

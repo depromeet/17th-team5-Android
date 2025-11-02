@@ -24,6 +24,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.depromeet.team5.core.domain.model.OrderType
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.depromeet.team5.core.designsystem.foundation.HedgeColor
 import com.depromeet.team5.core.designsystem.foundation.HedgeTypography
 import com.depromeet.team5.core.navigation.request.RequestViewModel
@@ -37,24 +38,54 @@ fun HomeRoute(
     onSellClick: () -> Unit,
     modifier: Modifier = Modifier,
     requestViewModel: RequestViewModel = hiltViewModel(),
+    homeViewModel: HomeViewModel = hiltViewModel()
 ) {
-    HomeScreen(
-        onBuyClick = {
-            requestViewModel.request =
-                requestViewModel.request.copy(orderType = OrderType.BUY)
-            onBuyClick()
-        },
-        onSellClick = {
-            requestViewModel.request =
-                requestViewModel.request.copy(orderType = OrderType.SELL)
-            onSellClick()
-        },
-        modifier = modifier
-    )
+    val homeUiState by homeViewModel.homeUiStateFlow.collectAsStateWithLifecycle()
+
+    when(val uiState = homeUiState){
+        is HomeUiState.Success -> {
+            HomeScreen(
+                percentage = uiState.percentage,
+                hedge = uiState.hedge,
+                bronze = uiState.bronze,
+                silver = uiState.silver,
+                gold = uiState.gold,
+                onBuyClick = {
+                    requestViewModel.request =
+                        requestViewModel.request.copy(orderType = OrderType.BUY)
+                    onBuyClick()
+                },
+                onSellClick = {
+                    requestViewModel.request =
+                        requestViewModel.request.copy(orderType = OrderType.SELL)
+                    onSellClick()
+                },
+                modifier = modifier
+            )
+        }
+
+        is HomeUiState.Loading -> {
+
+        }
+
+        is HomeUiState.Error -> {
+
+        }
+
+        is HomeUiState.Failure -> {
+
+        }
+
+    }
 }
 
 @Composable
 private fun HomeScreen(
+    percentage: Int,
+    hedge: Int,
+    bronze: Int,
+    silver: Int,
+    gold: Int,
     onBuyClick: () -> Unit,
     onSellClick: () -> Unit,
     modifier: Modifier = Modifier
@@ -93,7 +124,13 @@ private fun HomeScreen(
             }
 
             when (selectedTab) {
-                HomeTab.HOME -> HomeSection()
+                HomeTab.HOME -> HomeSection(
+                    percentage = percentage,
+                    bronze = bronze,
+                    silver = silver,
+                    gold = gold,
+                    platinum = hedge
+                )
                 HomeTab.PRINCIPLE -> PrincipleSection()
             }
         }
@@ -113,6 +150,11 @@ private fun HomeScreen(
 @Composable
 private fun HomePreview() {
     HomeScreen(
+        percentage = 10,
+        hedge = 1,
+        bronze = 2,
+        silver = 3,
+        gold = 4,
         onBuyClick = {},
         onSellClick = {}
     )

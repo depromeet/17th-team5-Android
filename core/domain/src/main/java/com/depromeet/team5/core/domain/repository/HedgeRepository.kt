@@ -5,6 +5,7 @@ import com.depromeet.team5.core.domain.model.MyPrincipleGroup
 import com.depromeet.team5.core.domain.model.Retrospection
 import com.depromeet.team5.core.domain.model.Search
 import com.depromeet.team5.core.domain.request.CreateRetrospectionRequest
+import com.depromeet.team5.core.domain.model.UserStats
 import kotlinx.coroutines.flow.Flow
 
 
@@ -25,4 +26,6 @@ interface HedgeRepository {
         uri: String,
         fileName: String? = null
     ): Int
+
+    fun userStats(): Flow<UserStats>
 }

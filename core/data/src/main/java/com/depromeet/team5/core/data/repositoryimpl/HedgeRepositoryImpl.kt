@@ -6,6 +6,7 @@ import com.depromeet.team5.core.domain.model.Feedback
 import com.depromeet.team5.core.domain.model.MyPrincipleGroup
 import com.depromeet.team5.core.domain.model.Retrospection
 import com.depromeet.team5.core.domain.model.Search
+import com.depromeet.team5.core.domain.model.UserStats
 import com.depromeet.team5.core.domain.repository.HedgeRepository
 import com.depromeet.team5.core.domain.request.CreateRetrospectionRequest
 import kotlinx.coroutines.flow.Flow
@@ -40,4 +41,8 @@ internal class HedgeRepositoryImpl @Inject constructor(
         uri: String,
         fileName: String?
     ): Int = remoteDataSource.uploadImageUri(domain, uri, fileName)
+
+    override fun userStats(): Flow<UserStats> = flow{
+        emit(remoteDataSource.userStats().toDomain())
+    }
 }

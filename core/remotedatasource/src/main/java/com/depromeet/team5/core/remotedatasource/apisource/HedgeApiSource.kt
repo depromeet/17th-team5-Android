@@ -6,6 +6,7 @@ import com.depromeet.team5.core.remotedatasource.model.MyPrincipleGroupsRemoteDa
 import com.depromeet.team5.core.remotedatasource.model.RetrospectionRemoteData
 import com.depromeet.team5.core.remotedatasource.model.SearchRemoteData
 import com.depromeet.team5.core.remotedatasource.request.CreateRetrospectionRequestRemoteData
+import com.depromeet.team5.core.remotedatasource.model.UserStatsRemoteData
 
 
 interface HedgeApiSource {
@@ -23,4 +24,7 @@ interface HedgeApiSource {
         uri: Uri,
         fileName: String? = null
     ): Int
+
+    suspend fun userStats(): UserStatsRemoteData
+
 }

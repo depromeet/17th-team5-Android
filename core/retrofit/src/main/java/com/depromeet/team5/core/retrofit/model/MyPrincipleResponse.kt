@@ -24,8 +24,10 @@ data class MyPrincipleResponse(
 data class MyPrincipleInfoResponse(
     val id: Int,
     val groupId: Int,
+    val principleType: String,
     val groupName: String,
     val principle: String,
+    val description: String,
     val displayOrder: Int
 ) : RetrofitMapper<MyPrincipleInfoRemoteData> {
     override fun toRemoteData(): MyPrincipleInfoRemoteData = MyPrincipleInfoRemoteData(
@@ -33,6 +35,7 @@ data class MyPrincipleInfoResponse(
         groupId = groupId,
         groupName = groupName,
         principle = principle,
+        description = description,
         displayOrder = displayOrder
     )
 }

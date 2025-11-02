@@ -23,6 +23,7 @@ data class MyPrincipleInfoRemoteData(
     val groupId: Int,
     val groupName: String,
     val principle: String,
+    val description: String,
     val displayOrder: Int
 ) : RemoteDataMapper<MyPrincipleInfoData> {
 
@@ -31,6 +32,7 @@ data class MyPrincipleInfoRemoteData(
         groupId = groupId,
         groupName = groupName,
         principle = principle,
+        description = description,
         displayOrder = displayOrder
     )
 }

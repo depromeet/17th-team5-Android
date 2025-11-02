@@ -10,8 +10,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.depromeet.team5.core.domain.usecase.CreateAnalysisUseCase
-import com.depromeet.team5.core.navigation.request.EmotionParams
-import com.depromeet.team5.core.navigation.request.PrincipleCheckParams
+import com.depromeet.team5.core.navigation.request.OrderTypeParams
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -26,123 +25,116 @@ import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
 import javax.inject.Inject
 
-@Stable
-enum class Emotion(
-    @DrawableRes val iconRes: Int,
-    @DrawableRes val enabledIconRes: Int,
-    @DrawableRes val disabledIconRes: Int,
-    @StringRes val labelRes: Int
-) {
-    Anxious(
-        R.drawable.ic_emotion_anxious,
-        R.drawable.ic_emotion_anxious_on,
-        R.drawable.ic_emotion_anxious_off,
-        R.string.emotion_anxious,
-    ),
-    Impulse(
-        R.drawable.ic_emotion_impulse,
-        R.drawable.ic_emotion_impulse_on,
-        R.drawable.ic_emotion_impulse_off,
-        R.string.emotion_impulse,
-    ),
-    Neutral(
-        R.drawable.ic_emotion_neutral,
-        R.drawable.ic_emotion_neutral_on,
-        R.drawable.ic_emotion_neutral_off,
-        R.string.emotion_neutral,
-    ),
-    Confidence(
-        R.drawable.ic_emotion_confidence,
-        R.drawable.ic_emotion_confidence_on,
-        R.drawable.ic_emotion_confidence_off,
-        R.string.emotion_confidence,
-    ),
-    Conviction(
-        R.drawable.ic_emotion_conviction,
-        R.drawable.ic_emotion_conviction_on,
-        R.drawable.ic_emotion_conviction_off,
-        R.string.emotion_conviction,
-    );
-
-    fun toEmotionParams(): EmotionParams {
-        return when (this) {
-            Anxious -> EmotionParams.ANXIETY
-            Impulse -> EmotionParams.IMPULSE
-            Neutral -> EmotionParams.MINDLESSNESS
-            Confidence -> EmotionParams.CONFIDENCE
-            Conviction -> EmotionParams.CONVICTION
-        }
-    }
-}
-
-enum class OrderType {
-    BUY, SELL
-}
-
 data class TradeInfo(
     @DrawableRes
     val logoDrawableRes: Int,
     val stockName: String,
-    val orderType: OrderType,
+    val orderType: OrderTypeParams,
     val price: Long,
     val currency: String,
     val volume: Int,
     val orderDate: String,
 )
 
+/*
+* 업데이트시켜야 할 params
+* principle
+*   adherence
+*   note (비고)
+*   List<uri>
+*   List<article>
+* */
+
 data class Principle(
-    val id: Long,
+    val id: Int,
+    val title: String,
     val description: String,
-    val checked: Boolean = false,
-    val icon: ImageVector? = null,
-) {
-    fun toPrincipleCheckParams(): PrincipleCheckParams = PrincipleCheckParams(
-        isFollowed = checked,
-        principleId = id.toInt()
-    )
-}
-
-fun PrincipleCheckParams.toPrinciple(): Principle {
-    return Principle(
-        id = principleId.toLong(),
-        description = "",
-        checked = isFollowed
-    )
-}
-
-val String.toUiCurrency: String
-    get() = if ("KRW" in this) "원" else "$"
-
-internal data class AnalysisRequest(
-    val market: String,
-    val symbol: String,
-    val time: String,
+    val adherence: PrincipleAdherence,
+    val note: TextFieldValue,
+    val images: List<String>,
+    val articles: List<Article>,
 )
 
-private fun formatDate(date: String): String {
-    val regex = """(\d{4})년\s*(\d{1,2})월\s*(\d{1,2})일""".toRegex()
+enum class PrincipleAdherence {
+    UNSELECTED, KEEP, NEUTRAL, BREAK,
+}
 
-    val matchResult = regex.find(date)
+enum class RestrictionAttachment {
+    IMAGE, LINK,
+}
 
-    if (matchResult != null) {
-        val (year, month, day) = matchResult.destructured
+data class PrincipleTemplate(
+    val id: Int,
+    val name: String,
+    val emoji: String,
+    val principles: List<Principle>
+) {
 
-        val formattedMonth = month.padStart(2, '0')
-        val formattedDay = day.padStart(2, '0')
-
-        return "$year-$formattedMonth-$formattedDay"
+    fun getIndexOfFirstUnselectedPrinciple(): Int {
+        return principles.indexOfFirst { it.adherence == PrincipleAdherence.UNSELECTED }
     }
 
-    error("잘못된 Date Format이 들어왔습니다. Params : { $date }")
+    fun getCheckedPrincipleCount(): Int {
+        return principles.count { it.adherence != PrincipleAdherence.UNSELECTED }
+    }
+
+    fun isAllPrincipleChecked(): Boolean {
+        return getCheckedPrincipleCount() == principles.size
+    }
+
+    companion object {
+        val RETROSPECT_ENTRY = PrincipleTemplate(
+            id = 0,
+            name = "이건 진짜 지켜야 해",
+            emoji = "👍",
+            principles = listOf(
+                Principle(
+                    id = 0,
+                    title = "종목 선택 시 최근 매출액 확인하기",
+                    description = "상승장에서 눌림목 나오면 지지선 나올 때까지 기다렸다가 분할 매수하자. 몰빵은 절대 금지",
+                    adherence = PrincipleAdherence.KEEP,
+                    note = TextFieldValue(""),
+                    images = emptyList(),
+                    articles = emptyList(),
+                ),
+                Principle(
+                    id = 1,
+                    title = "커뮤니티 반응 보고 투자 금지",
+                    description = "description",
+                    adherence = PrincipleAdherence.UNSELECTED,
+                    note = TextFieldValue(""),
+                    images = emptyList(),
+                    articles = emptyList(),
+                ),
+                Principle(
+                    id = 2,
+                    title = "감정 로그 활용하기",
+                    description = "감정 로그를 활용해 ‘불안 시점 vs 실제 하락률’을 비교하면 정확도가 높아진다고 한다. 감정 로그를 꼭 확인하자!",
+                    adherence = PrincipleAdherence.UNSELECTED,
+                    note = TextFieldValue(""),
+                    images = emptyList(),
+                    articles = emptyList(),
+                ),
+                Principle(
+                    id = 3,
+                    title = "본질 가치보다 낮게 거래되는 주식 찾아 장기 보유하기",
+                    description = "기업의 본질 가치보다 낮게 거래되는 주식을 찾아 장기 보유하기",
+                    adherence = PrincipleAdherence.UNSELECTED,
+                    note = TextFieldValue(""),
+                    images = emptyList(),
+                    articles = emptyList(),
+                )
+            ),
+        )
+    }
 }
 
-
-fun String.toIsoUtcString(hour: Int = 9): String {
-    val localDate = LocalDate.parse(this, DateTimeFormatter.ofPattern("yyyy-MM-dd"))
-    val localDateTime = LocalDateTime.of(localDate, LocalTime.of(hour, 0, 0))
-    return localDateTime.atOffset(ZoneOffset.UTC).format(DateTimeFormatter.ISO_OFFSET_DATE_TIME)
-}
-
+data class Article(
+    val originUrl: String,
+    val title: String?,
+    val thumbnail: String?,
+    val source: String?
+)
 
 @HiltViewModel
 class ReasonsViewModel @Inject constructor(

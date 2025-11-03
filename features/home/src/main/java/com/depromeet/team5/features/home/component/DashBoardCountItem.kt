@@ -37,8 +37,8 @@ fun DashBoardCountItem(
             modifier = Modifier
                 .padding(bottom = 6.dp)
                 .size(
-                    width = (LocalConfiguration.current.screenWidthDp * 32f / 375f).dp,
-                    height = (LocalConfiguration.current.screenHeightDp * 38f / 815f).dp
+                    width = 32.dp,
+                    height = 38.dp
                 ),
             contentScale = ContentScale.Crop
         )

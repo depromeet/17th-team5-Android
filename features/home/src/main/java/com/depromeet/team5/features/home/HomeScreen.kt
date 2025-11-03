@@ -22,12 +22,14 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Dialog
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.depromeet.team5.core.domain.model.OrderType
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.depromeet.team5.core.designsystem.foundation.HedgeColor
 import com.depromeet.team5.core.designsystem.foundation.HedgeTypography
 import com.depromeet.team5.core.navigation.request.RequestViewModel
+import com.depromeet.team5.features.home.component.DashBoardDialog
 import com.depromeet.team5.features.home.component.HomeFloatingActionButton
 import com.depromeet.team5.features.home.section.HomeSection
 import com.depromeet.team5.features.home.section.PrincipleSection
@@ -42,7 +44,7 @@ fun HomeRoute(
 ) {
     val homeUiState by homeViewModel.homeUiStateFlow.collectAsStateWithLifecycle()
 
-    when(val uiState = homeUiState){
+    when (val uiState = homeUiState) {
         is HomeUiState.Success -> {
             HomeScreen(
                 percentage = uiState.percentage,
@@ -92,6 +94,17 @@ private fun HomeScreen(
 ) {
     var fabChecked by rememberSaveable { mutableStateOf(false) }
     var selectedTab by rememberSaveable { mutableStateOf(HomeTab.HOME) }
+    var isDashBoardVisible by rememberSaveable { mutableStateOf(false) }
+
+    if (isDashBoardVisible) {
+        Dialog(
+            onDismissRequest = { isDashBoardVisible = false }
+        ) {
+            DashBoardDialog(
+                onDismissRequest = { isDashBoardVisible = false }
+            )
+        }
+    }
 
     Box(modifier = modifier.fillMaxSize()) {
         Column(Modifier.fillMaxWidth()) {
@@ -129,8 +142,10 @@ private fun HomeScreen(
                     bronze = bronze,
                     silver = silver,
                     gold = gold,
-                    platinum = hedge
+                    platinum = hedge,
+                    onDashBoardClick = { isDashBoardVisible = it }
                 )
+
                 HomeTab.PRINCIPLE -> PrincipleSection()
             }
         }

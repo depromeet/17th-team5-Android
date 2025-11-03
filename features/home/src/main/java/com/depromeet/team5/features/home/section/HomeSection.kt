@@ -2,6 +2,7 @@ package com.depromeet.team5.features.home.section
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -39,6 +40,7 @@ fun HomeSection(
     silver: Int,
     gold: Int,
     platinum: Int,
+    onDashBoardClick: (Boolean) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -61,6 +63,9 @@ fun HomeSection(
                 )
                 .border(width = 1.dp, color = Color(0xFFF1F2F4), shape = RoundedCornerShape(22.dp))
                 .clip(RoundedCornerShape(22.dp))
+                .clickable {
+                    onDashBoardClick(true)
+                }
                 .fillMaxWidth()
         ) {
             Box(
@@ -201,6 +206,7 @@ private fun HomeSectionPreview() {
         bronze = 2,
         silver = 3,
         gold = 4,
-        platinum = 5
+        platinum = 5,
+        onDashBoardClick = {}
     )
 }

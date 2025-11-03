@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.depromeet.team5.core.domain.usecase.CreateFeedbackUseCase
 import com.depromeet.team5.core.domain.usecase.CreateRetrospectionUseCase
 import com.depromeet.team5.core.navigation.request.CreateRetrospectionParams
+import com.depromeet.team5.core.navigation.request.PrincipleCheckParams
 import com.depromeet.team5.features.feedback.AiFeedbackUiState
 import com.depromeet.team5.features.feedback.PrincipleState
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -43,7 +44,12 @@ class AiFeedbackViewModel @Inject constructor(
                     "orderDate" to formatDate(request.orderDate),
                     "returnRate" to request.returnRate,
                     "content" to request.content,
-                    "principleChecks" to request.principleChecks,
+                    "principleChecks" to request.principles.map {
+                        PrincipleCheckParams(
+                            principleId = it.id,
+                            status = it.status,
+                        )
+                    },
                     "emotion" to request.emotion?.name
                 )
             )
@@ -76,7 +82,6 @@ class AiFeedbackViewModel @Inject constructor(
                 .collect()
         }
     }
-
 
     fun updatePrinciple(title: String) {
         when (_feedbackStateFlow.value) {

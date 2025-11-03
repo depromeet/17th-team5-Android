@@ -43,8 +43,11 @@ data class CreateRetrospectionParams(
 
 @Serializable
 data class PrincipleCheckParams(
-    val isFollowed: Boolean,
-    val principleId: Int
+    val principleId: Int,
+    val status: String,
+    val reason: String = "",
+    val imageIds: List<Int> = emptyList(),
+    val links: List<Int> = emptyList(),
 )
 
 enum class EmotionParams {

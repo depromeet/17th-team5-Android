@@ -81,8 +81,8 @@ fun ReasonRoute(
 ) {
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
-    val principleTemplate by viewModel.principleTemplate.collectAsStateWithLifecycle()
-    val tradeInfo by viewModel.tradeInfo.collectAsStateWithLifecycle()
+    val principleTemplate by viewModel.principleTemplate.stateFlow.collectAsStateWithLifecycle()
+    val tradeInfo by viewModel.tradeInfo.stateFlow.collectAsStateWithLifecycle()
     var toastMessage: String? by remember { mutableStateOf(null) }
     var limitedAttachmentType: RestrictionAttachment? by remember { mutableStateOf(null) }
     var showLimitedAttachmentModal by remember { mutableStateOf(false) }

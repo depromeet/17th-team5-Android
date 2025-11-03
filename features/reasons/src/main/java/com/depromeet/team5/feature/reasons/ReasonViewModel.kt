@@ -6,11 +6,9 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.depromeet.team5.core.navigation.request.OrderTypeParams
+import com.depromeet.team5.core.ui.lazy.hedgeState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.jsoup.Jsoup
@@ -133,17 +131,11 @@ class ReasonViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
 
-    private val _tradeInfo = MutableStateFlow(dummyTradeInfo)
-    val tradeInfo = _tradeInfo.asStateFlow()
-
+    val tradeInfo by hedgeState(dummyTradeInfo)
     val initialPrincipleTemplate = PrincipleTemplate.RETROSPECT_ENTRY
+    val principleTemplate by hedgeState(initialPrincipleTemplate)
 
-    private val _principleTemplate: MutableStateFlow<PrincipleTemplate> = MutableStateFlow(initialPrincipleTemplate)
-    val principleTemplate = _principleTemplate.asStateFlow()
-
-    fun initTradeInfo(tradeInfo: TradeInfo) {
-        _tradeInfo.value = tradeInfo
-    }
+    fun initTradeInfo(tradeInfo: TradeInfo) = this.tradeInfo.update { tradeInfo }
 
     fun onAdherenceChanged(id: Int, value: PrincipleAdherence) = updatePrincipleTemplate(id) { it.copy(adherence = value) }
 
@@ -196,7 +188,7 @@ class ReasonViewModel @Inject constructor(
         id: Int,
         crossinline transform: (Principle) -> Principle
     ) {
-        _principleTemplate.update { template ->
+        principleTemplate.update { template ->
             val idx = template.principles.indexOfFirst { it.id == id }
             if (idx < 0) template else {
                 val old = template.principles[idx]

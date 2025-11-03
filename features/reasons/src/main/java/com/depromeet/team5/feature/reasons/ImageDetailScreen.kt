@@ -55,7 +55,7 @@ fun ImageDetailRoute(
     viewModel: ReasonViewModel = hiltViewModel(),
     modifier: Modifier = Modifier,
 ) {
-    val principleTemplate by viewModel.principleTemplate.collectAsStateWithLifecycle()
+    val principleTemplate by viewModel.principleTemplate.stateFlow.collectAsStateWithLifecycle()
     val images = principleTemplate.principles[principleIndex].images
     val pagerState = rememberPagerState(initialPage = imageIndex) { images.size }
     val coroutineScope = rememberCoroutineScope()

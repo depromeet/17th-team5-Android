@@ -17,7 +17,9 @@
     <string name="home_tab_retrospection_history">회고 기록</string>
     <string name="home_tab_retrospection_month">%s 회고</string>
     <string name="home_tab_retrospection_empty">아직 내 회고 기록이 없어요\n회고를 시작해볼까요?</string>
-    
+    <string name="home_tab_retrospection_trade_buy">매수</string>
+    <string name="home_tab_retrospection_trade_sell">매도</string>
+
 
     // principle
 

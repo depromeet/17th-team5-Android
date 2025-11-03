@@ -10,13 +10,23 @@ import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.Divider
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -26,12 +36,21 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.depromeet.team5.core.designsystem.foundation.HedgeColor
+import com.depromeet.team5.core.designsystem.foundation.HedgeColor.BLUE_500
+import com.depromeet.team5.core.designsystem.foundation.HedgeColor.RED_500
 import com.depromeet.team5.core.designsystem.foundation.HedgeTypography
 import com.depromeet.team5.core.ui.model.HedgeBadge
+import com.depromeet.team5.features.home.R
+import com.depromeet.team5.features.home.RetrospectionListUiState
+import com.depromeet.team5.features.home.RetrospectionSectionState
+import com.depromeet.team5.features.home.RetrospectionState
+import com.depromeet.team5.features.home.RetrospectionSymbolState
 import com.depromeet.team5.features.home.component.DashBoardCountItem
+import com.depromeet.team5.features.home.component.RetrospectionMasterDetail
 
 @Composable
 fun HomeSection(
@@ -40,17 +59,18 @@ fun HomeSection(
     silver: Int,
     gold: Int,
     platinum: Int,
+    retrospectionListUiState: RetrospectionListUiState,
     onDashBoardClick: (Boolean) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(
         modifier = modifier
             .padding(top = 16.dp)
-            .padding(horizontal = 20.dp)
             .fillMaxWidth()
     ) {
         Box(
             modifier = Modifier
+                .padding(horizontal = 20.dp)
                 .shadow(
                     elevation = 20.dp,
                     shape = RoundedCornerShape(22.dp),
@@ -195,18 +215,140 @@ fun HomeSection(
             }
         }
         Spacer(modifier = Modifier.height(16.dp))
+
+        Text(
+            text = stringResource(id = R.string.home_tab_retrospection_history),
+            style = HedgeTypography.Headline2.SemiBold,
+            color = HedgeColor.Text.Title,
+            modifier = Modifier.padding(vertical = 10.dp, horizontal = 20.dp)
+        )
+
+        when (retrospectionListUiState) {
+            is RetrospectionListUiState.Empty -> {
+                Text(
+                    text = stringResource(id = R.string.home_tab_retrospection_empty),
+                    style = HedgeTypography.Headline2.SemiBold,
+                    color = HedgeColor.Text.Assistive,
+                    modifier = Modifier
+                        .padding(bottom = 100.dp)
+                        .fillMaxSize()
+                        .wrapContentSize(Alignment.Center),
+                    textAlign = TextAlign.Center
+                )
+            }
+
+            is RetrospectionListUiState.Success -> {
+                RetrospectionMasterDetail(
+                    symbols = retrospectionListUiState.symbols,
+                    modifier = Modifier.fillMaxWidth()
+                )
+            }
+
+            is RetrospectionListUiState.Loading -> {
+
+            }
+
+            is RetrospectionListUiState.Error -> {
+
+            }
+
+            is RetrospectionListUiState.Failure -> {
+
+            }
+        }
     }
 }
 
 @Preview(showBackground = true)
 @Composable
 private fun HomeSectionPreview() {
+    val sampleSections = listOf(
+        RetrospectionSectionState(
+            title = "이번달 회고",
+            items = listOf(
+                RetrospectionState(
+                    id = 1,
+                    dayText = "9월 15일",
+                    priceVolumeText = "85,000원 • 8주",
+                    tradeLabelRes = R.string.home_tab_retrospection_trade_sell,
+                    tradeColor = BLUE_500,
+                    orderDateText = "2025.09.14"
+                ),
+                RetrospectionState(
+                    id = 2,
+                    dayText = "9월 15일",
+                    priceVolumeText = "85,000원 • 8주",
+                    tradeLabelRes = R.string.home_tab_retrospection_trade_buy,
+                    tradeColor = RED_500,
+                    orderDateText = "2025.09.06"
+                ),
+                RetrospectionState(
+                    id = 8,
+                    dayText = "9월 8일",
+                    priceVolumeText = "85,000원 • 8주",
+                    tradeLabelRes = R.string.home_tab_retrospection_trade_buy,
+                    tradeColor = RED_500,
+                    orderDateText = "2025.09.06"
+                )
+            )
+        ),
+        RetrospectionSectionState(
+            title = "지난달 회고",
+            items = listOf(
+                RetrospectionState(
+                    id = 3,
+                    dayText = "8월 14일",
+                    priceVolumeText = "85,000원 • 8주",
+                    tradeLabelRes = R.string.home_tab_retrospection_trade_buy,
+                    tradeColor = RED_500,
+                    orderDateText = "2025.08.12"
+                )
+            )
+        )
+    )
+
+    val ui = RetrospectionListUiState.Success(
+        symbols = listOf(
+            RetrospectionSymbolState(
+                symbol = "삼성전자",
+                sections = sampleSections
+            ),
+            RetrospectionSymbolState(
+                symbol = "테슬라",
+                sections = listOf(
+                    RetrospectionSectionState(
+                        title = "이번달 회고",
+                        items = listOf(
+                            RetrospectionState(
+                                id = 4,
+                                dayText = "9월 25일",
+                                priceVolumeText = "350.00달러 • 3주",
+                                tradeLabelRes = R.string.home_tab_retrospection_trade_buy,
+                                tradeColor = RED_500,
+                                orderDateText = "2025.09.25"
+                            )
+                        )
+                    )
+                )
+            ),
+            RetrospectionSymbolState(
+                symbol = "팔란티어",
+                sections = sampleSections
+            ),
+            RetrospectionSymbolState(
+                symbol = "애플",
+                sections = sampleSections.take(1)
+            ),
+        )
+    )
+
     HomeSection(
-        percentage = 10,
+        percentage = 72,
         bronze = 2,
-        silver = 3,
-        gold = 4,
-        platinum = 5,
+        silver = 5,
+        gold = 3,
+        platinum = 1,
+        retrospectionListUiState = ui,
         onDashBoardClick = {}
     )
 }

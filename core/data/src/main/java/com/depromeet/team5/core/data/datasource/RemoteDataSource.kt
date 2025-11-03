@@ -3,6 +3,7 @@ package com.depromeet.team5.core.data.datasource
 import com.depromeet.team5.core.data.model.FeedbackData
 import com.depromeet.team5.core.data.model.MyPrincipleGroupsData
 import com.depromeet.team5.core.data.model.RetrospectionData
+import com.depromeet.team5.core.data.model.RetrospectionListData
 import com.depromeet.team5.core.data.model.SearchData
 import com.depromeet.team5.core.data.request.CreateRetrospectionRequestData
 import com.depromeet.team5.core.data.model.UserStatsData
@@ -25,4 +26,6 @@ interface RemoteDataSource {
     ): Int
 
     suspend fun userStats(): UserStatsData
+
+    suspend fun retrospectionList(): RetrospectionListData
 }

@@ -5,6 +5,7 @@ import com.depromeet.team5.core.data.mapper.toData
 import com.depromeet.team5.core.domain.model.Feedback
 import com.depromeet.team5.core.domain.model.MyPrincipleGroup
 import com.depromeet.team5.core.domain.model.Retrospection
+import com.depromeet.team5.core.domain.model.RetrospectionList
 import com.depromeet.team5.core.domain.model.Search
 import com.depromeet.team5.core.domain.model.UserStats
 import com.depromeet.team5.core.domain.repository.HedgeRepository
@@ -44,5 +45,9 @@ internal class HedgeRepositoryImpl @Inject constructor(
 
     override fun userStats(): Flow<UserStats> = flow{
         emit(remoteDataSource.userStats().toDomain())
+    }
+
+    override fun retrospectionList(): Flow<RetrospectionList> = flow {
+        emit(remoteDataSource.retrospectionList().toDomain())
     }
 }

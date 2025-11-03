@@ -70,36 +70,6 @@ class AiFeedbackViewModel @Inject constructor(
         }
     }
 
-
-    fun updatePrinciple(title: String) {
-        when (_feedbackStateFlow.value) {
-            is AiFeedbackUiState.Success -> {
-//                val index =
-//                    (_feedbackStateFlow.value as AiFeedbackUiState.Success).principles.indexOfFirst { it.title == title }
-//
-//                if (index == -1) return
-//
-//                val principles = (_feedbackStateFlow.value as AiFeedbackUiState.Success).principles
-//                val target = principles[index]
-//
-//                val newPrinciple = target.copy(isAdd = !target.isAdd)
-//
-//                val newPrinciples = principles.toMutableList().apply {
-//                    set(index, newPrinciple)
-//                }
-//
-//                _feedbackStateFlow.update {
-//                    (_feedbackStateFlow.value as AiFeedbackUiState.Success).copy(
-//                        principles = newPrinciples
-//                    )
-//                }
-
-            }
-
-            else -> {}
-        }
-    }
-
     private fun formatDate(date: String): String {
         val regex = """(\d{4})년\s*(\d{1,2})월\s*(\d{1,2})일""".toRegex()
 

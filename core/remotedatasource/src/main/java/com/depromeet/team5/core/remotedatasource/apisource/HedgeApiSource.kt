@@ -3,6 +3,7 @@ package com.depromeet.team5.core.remotedatasource.apisource
 import android.net.Uri
 import com.depromeet.team5.core.remotedatasource.model.FeedbackRemoteData
 import com.depromeet.team5.core.remotedatasource.model.MyPrincipleGroupsRemoteData
+import com.depromeet.team5.core.remotedatasource.model.RetrospectionListRemoteData
 import com.depromeet.team5.core.remotedatasource.model.RetrospectionRemoteData
 import com.depromeet.team5.core.remotedatasource.model.SearchRemoteData
 import com.depromeet.team5.core.remotedatasource.request.CreateRetrospectionRequestRemoteData
@@ -27,4 +28,5 @@ interface HedgeApiSource {
 
     suspend fun userStats(): UserStatsRemoteData
 
+    suspend fun retrospectionList(): RetrospectionListRemoteData
 }

@@ -1,4 +1,4 @@
-package com.depromeet.team5.features.home
+package com.depromeet.team5.features.home.screen
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -29,6 +29,9 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.depromeet.team5.core.designsystem.foundation.HedgeColor
 import com.depromeet.team5.core.designsystem.foundation.HedgeTypography
 import com.depromeet.team5.core.navigation.request.RequestViewModel
+import com.depromeet.team5.features.home.R
+import com.depromeet.team5.features.home.RetrospectionListUiState
+import com.depromeet.team5.features.home.UserStatsUiState
 import com.depromeet.team5.features.home.component.DashBoardDialog
 import com.depromeet.team5.features.home.component.HomeFloatingActionButton
 import com.depromeet.team5.features.home.section.HomeSection
@@ -42,16 +45,18 @@ fun HomeRoute(
     requestViewModel: RequestViewModel = hiltViewModel(),
     homeViewModel: HomeViewModel = hiltViewModel()
 ) {
-    val homeUiState by homeViewModel.homeUiStateFlow.collectAsStateWithLifecycle()
+    val userStatsUiState by homeViewModel.userStatsUiStateFlow.collectAsStateWithLifecycle()
+    val retrospectionListUiState by homeViewModel.retrospectionListUiStateFlow.collectAsStateWithLifecycle()
 
-    when (val uiState = homeUiState) {
-        is HomeUiState.Success -> {
+    when (val uiState = userStatsUiState) {
+        is UserStatsUiState.Success -> {
             HomeScreen(
                 percentage = uiState.percentage,
                 hedge = uiState.hedge,
                 bronze = uiState.bronze,
                 silver = uiState.silver,
                 gold = uiState.gold,
+                retrospectionListUiState = retrospectionListUiState,
                 onBuyClick = {
                     requestViewModel.request =
                         requestViewModel.request.copy(orderType = OrderType.BUY)
@@ -66,15 +71,15 @@ fun HomeRoute(
             )
         }
 
-        is HomeUiState.Loading -> {
+        is UserStatsUiState.Loading -> {
 
         }
 
-        is HomeUiState.Error -> {
+        is UserStatsUiState.Error -> {
 
         }
 
-        is HomeUiState.Failure -> {
+        is UserStatsUiState.Failure -> {
 
         }
 
@@ -88,6 +93,7 @@ private fun HomeScreen(
     bronze: Int,
     silver: Int,
     gold: Int,
+    retrospectionListUiState: RetrospectionListUiState,
     onBuyClick: () -> Unit,
     onSellClick: () -> Unit,
     modifier: Modifier = Modifier
@@ -143,6 +149,7 @@ private fun HomeScreen(
                     silver = silver,
                     gold = gold,
                     platinum = hedge,
+                    retrospectionListUiState = retrospectionListUiState,
                     onDashBoardClick = { isDashBoardVisible = it }
                 )
 
@@ -170,6 +177,7 @@ private fun HomePreview() {
         bronze = 2,
         silver = 3,
         gold = 4,
+        retrospectionListUiState = RetrospectionListUiState.Loading,
         onBuyClick = {},
         onSellClick = {}
     )

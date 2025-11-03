@@ -5,6 +5,7 @@ import com.depromeet.team5.core.retrofit.model.BaseResponse
 import com.depromeet.team5.core.retrofit.model.FeedbackResponse
 import com.depromeet.team5.core.retrofit.model.ImageUploadResponse
 import com.depromeet.team5.core.retrofit.model.MyPrincipleGroupsResponse
+import com.depromeet.team5.core.retrofit.model.RetrospectionListResponse
 import com.depromeet.team5.core.retrofit.model.RetrospectionResponse
 import com.depromeet.team5.core.retrofit.model.SearchResponse
 import com.depromeet.team5.core.retrofit.model.UserStatsResponse
@@ -47,4 +48,6 @@ interface HedgeApi {
     @GET("api/v1/reports")
     suspend fun userStats(): UserStatsResponse
 
+    @GET("api/v1/retrospections")
+    suspend fun retrospectionList(): RetrospectionListResponse
 }

@@ -5,6 +5,7 @@ import com.depromeet.team5.core.data.datasource.RemoteDataSource
 import com.depromeet.team5.core.data.model.FeedbackData
 import com.depromeet.team5.core.data.model.MyPrincipleGroupsData
 import com.depromeet.team5.core.data.model.RetrospectionData
+import com.depromeet.team5.core.data.model.RetrospectionListData
 import com.depromeet.team5.core.data.model.SearchData
 import com.depromeet.team5.core.data.request.CreateRetrospectionRequestData
 import com.depromeet.team5.core.data.model.UserStatsData
@@ -44,4 +45,6 @@ internal class RemoteDataSourceImpl @Inject constructor(
     override suspend fun userStats(): UserStatsData =
         hedgeApiSource.userStats().toData()
 
+    override suspend fun retrospectionList(): RetrospectionListData =
+        hedgeApiSource.retrospectionList().toData()
 }

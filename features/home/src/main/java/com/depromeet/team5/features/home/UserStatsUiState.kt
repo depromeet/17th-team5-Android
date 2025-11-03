@@ -1,6 +1,6 @@
 package com.depromeet.team5.features.home
 
-sealed class HomeUiState {
+sealed class UserStatsUiState {
 
     data class Success(
         val percentage:Int,
@@ -8,16 +8,16 @@ sealed class HomeUiState {
         val bronze: Int,
         val silver: Int,
         val gold: Int,
-    ): HomeUiState()
+    ): UserStatsUiState()
 
-    object Loading: HomeUiState()
+    object Loading: UserStatsUiState()
 
     data class Error(
         val code: String,
         val message: String
-    ): HomeUiState()
+    ): UserStatsUiState()
 
     data class Failure(
         val throwable: Throwable
-    ): HomeUiState()
+    ): UserStatsUiState()
 }

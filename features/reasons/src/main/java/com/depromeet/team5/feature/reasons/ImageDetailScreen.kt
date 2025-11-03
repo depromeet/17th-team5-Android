@@ -43,6 +43,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
 import com.depromeet.team5.core.designsystem.foundation.HedgeColor
+import com.depromeet.team5.core.designsystem.foundation.HedgeIcon
 import com.depromeet.team5.core.designsystem.foundation.HedgeTypography
 import com.depromeet.team5.feature.reasons.ui.ZoomableContainer
 import kotlinx.coroutines.launch
@@ -136,7 +137,10 @@ private fun TopOverlay(
         verticalAlignment = Alignment.CenterVertically,
     ) {
         IconButton(onClick = onClickBack) {
-            Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+            Icon(
+                imageVector = HedgeIcon.ArrowLeftThick,
+                contentDescription = "back",
+            )
         }
         Text(
             text = text,

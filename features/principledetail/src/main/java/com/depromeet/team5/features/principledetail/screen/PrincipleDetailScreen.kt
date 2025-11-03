@@ -15,9 +15,16 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Text
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -25,12 +32,15 @@ import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import com.depromeet.team5.core.designsystem.component.HedgeButton
 import com.depromeet.team5.core.designsystem.foundation.HedgeColor
 import com.depromeet.team5.core.designsystem.foundation.HedgeIcon
 import com.depromeet.team5.core.designsystem.foundation.HedgeTypography
+import com.depromeet.team5.features.principledetail.R
 
 
 @Composable
@@ -56,8 +66,7 @@ private fun PrincipleDetailScreen(
         ) {
             Topbar(
                 modifier = Modifier.background(HedgeColor.Brand.Secondary),
-                onBackPressed = {},
-                onClickedMenu = {}
+                onBackPressed = {}
             )
 
             Column(
@@ -265,9 +274,10 @@ fun PrincipleDetailFloatingButton(
 @Composable
 private fun Topbar(
     modifier: Modifier = Modifier,
-    onBackPressed: () -> Unit,
-    onClickedMenu: () -> Unit
+    onBackPressed: () -> Unit
 ) {
+    var isExpanded by remember { mutableStateOf(false) }
+
     Row(
         modifier = modifier
             .fillMaxWidth()
@@ -289,15 +299,65 @@ private fun Topbar(
             modifier = Modifier.weight(1f)
         )
 
-        Image(
-            modifier = Modifier
-                .padding(end = 16.dp)
-                .clickable(enabled = true) {
-                    onClickedMenu()
-                },
-            imageVector = HedgeIcon.Menu,
-            contentDescription = null,
-            colorFilter = ColorFilter.tint(color = HedgeColor.Text.Primary)
+        Box {
+            Image(
+                modifier = Modifier
+                    .padding(end = 16.dp)
+                    .clickable(enabled = true) {
+                        isExpanded = !isExpanded
+                    },
+                imageVector = HedgeIcon.Menu,
+                contentDescription = null,
+                colorFilter = ColorFilter.tint(color = HedgeColor.Text.Primary)
+            )
+            if (isExpanded) {
+                ModifyAndRemoveDropdown(
+                    expand = isExpanded,
+                    onClickedModifyButton = { isExpanded = false },
+                    onClickedRemoveButton = { isExpanded = false },
+                    onDismissRequest = { isExpanded = false }
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun ModifyAndRemoveDropdown(
+    expand: Boolean,
+    modifier: Modifier = Modifier,
+    onClickedModifyButton: () -> Unit,
+    onClickedRemoveButton: () -> Unit,
+    onDismissRequest: () -> Unit
+) {
+    DropdownMenu(
+        modifier = modifier
+            .background(HedgeColor.WHITE),
+        shape = RoundedCornerShape(20.dp),
+        expanded = expand,
+        containerColor = HedgeColor.WHITE,
+        onDismissRequest = onDismissRequest,
+        offset = DpOffset((-20).dp, 0.dp)
+    ) {
+        DropdownMenuItem(
+            text = { Text(stringResource(R.string.modify)) },
+            onClick = onClickedModifyButton,
+            trailingIcon = {
+                Image(
+                    imageVector = HedgeIcon.Pencil,
+                    contentDescription = null
+                )
+            }
+        )
+        DropdownMenuItem(
+            text = { Text(stringResource(R.string.delete)) },
+            onClick = onClickedRemoveButton,
+            trailingIcon = {
+                Image(
+                    imageVector = HedgeIcon.Trash,
+                    contentDescription = null
+                )
+            }
         )
     }
 }
@@ -310,13 +370,12 @@ fun PrincipleDetailScreenPreview() {
 }
 
 
-@Preview
+@Preview(showBackground = true)
 @Composable
 fun TopbarPreview() {
     Topbar(
         modifier = Modifier
             .background(HedgeColor.Brand.Secondary),
-        onClickedMenu = {},
         onBackPressed = {}
     )
 }

@@ -132,7 +132,7 @@ fun RetrospectRoute(
                 ?.let {
                     when (retrospectionState.returnToggleState.value) {
                         true -> retrospectionState.returnTextFieldState.value.text.isNotEmpty() &&
-                                !retrospectionState.returnTextFieldState.value.isError
+                            !retrospectionState.returnTextFieldState.value.isError
 
                         false -> true
                     }
@@ -871,7 +871,7 @@ private fun RetrospectRoutePreview() {
                 ?.let {
                     when (retrospectionState.returnToggleState.value) {
                         true -> retrospectionState.returnTextFieldState.value.text.isNotEmpty() &&
-                                !retrospectionState.returnTextFieldState.value.isError
+                            !retrospectionState.returnTextFieldState.value.isError
 
                         false -> true
                     }

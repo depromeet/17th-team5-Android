@@ -1,10 +1,10 @@
 package com.depromeet.team5.core.retrofit.api
 
 import com.depromeet.team5.core.retrofit.model.AnalysisResponse
+import com.depromeet.team5.core.retrofit.model.FeedbackResponse
 import com.depromeet.team5.core.retrofit.model.RetrospectionResponse
 import com.depromeet.team5.core.retrofit.model.SearchResponse
 import okhttp3.RequestBody
-import okhttp3.ResponseBody
 import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.POST
@@ -24,7 +24,7 @@ interface HedgeApi {
     @POST("api/v1/reports/{retrospectionId}/feedback")
     suspend fun createFeedback(
         @Path("retrospectionId") retrospectionId: Int
-    ): ResponseBody
+    ): FeedbackResponse
 
     @GET("api/analysis/v1")
     suspend fun createAnalysis(@QueryMap query: Map<String, String>): AnalysisResponse

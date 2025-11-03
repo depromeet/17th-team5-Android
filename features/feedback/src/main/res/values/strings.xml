@@ -1,18 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    // past
     <string name="feedback_my_retrospect">나의 회고</string>
     <string name="feedback_ai_feedback">AI 피드백</string>
     <string name="feedback_delete">삭제</string>
-    <string name="feedback_ai_notice">본 서비스에서 제공하는 AI 피드백은 투자 참고용 정보이며, 실제 투자 판단에 대한 책임은 사용자 본인에게 있습니다.</string>
     <string name="feedback_summary">요약</string>
     <string name="feedback_summary_one_line">요약 한 마디</string>
     <string name="feedback_market_status">당시 시장 현황</string>
     <string name="feedback_ai_recommended_principle">AI 추천 원칙</string>
     <string name="feedback_add">추가</string>
-    <string name="feedback_complete">완료</string>
     <string name="feedback_ai_feedback_in_progress">AI 피드백 작성중...</string>
     <string name="feedback_error">피드백 정보를 가져오는데 문제가 발생했어요.\n다시 시도해주세요.</string>
     <string name="feedback_not_yet">추후에 공개될 예정이에요.</string>
     <string name="price_and_stock">%,d원・%d주 매도</string>
     <string name="feedback_add_principle">내 투자 원칙에 추가되었습니다</string>
+
+    // new
+    <string name="feedback_complete">완료</string>
+    <string name="feedback_count">%d개</string>
+    <string name="feedback_keep_title">앞으로도 유지해보세요</string>
+    <string name="feedback_fix_title">고쳐보면 좋아요</string>
+    <string name="feedback_next_title">다음 투자엔 이렇게 해보세요</string>
+    <string name="feedback_add_principle_button">원칙 추가해보기</string>
+    <string name="feedback_content">• %s</string>
+    <string name="feedback_ai_notice">AI 피드백은 투자 습관을 돌아보기 위한 도우미일 뿐,\n투자 판단이나 매매를 권유하는 내용은 아니에요.\n점수는 회고한 투자 원칙을 바탕으로 산출된 결과예요.</string>
 </resources>

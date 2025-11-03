@@ -1,23 +1,26 @@
-package com.depromeet.team5.core.remotedatasource.model
+package com.depromeet.team5.core.retrofit.model
 
-import com.depromeet.team5.core.data.model.FeedbackData
-import com.depromeet.team5.core.data.model.FeedbackInfoData
-import com.depromeet.team5.core.remotedatasource.mapper.RemoteDataMapper
+import com.depromeet.team5.core.remotedatasource.model.FeedbackInfoRemoteData
+import com.depromeet.team5.core.remotedatasource.model.FeedbackRemoteData
+import com.depromeet.team5.core.retrofit.mapper.RetrofitMapper
+import kotlinx.serialization.Serializable
 
-data class FeedbackRemoteData(
+@Serializable
+data class FeedbackResponse(
     val code: String,
     val message: String,
-    val data: FeedbackInfoRemoteData?,
-) : RemoteDataMapper<FeedbackData> {
-    override fun toData(): FeedbackData =
-        FeedbackData(
+    val data: FeedbackInfoResponse?,
+) : RetrofitMapper<FeedbackRemoteData> {
+    override fun toRemoteData(): FeedbackRemoteData =
+        FeedbackRemoteData(
             code = code,
             message = message,
-            data = data?.toData()
+            data = data?.toRemoteData()
         )
 }
 
-data class FeedbackInfoRemoteData(
+@Serializable
+data class FeedbackInfoResponse(
     val symbol: String,
     val price: Long,
     val volume: Int,
@@ -29,9 +32,9 @@ data class FeedbackInfoRemoteData(
     val keep: List<String>,
     val fix: List<String>,
     val next: List<String>,
-) : RemoteDataMapper<FeedbackInfoData> {
-    override fun toData(): FeedbackInfoData =
-        FeedbackInfoData(
+) : RetrofitMapper<FeedbackInfoRemoteData> {
+    override fun toRemoteData(): FeedbackInfoRemoteData =
+        FeedbackInfoRemoteData(
             badge = badge,
             symbol = symbol,
             orderType = orderType,

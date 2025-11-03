@@ -1,7 +1,14 @@
+import java.util.Properties
+import kotlin.apply
+
 plugins {
     alias(libs.plugins.depromeet.team5.library)
     alias(libs.plugins.depromeet.team5.hilt)
     alias(libs.plugins.kotlinx.serialization)
+}
+
+val properties = Properties().apply {
+    load(project.rootProject.file("local.properties").inputStream())
 }
 
 android {
@@ -14,7 +21,7 @@ android {
     buildTypes {
         debug {
             isMinifyEnabled = false
-            buildConfigField("String", "BASE_URL", "\"http://13.209.109.151:8080/\"")
+            buildConfigField("String", "BASE_URL", properties["base_url"].toString())
         }
         release {
             isMinifyEnabled = true

@@ -1,22 +1,21 @@
 package com.depromeet.team5.core.domain.model
 
-
 data class Feedback(
     val code: String,
     val message: String,
-    val summarize: String,
-    val summarizeOfMarket: String,
-    val principles: List<Principle>
-) {
+    val data: FeedbackInfo?,
+)
 
-    companion object {
-
-        val EMPTY = Feedback(
-            code = "",
-            message = "",
-            summarize = "",
-            summarizeOfMarket = "",
-            principles = emptyList()
-        )
-    }
-}
+data class FeedbackInfo(
+    val symbol: String,
+    val price: Long,
+    val volume: Int,
+    val orderType: String,
+    val keptCount: Int,
+    val neutralCount: Int,
+    val notKeptCount: Int,
+    val badge: String,
+    val keep: List<String>,
+    val fix: List<String>,
+    val next: List<String>,
+)

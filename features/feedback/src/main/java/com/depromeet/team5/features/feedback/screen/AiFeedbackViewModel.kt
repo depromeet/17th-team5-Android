@@ -3,7 +3,6 @@ package com.depromeet.team5.features.feedback.screen
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.depromeet.team5.core.domain.model.Feedback
 import com.depromeet.team5.core.domain.usecase.CreateFeedbackUseCase
 import com.depromeet.team5.core.domain.usecase.CreateRetrospectionUseCase
 import com.depromeet.team5.core.navigation.request.CreateRetrospectionParams
@@ -17,10 +16,8 @@ import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.flatMapConcat
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
-
 
 @HiltViewModel
 class AiFeedbackViewModel @Inject constructor(
@@ -32,7 +29,6 @@ class AiFeedbackViewModel @Inject constructor(
     private val _feedbackStateFlow: MutableStateFlow<AiFeedbackUiState> =
         MutableStateFlow(AiFeedbackUiState.Loading)
     val feedbackStateFlow: StateFlow<AiFeedbackUiState> = _feedbackStateFlow
-
 
     fun createRetrospection(request: CreateRetrospectionParams) {
         viewModelScope.launch {
@@ -53,17 +49,17 @@ class AiFeedbackViewModel @Inject constructor(
             )
                 .flatMapConcat { createFeedbackUseCase(it.id) }
                 .map {
-                    if (it != Feedback.EMPTY) {
+                    if (it.data != null) {
                         AiFeedbackUiState.Success(
-                            summarize = it.summarize,
-                            summarizeOfMarket = it.summarizeOfMarket,
-                            principles = it.principles.map { principle ->
-                                PrincipleState(
-                                    title = principle.title,
-                                    content = principle.content,
-                                    isAdd = false
-                                )
-                            }
+                            badge = it.data!!.badge,
+                            principleCheckSummary = PrincipleState(
+                                keptCount = it.data!!.keptCount,
+                                neutralCount = it.data!!.neutralCount,
+                                notKeptCount = it.data!!.notKeptCount
+                            ),
+                            keep = it.data!!.keep,
+                            fix = it.data!!.fix,
+                            next = it.data!!.next
                         )
                     } else {
                         AiFeedbackUiState.Error(
@@ -78,53 +74,53 @@ class AiFeedbackViewModel @Inject constructor(
                 }
                 .onEach { _feedbackStateFlow.value = it }
                 .collect()
-        }
     }
+}
 
 
-    fun updatePrinciple(title: String) {
-        when (_feedbackStateFlow.value) {
-            is AiFeedbackUiState.Success -> {
-                val index =
-                    (_feedbackStateFlow.value as AiFeedbackUiState.Success).principles.indexOfFirst { it.title == title }
+fun updatePrinciple(title: String) {
+    when (_feedbackStateFlow.value) {
+        is AiFeedbackUiState.Success -> {
+//                val index =
+//                    (_feedbackStateFlow.value as AiFeedbackUiState.Success).principles.indexOfFirst { it.title == title }
+//
+//                if (index == -1) return
+//
+//                val principles = (_feedbackStateFlow.value as AiFeedbackUiState.Success).principles
+//                val target = principles[index]
+//
+//                val newPrinciple = target.copy(isAdd = !target.isAdd)
+//
+//                val newPrinciples = principles.toMutableList().apply {
+//                    set(index, newPrinciple)
+//                }
+//
+//                _feedbackStateFlow.update {
+//                    (_feedbackStateFlow.value as AiFeedbackUiState.Success).copy(
+//                        principles = newPrinciples
+//                    )
+//                }
 
-                if (index == -1) return
-
-                val principles = (_feedbackStateFlow.value as AiFeedbackUiState.Success).principles
-                val target = principles[index]
-
-                val newPrinciple = target.copy(isAdd = !target.isAdd)
-
-                val newPrinciples = principles.toMutableList().apply {
-                    set(index, newPrinciple)
-                }
-
-                _feedbackStateFlow.update {
-                    (_feedbackStateFlow.value as AiFeedbackUiState.Success).copy(
-                        principles = newPrinciples
-                    )
-                }
-
-            }
-
-            else -> {}
-        }
-    }
-
-    private fun formatDate(date: String): String {
-        val regex = """(\d{4})년\s*(\d{1,2})월\s*(\d{1,2})일""".toRegex()
-
-        val matchResult = regex.find(date)
-
-        if (matchResult != null) {
-            val (year, month, day) = matchResult.destructured
-
-            val formattedMonth = month.padStart(2, '0')
-            val formattedDay = day.padStart(2, '0')
-
-            return "$year-$formattedMonth-$formattedDay"
         }
 
-        error("잘못된 Date Format이 들어왔습니다. Params : { $date }")
+        else -> {}
     }
+}
+
+private fun formatDate(date: String): String {
+    val regex = """(\d{4})년\s*(\d{1,2})월\s*(\d{1,2})일""".toRegex()
+
+    val matchResult = regex.find(date)
+
+    if (matchResult != null) {
+        val (year, month, day) = matchResult.destructured
+
+        val formattedMonth = month.padStart(2, '0')
+        val formattedDay = day.padStart(2, '0')
+
+        return "$year-$formattedMonth-$formattedDay"
+    }
+
+    error("잘못된 Date Format이 들어왔습니다. Params : { $date }")
+}
 }

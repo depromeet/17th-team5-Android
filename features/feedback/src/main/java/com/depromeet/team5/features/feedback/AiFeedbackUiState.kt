@@ -4,9 +4,11 @@ package com.depromeet.team5.features.feedback
 sealed class AiFeedbackUiState {
 
     data class Success(
-        val summarize: String,
-        val summarizeOfMarket: String,
-        val principles: List<PrincipleState>
+        val badge: String,
+        val principleCheckSummary: PrincipleState,
+        val keep: List<String>,
+        val fix: List<String>,
+        val next: List<String>
     ) : AiFeedbackUiState()
 
     object Loading : AiFeedbackUiState()
@@ -23,7 +25,7 @@ sealed class AiFeedbackUiState {
 }
 
 data class PrincipleState(
-    val title: String,
-    val content: String,
-    val isAdd: Boolean
+    val keptCount: Int,
+    val neutralCount: Int,
+    val notKeptCount: Int
 )

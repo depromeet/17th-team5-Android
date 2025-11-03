@@ -18,6 +18,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -82,15 +83,16 @@ fun InputToolBar(
 }
 
 @Composable
-fun InputToolBar(
+fun InputToolBarIme(
     hasImages: Boolean,
     hasLinks: Boolean,
     onClickAddImage: () -> Unit,
     onClickAddLink: () -> Unit,
     onClickAddMention: () -> Unit,
-    onClickRemain: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    val keyboardController = LocalSoftwareKeyboardController.current
+
     Column(
         modifier = modifier
             .background(color = HedgeColor.Neutral.BackgroundDefault),
@@ -147,7 +149,7 @@ fun InputToolBar(
             HedgeButton.Text(
                 text = stringResource(R.string.remain),
                 imageVector = null,
-                onClick = onClickRemain,
+                onClick = { keyboardController?.hide() }
             )
         }
     }

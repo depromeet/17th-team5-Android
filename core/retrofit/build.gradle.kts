@@ -24,6 +24,7 @@ android {
         }
         release {
             isMinifyEnabled = false
+            buildConfigField("String", "BASE_URL", properties["base_url"].toString())
         }
     }
 

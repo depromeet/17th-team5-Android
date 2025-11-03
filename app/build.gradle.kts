@@ -1,3 +1,5 @@
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.depromeet.team5.application)
     alias(libs.plugins.depromeet.team5.application.compose)
@@ -8,6 +10,22 @@ plugins {
 
 android {
     namespace = "com.depromeet.team5"
+
+    signingConfigs {
+        create("release") {
+            // These values are read from the keystore.properties file.
+            // Do not check this file into version control.
+            val keystorePropertiesFile = rootProject.file("keystore.properties")
+            if (keystorePropertiesFile.exists()) {
+                val properties = Properties()
+                properties.load(keystorePropertiesFile.inputStream())
+                keyAlias = properties.getProperty("keyAlias")
+                keyPassword = properties.getProperty("keyPassword")
+                storeFile = file(properties.getProperty("storeFile"))
+                storePassword = properties.getProperty("storePassword")
+            }
+        }
+    }
 
     defaultConfig {
         applicationId = "com.depromeet.team5"
@@ -29,6 +47,7 @@ android {
             isDebuggable = false
             isMinifyEnabled = true
             isShrinkResources = true
+            signingConfig = signingConfigs.getByName("release")
 
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),

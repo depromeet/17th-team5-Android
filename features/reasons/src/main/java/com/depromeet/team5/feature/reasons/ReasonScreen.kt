@@ -85,7 +85,6 @@ fun ReasonRoute(
     val tradeInfo by viewModel.tradeInfo.stateFlow.collectAsStateWithLifecycle()
     var toastMessage: String? by remember { mutableStateOf(null) }
     var limitedAttachmentType: RestrictionAttachment? by remember { mutableStateOf(null) }
-    var showLimitedAttachmentModal by remember { mutableStateOf(false) }
     var showCompleteModal by remember { mutableStateOf(false) }
     var showBackModal by remember { mutableStateOf(false) }
     var showAddLinkModal by remember { mutableStateOf(false) }
@@ -130,23 +129,16 @@ fun ReasonRoute(
         )
     }
 
-    LaunchedEffect(limitedAttachmentType) {
-        limitedAttachmentType?.let {
-            showLimitedAttachmentModal = true
-            limitedAttachmentType = null
-        }
-    }
-
     toastMessage?.let { HedgeToast(it) { toastMessage = null } }
 
     HedgeModal(
-        showModal = showLimitedAttachmentModal,
+        showModal = limitedAttachmentType != null,
         icon = null,
         title = stringResource(if (limitedAttachmentType == RestrictionAttachment.IMAGE) R.string.limited_image_modal_title else R.string.limited_link_modal_title),
         description = stringResource(if (limitedAttachmentType == RestrictionAttachment.IMAGE) R.string.limited_image_modal_description else R.string.limited_link_modal_description),
-        submitButton = stringResource(R.string.submit) to { showLimitedAttachmentModal = false },
+        submitButton = stringResource(R.string.submit) to { limitedAttachmentType = null },
         cancelButton = null,
-        onDismissRequest = { showLimitedAttachmentModal = false }
+        onDismissRequest = { limitedAttachmentType = null }
     )
 
     HedgeModal(

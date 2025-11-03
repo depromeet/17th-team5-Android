@@ -44,6 +44,7 @@ data class MyPrincipleInfoData(
     override fun toDomain(): MyPrinciple = MyPrinciple(
         id = id,
         groupId = groupId,
+        groupName = groupName,
         principle = principle,
         description = description
     )

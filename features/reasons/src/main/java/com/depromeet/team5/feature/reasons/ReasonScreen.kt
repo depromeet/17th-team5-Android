@@ -57,7 +57,8 @@ import com.depromeet.team5.core.designsystem.component.HedgeTopBar
 import com.depromeet.team5.core.designsystem.foundation.HedgeColor
 import com.depromeet.team5.core.designsystem.foundation.HedgeIcon
 import com.depromeet.team5.core.designsystem.foundation.HedgeTypography
-import com.depromeet.team5.core.navigation.request.OrderTypeParams
+import com.depromeet.team5.core.domain.model.MyPrinciple
+import com.depromeet.team5.core.domain.model.OrderType
 import com.depromeet.team5.core.navigation.request.RequestViewModel
 import com.depromeet.team5.core.ui.HedgeModal
 import com.depromeet.team5.feature.reasons.ui.AutoScrollTextField
@@ -127,6 +128,24 @@ fun ReasonRoute(
                 orderDate = requestViewModel.request.orderDate
             )
         )
+        viewModel.initPrincipleTemplate(
+            PrincipleTemplate(
+                id = requestViewModel.request.principles[0].groupId,
+                name = requestViewModel.request.principles[0].groupName,
+                emoji = "\uD83D\uDCC8",
+                principles = requestViewModel.request.principles.mapIndexed { index, item ->
+                    Principle(
+                        id = item.id,
+                        title = item.principle,
+                        description = item.description,
+                        adherence = if (index == 0) PrincipleAdherence.KEEP else PrincipleAdherence.UNSELECTED,
+                        note = TextFieldValue(""),
+                        images = emptyList(),
+                        articles = emptyList(),
+                    )
+                },
+            )
+        )
     }
 
     toastMessage?.let { HedgeToast(it) { toastMessage = null } }
@@ -149,6 +168,24 @@ fun ReasonRoute(
         submitButton = stringResource(R.string.complete) to {
             showCompleteModal = false
             onClickDone()
+            requestViewModel.request = requestViewModel.request.copy(
+                principles = principleTemplate.principles.map {
+                    MyPrinciple(
+                        id = it.id,
+                        groupId = principleTemplate.id,
+                        groupName = principleTemplate.name,
+                        principle = it.title,
+                        description = it.description,
+                        status = when (it.adherence) {
+                            PrincipleAdherence.KEEP -> "KEPT"
+                            PrincipleAdherence.NEUTRAL -> "NEUTRAL"
+                            PrincipleAdherence.BREAK -> "NOT_KEPT"
+                            else -> error("UNSELECTED should never reach here")
+                        },
+                    )
+                }
+            )
+
         },
         cancelButton = stringResource(R.string.cancel) to {
             showCompleteModal = false
@@ -350,7 +387,7 @@ private fun TradeInfo(
                 tradeInfo.price,
                 tradeInfo.currency,
                 tradeInfo.volume,
-                stringResource(if (tradeInfo.orderType == OrderTypeParams.BUY) R.string.buy else R.string.sell)
+                stringResource(if (tradeInfo.orderType == OrderType.BUY) R.string.buy else R.string.sell)
             ),
             color = HedgeColor.Trade.Sell,
             style = HedgeTypography.Label1.SemiBold,

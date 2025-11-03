@@ -16,6 +16,8 @@ data class MyPrincipleGroup(
 data class MyPrinciple(
     val id: Int,
     val groupId: Int,
+    val groupName: String,
     val principle: String,
-    val description: String
+    val description: String,
+    val status: String = "",
 )

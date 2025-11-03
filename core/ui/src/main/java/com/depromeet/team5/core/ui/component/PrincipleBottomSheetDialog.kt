@@ -64,7 +64,12 @@ import com.depromeet.team5.core.ui.R
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
-
+/*
+* todo
+*  투자원칙 그룹 목록 조회 api쏜 다음, emoji랑 group name 보내줘야 함
+*  화면 연결 principle screen 지우고 내 화면으로
+*  바텀 인셋
+* */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PrincipleBottomSheetDialog(
@@ -476,18 +481,21 @@ fun HedgeModalBottomSheetPreview() {
                 MyPrinciple(
                     id = 1,
                     groupId = 1,
+                    groupName = "",
                     principle = "안전마진을 확보하라",
                     description = "안전마진을 확보하라 content"
                 ),
                 MyPrinciple(
                     id = 2,
                     groupId = 1,
+                    groupName = "",
                     principle = "기업의 본질 가치보다 낮게 거래되는 주식을 찾아 장기 보유하기",
                     description = "안전마진을 확보하라 content"
                 ),
                 MyPrinciple(
                     id = 3,
                     groupId = 1,
+                    groupName = "",
                     principle = "정책 민감도가 높은 주식은 정책 잘 살펴보고 매매",
                     description = "안전마진을 확보하라 content"
                 )
@@ -553,6 +561,7 @@ fun SelectedMyPrincipleItemPreview() {
     val myPrinciple = MyPrinciple(
         id = 1,
         groupId = 1,
+        groupName = "",
         principle = "안전마진을 확보하라",
         description = "안전마진을 확보하라 content"
     )

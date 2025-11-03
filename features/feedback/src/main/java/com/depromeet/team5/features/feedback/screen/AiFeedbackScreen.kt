@@ -50,6 +50,9 @@ import com.depromeet.team5.features.feedback.PrincipleState
 import com.depromeet.team5.features.feedback.R
 import com.depromeet.team5.features.feedback.component.PrincipleCounter
 
+/*
+* todo inset
+* */
 @Composable
 fun AiFeedbackRoute(
     requestViewModel: RequestViewModel,

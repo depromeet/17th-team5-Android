@@ -5,7 +5,7 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.depromeet.team5.core.navigation.request.OrderTypeParams
+import com.depromeet.team5.core.domain.model.OrderType
 import com.depromeet.team5.core.ui.lazy.hedgeState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -19,7 +19,7 @@ data class TradeInfo(
     @DrawableRes
     val logoDrawableRes: Int,
     val stockName: String,
-    val orderType: OrderTypeParams,
+    val orderType: OrderType,
     val price: Long,
     val currency: String,
     val volume: Int,
@@ -137,6 +137,8 @@ class ReasonViewModel @Inject constructor(
 
     fun initTradeInfo(tradeInfo: TradeInfo) = this.tradeInfo.update { tradeInfo }
 
+    fun initPrincipleTemplate(principleTemplate: PrincipleTemplate) = this.principleTemplate.update { principleTemplate }
+
     fun onAdherenceChanged(id: Int, value: PrincipleAdherence) = updatePrincipleTemplate(id) { it.copy(adherence = value) }
 
     fun onNoteChanged(id: Int, value: TextFieldValue) = updatePrincipleTemplate(id) { it.copy(note = value) }
@@ -185,15 +187,14 @@ class ReasonViewModel @Inject constructor(
     }
 
     private inline fun updatePrincipleTemplate(
-        id: Int,
+        index: Int,
         crossinline transform: (Principle) -> Principle
     ) {
         principleTemplate.update { template ->
-            val idx = template.principles.indexOfFirst { it.id == id }
-            if (idx < 0) template else {
-                val old = template.principles[idx]
+            if (index < 0) template else {
+                val old = template.principles[index]
                 val newItem = transform(old)
-                val newList = template.principles.toMutableList().apply { set(idx, newItem) }
+                val newList = template.principles.toMutableList().apply { set(index, newItem) }
                 template.copy(
                     principles = newList,
                 )
@@ -208,7 +209,7 @@ class ReasonViewModel @Inject constructor(
         val dummyTradeInfo = TradeInfo(
             logoDrawableRes = R.drawable.ic_company_logo,
             stockName = "Apple",
-            orderType = OrderTypeParams.BUY,
+            orderType = OrderType.BUY,
             price = 65000,
             currency = "$",
             volume = 3,

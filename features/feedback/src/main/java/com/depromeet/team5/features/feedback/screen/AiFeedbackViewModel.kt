@@ -74,13 +74,13 @@ class AiFeedbackViewModel @Inject constructor(
                 }
                 .onEach { _feedbackStateFlow.value = it }
                 .collect()
+        }
     }
-}
 
 
-fun updatePrinciple(title: String) {
-    when (_feedbackStateFlow.value) {
-        is AiFeedbackUiState.Success -> {
+    fun updatePrinciple(title: String) {
+        when (_feedbackStateFlow.value) {
+            is AiFeedbackUiState.Success -> {
 //                val index =
 //                    (_feedbackStateFlow.value as AiFeedbackUiState.Success).principles.indexOfFirst { it.title == title }
 //
@@ -101,26 +101,26 @@ fun updatePrinciple(title: String) {
 //                    )
 //                }
 
+            }
+
+            else -> {}
+        }
+    }
+
+    private fun formatDate(date: String): String {
+        val regex = """(\d{4})년\s*(\d{1,2})월\s*(\d{1,2})일""".toRegex()
+
+        val matchResult = regex.find(date)
+
+        if (matchResult != null) {
+            val (year, month, day) = matchResult.destructured
+
+            val formattedMonth = month.padStart(2, '0')
+            val formattedDay = day.padStart(2, '0')
+
+            return "$year-$formattedMonth-$formattedDay"
         }
 
-        else -> {}
+        error("잘못된 Date Format이 들어왔습니다. Params : { $date }")
     }
-}
-
-private fun formatDate(date: String): String {
-    val regex = """(\d{4})년\s*(\d{1,2})월\s*(\d{1,2})일""".toRegex()
-
-    val matchResult = regex.find(date)
-
-    if (matchResult != null) {
-        val (year, month, day) = matchResult.destructured
-
-        val formattedMonth = month.padStart(2, '0')
-        val formattedDay = day.padStart(2, '0')
-
-        return "$year-$formattedMonth-$formattedDay"
-    }
-
-    error("잘못된 Date Format이 들어왔습니다. Params : { $date }")
-}
 }

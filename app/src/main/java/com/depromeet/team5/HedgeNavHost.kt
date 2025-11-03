@@ -10,7 +10,6 @@ import com.depromeet.team5.features.feedback.navigation.feedbackScreen
 import com.depromeet.team5.features.feedback.navigation.navigateToFeedback
 import com.depromeet.team5.features.home.Home
 import com.depromeet.team5.features.home.homeScreen
-import com.depromeet.team5.features.principle.navigation.navigateToPrinciple
 import com.depromeet.team5.features.principle.navigation.principleScreen
 import com.depromeet.team5.features.retrospect.screen.navigateToRetrospect
 import com.depromeet.team5.features.retrospect.screen.retrospectScreen
@@ -44,7 +43,7 @@ fun HedgeNavHost(
         retrospectScreen(
             navController = navController,
             onBackPressed = { navController.popBackStack() },
-            onClickedConfirmButton = { navController.navigateToPrinciple() },
+            onClickedConfirmButton = { navController.navigateToReasonGraph() },
             onShowErrorToast = onShowErrorToast
         )
 

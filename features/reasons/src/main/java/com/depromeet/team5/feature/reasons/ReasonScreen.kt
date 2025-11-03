@@ -64,6 +64,7 @@ import com.depromeet.team5.core.ui.HedgeModal
 import com.depromeet.team5.feature.reasons.ui.AutoScrollTextField
 import com.depromeet.team5.feature.reasons.ui.ImageThumbnailContainer
 import com.depromeet.team5.feature.reasons.ui.InputToolBar
+import com.depromeet.team5.feature.reasons.ui.InputToolBarIme
 import com.depromeet.team5.feature.reasons.ui.LinkModal
 import com.depromeet.team5.feature.reasons.ui.LinkThumbnailContainer
 import com.depromeet.team5.feature.reasons.ui.PrincipleAdherenceContainer
@@ -308,7 +309,6 @@ private fun ReasonsScreen(
                 ReasonsPage(
                     principle = principleTemplate.principles[page],
                     isImeVisible = isImeVisible,
-                    onClickDone = onClickDone,
                     onClickAddImage = onClickAddImage,
                     onClickAddLink = onClickAddLink,
                     onClickAddMention = onClickAddMention,
@@ -371,7 +371,6 @@ private fun TradeInfo(
 private fun ReasonsPage(
     principle: Principle,
     isImeVisible: Boolean,
-    onClickDone: () -> Unit,
     onClickAddImage: () -> Unit,
     onClickAddLink: () -> Unit,
     onClickAddMention: () -> Unit,
@@ -437,7 +436,7 @@ private fun ReasonsPage(
             }
         }
         if (isImeVisible) {
-            InputToolBar(
+            InputToolBarIme(
                 modifier = Modifier
                     .imePadding(),
                 hasImages = principle.images.isNotEmpty(),
@@ -445,7 +444,6 @@ private fun ReasonsPage(
                 onClickAddImage = onClickAddImage,
                 onClickAddLink = onClickAddLink,
                 onClickAddMention = onClickAddMention,
-                onClickRemain = onClickDone,
             )
         }
     }

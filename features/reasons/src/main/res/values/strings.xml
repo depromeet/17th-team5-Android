@@ -41,4 +41,5 @@
     <string name="cannot_complete_restriction">아직 점검하지 않은 원칙이 있어요</string>
     <string name="link_input">링크 입력</string>
     <string name="add">추가하기</string>
+    <string name="selecte_before">선택 전</string>
 </resources>

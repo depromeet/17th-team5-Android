@@ -7,7 +7,6 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -535,11 +534,34 @@ private fun CompactPrincipleHeader(
             overflow = TextOverflow.Ellipsis,
         )
         Spacer(Modifier.size(4.dp))
-        if (adherence != PrincipleAdherence.UNSELECTED) {
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(4.dp),
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            if (adherence == PrincipleAdherence.UNSELECTED) {
+                Icon(
+                    modifier = Modifier
+                        .size(18.dp),
+                    painter = painterResource(R.drawable.ic_circle),
+                    tint = HedgeColor.Brand.Disabled,
+                    contentDescription = null,
+                )
+                Spacer(Modifier.size(3.dp))
+                Icon(
+                    modifier = Modifier
+                        .size(18.dp),
+                    painter = painterResource(R.drawable.ic_triangle),
+                    tint = HedgeColor.Brand.Disabled,
+                    contentDescription = null,
+                )
+                Spacer(Modifier.size(3.dp))
+                Icon(
+                    modifier = Modifier
+                        .size(18.dp),
+                    painter = painterResource(R.drawable.ic_cross),
+                    tint = HedgeColor.Brand.Disabled,
+                    contentDescription = null,
+                )
+            } else {
                 Icon(
                     modifier = Modifier
                         .size(18.dp),
@@ -552,22 +574,23 @@ private fun CompactPrincipleHeader(
                     tint = HedgeColor.Brand.Primary,
                     contentDescription = null,
                 )
-                Text(
-                    text = when (adherence) {
-                        PrincipleAdherence.KEEP -> stringResource(R.string.principle_followed)
-                        PrincipleAdherence.NEUTRAL -> stringResource(R.string.principle_neutral)
-                        PrincipleAdherence.BREAK -> stringResource(R.string.principle_not_followed)
-                        else -> error("UNSELECTED should never reach here")
-                    },
-                    style = HedgeTypography.Body3.SemiBold,
-                    color = HedgeColor.Brand.Darken,
-                )
             }
-            Spacer(Modifier.size(12.dp))
-            HorizontalDivider(
-                color = HedgeColor.Neutral.BackgroundSecondary
+            Spacer(Modifier.size(4.dp))
+            Text(
+                text = when (adherence) {
+                    PrincipleAdherence.KEEP -> stringResource(R.string.principle_followed)
+                    PrincipleAdherence.NEUTRAL -> stringResource(R.string.principle_neutral)
+                    PrincipleAdherence.BREAK -> stringResource(R.string.principle_not_followed)
+                    else -> stringResource(R.string.selecte_before)
+                },
+                style = if (adherence == PrincipleAdherence.UNSELECTED) HedgeTypography.Body3.Medium else HedgeTypography.Body3.SemiBold,
+                color = if (adherence == PrincipleAdherence.UNSELECTED) HedgeColor.Text.Assistive else HedgeColor.Brand.Darken,
             )
         }
+        Spacer(Modifier.size(12.dp))
+        HorizontalDivider(
+            color = HedgeColor.Neutral.BackgroundSecondary
+        )
     }
 }
 

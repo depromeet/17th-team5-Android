@@ -3,6 +3,7 @@ package com.depromeet.team5.features.principledetail.screen
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -13,9 +14,10 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.HorizontalDivider
@@ -32,126 +34,186 @@ import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import coil3.compose.AsyncImage
 import com.depromeet.team5.core.designsystem.component.HedgeButton
 import com.depromeet.team5.core.designsystem.foundation.HedgeColor
 import com.depromeet.team5.core.designsystem.foundation.HedgeIcon
 import com.depromeet.team5.core.designsystem.foundation.HedgeTypography
+import com.depromeet.team5.core.domain.model.MyPrinciple
+import com.depromeet.team5.core.domain.model.MyPrincipleGroup
+import com.depromeet.team5.core.domain.model.OrderType
+import com.depromeet.team5.core.domain.monad.HedgeUiState
+import com.depromeet.team5.core.navigation.PrincipleType
 import com.depromeet.team5.features.principledetail.R
 
 
 @Composable
 fun PrincipleDetailRoute(
-    modifier: Modifier = Modifier
+    principleType: PrincipleType,
+    modifier: Modifier = Modifier,
+    viewModel: PrincipleDetailViewModel = hiltViewModel(),
+    onBackPressed: () -> Unit
 ) {
+    val uiState by viewModel.uiStateFlow.collectAsStateWithLifecycle()
 
+    PrincipleDetailScreen(
+        modifier = modifier,
+        uiState = uiState,
+        principleType = principleType,
+        onRetryButtonClicked = {
+            viewModel.restart()
+        },
+        onClickedModifyButton = {
 
+        },
+        onClickedRemoveButton = {
+
+        },
+        onClickedItemModifyButton = { principleId ->
+
+        },
+        onClickedItemRemoveButton = { principleId ->
+
+        },
+        onBackPressed = onBackPressed
+    )
 }
 
 @Composable
 private fun PrincipleDetailScreen(
-    modifier: Modifier = Modifier
+    uiState: HedgeUiState<MyPrincipleGroup>,
+    principleType: PrincipleType,
+    modifier: Modifier = Modifier,
+    onRetryButtonClicked: () -> Unit,
+    onClickedModifyButton: () -> Unit,
+    onClickedRemoveButton: () -> Unit,
+    onClickedItemModifyButton: (Int) -> Unit,
+    onClickedItemRemoveButton: (Int) -> Unit,
+    onBackPressed: () -> Unit
 ) {
-    Box(
-        modifier = modifier
-            .fillMaxSize()
-    ) {
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(HedgeColor.WHITE)
-        ) {
-            Topbar(
-                modifier = Modifier.background(HedgeColor.Brand.Secondary),
-                onBackPressed = {},
-                onClickedModifyButton = {},
-                onClickedRemoveButton = {}
-            )
+    if (uiState is HedgeUiState.Loading) {
+        LoadingProgressbar()
+    }
 
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .background(HedgeColor.Brand.Secondary)
-                    .padding(horizontal = 20.dp)
+    when (uiState) {
+        is HedgeUiState.Success<MyPrincipleGroup> -> {
+            Box(
+                modifier = modifier
+                    .fillMaxSize()
             ) {
-                Box(
+                Column(
                     modifier = Modifier
-                        .padding(top = 44.dp)
-                        .size(56.dp)
-                        .clip(CircleShape)
+                        .fillMaxSize()
                         .background(HedgeColor.WHITE)
                 ) {
-                    //todo Image인지 유니코드인지 구분해서 사용하기
-//                if(thumbnail == UNICODE) {
-//                    Text(
-//                        text = unicode
-//                    )
-//                } else {
-//                    Image()
-//                }
+                    Topbar(
+                        modifier = Modifier.background(HedgeColor.Brand.Secondary),
+                        onBackPressed = onBackPressed,
+                        onClickedModifyButton = onClickedModifyButton,
+                        onClickedRemoveButton = onClickedRemoveButton
+                    )
+
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .background(HedgeColor.Brand.Secondary)
+                            .padding(horizontal = 20.dp)
+                    ) {
+                        Box(
+                            modifier = Modifier
+                                .padding(top = 44.dp)
+                                .size(56.dp)
+                                .clip(CircleShape)
+                                .background(HedgeColor.WHITE),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            if (uiState.data.thumbnail.startsWith("http")) {
+                                AsyncImage(
+                                    model = uiState.data.thumbnail,
+                                    contentDescription = null
+                                )
+                            } else {
+                                Text(
+                                    text = uiState.data.thumbnail
+                                )
+                            }
+                        }
+
+                        Text(
+                            modifier = Modifier.padding(top = 20.dp, bottom = 30.dp),
+                            text = uiState.data.groupName,
+                            style = HedgeTypography.Headline1.SemiBold,
+                            color = HedgeColor.Text.Title
+                        )
+                    }
+
+                    LazyColumn(
+                        modifier = Modifier
+                            .padding(top = 10.dp)
+                            .fillMaxWidth()
+                    ) {
+                        itemsIndexed(
+                            items = uiState.data.principles,
+                            key = { index, principle -> principle.id }
+                        ) { index, principle ->
+                            PrincipleItem(
+                                index = index + 1,
+                                principle = principle,
+                                onClickedItemModifyButton = onClickedItemModifyButton,
+                                onClickedItemRemoveButton = onClickedItemRemoveButton
+                            )
+                            HorizontalDivider(
+                                thickness = 1.dp,
+                                color = HedgeColor.Neutral.BackgroundSecondary
+                            )
+                        }
+                    }
                 }
 
-                Text(
-                    modifier = Modifier.padding(top = 20.dp, bottom = 30.dp),
-                    text = "이건 좀 지키자 제발",
-                    style = HedgeTypography.Headline1.SemiBold,
-                    color = HedgeColor.Text.Title
-                )
-            }
+                when (principleType) {
+                    PrincipleType.MINE -> {
+                        PrincipleDetailFloatingButton(
+                            modifier = Modifier
+                                .padding(end = 20.dp, bottom = 45.dp)
+                                .align(alignment = Alignment.BottomEnd)
+                        ) {
+                            //todo 버튼 클릭 시 원칙 추가 기능 넣기
+                        }
+                    }
 
-            LazyColumn(
-                modifier = Modifier
-                    .padding(top = 10.dp)
-                    .fillMaxWidth()
-            ) {
-                items(
-                    items = mutableListOf(
-                        "1",
-                        "2",
-                        "3",
-                        "4",
-                        "5",
-                        "6",
-                        "7",
-                        "8",
-                        "9",
-                        "10",
-                        "11",
-                        "12",
-                        "13"
-                    ),
-                    key = { it }
-                ) {
-                    //todo MyPrinciple 타입 사용하기
-                    PrincipleItem(
-                        index = 1,
-                        title = "종목 선택 시 최근 매출액 확인하기 종목 선택 시 최근 매출액 확인하기",
-                        content = "상승장에서 눌림목 나오면 지지선 나올 때까지 기다렸다가 분할 매수하자. 몰빵은 절대 금지."
-                    )
-                    HorizontalDivider(
-                        thickness = 1.dp,
-                        color = HedgeColor.Neutral.BackgroundSecondary
-                    )
+                    PrincipleType.RECOMMENDED -> {
+                        PrincipleDetailConfirmButton(
+                            modifier = Modifier.align(Alignment.BottomCenter)
+                        )
+                    }
                 }
             }
         }
 
-        //todo 추천 원칙인지 내 원칙인지 구분에 따라 버튼 구분하기
-        PrincipleDetailConfirmButton(
-            modifier = Modifier.align(Alignment.BottomCenter)
-        )
+        is HedgeUiState.Error -> {
+            ErrorScreen(
+                onRetryButtonClicked = onRetryButtonClicked
+            )
+        }
+
+        else -> {}
     }
 }
 
 @Composable
 fun PrincipleItem(
     index: Int,
-    title: String,
-    content: String,
-    modifier: Modifier = Modifier
+    principle: MyPrinciple,
+    modifier: Modifier = Modifier,
+    onClickedItemModifyButton: (Int) -> Unit,
+    onClickedItemRemoveButton: (Int) -> Unit,
 ) {
     var isExpand by remember { mutableStateOf(false) }
 
@@ -174,13 +236,13 @@ fun PrincipleItem(
         ) {
             Text(
                 modifier = Modifier,
-                text = title,
+                text = principle.principle,
                 style = HedgeTypography.Body2.SemiBold,
                 color = HedgeColor.Text.Primary
             )
             Text(
                 modifier = Modifier.padding(top = 6.dp),
-                text = content,
+                text = principle.description,
                 style = HedgeTypography.Body3.Regular,
                 color = HedgeColor.Text.Primary
             )
@@ -188,7 +250,15 @@ fun PrincipleItem(
 
         Box {
             Image(
-                modifier = Modifier.padding(start = 10.dp),
+                modifier = Modifier
+                    .padding(start = 10.dp)
+                    .clickable(
+                        enabled = true,
+                        indication = null,
+                        interactionSource = remember { MutableInteractionSource() }
+                    ) {
+                        isExpand = !isExpand
+                    },
                 imageVector = HedgeIcon.Menu,
                 contentDescription = null,
                 colorFilter = ColorFilter.tint(color = HedgeColor.Text.Disabled)
@@ -196,8 +266,12 @@ fun PrincipleItem(
 
             ModifyAndRemoveDropdown(
                 expand = isExpand,
-                onClickedModifyButton = {},
-                onClickedRemoveButton = {},
+                onClickedModifyButton = {
+                    onClickedItemModifyButton(principle.id)
+                },
+                onClickedRemoveButton = {
+                    onClickedItemRemoveButton(principle.id)
+                },
                 onDismissRequest = { isExpand = false }
             )
         }
@@ -315,7 +389,11 @@ private fun Topbar(
             Image(
                 modifier = Modifier
                     .padding(end = 16.dp)
-                    .clickable(enabled = true) {
+                    .clickable(
+                        enabled = true,
+                        indication = null,
+                        interactionSource = remember { MutableInteractionSource() }
+                    ) {
                         isExpanded = !isExpanded
                     },
                 imageVector = HedgeIcon.Menu,
@@ -388,11 +466,72 @@ private fun ModifyAndRemoveDropdown(
     }
 }
 
+@Composable
+private fun ErrorScreen(
+    onRetryButtonClicked: () -> Unit
+) {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(HedgeColor.WHITE),
+        contentAlignment = Alignment.Center
+    ) {
+        HedgeButton.Action.Filled(
+            text = "재시도",
+            size = HedgeButton.Action.Size.Medium,
+            onClick = onRetryButtonClicked
+        )
+    }
+}
+
+
+@Composable
+private fun LoadingProgressbar() {
+    Box(
+        modifier = Modifier
+            .fillMaxSize(),
+        contentAlignment = Alignment.Center
+    ) {
+        CircularProgressIndicator(
+            strokeWidth = 2.5.dp,
+            color = HedgeColor.Brand.Primary,
+            strokeCap = StrokeCap.Round,
+            trackColor = HedgeColor.Brand.Primary.copy(alpha = 0.1f),
+        )
+    }
+}
+
 
 @Preview
 @Composable
 fun PrincipleDetailScreenPreview() {
-    PrincipleDetailScreen()
+    PrincipleDetailScreen(
+        uiState = HedgeUiState.Success(
+            data = MyPrincipleGroup.EMPTY.copy(
+                groupName = "이건 좀 지키자 제발",
+                orderType = OrderType.BUY,
+                principles = listOf(
+                    MyPrinciple.EMPTY.copy(
+                        id = 1,
+                        principle = "종목 선택 시 최근 매출액 확인하기 종목 선택 시 최근 매출액 확인하기 ",
+                        description = "상승장에서 눌림목 나오면 지지선 나올 때까지 기다렸다가 분할 매수하자. 몰빵은 절대 금지."
+                    ),
+                    MyPrinciple.EMPTY.copy(
+                        id = 2,
+                        principle = "종목 선택 시 최근 매출액 확인하기 종목 선택 시 최근 매출액 확인하기 ",
+                        description = "상승장에서 눌림목 나오면 지지선 나올 때까지 기다렸다가 분할 매수하자. 몰빵은 절대 금지."
+                    )
+                )
+            )
+        ),
+        principleType = PrincipleType.MINE,
+        onRetryButtonClicked = {},
+        onClickedModifyButton = {},
+        onClickedRemoveButton = {},
+        onClickedItemModifyButton = {},
+        onClickedItemRemoveButton = {},
+        onBackPressed = {}
+    )
 }
 
 
@@ -411,10 +550,16 @@ fun TopbarPreview() {
 @Preview
 @Composable
 fun PrincipleItemPreview() {
+    val principle = MyPrinciple.EMPTY.copy(
+        principle = "종목 선택 시 최근 매출액 확인하기 종목 선택 시 최근 매출액 확인하기 ",
+        description = "상승장에서 눌림목 나오면 지지선 나올 때까지 기다렸다가 분할 매수하자. 몰빵은 절대 금지."
+    )
+
     PrincipleItem(
         index = 1,
-        title = "종목 선택 시 최근 매출액 확인하기 종목 선택 시 최근 매출액 확인하기 ",
-        content = "상승장에서 눌림목 나오면 지지선 나올 때까지 기다렸다가 분할 매수하자. 몰빵은 절대 금지."
+        principle = principle,
+        onClickedItemModifyButton = {},
+        onClickedItemRemoveButton = {}
     )
 }
 
@@ -437,4 +582,16 @@ fun ConfirmButtonPreview() {
     ) {
         PrincipleDetailConfirmButton()
     }
+}
+
+@Preview
+@Composable
+fun LoadingProgressbarPreview() {
+    LoadingProgressbar()
+}
+
+@Preview
+@Composable
+fun ErrorScreenPreview() {
+    ErrorScreen {}
 }

@@ -12,6 +12,7 @@ import com.depromeet.team5.features.home.Home
 import com.depromeet.team5.features.home.homeScreen
 import com.depromeet.team5.features.principle.navigation.navigateToPrinciple
 import com.depromeet.team5.features.principle.navigation.principleScreen
+import com.depromeet.team5.features.principledetail.navigation.principleDetail
 import com.depromeet.team5.features.retrospect.screen.navigateToRetrospect
 import com.depromeet.team5.features.retrospect.screen.retrospectScreen
 import com.depromeet.team5.features.search.navigateToSearch
@@ -56,6 +57,10 @@ fun HedgeNavHost(
             navController = navController,
             onBackPressed = { navController.popBackStack() },
             onClickNext = { navController.navigateToReasonGraph() }
+        )
+
+        principleDetail(
+            onBackPressed = navController::popBackStack
         )
 
         reasonGraph(

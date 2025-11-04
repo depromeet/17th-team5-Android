@@ -30,6 +30,10 @@ dependencies {
     implementation(projects.core.navigation)
     implementation(projects.core.designsystem)
     implementation(projects.core.domain)
+    implementation(projects.core.ui)
+
+    implementation(libs.coil.compose)
+    implementation(libs.coil.network.okhttp)
 
     implementation(libs.org.jetbrains.kotlinx.kotlinx.serialization.json)
 }

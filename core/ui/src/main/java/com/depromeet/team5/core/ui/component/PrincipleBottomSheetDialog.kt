@@ -339,17 +339,21 @@ private fun HedgeModalBottomSheetScreen(
             }
         }
 
-        if (selectedMyPrincipleItem != -1) {
-            val target = groups.find { it.id == selectedMyPrincipleItem }?.principles ?: return
-
-            ConfirmButton(
-                modifier = Modifier.align(Alignment.BottomCenter),
-                enabled = selectedMyPrincipleItem != -1,
-                onClickedConfirmButton = {
-                    onClickedConfirmButton(target)
-                }
-            )
+        val target = if (selectedMyPrincipleItem == -1) {
+            beginnerPrinciple.principles.ifEmpty { return }
+        } else if (selectedMyPrincipleItem != -2) {
+            groups.find { it.id == selectedMyPrincipleItem }?.principles ?: return
+        } else {
+            return
         }
+
+        ConfirmButton(
+            modifier = Modifier.align(Alignment.BottomCenter),
+            enabled = selectedMyPrincipleItem != -1,
+            onClickedConfirmButton = {
+                onClickedConfirmButton(target)
+            }
+        )
     }
 }
 

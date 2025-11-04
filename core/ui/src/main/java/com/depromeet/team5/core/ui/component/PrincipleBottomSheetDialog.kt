@@ -192,7 +192,10 @@ private fun HedgeModalBottomSheetScreen(
                                 contentDescription = null
                             )
                         } else {
-                            Text(text = beginnerPrinciple.thumbnail)
+                            Text(
+                                text = beginnerPrinciple.thumbnail,
+                                style = HedgeTypography.Body3.SemiBold
+                            )
                         }
                     }
                 )
@@ -272,7 +275,10 @@ private fun HedgeModalBottomSheetScreen(
                                 contentDescription = null
                             )
                         } else {
-                            Text(text = group.thumbnail)
+                            Text(
+                                text = group.thumbnail,
+                                style = HedgeTypography.Body3.SemiBold
+                            )
                         }
                     },
                     selected = group.id == selectedMyPrincipleItem
@@ -456,7 +462,8 @@ private fun PrincipleGroupItem(
                 .background(
                     color = HedgeColor.Neutral.BackgroundSecondary,
                     shape = RoundedCornerShape(39.dp)
-                )
+                ),
+            contentAlignment = Alignment.Center
         ) {
             icon()
         }

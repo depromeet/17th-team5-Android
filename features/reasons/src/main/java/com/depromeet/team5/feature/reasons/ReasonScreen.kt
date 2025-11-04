@@ -57,7 +57,7 @@ import com.depromeet.team5.core.designsystem.component.HedgeTopBar
 import com.depromeet.team5.core.designsystem.foundation.HedgeColor
 import com.depromeet.team5.core.designsystem.foundation.HedgeIcon
 import com.depromeet.team5.core.designsystem.foundation.HedgeTypography
-import com.depromeet.team5.core.navigation.request.OrderTypeParams
+import com.depromeet.team5.core.domain.model.OrderType
 import com.depromeet.team5.core.navigation.request.RequestViewModel
 import com.depromeet.team5.core.ui.HedgeModal
 import com.depromeet.team5.feature.reasons.ui.AutoScrollTextField
@@ -350,7 +350,7 @@ private fun TradeInfo(
                 tradeInfo.price,
                 tradeInfo.currency,
                 tradeInfo.volume,
-                stringResource(if (tradeInfo.orderType == OrderTypeParams.BUY) R.string.buy else R.string.sell)
+                stringResource(if (tradeInfo.orderType == OrderType.BUY) R.string.buy else R.string.sell)
             ),
             color = HedgeColor.Trade.Sell,
             style = HedgeTypography.Label1.SemiBold,

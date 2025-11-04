@@ -5,7 +5,7 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.depromeet.team5.core.navigation.request.OrderTypeParams
+import com.depromeet.team5.core.domain.model.OrderType
 import com.depromeet.team5.core.ui.lazy.hedgeState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -19,7 +19,7 @@ data class TradeInfo(
     @DrawableRes
     val logoDrawableRes: Int,
     val stockName: String,
-    val orderType: OrderTypeParams,
+    val orderType: OrderType,
     val price: Long,
     val currency: String,
     val volume: Int,
@@ -208,7 +208,7 @@ class ReasonViewModel @Inject constructor(
         val dummyTradeInfo = TradeInfo(
             logoDrawableRes = R.drawable.ic_company_logo,
             stockName = "Apple",
-            orderType = OrderTypeParams.BUY,
+            orderType = OrderType.BUY,
             price = 65000,
             currency = "$",
             volume = 3,

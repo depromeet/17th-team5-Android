@@ -210,7 +210,6 @@ fun RetrospectRoute(
                         volume = stockTextFieldState.value.text.toInt(),
                         orderDate = dateTextFieldState.value.text,
                         currency = CurrencyType.from(currencyType.value),
-                        principles = principles,
                         returnRate = try {
                             when (returnSignType.value) {
                                 ReturnSignType.Plus -> {
@@ -225,6 +224,8 @@ fun RetrospectRoute(
                             null
                         }
                     )
+
+                    requestViewModel.principles = principles
                 }
 
                 onClickedConfirmButton()

@@ -1,9 +1,5 @@
 package com.depromeet.team5.features.principledetail.navigation
 
-import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.systemBars
-import androidx.compose.foundation.layout.windowInsetsPadding
-import androidx.compose.ui.Modifier
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavOptions
@@ -38,7 +34,6 @@ fun NavGraphBuilder.principleDetail(
         val args = backstackEntry.toRoute<PrincipleDetail>()
 
         PrincipleDetailRoute(
-            modifier = Modifier.windowInsetsPadding(WindowInsets.systemBars),
             principleType = args.principleType,
             onBackPressed = onBackPressed
         )

@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
@@ -367,46 +368,52 @@ private fun Topbar(
 ) {
     var isExpanded by remember { mutableStateOf(false) }
 
-    Row(
+    Column(
         modifier = modifier
-            .fillMaxWidth(),
-        verticalAlignment = Alignment.CenterVertically
+            .fillMaxWidth()
+            .statusBarsPadding()
     ) {
-        Image(
+        Row(
             modifier = Modifier
-                .padding(start = 4.dp)
-                .clickable(enabled = true) { onBackPressed() },
-            imageVector = HedgeIcon.ArrowLeftThick,
-            contentDescription = null,
-            colorFilter = ColorFilter.tint(color = HedgeColor.Text.Primary)
-        )
-
-        Spacer(
-            modifier = Modifier.weight(1f)
-        )
-
-        Box {
+                .fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
             Image(
                 modifier = Modifier
-                    .padding(end = 16.dp)
-                    .clickable(
-                        enabled = true,
-                        indication = null,
-                        interactionSource = remember { MutableInteractionSource() }
-                    ) {
-                        isExpanded = !isExpanded
-                    },
-                imageVector = HedgeIcon.Menu,
+                    .padding(start = 4.dp)
+                    .clickable(enabled = true) { onBackPressed() },
+                imageVector = HedgeIcon.ArrowLeftThick,
                 contentDescription = null,
                 colorFilter = ColorFilter.tint(color = HedgeColor.Text.Primary)
             )
-            if (isExpanded) {
-                ModifyAndRemoveDropdown(
-                    expand = isExpanded,
-                    onClickedModifyButton = onClickedModifyButton,
-                    onClickedRemoveButton = onClickedRemoveButton,
-                    onDismissRequest = { isExpanded = false }
+
+            Spacer(
+                modifier = Modifier.weight(1f)
+            )
+
+            Box {
+                Image(
+                    modifier = Modifier
+                        .padding(end = 16.dp)
+                        .clickable(
+                            enabled = true,
+                            indication = null,
+                            interactionSource = remember { MutableInteractionSource() }
+                        ) {
+                            isExpanded = !isExpanded
+                        },
+                    imageVector = HedgeIcon.Menu,
+                    contentDescription = null,
+                    colorFilter = ColorFilter.tint(color = HedgeColor.Text.Primary)
                 )
+                if (isExpanded) {
+                    ModifyAndRemoveDropdown(
+                        expand = isExpanded,
+                        onClickedModifyButton = onClickedModifyButton,
+                        onClickedRemoveButton = onClickedRemoveButton,
+                        onDismissRequest = { isExpanded = false }
+                    )
+                }
             }
         }
     }

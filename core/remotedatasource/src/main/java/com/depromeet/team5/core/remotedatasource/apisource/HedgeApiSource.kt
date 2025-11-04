@@ -22,7 +22,7 @@ interface HedgeApiSource {
 
     suspend fun getPrincipleGroups(orderType: String): MyPrincipleGroupsRemoteData
 
-    suspend fun getPrinciple(groupId: Int): MyPrincipleGroupRemoteData
+    suspend fun getPrincipleGroup(groupId: Int): MyPrincipleGroupRemoteData
 
     suspend fun deletePrincipleGroup(groupId: Int)
 

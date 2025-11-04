@@ -40,7 +40,7 @@ internal class HedgeRepositoryImpl @Inject constructor(
     }
 
     override fun getPrincipleGroup(groupId: Int): Flow<MyPrincipleGroup> = flow {
-        emit(remoteDataSource.getPrinciple(groupId))
+        emit(remoteDataSource.getPrincipleGroup(groupId))
     }
         .map { it.toDomain() }
 

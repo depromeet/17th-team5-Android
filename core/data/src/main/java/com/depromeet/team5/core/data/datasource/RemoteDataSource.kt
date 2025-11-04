@@ -21,7 +21,7 @@ interface RemoteDataSource {
 
     suspend fun getPrinciples(orderType: String): MyPrincipleGroupsData
 
-    suspend fun getPrinciple(groupId: Int): MyPrincipleGroupData
+    suspend fun getPrincipleGroup(groupId: Int): MyPrincipleGroupData
 
     suspend fun deletePrincipleGroup(groupId: Int)
 

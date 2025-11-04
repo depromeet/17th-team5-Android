@@ -41,8 +41,8 @@ internal class HedgeApiSourceImpl @Inject constructor(
     override suspend fun getPrincipleGroups(orderType: String): MyPrincipleGroupsRemoteData =
         hedgeApi.getPrincipleGroups(orderType = orderType).toRemoteData()
 
-    override suspend fun getPrinciple(groupId: Int): MyPrincipleGroupRemoteData =
-        hedgeApi.getPrinciple(groupId).toRemoteData()
+    override suspend fun getPrincipleGroup(groupId: Int): MyPrincipleGroupRemoteData =
+        hedgeApi.getPrincipleGroup(groupId).toRemoteData()
 
     override suspend fun deletePrincipleGroup(groupId: Int) =
         hedgeApi.deletePrincipleGroup(groupId)

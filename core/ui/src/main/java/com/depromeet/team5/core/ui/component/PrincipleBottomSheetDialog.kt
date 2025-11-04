@@ -133,23 +133,9 @@ private fun HedgeModalBottomSheetScreen(
     onClickedConfirmButton: (List<MyPrinciple>) -> Unit,
     onClickedAddButton: () -> Unit
 ) {
-    val context = LocalContext.current
     var selectedMyPrincipleItem by remember { mutableIntStateOf(-2) }
 
-    val beginnerPrinciple = remember(orderType) {
-        MyPrincipleGroup(
-            id = -1,
-            groupName = if (orderType == OrderType.BUY) {
-                context.getString(R.string.principle_bottom_sheet_dialog_beginner_buy_type)
-            } else {
-                context.getString(R.string.principle_bottom_sheet_dialog_beginner_sell_type)
-            },
-            thumbnail = "",
-            orderType = orderType,
-            displayOrder = 0,
-            principles = listOf()
-        )
-    }
+    val beginnerPrinciple = rememberBeginnerPrinciple(orderType)
 
     Box(
         modifier = modifier
@@ -588,6 +574,42 @@ fun MyPrincipleItem(
         )
     }
 }
+
+@Composable
+private fun rememberBeginnerPrinciple(orderType: OrderType) = run {
+    val context = LocalContext.current
+
+    remember(orderType) {
+        val principles = when (orderType) {
+            OrderType.BUY -> context.resources.getStringArray(R.array.principle_bottom_sheet_dialog_beginner_buy_type_array)
+            OrderType.SELL -> context.resources.getStringArray(R.array.principle_bottom_sheet_dialog_beginner_sell_type_array)
+            OrderType.NONE -> emptyArray()
+        }
+            .mapIndexed { index, principle ->
+                MyPrinciple(
+                    id = index,
+                    groupId = -1,
+                    principle = principle,
+                    description = ""
+                )
+            }
+
+        MyPrincipleGroup(
+            id = -1,
+            groupName = if (orderType == OrderType.BUY) {
+                context.getString(R.string.principle_bottom_sheet_dialog_beginner_buy_type)
+            } else {
+                context.getString(R.string.principle_bottom_sheet_dialog_beginner_sell_type)
+            },
+            thumbnail = "",
+            orderType = orderType,
+            displayOrder = 0,
+            principles = principles
+        )
+    }
+}
+
+
 
 @Preview
 @Composable

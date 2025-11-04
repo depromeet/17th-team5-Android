@@ -19,4 +19,17 @@
 
     <string name="standard">기본</string>
     <string name="select">선택</string>
+
+    <string-array name="principle_bottom_sheet_dialog_beginner_buy_type_array">
+        <item>안전마진을 확보하라</item>
+        <item>기업의 본질 가치보다 낮게 거래되는 주식을 찾아 장기 보유하기</item>
+        <item>정책 민감도가 높은 주식은 정책 잘 살펴보고 매매</item>
+    </string-array>
+
+    <string-array name="principle_bottom_sheet_dialog_beginner_sell_type_array">
+        <item>안전마진을 확보하라</item>
+        <item>기업의 본질 가치보다 낮게 거래되는 주식을 찾아 장기 보유하기</item>
+        <item>정책 민감도가 높은 주식은 정책 잘 살펴보고 매매</item>
+    </string-array>
+
 </resources>

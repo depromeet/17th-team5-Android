@@ -66,7 +66,9 @@ private fun PrincipleDetailScreen(
         ) {
             Topbar(
                 modifier = Modifier.background(HedgeColor.Brand.Secondary),
-                onBackPressed = {}
+                onBackPressed = {},
+                onClickedModifyButton = {},
+                onClickedRemoveButton = {}
             )
 
             Column(
@@ -151,6 +153,8 @@ fun PrincipleItem(
     content: String,
     modifier: Modifier = Modifier
 ) {
+    var isExpand by remember { mutableStateOf(false) }
+
     Row(
         modifier = modifier
             .fillMaxWidth()
@@ -182,12 +186,21 @@ fun PrincipleItem(
             )
         }
 
-        Image(
-            modifier = Modifier.padding(start = 10.dp),
-            imageVector = HedgeIcon.Menu,
-            contentDescription = null,
-            colorFilter = ColorFilter.tint(color = HedgeColor.Text.Disabled)
-        )
+        Box {
+            Image(
+                modifier = Modifier.padding(start = 10.dp),
+                imageVector = HedgeIcon.Menu,
+                contentDescription = null,
+                colorFilter = ColorFilter.tint(color = HedgeColor.Text.Disabled)
+            )
+
+            ModifyAndRemoveDropdown(
+                expand = isExpand,
+                onClickedModifyButton = {},
+                onClickedRemoveButton = {},
+                onDismissRequest = { isExpand = false }
+            )
+        }
     }
 }
 
@@ -274,22 +287,21 @@ fun PrincipleDetailFloatingButton(
 @Composable
 private fun Topbar(
     modifier: Modifier = Modifier,
-    onBackPressed: () -> Unit
+    onBackPressed: () -> Unit,
+    onClickedModifyButton: () -> Unit,
+    onClickedRemoveButton: () -> Unit
 ) {
     var isExpanded by remember { mutableStateOf(false) }
 
     Row(
         modifier = modifier
-            .fillMaxWidth()
-            .height(44.dp),
+            .fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Image(
             modifier = Modifier
                 .padding(start = 4.dp)
-                .clickable(enabled = true) {
-                    onBackPressed()
-                },
+                .clickable(enabled = true) { onBackPressed() },
             imageVector = HedgeIcon.ArrowLeftThick,
             contentDescription = null,
             colorFilter = ColorFilter.tint(color = HedgeColor.Text.Primary)
@@ -313,8 +325,8 @@ private fun Topbar(
             if (isExpanded) {
                 ModifyAndRemoveDropdown(
                     expand = isExpanded,
-                    onClickedModifyButton = { isExpanded = false },
-                    onClickedRemoveButton = { isExpanded = false },
+                    onClickedModifyButton = onClickedModifyButton,
+                    onClickedRemoveButton = onClickedRemoveButton,
                     onDismissRequest = { isExpanded = false }
                 )
             }
@@ -333,29 +345,43 @@ private fun ModifyAndRemoveDropdown(
     DropdownMenu(
         modifier = modifier
             .background(HedgeColor.WHITE),
-        shape = RoundedCornerShape(20.dp),
+        shape = RoundedCornerShape(16.dp),
         expanded = expand,
         containerColor = HedgeColor.WHITE,
         onDismissRequest = onDismissRequest,
         offset = DpOffset((-20).dp, 0.dp)
     ) {
         DropdownMenuItem(
-            text = { Text(stringResource(R.string.modify)) },
+            text = {
+                Text(
+                    text = stringResource(R.string.modify),
+                    style = HedgeTypography.Body3.Medium,
+                    color = HedgeColor.Text.Primary
+                )
+            },
             onClick = onClickedModifyButton,
             trailingIcon = {
                 Image(
                     imageVector = HedgeIcon.Pencil,
-                    contentDescription = null
+                    contentDescription = null,
+                    colorFilter = ColorFilter.tint(HedgeColor.Text.Primary)
                 )
             }
         )
         DropdownMenuItem(
-            text = { Text(stringResource(R.string.delete)) },
+            text = {
+                Text(
+                    text = stringResource(R.string.delete),
+                    style = HedgeTypography.Body3.Medium,
+                    color = HedgeColor.Feedback.Error
+                )
+            },
             onClick = onClickedRemoveButton,
             trailingIcon = {
                 Image(
                     imageVector = HedgeIcon.Trash,
-                    contentDescription = null
+                    contentDescription = null,
+                    colorFilter = ColorFilter.tint(HedgeColor.Feedback.Error)
                 )
             }
         )
@@ -376,7 +402,9 @@ fun TopbarPreview() {
     Topbar(
         modifier = Modifier
             .background(HedgeColor.Brand.Secondary),
-        onBackPressed = {}
+        onBackPressed = {},
+        onClickedModifyButton = {},
+        onClickedRemoveButton = {}
     )
 }
 

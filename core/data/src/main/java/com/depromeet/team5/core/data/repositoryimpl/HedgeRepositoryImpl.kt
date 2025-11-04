@@ -13,6 +13,7 @@ import com.depromeet.team5.core.domain.repository.HedgeRepository
 import com.depromeet.team5.core.domain.request.CreateRetrospectionRequest
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
 
@@ -37,6 +38,11 @@ internal class HedgeRepositoryImpl @Inject constructor(
     override fun getPrincipleGroups(orderType: String): Flow<List<MyPrincipleGroup>> = flow {
         emit(remoteDataSource.getPrinciples(orderType).toDomain())
     }
+
+    override fun getPrincipleGroup(groupId: Int): Flow<MyPrincipleGroup> = flow {
+        emit(remoteDataSource.getPrinciple(groupId))
+    }
+        .map { it.toDomain() }
 
     override suspend fun uploadImageUri(
         domain: String,

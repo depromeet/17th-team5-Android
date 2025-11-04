@@ -5,6 +5,7 @@ import com.depromeet.team5.core.retrofit.model.BaseResponse
 import com.depromeet.team5.core.retrofit.model.FeedbackResponse
 import com.depromeet.team5.core.retrofit.model.ImageUploadResponse
 import com.depromeet.team5.core.retrofit.model.MyPrincipleGroupsResponse
+import com.depromeet.team5.core.retrofit.model.MyPrincipleResponse
 import com.depromeet.team5.core.retrofit.model.RetrospectionListResponse
 import com.depromeet.team5.core.retrofit.model.RetrospectionResponse
 import com.depromeet.team5.core.retrofit.model.SearchResponse
@@ -38,6 +39,12 @@ interface HedgeApi {
         @Query("type")
         orderType: String
     ): MyPrincipleGroupsResponse
+
+    @GET("api/v1/principle-groups/{groupId}")
+    suspend fun getPrinciple(
+        @Path("groupId")
+        groupId: Int
+    ): MyPrincipleResponse
 
     @Multipart
     @POST("api/v1/{domain}/images/upload")

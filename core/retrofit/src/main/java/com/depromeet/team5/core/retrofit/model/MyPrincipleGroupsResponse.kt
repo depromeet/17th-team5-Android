@@ -22,6 +22,23 @@ data class MyPrincipleGroupsResponse(
 }
 
 @Serializable
+data class MyPrincipleResponse(
+    val code: String,
+    val message: String,
+    val data: MyPrincipleGroupResponse
+) : RetrofitMapper<MyPrincipleGroupRemoteData> {
+
+    override fun toRemoteData(): MyPrincipleGroupRemoteData = MyPrincipleGroupRemoteData(
+        id = data.id,
+        groupName = data.groupName,
+        thumbnail = data.thumbnail,
+        principleType = data.principleType,
+        displayOrder = data.displayOrder,
+        principles = data.principles.map { it.toRemoteData() },
+    )
+}
+
+@Serializable
 data class MyPrincipleGroupResponse(
     val id: Int,
     val groupName: String,

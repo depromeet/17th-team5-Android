@@ -2,6 +2,7 @@ package com.depromeet.team5.core.remotedatasource.apisource
 
 import android.net.Uri
 import com.depromeet.team5.core.remotedatasource.model.FeedbackRemoteData
+import com.depromeet.team5.core.remotedatasource.model.MyPrincipleGroupRemoteData
 import com.depromeet.team5.core.remotedatasource.model.MyPrincipleGroupsRemoteData
 import com.depromeet.team5.core.remotedatasource.model.RetrospectionListRemoteData
 import com.depromeet.team5.core.remotedatasource.model.RetrospectionRemoteData
@@ -20,6 +21,8 @@ interface HedgeApiSource {
     suspend fun createFeedback(retrospectionId: Int): FeedbackRemoteData
 
     suspend fun getPrincipleGroups(orderType: String): MyPrincipleGroupsRemoteData
+
+    suspend fun getPrinciple(groupId: Int): MyPrincipleGroupRemoteData
 
     suspend fun uploadImageUri(
         domain: String,

@@ -4,6 +4,7 @@ import android.content.Context
 import android.net.Uri
 import com.depromeet.team5.core.remotedatasource.apisource.HedgeApiSource
 import com.depromeet.team5.core.remotedatasource.model.FeedbackRemoteData
+import com.depromeet.team5.core.remotedatasource.model.MyPrincipleGroupRemoteData
 import com.depromeet.team5.core.remotedatasource.model.MyPrincipleGroupsRemoteData
 import com.depromeet.team5.core.remotedatasource.model.RetrospectionRemoteData
 import com.depromeet.team5.core.remotedatasource.model.RetrospectionListRemoteData
@@ -18,6 +19,7 @@ import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.toRequestBody
 import javax.inject.Inject
 import javax.inject.Singleton
+
 
 @Singleton
 internal class HedgeApiSourceImpl @Inject constructor(
@@ -38,6 +40,9 @@ internal class HedgeApiSourceImpl @Inject constructor(
 
     override suspend fun getPrincipleGroups(orderType: String): MyPrincipleGroupsRemoteData =
         hedgeApi.getPrincipleGroups(orderType = orderType).toRemoteData()
+
+    override suspend fun getPrinciple(groupId: Int): MyPrincipleGroupRemoteData =
+        hedgeApi.getPrinciple(groupId).toRemoteData()
 
     override suspend fun uploadImageUri(
         domain: String,

@@ -4,7 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.depromeet.team5.core.domain.monad.HedgeUiState
 import com.depromeet.team5.core.domain.monad.asUiState
-import com.depromeet.team5.core.domain.usecase.GetPrinciplesUseCase
+import com.depromeet.team5.core.domain.usecase.GetPrincipleGroupsUseCase
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
@@ -15,11 +15,11 @@ import kotlinx.coroutines.flow.stateIn
 
 @HiltViewModel(assistedFactory = RetrospectionViewModel.Factory::class)
 class RetrospectionViewModel @AssistedInject constructor(
-    private val getPrincipleUseCase: GetPrinciplesUseCase,
+    private val getPrincipleGroupsUseCase: GetPrincipleGroupsUseCase,
     @Assisted orderType: String
 ) : ViewModel() {
 
-    val principleUiState = getPrincipleUseCase(orderType)
+    val principleGroupsUiState = getPrincipleGroupsUseCase(orderType)
         .asUiState()
         .stateIn(
             scope = viewModelScope,

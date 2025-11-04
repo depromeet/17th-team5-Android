@@ -114,7 +114,7 @@ fun RetrospectRoute(
         requestParams = requestViewModel.request
     )
 
-    val myPrincipleState by viewModel.principleUiState.collectAsStateWithLifecycle()
+    val myPrincipleState by viewModel.principleGroupsUiState.collectAsStateWithLifecycle()
 
     var isOpenBottomSheetDialog by remember { mutableStateOf(false) }
 

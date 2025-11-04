@@ -6,7 +6,7 @@ import com.depromeet.team5.core.domain.model.MyPrincipleGroup
 import com.depromeet.team5.core.domain.model.OrderType
 
 
-data class MyPrincipleListData(
+data class MyPrincipleGroupsData(
     val code: String,
     val message: String,
     val data: List<MyPrincipleGroupData>
@@ -21,7 +21,7 @@ data class MyPrincipleGroupData(
     val thumbnail: String,
     val principleType: String,
     val displayOrder: Int,
-    val principles: List<MyPrincipleInfoData>
+    val principles: List<MyPrincipleData>
 ) : DataMapper<MyPrincipleGroup> {
 
     override fun toDomain(): MyPrincipleGroup = MyPrincipleGroup(
@@ -39,7 +39,7 @@ data class MyPrincipleGroupData(
 
 }
 
-data class MyPrincipleInfoData(
+data class MyPrincipleData(
     val id: Int,
     val groupId: Int,
     val groupName: String,

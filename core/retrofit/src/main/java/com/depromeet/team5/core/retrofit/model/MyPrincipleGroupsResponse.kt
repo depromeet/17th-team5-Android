@@ -1,20 +1,20 @@
 package com.depromeet.team5.core.retrofit.model
 
 import com.depromeet.team5.core.remotedatasource.model.MyPrincipleGroupRemoteData
-import com.depromeet.team5.core.remotedatasource.model.MyPrincipleInfoRemoteData
-import com.depromeet.team5.core.remotedatasource.model.MyPrincipleListRemoteData
+import com.depromeet.team5.core.remotedatasource.model.MyPrincipleGroupsRemoteData
+import com.depromeet.team5.core.remotedatasource.model.MyPrincipleRemoteData
 import com.depromeet.team5.core.retrofit.mapper.RetrofitMapper
 import kotlinx.serialization.Serializable
 
 
 @Serializable
-data class MyPrincipleListResponse(
+data class MyPrincipleGroupsResponse(
     val code: String,
     val message: String,
     val data: List<MyPrincipleGroupResponse>
-) : RetrofitMapper<MyPrincipleListRemoteData> {
+) : RetrofitMapper<MyPrincipleGroupsRemoteData> {
 
-    override fun toRemoteData(): MyPrincipleListRemoteData = MyPrincipleListRemoteData(
+    override fun toRemoteData(): MyPrincipleGroupsRemoteData = MyPrincipleGroupsRemoteData(
         code = code,
         message = message,
         data = data.map { it.toRemoteData() }
@@ -28,7 +28,7 @@ data class MyPrincipleGroupResponse(
     val thumbnail: String,
     val principleType: String,
     val displayOrder: Int,
-    val principles: List<MyPrincipleInfoResponse>
+    val principles: List<MyPrincipleResponse>
 ) : RetrofitMapper<MyPrincipleGroupRemoteData> {
 
     override fun toRemoteData(): MyPrincipleGroupRemoteData = MyPrincipleGroupRemoteData(
@@ -42,7 +42,7 @@ data class MyPrincipleGroupResponse(
 }
 
 @Serializable
-data class MyPrincipleInfoResponse(
+data class MyPrincipleResponse(
     val id: Int,
     val groupId: Int,
     val principleType: String,
@@ -50,8 +50,8 @@ data class MyPrincipleInfoResponse(
     val principle: String,
     val description: String,
     val displayOrder: Int
-) : RetrofitMapper<MyPrincipleInfoRemoteData> {
-    override fun toRemoteData(): MyPrincipleInfoRemoteData = MyPrincipleInfoRemoteData(
+) : RetrofitMapper<MyPrincipleRemoteData> {
+    override fun toRemoteData(): MyPrincipleRemoteData = MyPrincipleRemoteData(
         id = id,
         groupId = groupId,
         groupName = groupName,

@@ -28,7 +28,9 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -101,6 +103,7 @@ fun PrincipleBottomSheetDialog(
     ) {
         Box(
             modifier = Modifier
+                .windowInsetsPadding(WindowInsets.systemBars)
                 .heightIn(max = (screenHeight * 0.76f))
         ) {
             HedgeModalBottomSheetScreen(
@@ -613,7 +616,7 @@ private fun rememberBeginnerPrinciple(orderType: OrderType) = run {
 
 @Preview
 @Composable
-fun HedgePrincipleListItemPreview() {
+private fun HedgePrincipleListItemPreview() {
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -630,7 +633,7 @@ fun HedgePrincipleListItemPreview() {
 
 @Preview
 @Composable
-fun SelectedMyPrincipleItemPreview() {
+private fun SelectedMyPrincipleItemPreview() {
     val myPrinciple = MyPrinciple(
         id = 1,
         groupId = 1,
@@ -648,7 +651,7 @@ fun SelectedMyPrincipleItemPreview() {
 
 @Preview
 @Composable
-fun ConfirmButtonPreview() {
+private fun ConfirmButtonPreview() {
     Box(
         modifier = Modifier.background(
             color = HedgeColor.WHITE

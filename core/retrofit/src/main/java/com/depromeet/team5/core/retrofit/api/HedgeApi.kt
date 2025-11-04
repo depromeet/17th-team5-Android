@@ -2,7 +2,7 @@ package com.depromeet.team5.core.retrofit.api
 
 import com.depromeet.team5.core.retrofit.model.AnalysisResponse
 import com.depromeet.team5.core.retrofit.model.FeedbackResponse
-import com.depromeet.team5.core.retrofit.model.MyPrincipleResponse
+import com.depromeet.team5.core.retrofit.model.MyPrincipleListResponse
 import com.depromeet.team5.core.retrofit.model.RetrospectionResponse
 import com.depromeet.team5.core.retrofit.model.SearchResponse
 import okhttp3.RequestBody
@@ -34,6 +34,6 @@ interface HedgeApi {
     suspend fun getPrinciples(
         @Query("type")
         orderType: String
-    ): MyPrincipleResponse
+    ): MyPrincipleListResponse
 
 }

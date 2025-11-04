@@ -48,6 +48,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
@@ -131,7 +132,22 @@ private fun HedgeModalBottomSheetScreen(
     onClickedConfirmButton: (List<MyPrinciple>) -> Unit,
     onClickedAddButton: () -> Unit
 ) {
+    val context = LocalContext.current
     var selectedMyPrincipleItem by remember { mutableIntStateOf(-1) }
+
+    val beginnerPrinciple = remember(orderType) {
+        MyPrincipleGroup(
+            id = -1,
+            groupName = if (orderType == OrderType.BUY) {
+                context.getString(R.string.principle_bottom_sheet_dialog_beginner_buy_type)
+            } else {
+                context.getString(R.string.principle_bottom_sheet_dialog_beginner_sell_type)
+            },
+            thumbnail = "",
+            displayOrder = 0,
+            principles = listOf()
+        )
+    }
 
     val springSpec = spring<IntSize>(
         dampingRatio = Spring.DampingRatioLowBouncy,
@@ -166,22 +182,10 @@ private fun HedgeModalBottomSheetScreen(
             }
 
             item {
-                when (orderType) {
-                    OrderType.BUY -> {
-                        PrincipleGroupItem(
-                            icon = {},
-                            title = "초보자를 위한 매수 원칙"
-                        )
-                    }
-
-                    OrderType.SELL -> {
-                        PrincipleGroupItem(
-                            selected = false,
-                            icon = {},
-                            title = "초보자를 위한 매도 원칙"
-                        )
-                    }
-                }
+                PrincipleGroupItem(
+                    title = beginnerPrinciple.groupName,
+                    icon = {}
+                )
             }
 
             item {
@@ -241,7 +245,7 @@ private fun HedgeModalBottomSheetScreen(
             items(
                 items = groups.filter { it.principles.isNotEmpty() },
                 key = { it.id }
-            ) { item ->
+            ) { group ->
 
                 PrincipleGroupItem(
                     modifier = Modifier
@@ -249,14 +253,20 @@ private fun HedgeModalBottomSheetScreen(
                             enabled = true,
                             indication = null,
                             interactionSource = remember { MutableInteractionSource() }
-                        ) { selectedMyPrincipleItem = item.id },
-                    title = item.groupName,
-                    icon = {},
-                    selected = item.id == selectedMyPrincipleItem
+                        ) { selectedMyPrincipleItem = group.id },
+                    title = group.groupName,
+                    icon = {
+                        if (group.thumbnail.startsWith("http")) {
+
+                        } else {
+                            Text(text = group.thumbnail)
+                        }
+                    },
+                    selected = group.id == selectedMyPrincipleItem
                 )
 
                 AnimatedVisibility(
-                    item.id == selectedMyPrincipleItem,
+                    group.id == selectedMyPrincipleItem,
                     enter = expandVertically(
                         animationSpec = springSpec,
                         expandFrom = Alignment.Top
@@ -283,7 +293,7 @@ private fun HedgeModalBottomSheetScreen(
                             Spacer(modifier = Modifier.size(24.dp))
 
                             Column {
-                                val list = item.principles
+                                val list = group.principles
 
                                 list.forEachIndexed { index, item ->
                                     MyPrincipleItem(index + 1, item)

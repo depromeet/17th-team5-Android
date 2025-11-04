@@ -1,5 +1,4 @@
 import java.util.Properties
-import kotlin.apply
 
 plugins {
     alias(libs.plugins.depromeet.team5.library)
@@ -24,7 +23,8 @@ android {
             buildConfigField("String", "BASE_URL", properties["base_url"].toString())
         }
         release {
-            isMinifyEnabled = true
+            isMinifyEnabled = false
+            buildConfigField("String", "BASE_URL", properties["base_url"].toString())
         }
     }
 

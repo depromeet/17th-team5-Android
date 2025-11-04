@@ -54,6 +54,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
+import coil3.compose.AsyncImage
 import com.depromeet.team5.core.designsystem.component.HedgeButton
 import com.depromeet.team5.core.designsystem.foundation.HedgeColor
 import com.depromeet.team5.core.designsystem.foundation.HedgeIcon
@@ -184,7 +185,16 @@ private fun HedgeModalBottomSheetScreen(
             item {
                 PrincipleGroupItem(
                     title = beginnerPrinciple.groupName,
-                    icon = {}
+                    icon = {
+                        if (beginnerPrinciple.thumbnail.startsWith("http")) {
+                            AsyncImage(
+                                model = beginnerPrinciple.thumbnail,
+                                contentDescription = null
+                            )
+                        } else {
+                            Text(text = beginnerPrinciple.thumbnail)
+                        }
+                    }
                 )
             }
 
@@ -257,7 +267,10 @@ private fun HedgeModalBottomSheetScreen(
                     title = group.groupName,
                     icon = {
                         if (group.thumbnail.startsWith("http")) {
-
+                            AsyncImage(
+                                model = group.thumbnail,
+                                contentDescription = null
+                            )
                         } else {
                             Text(text = group.thumbnail)
                         }

@@ -134,7 +134,7 @@ private fun HedgeModalBottomSheetScreen(
     onClickedAddButton: () -> Unit
 ) {
     val context = LocalContext.current
-    var selectedMyPrincipleItem by remember { mutableIntStateOf(-1) }
+    var selectedMyPrincipleItem by remember { mutableIntStateOf(-2) }
 
     val beginnerPrinciple = remember(orderType) {
         MyPrincipleGroup(
@@ -150,11 +150,6 @@ private fun HedgeModalBottomSheetScreen(
             principles = listOf()
         )
     }
-
-    val springSpec = spring<IntSize>(
-        dampingRatio = Spring.DampingRatioLowBouncy,
-        stiffness = Spring.StiffnessLow
-    )
 
     Box(
         modifier = modifier
@@ -185,6 +180,14 @@ private fun HedgeModalBottomSheetScreen(
 
             item {
                 PrincipleGroupItem(
+                    modifier = Modifier
+                        .clickable(
+                            enabled = true,
+                            indication = null,
+                            interactionSource = remember { MutableInteractionSource() }
+                        ) {
+                            selectedMyPrincipleItem = beginnerPrinciple.id
+                        },
                     title = beginnerPrinciple.groupName,
                     icon = {
                         if (beginnerPrinciple.thumbnail.startsWith("http")) {
@@ -198,7 +201,13 @@ private fun HedgeModalBottomSheetScreen(
                                 style = HedgeTypography.Body3.SemiBold
                             )
                         }
-                    }
+                    },
+                    selected = selectedMyPrincipleItem == beginnerPrinciple.id
+                )
+
+                MyPrincipleItems(
+                    visible = beginnerPrinciple.id == selectedMyPrincipleItem,
+                    principles = beginnerPrinciple.principles
                 )
             }
 
@@ -285,48 +294,10 @@ private fun HedgeModalBottomSheetScreen(
                     selected = group.id == selectedMyPrincipleItem
                 )
 
-                AnimatedVisibility(
-                    group.id == selectedMyPrincipleItem,
-                    enter = expandVertically(
-                        animationSpec = springSpec,
-                        expandFrom = Alignment.Top
-                    ) + fadeIn(animationSpec = tween(durationMillis = 300)),
-                    // 사라질 때: 아래에서 위로 줄어들며 서서히 사라짐
-                    exit = shrinkVertically(
-                        animationSpec = springSpec,
-                        shrinkTowards = Alignment.Top
-                    ) + fadeOut(animationSpec = tween(durationMillis = 300))
-                ) {
-                    Row {
-                        Spacer(modifier = Modifier.size(36.dp))
-
-                        Row(
-                            modifier = Modifier.height(IntrinsicSize.Min)
-                        ) {
-                            Box(
-                                modifier = Modifier
-                                    .width(3.dp)
-                                    .fillMaxHeight()
-                                    .background(HedgeColor.Neutral.BackgroundSecondary)
-                            )
-
-                            Spacer(modifier = Modifier.size(24.dp))
-
-                            Column {
-                                val list = group.principles
-
-                                list.forEachIndexed { index, item ->
-                                    MyPrincipleItem(index + 1, item)
-
-                                    if (index != list.size - 1)
-                                        Spacer(modifier = Modifier.size(12.dp))
-                                }
-                            }
-                        }
-                    }
-
-                    Spacer(modifier = Modifier.size(16.dp))
-                }
+                MyPrincipleItems(
+                    visible = group.id == selectedMyPrincipleItem,
+                    principles = group.principles
+                )
             }
         }
 
@@ -488,6 +459,58 @@ private fun PrincipleGroupItem(
                 color = if (selected) HedgeColor.Brand.Primary else HedgeColor.Text.Disabled
             )
         )
+    }
+}
+
+@Composable
+private fun MyPrincipleItems(
+    visible: Boolean,
+    principles: List<MyPrinciple>
+) {
+    val springSpec = spring<IntSize>(
+        dampingRatio = Spring.DampingRatioLowBouncy,
+        stiffness = Spring.StiffnessLow
+    )
+
+    AnimatedVisibility(
+        visible = visible,
+        enter = expandVertically(
+            animationSpec = springSpec,
+            expandFrom = Alignment.Top
+        ) + fadeIn(animationSpec = tween(durationMillis = 300)),
+        // 사라질 때: 아래에서 위로 줄어들며 서서히 사라짐
+        exit = shrinkVertically(
+            animationSpec = springSpec,
+            shrinkTowards = Alignment.Top
+        ) + fadeOut(animationSpec = tween(durationMillis = 300))
+    ) {
+        Row {
+            Spacer(modifier = Modifier.size(36.dp))
+
+            Row(
+                modifier = Modifier.height(IntrinsicSize.Min)
+            ) {
+                Box(
+                    modifier = Modifier
+                        .width(3.dp)
+                        .fillMaxHeight()
+                        .background(HedgeColor.Neutral.BackgroundSecondary)
+                )
+
+                Spacer(modifier = Modifier.size(24.dp))
+
+                Column {
+                    principles.forEachIndexed { index, item ->
+                        MyPrincipleItem(index + 1, item)
+
+                        if (index != principles.size - 1)
+                            Spacer(modifier = Modifier.size(12.dp))
+                    }
+                }
+            }
+        }
+
+        Spacer(modifier = Modifier.size(16.dp))
     }
 }
 

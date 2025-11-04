@@ -335,7 +335,7 @@ private fun HedgeModalBottomSheetScreen(
 
         ConfirmButton(
             modifier = Modifier.align(Alignment.BottomCenter),
-            enabled = selectedMyPrincipleItem != -1,
+            enabled = selectedMyPrincipleItem != -2,
             onClickedConfirmButton = {
                 onClickedConfirmButton(target)
             }

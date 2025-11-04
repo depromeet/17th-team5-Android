@@ -10,7 +10,6 @@ import com.depromeet.team5.features.feedback.navigation.feedbackScreen
 import com.depromeet.team5.features.feedback.navigation.navigateToFeedback
 import com.depromeet.team5.features.home.Home
 import com.depromeet.team5.features.home.homeScreen
-import com.depromeet.team5.features.principle.navigation.navigateToPrinciple
 import com.depromeet.team5.features.principle.navigation.principleScreen
 import com.depromeet.team5.features.retrospect.screen.Retrospect
 import com.depromeet.team5.features.retrospect.screen.navigateToRetrospect
@@ -20,7 +19,8 @@ import com.depromeet.team5.features.search.searchScreen
 
 @Composable
 fun HedgeNavHost(
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onShowErrorToast: @Composable (Throwable) -> Unit
 ) {
     val navController = rememberNavController()
 
@@ -44,7 +44,8 @@ fun HedgeNavHost(
         retrospectScreen(
             navController = navController,
             onBackPressed = { navController.popBackStack() },
-            onClickedConfirmButton = { navController.navigateToPrinciple() }
+            onClickedConfirmButton = { navController.navigateToReason() },
+            onShowErrorToast = onShowErrorToast
         )
 
         principleScreen(

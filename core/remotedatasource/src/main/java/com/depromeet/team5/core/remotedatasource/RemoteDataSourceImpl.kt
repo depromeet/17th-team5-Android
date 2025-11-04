@@ -3,6 +3,7 @@ package com.depromeet.team5.core.remotedatasource
 import com.depromeet.team5.core.data.datasource.RemoteDataSource
 import com.depromeet.team5.core.data.model.AnalysisData
 import com.depromeet.team5.core.data.model.FeedbackData
+import com.depromeet.team5.core.data.model.MyPrincipleGroupsData
 import com.depromeet.team5.core.data.model.RetrospectionData
 import com.depromeet.team5.core.data.model.SearchData
 import com.depromeet.team5.core.remotedatasource.apisource.HedgeApiSource
@@ -27,4 +28,6 @@ internal class RemoteDataSourceImpl @Inject constructor(
     override suspend fun createAnalysis(body: Map<String, Any?>): AnalysisData =
         hedgeApiSource.createAnalysis(body).toData()
 
+    override suspend fun getPrinciples(orderType: String): MyPrincipleGroupsData =
+        hedgeApiSource.getPrincipleGroups(orderType).toData()
 }

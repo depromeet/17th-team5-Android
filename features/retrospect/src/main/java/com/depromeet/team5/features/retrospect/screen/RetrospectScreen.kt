@@ -60,14 +60,20 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.depromeet.team5.core.designsystem.component.HedgeButton
 import com.depromeet.team5.core.designsystem.component.HedgeSegment
 import com.depromeet.team5.core.designsystem.component.HedgeTopBar
 import com.depromeet.team5.core.designsystem.foundation.HedgeColor
 import com.depromeet.team5.core.designsystem.foundation.HedgeTypography
+import com.depromeet.team5.core.domain.model.MyPrinciple
+import com.depromeet.team5.core.domain.model.MyPrincipleGroup
+import com.depromeet.team5.core.domain.model.OrderType
+import com.depromeet.team5.core.domain.monad.HedgeUiState
 import com.depromeet.team5.core.navigation.request.CreateRetrospectionParams
-import com.depromeet.team5.core.navigation.request.OrderTypeParams
 import com.depromeet.team5.core.navigation.request.RequestViewModel
+import com.depromeet.team5.core.ui.component.PrincipleBottomSheetDialog
 import com.depromeet.team5.features.retrospect.R
 import com.depromeet.team5.features.retrospect.annotation.CurrencyType
 import com.depromeet.team5.features.retrospect.annotation.ReturnSignType
@@ -93,12 +99,24 @@ fun RetrospectRoute(
     requestViewModel: RequestViewModel,
     modifier: Modifier = Modifier,
     onClickedConfirmButton: () -> Unit,
-    onBackPressed: () -> Unit
+    onBackPressed: () -> Unit,
+    onShowErrorToast: @Composable (Throwable) -> Unit
 ) {
     val context = LocalContext.current
+
+    val viewModel: RetrospectionViewModel = hiltViewModel(
+        creationCallback = { factory: RetrospectionViewModel.Factory ->
+            factory.create(requestViewModel.request.orderType.name)
+        }
+    )
+
     val retrospectionState = rememberRetrospectionState(
         requestParams = requestViewModel.request
     )
+
+    val myPrincipleState by viewModel.principleGroupsUiState.collectAsStateWithLifecycle()
+
+    var isOpenBottomSheetDialog by remember { mutableStateOf(false) }
 
     val isButtonEnabled by remember {
         derivedStateOf {
@@ -166,30 +184,7 @@ fun RetrospectRoute(
         },
         onClickedConfirmButton = {
             if (!isButtonEnabled) return@RetrospectScreen
-
-            with(retrospectionState) {
-                requestViewModel.request = requestViewModel.request.copy(
-                    price = sellingTextFieldState.value.text.toInt(),
-                    volume = stockTextFieldState.value.text.toInt(),
-                    orderDate = dateTextFieldState.value.text,
-                    currency = CurrencyType.from(currencyType.value),
-                    returnRate = try {
-                        when (returnSignType.value) {
-                            ReturnSignType.Plus -> {
-                                returnTextFieldState.value.text.toDouble()
-                            }
-
-                            ReturnSignType.Minus -> {
-                                returnTextFieldState.value.text.toDouble() * -1
-                            }
-                        }
-                    } catch (e: Exception) {
-                        null
-                    }
-                )
-            }
-
-            onClickedConfirmButton()
+            isOpenBottomSheetDialog = true
         },
         onUpdateReturnToggle = { isToggled ->
             retrospectionState.returnToggleState.value = isToggled
@@ -202,6 +197,44 @@ fun RetrospectRoute(
         },
         onBackPressed = onBackPressed
     )
+
+    if (isOpenBottomSheetDialog) {
+        PrincipleDialog(
+            uiState = myPrincipleState,
+            orderType = requestViewModel.request.orderType,
+            onClickedClose = { isOpenBottomSheetDialog = false },
+            onClickedConfirmButton = { principles ->
+                with(retrospectionState) {
+                    requestViewModel.request = requestViewModel.request.copy(
+                        price = sellingTextFieldState.value.text.toInt(),
+                        volume = stockTextFieldState.value.text.toInt(),
+                        orderDate = dateTextFieldState.value.text,
+                        currency = CurrencyType.from(currencyType.value),
+                        returnRate = try {
+                            when (returnSignType.value) {
+                                ReturnSignType.Plus -> {
+                                    returnTextFieldState.value.text.toDouble()
+                                }
+
+                                ReturnSignType.Minus -> {
+                                    returnTextFieldState.value.text.toDouble() * -1
+                                }
+                            }
+                        } catch (e: Exception) {
+                            null
+                        }
+                    )
+
+                    requestViewModel.principles = principles
+                }
+
+                onClickedConfirmButton()
+            },
+            onShowErrorToast = {
+                onShowErrorToast(it)
+            }
+        )
+    }
 }
 
 @Composable
@@ -306,7 +339,7 @@ private fun RetrospectScreen(
 
         Text(
             modifier = Modifier.padding(start = 20.dp, top = 8.dp),
-            text = if (requestParams.orderType == OrderTypeParams.SELL) {
+            text = if (requestParams.orderType == OrderType.SELL) {
                 stringResource(id = R.string.retrospect_selling_price_title)
             } else {
                 stringResource(id = R.string.retrospect_buy_price_title)
@@ -388,7 +421,7 @@ private fun RetrospectScreen(
             modifier = Modifier.padding(horizontal = 20.dp),
             verticalArrangement = Arrangement.Bottom
         ) {
-            if (requestParams.orderType == OrderTypeParams.SELL) {
+            if (requestParams.orderType == OrderType.SELL) {
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween
@@ -433,6 +466,36 @@ private fun RetrospectScreen(
 }
 
 @Composable
+private fun PrincipleDialog(
+    uiState: HedgeUiState<List<MyPrincipleGroup>>,
+    orderType: OrderType,
+    onClickedClose: () -> Unit,
+    onClickedConfirmButton: (List<MyPrinciple>) -> Unit,
+    onShowErrorToast: @Composable (Throwable) -> Unit
+) {
+    when (val state = uiState) {
+        is HedgeUiState.Success<List<MyPrincipleGroup>> -> {
+            PrincipleBottomSheetDialog(
+                title = stringResource(R.string.principle_bottom_sheet_dialog_title),
+                groups = state.data,
+                orderType = orderType,
+                isShowAddButton = false,
+                onClickedClose = onClickedClose,
+                onClickedConfirmButton = onClickedConfirmButton
+            )
+        }
+
+        is HedgeUiState.Error -> {
+            state.throwable?.let {
+                onShowErrorToast(it)
+            }
+        }
+
+        else -> {}
+    }
+}
+
+@Composable
 private fun SellingTextField(
     state: State<TextFieldState>,
     currencyTypeState: State<CurrencyType>,
@@ -463,7 +526,7 @@ private fun SellingTextField(
     HedgeUnitTextField(
         modifier = modifier.focusRequester(focusRequester),
         label = state.value.label,
-        placeholder = if (requestParams.orderType == OrderTypeParams.SELL) {
+        placeholder = if (requestParams.orderType == OrderType.SELL) {
             stringResource(R.string.retrospect_selling_price_placeholder)
         } else {
             stringResource(R.string.retrospect_buy_price_placeholder)
@@ -802,7 +865,7 @@ private fun RetrospectRoutePreview() {
             modifier = Modifier.padding(paddingValues),
             retrospectionState = retrospectionState,
             buttonEnabled = isButtonEnabled,
-            requestParams = CreateRetrospectionParams.EMPTY.copy(orderType = OrderTypeParams.SELL),
+            requestParams = CreateRetrospectionParams.EMPTY.copy(orderType = OrderType.SELL),
             onUpdateSellingText = { text, selection ->
                 retrospectionState.sellingTextFieldState.value =
                     retrospectionState.sellingTextFieldState.value.copy(

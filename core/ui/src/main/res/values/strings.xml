@@ -8,4 +8,28 @@
     <string name="badge_description_silver">계획과는 조금 달랐지만\n 상황에 맞게 판단을 잘 조정했어요</string>
     <string name="badge_description_gold">근거 있는 판단으로\n 흔들림 없이 결정했어요</string>
     <string name="badge_description_platinum">시장의 흐름을 넓고 깊게 이해하며,\n 스스로의 기준으로 움직였어요</string>
+
+
+    <string name="principle_bottom_sheet_dialog_beginner_buy_type">초보자를 위한 매수 원칙</string>
+    <string name="principle_bottom_sheet_dialog_beginner_sell_type">초보자를 위한 매도 원칙</string>
+    <string name="principle_bottom_sheet_dialog_button_text">이 원칙으로 회고하기</string>
+    <string name="principle_bottom_sheet_dialog_add_button_text">새로운 원칙 그룹 추가</string>
+    <string name="principle_myself">내가 만든</string>
+    <string name="principle_limit_size">한 템플릿 당 최대 5개를 추가할 수 있어요</string>
+
+    <string name="standard">기본</string>
+    <string name="select">선택</string>
+
+    <string-array name="principle_bottom_sheet_dialog_beginner_buy_type_array">
+        <item>안전마진을 확보하라</item>
+        <item>기업의 본질 가치보다 낮게 거래되는 주식을 찾아 장기 보유하기</item>
+        <item>정책 민감도가 높은 주식은 정책 잘 살펴보고 매매</item>
+    </string-array>
+
+    <string-array name="principle_bottom_sheet_dialog_beginner_sell_type_array">
+        <item>안전마진을 확보하라</item>
+        <item>기업의 본질 가치보다 낮게 거래되는 주식을 찾아 장기 보유하기</item>
+        <item>정책 민감도가 높은 주식은 정책 잘 살펴보고 매매</item>
+    </string-array>
+
 </resources>

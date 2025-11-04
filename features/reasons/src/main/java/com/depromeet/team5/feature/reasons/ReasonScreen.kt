@@ -227,7 +227,7 @@ fun ReasonRoute(
             else showAddLinkModal = true
         },
         onClickAddMention = { showAddMentionModal = true },
-        onClickImage = { onClickImage(ImageDetail(pagerState.currentPage, it)) },
+        onClickImage = { onClickImage(ImageDetail(principleTemplate.principles[pagerState.currentPage].images, it)) },
         onClickDeleteImage = { viewModel.onRemoveImage(pagerState.currentPage, it) },
         onClickDeleteLink = { viewModel.onRemoveArticle(pagerState.currentPage, it) },
         onReasonChanged = { viewModel.onNoteChanged(pagerState.currentPage, it) },

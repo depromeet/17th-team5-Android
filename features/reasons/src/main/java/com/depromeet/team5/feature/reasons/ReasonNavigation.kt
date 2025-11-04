@@ -19,7 +19,7 @@ object ReasonGraph
 object Reason
 
 @Serializable
-data class ImageDetail(val principleIndex: Int, val imageIndex: Int)
+data class ImageDetail(val images: List<String>, val imageIndex: Int)
 
 fun NavGraphBuilder.reasonGraph(
     navController: NavController,
@@ -30,12 +30,10 @@ fun NavGraphBuilder.reasonGraph(
         startDestination = Reason,
     ) {
         composable<Reason> { backStackEntry ->
-
             ReasonRoute(
                 onClickBack = onClickBack,
                 onClickDone = onClickDone,
                 onClickImage = { navController.navigateToImageDetail(it) },
-                viewModel = backStackEntry.getReasonViewModel(navController),
                 requestViewModel = backStackEntry.getRequestViewModel(navController)
             )
         }
@@ -43,10 +41,9 @@ fun NavGraphBuilder.reasonGraph(
         composable<ImageDetail> { backStackEntry ->
             val imageDetail = backStackEntry.toRoute<ImageDetail>()
             ImageDetailRoute(
-                principleIndex = imageDetail.principleIndex,
-                imageIndex = imageDetail.imageIndex,
+                images = imageDetail.images,
+                initialIndex = imageDetail.imageIndex,
                 onClickBack = onClickBack,
-                viewModel = backStackEntry.getReasonViewModel(navController)
             )
         }
     }
@@ -56,14 +53,6 @@ fun NavGraphBuilder.reasonGraph(
 private fun NavBackStackEntry.getRequestViewModel(navController: NavController): RequestViewModel {
     val parentEntry = remember(this) {
         navController.getBackStackEntry(navController.graph.startDestinationRoute!!)
-    }
-    return hiltViewModel(parentEntry)
-}
-
-@Composable
-private fun NavBackStackEntry.getReasonViewModel(navController: NavController): ReasonViewModel {
-    val parentEntry = remember(this) {
-        navController.getBackStackEntry<ReasonGraph>()
     }
     return hiltViewModel(parentEntry)
 }

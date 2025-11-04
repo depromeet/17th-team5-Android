@@ -24,6 +24,7 @@ import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -53,6 +54,7 @@ import com.depromeet.team5.core.domain.model.OrderType
 import com.depromeet.team5.core.domain.monad.HedgeUiState
 import com.depromeet.team5.core.navigation.PrincipleType
 import com.depromeet.team5.features.principledetail.R
+import com.depromeet.team5.features.principledetail.event.PrincipleDetailEvent
 
 
 @Composable
@@ -60,9 +62,33 @@ fun PrincipleDetailRoute(
     principleType: PrincipleType,
     modifier: Modifier = Modifier,
     viewModel: PrincipleDetailViewModel = hiltViewModel(),
-    onBackPressed: () -> Unit
+    onBackPressed: () -> Unit,
+    onShowErrorToast: @Composable (Throwable) -> Unit
 ) {
     val uiState by viewModel.uiStateFlow.collectAsStateWithLifecycle()
+
+    var principleDetailEvent: PrincipleDetailEvent by remember { mutableStateOf(PrincipleDetailEvent.None) }
+
+//    val isShowErrorToast: Boolean by remember(principleDetailEvent) {
+//        derivedStateOf { principleDetailEvent is PrincipleDetailEvent.ShowErrorToast }
+//    }
+
+    LaunchedEffect(Unit) {
+        viewModel.eventFlow.collect { event ->
+            when (event) {
+                PrincipleDetailEvent.Finish -> {
+                    onBackPressed()
+                }
+
+                is PrincipleDetailEvent.ShowErrorToast -> {
+                    principleDetailEvent = event
+                }
+
+                else -> {}
+            }
+
+        }
+    }
 
     PrincipleDetailScreen(
         modifier = modifier,
@@ -71,11 +97,11 @@ fun PrincipleDetailRoute(
         onRetryButtonClicked = {
             viewModel.restart()
         },
-        onClickedModifyButton = {
+        onClickedModifyButton = { groupId ->
 
         },
-        onClickedRemoveButton = {
-
+        onClickedRemoveButton = { groupId ->
+            viewModel.deletePrincipleGroup(groupId)
         },
         onClickedItemModifyButton = { principleId ->
 
@@ -85,6 +111,10 @@ fun PrincipleDetailRoute(
         },
         onBackPressed = onBackPressed
     )
+
+    if (principleDetailEvent is PrincipleDetailEvent.ShowErrorToast) {
+        onShowErrorToast(Throwable())
+    }
 }
 
 @Composable
@@ -93,8 +123,8 @@ private fun PrincipleDetailScreen(
     principleType: PrincipleType,
     modifier: Modifier = Modifier,
     onRetryButtonClicked: () -> Unit,
-    onClickedModifyButton: () -> Unit,
-    onClickedRemoveButton: () -> Unit,
+    onClickedModifyButton: (Int) -> Unit,
+    onClickedRemoveButton: (Int) -> Unit,
     onClickedItemModifyButton: (Int) -> Unit,
     onClickedItemRemoveButton: (Int) -> Unit,
     onBackPressed: () -> Unit
@@ -117,8 +147,12 @@ private fun PrincipleDetailScreen(
                     Topbar(
                         modifier = Modifier.background(HedgeColor.Brand.Secondary),
                         onBackPressed = onBackPressed,
-                        onClickedModifyButton = onClickedModifyButton,
-                        onClickedRemoveButton = onClickedRemoveButton
+                        onClickedModifyButton = {
+                            onClickedModifyButton(uiState.data.id)
+                        },
+                        onClickedRemoveButton = {
+                            onClickedRemoveButton(uiState.data.id)
+                        }
                     )
 
                     Column(
@@ -216,7 +250,7 @@ fun PrincipleItem(
     onClickedItemModifyButton: (Int) -> Unit,
     onClickedItemRemoveButton: (Int) -> Unit,
 ) {
-    var isExpand by remember { mutableStateOf(false) }
+    var isExpanded by remember { mutableStateOf(false) }
 
     Row(
         modifier = modifier
@@ -258,7 +292,7 @@ fun PrincipleItem(
                         indication = null,
                         interactionSource = remember { MutableInteractionSource() }
                     ) {
-                        isExpand = !isExpand
+                        isExpanded = !isExpanded
                     },
                 imageVector = HedgeIcon.Menu,
                 contentDescription = null,
@@ -266,14 +300,16 @@ fun PrincipleItem(
             )
 
             ModifyAndRemoveDropdown(
-                expand = isExpand,
+                expand = isExpanded,
                 onClickedModifyButton = {
                     onClickedItemModifyButton(principle.id)
+                    isExpanded = false
                 },
                 onClickedRemoveButton = {
                     onClickedItemRemoveButton(principle.id)
+                    isExpanded = false
                 },
-                onDismissRequest = { isExpand = false }
+                onDismissRequest = { isExpanded = false }
             )
         }
     }
@@ -409,8 +445,14 @@ private fun Topbar(
                 if (isExpanded) {
                     ModifyAndRemoveDropdown(
                         expand = isExpanded,
-                        onClickedModifyButton = onClickedModifyButton,
-                        onClickedRemoveButton = onClickedRemoveButton,
+                        onClickedModifyButton = {
+                            onClickedModifyButton()
+                            isExpanded = false
+                        },
+                        onClickedRemoveButton = {
+                            onClickedRemoveButton()
+                            isExpanded = false
+                        },
                         onDismissRequest = { isExpanded = false }
                     )
                 }

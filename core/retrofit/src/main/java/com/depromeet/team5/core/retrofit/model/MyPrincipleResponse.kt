@@ -26,6 +26,7 @@ data class MyPrincipleGroupResponse(
     val id: Int,
     val groupName: String,
     val thumbnail: String,
+    val principleType: String,
     val displayOrder: Int,
     val principles: List<MyPrincipleInfoResponse>
 ) : RetrofitMapper<MyPrincipleGroupRemoteData> {
@@ -34,6 +35,7 @@ data class MyPrincipleGroupResponse(
         id = id,
         groupName = groupName,
         thumbnail = thumbnail,
+        principleType = principleType,
         displayOrder = displayOrder,
         principles = principles.map { it.toRemoteData() }
     )

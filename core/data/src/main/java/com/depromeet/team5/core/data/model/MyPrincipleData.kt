@@ -3,6 +3,7 @@ package com.depromeet.team5.core.data.model
 import com.depromeet.team5.core.data.mapper.DataMapper
 import com.depromeet.team5.core.domain.model.MyPrinciple
 import com.depromeet.team5.core.domain.model.MyPrincipleGroup
+import com.depromeet.team5.core.domain.model.OrderType
 
 
 data class MyPrincipleData(
@@ -18,6 +19,7 @@ data class MyPrincipleGroupData(
     val id: Int,
     val groupName: String,
     val thumbnail: String,
+    val principleType: String,
     val displayOrder: Int,
     val principles: List<MyPrincipleInfoData>
 ) : DataMapper<MyPrincipleGroup> {
@@ -26,6 +28,11 @@ data class MyPrincipleGroupData(
         id = id,
         groupName = groupName,
         thumbnail = thumbnail,
+        orderType = when (principleType) {
+            "BUY" -> OrderType.BUY
+            "SELL" -> OrderType.SELL
+            else -> OrderType.NONE
+        },
         displayOrder = displayOrder,
         principles = principles.map { it.toDomain() }
     )

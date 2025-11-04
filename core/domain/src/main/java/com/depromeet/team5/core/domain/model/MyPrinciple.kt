@@ -8,6 +8,7 @@ data class MyPrincipleGroup(
     val id: Int,
     val groupName: String,
     val thumbnail: String,
+    val orderType: OrderType,
     val displayOrder: Int,
     val principles: List<MyPrinciple>
 )

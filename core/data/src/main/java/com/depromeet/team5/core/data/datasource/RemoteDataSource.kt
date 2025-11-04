@@ -23,6 +23,8 @@ interface RemoteDataSource {
 
     suspend fun getPrinciple(groupId: Int): MyPrincipleGroupData
 
+    suspend fun deletePrincipleGroup(groupId: Int)
+
     suspend fun uploadImageUri(
         domain: String,
         uri: String,

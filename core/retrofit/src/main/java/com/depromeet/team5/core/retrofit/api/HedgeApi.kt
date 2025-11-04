@@ -14,6 +14,7 @@ import com.depromeet.team5.core.retrofit.model.UserStatsResponse
 import okhttp3.RequestBody
 import okhttp3.MultipartBody
 import retrofit2.http.Body
+import retrofit2.http.DELETE
 import retrofit2.http.GET
 import retrofit2.http.Multipart
 import retrofit2.http.POST
@@ -45,6 +46,12 @@ interface HedgeApi {
         @Path("groupId")
         groupId: Int
     ): MyPrincipleResponse
+
+    @DELETE("api/v1/principle-groups/{groupId}")
+    suspend fun deletePrincipleGroup(
+        @Path("groupId")
+        groupId: Int
+    )
 
     @Multipart
     @POST("api/v1/{domain}/images/upload")

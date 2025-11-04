@@ -60,7 +60,8 @@ fun HedgeNavHost(
         )
 
         principleDetail(
-            onBackPressed = navController::popBackStack
+            onBackPressed = navController::popBackStack,
+            onShowErrorToast = onShowErrorToast
         )
 
         reasonGraph(

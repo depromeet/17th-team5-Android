@@ -1,6 +1,5 @@
 package com.depromeet.team5.features.home.component
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -10,7 +9,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -23,18 +21,19 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import coil3.compose.AsyncImage
 import com.depromeet.team5.core.designsystem.foundation.HedgeColor
 import com.depromeet.team5.core.designsystem.foundation.HedgeTypography
+import com.depromeet.team5.core.domain.model.RecommendedPrinciple
 import com.depromeet.team5.features.home.R
-import com.depromeet.team5.features.home.screen.RecommendPrinciple
 
 @Composable
 fun RecommendPrincipleItem(
-    recommendPrinciple: RecommendPrinciple,
+    recommendPrinciple: RecommendedPrinciple,
+    onClick: (Int) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Box(
@@ -45,14 +44,13 @@ fun RecommendPrincipleItem(
                 spotColor = Color(0x140D0F26),
                 clip = false
             )
+            .clickable { onClick(recommendPrinciple.id) }
             .background(
                 color = HedgeColor.Neutral.BackgroundDefault,
                 shape = RoundedCornerShape(18.dp)
             )
             .border(width = 1.dp, color = Color(0xFFF1F2F4), shape = RoundedCornerShape(18.dp))
             .clip(RoundedCornerShape(18.dp))
-            .clickable {
-            }
             .size(150.dp, 165.dp)
     ) {
         Box(
@@ -98,33 +96,34 @@ fun RecommendPrincipleItem(
                     onDrawBehind { drawRect(brush) }
                 }
         )
-
-        Column(
-            modifier = Modifier.padding(horizontal = 18.dp, vertical = 20.dp)
+        Row(
+            modifier = Modifier.padding(horizontal = 18.dp, vertical = 20.dp),
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Image(
-                    painter = painterResource(recommendPrinciple.imgResId),
-                    contentDescription = null,
-                    modifier = Modifier
-                        .padding(end = 4.dp)
-                        .clip(CircleShape)
-                        .size(24.dp),
-                    contentScale = ContentScale.Crop
-                )
-
-                Text(
-                    text = stringResource(recommendPrinciple.celebResId),
-                    style = HedgeTypography.Label2.Medium,
-                    color = Color(0xFF000000).copy(alpha = 0.7f)
-                )
-            }
-            Spacer(modifier = Modifier.padding(bottom = 36.dp))
+            AsyncImage(
+                model = recommendPrinciple.thumbnail,
+                contentDescription = null,
+                modifier = Modifier
+                    .padding(end = 4.dp)
+                    .size(24.dp),
+                contentScale = ContentScale.Crop
+            )
 
             Text(
-                text = stringResource(recommendPrinciple.principleGroupTitleResId),
+                text = recommendPrinciple.groupName,
+                style = HedgeTypography.Label2.Medium,
+                color = Color(0xFF000000).copy(alpha = 0.7f)
+            )
+        }
+        Spacer(modifier = Modifier.padding(bottom = 36.dp))
+
+        Column(
+            modifier = Modifier
+                .padding(horizontal = 18.dp, vertical = 20.dp)
+                .align(Alignment.BottomStart)
+        ) {
+            Text(
+                text = recommendPrinciple.groupName,
                 style = HedgeTypography.Body3.SemiBold,
                 color = HedgeColor.Text.Title,
                 modifier = Modifier.padding(bottom = 8.dp)
@@ -133,7 +132,7 @@ fun RecommendPrincipleItem(
             Text(
                 text = stringResource(
                     id = R.string.principle_tab_recommend_principle_count,
-                    recommendPrinciple.count
+                    recommendPrinciple.principleCount
                 ),
                 style = HedgeTypography.Label2.Medium,
                 color = HedgeColor.Brand.Darken,
@@ -146,6 +145,12 @@ fun RecommendPrincipleItem(
 @Composable
 private fun RecommendPrincipleItemPreview() {
     RecommendPrincipleItem(
-        recommendPrinciple = RecommendPrinciple.WARREN_BUFFETT
+        recommendPrinciple = RecommendedPrinciple(
+            thumbnail = "🔥",
+            groupName = "초보자를 위한 매수 원칙",
+            principleCount = 10,
+            id = 0,
+        ),
+        onClick = {}
     )
 }

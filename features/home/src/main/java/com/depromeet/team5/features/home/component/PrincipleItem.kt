@@ -1,6 +1,7 @@
 package com.depromeet.team5.features.home.component
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
@@ -15,20 +16,25 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import coil3.compose.AsyncImage
 import com.depromeet.team5.core.designsystem.foundation.HedgeColor
 import com.depromeet.team5.core.designsystem.foundation.HedgeIcon
 import com.depromeet.team5.core.designsystem.foundation.HedgeTypography
 
 @Composable
 fun PrincipleItem(
+    id: Int,
     icon: String,
     title: String,
+    onClick: (Int) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Row(
         modifier = modifier
+            .clickable { onClick(id) }
             .padding(start = 20.dp, top = 12.dp, bottom = 12.dp)
             .fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically,
@@ -37,16 +43,30 @@ fun PrincipleItem(
         Row(
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Box(
-                modifier = Modifier
-                    .background(color = HedgeColor.Neutral.BackgroundSecondary, shape = CircleShape)
-                    .size(32.dp),
-                contentAlignment = Alignment.Center
-            ){
-                Text(
-                    text = icon,
-                    style = HedgeTypography.Body3.SemiBold
+            if (icon.startsWith("http")) {
+                AsyncImage(
+                    model = icon,
+                    contentDescription = null,
+                    modifier = Modifier
+                        .padding(end = 4.dp)
+                        .size(32.dp),
+                    contentScale = ContentScale.Crop
                 )
+            } else {
+                Box(
+                    modifier = Modifier
+                        .background(
+                            color = HedgeColor.Neutral.BackgroundSecondary,
+                            shape = CircleShape
+                        )
+                        .size(32.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = icon,
+                        style = HedgeTypography.Body3.SemiBold
+                    )
+                }
             }
             Spacer(Modifier.width(12.dp))
 
@@ -72,7 +92,9 @@ fun PrincipleItem(
 @Composable
 private fun PrincipleItemPreview() {
     PrincipleItem(
+        id = 0,
         icon = "🔥",
-        title = "초보자를 위한 매수 원칙"
+        title = "초보자를 위한 매수 원칙",
+        onClick = {}
     )
 }

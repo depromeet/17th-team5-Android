@@ -9,6 +9,7 @@ import com.depromeet.team5.core.remotedatasource.model.RetrospectionRemoteData
 import com.depromeet.team5.core.remotedatasource.model.RetrospectionListRemoteData
 import com.depromeet.team5.core.remotedatasource.model.SearchRemoteData
 import com.depromeet.team5.core.remotedatasource.request.CreateRetrospectionRequestRemoteData
+import com.depromeet.team5.core.remotedatasource.model.SystemPrincipleRemoteData
 import com.depromeet.team5.core.remotedatasource.model.UserStatsRemoteData
 import com.depromeet.team5.core.retrofit.api.HedgeApi
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -71,4 +72,10 @@ internal class HedgeApiSourceImpl @Inject constructor(
         hedgeApi
             .retrospectionList()
             .toRemoteData()
+
+    override suspend fun systemPrincipleList(): SystemPrincipleRemoteData =
+        hedgeApi
+            .systemPrincipleList()
+            .toRemoteData()
+
 }

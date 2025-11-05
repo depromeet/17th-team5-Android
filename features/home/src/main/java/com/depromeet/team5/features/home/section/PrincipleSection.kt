@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.Divider
 import androidx.compose.material.Text
@@ -26,17 +27,20 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.depromeet.team5.core.designsystem.foundation.HedgeColor
 import com.depromeet.team5.core.designsystem.foundation.HedgeTypography
+import com.depromeet.team5.core.domain.model.DefaultPrinciple
 import com.depromeet.team5.core.domain.model.MyPrincipleGroup
 import com.depromeet.team5.core.domain.model.OrderType
+import com.depromeet.team5.core.domain.model.RecommendedPrinciple
 import com.depromeet.team5.core.domain.monad.HedgeUiState
 import com.depromeet.team5.features.home.R
 import com.depromeet.team5.features.home.component.OrderTypeButton
 import com.depromeet.team5.features.home.component.PrincipleItem
 import com.depromeet.team5.features.home.component.RecommendPrincipleItem
-import com.depromeet.team5.features.home.screen.RecommendPrinciple
 
 @Composable
 fun PrincipleSection(
+    recommendedUiState: HedgeUiState<List<RecommendedPrinciple>>,
+    defaultsUiState: HedgeUiState<List<DefaultPrinciple>>,
     selected: OrderType,
     onSelect: (OrderType) -> Unit,
     principleGroupsUiState: HedgeUiState<List<MyPrincipleGroup>>,
@@ -47,17 +51,32 @@ fun PrincipleSection(
             .padding(top = 20.dp)
             .fillMaxWidth()
     ) {
-        LazyRow(
-            contentPadding = PaddingValues(start = 16.dp, end = 16.dp),
-            horizontalArrangement = Arrangement.spacedBy(12.dp)
-        ) {
-            RecommendPrinciple.entries.forEach {
-                item {
-                    RecommendPrincipleItem(
-                        recommendPrinciple = it,
-                        modifier = Modifier.padding(bottom = 20.dp)
-                    )
+
+        when (val recommendPrinciple = recommendedUiState) {
+            is HedgeUiState.Success -> {
+                LazyRow(
+                    contentPadding = PaddingValues(start = 16.dp, end = 16.dp),
+                    horizontalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    items(
+                        items = recommendPrinciple.data,
+                        key = { it.id }
+                    ) {
+                        RecommendPrincipleItem(
+                            recommendPrinciple = it,
+                            onClick = {},
+                            modifier = Modifier.padding(bottom = 20.dp)
+                        )
+                    }
                 }
+            }
+
+            is HedgeUiState.Loading -> {
+
+            }
+
+            is HedgeUiState.Error -> {
+
             }
         }
         Spacer(Modifier.height(20.dp))
@@ -85,6 +104,29 @@ fun PrincipleSection(
             color = HedgeColor.Text.Title,
             modifier = Modifier.padding(horizontal = 20.dp, vertical = 10.dp)
         )
+
+        when (val defaultPrinciple = defaultsUiState) {
+            is HedgeUiState.Success -> {
+                val filtered = defaultPrinciple.data.filter { it.orderType == selected }
+                filtered.forEach { group ->
+                    PrincipleItem(
+                        id = group.id,
+                        icon = group.thumbnail,
+                        title = group.groupName,
+                        onClick = {}
+                    )
+                }
+
+            }
+
+            is HedgeUiState.Loading -> {
+
+            }
+
+            is HedgeUiState.Error -> {
+
+            }
+        }
 
         Divider(
             modifier = Modifier
@@ -125,11 +167,12 @@ fun PrincipleSection(
             is HedgeUiState.Success -> {
                 ui.data.forEach { group ->
                     PrincipleItem(
+                        id = group.id,
                         icon = group.thumbnail,
                         title = group.groupName,
+                        onClick = {}
                     )
                 }
-
             }
 
             is HedgeUiState.Loading -> {
@@ -148,6 +191,8 @@ fun PrincipleSection(
 @Composable
 private fun PrincipleSectionPreview() {
     PrincipleSection(
+        recommendedUiState = HedgeUiState.Loading(emptyList()),
+        defaultsUiState = HedgeUiState.Loading(emptyList()),
         selected = OrderType.BUY,
         onSelect = {},
         principleGroupsUiState = HedgeUiState.Loading(emptyList())

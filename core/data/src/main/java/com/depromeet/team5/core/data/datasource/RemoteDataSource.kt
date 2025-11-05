@@ -6,6 +6,7 @@ import com.depromeet.team5.core.data.model.RetrospectionData
 import com.depromeet.team5.core.data.model.RetrospectionListData
 import com.depromeet.team5.core.data.model.SearchData
 import com.depromeet.team5.core.data.request.CreateRetrospectionRequestData
+import com.depromeet.team5.core.data.model.SystemPrincipleData
 import com.depromeet.team5.core.data.model.UserStatsData
 
 
@@ -28,4 +29,6 @@ interface RemoteDataSource {
     suspend fun userStats(): UserStatsData
 
     suspend fun retrospectionList(): RetrospectionListData
+
+    suspend fun systemPrincipleList(): SystemPrincipleData
 }

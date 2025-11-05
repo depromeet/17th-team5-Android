@@ -4,10 +4,13 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.systemBars
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.material.Icon
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -27,8 +30,11 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.depromeet.team5.core.designsystem.foundation.HedgeColor
 import com.depromeet.team5.core.designsystem.foundation.HedgeTypography
+import com.depromeet.team5.core.domain.model.DefaultPrinciple
 import com.depromeet.team5.core.domain.model.MyPrincipleGroup
 import com.depromeet.team5.core.domain.model.OrderType
+import com.depromeet.team5.core.domain.model.RecommendedPrinciple
+import com.depromeet.team5.core.domain.model.UserStatsInfo
 import com.depromeet.team5.core.domain.monad.HedgeUiState
 import com.depromeet.team5.core.navigation.request.RequestViewModel
 import com.depromeet.team5.features.home.R
@@ -51,10 +57,14 @@ fun HomeRoute(
     val selectedOrderType by homeViewModel.principleOrderType.collectAsStateWithLifecycle()
     val principleGroupsUiState by homeViewModel.principleGroupsUiState.collectAsStateWithLifecycle()
 
+    val recommendedUiState by homeViewModel.recommendedPrinciplesUiState.collectAsStateWithLifecycle()
+    val defaultsUiState by homeViewModel.defaultPrinciplesUiState.collectAsStateWithLifecycle()
 
     HomeScreen(
         userStatsUiState = userStatsUiState,
         retrospectionListUiState = retrospectionListUiState,
+        recommendedUiState = recommendedUiState,
+        defaultsUiState = defaultsUiState,
         selectedOrderType = selectedOrderType,
         principleGroupsUiState = principleGroupsUiState,
         onChangePrincipleOrderType = { homeViewModel.setPrincipleOrderType(it) },
@@ -68,14 +78,16 @@ fun HomeRoute(
                 requestViewModel.request.copy(orderType = OrderType.SELL)
             onSellClick()
         },
-        modifier = modifier
+        modifier = Modifier.windowInsetsPadding(WindowInsets.systemBars)
     )
 }
 
 @Composable
 private fun HomeScreen(
-    userStatsUiState: HedgeUiState<UserStatsSummary>,
+    userStatsUiState: HedgeUiState<UserStatsInfo>,
     retrospectionListUiState: HedgeUiState<List<RetrospectionSymbolState>>,
+    recommendedUiState: HedgeUiState<List<RecommendedPrinciple>>,
+    defaultsUiState: HedgeUiState<List<DefaultPrinciple>>,
     selectedOrderType: OrderType,
     principleGroupsUiState: HedgeUiState<List<MyPrincipleGroup>>,
     onChangePrincipleOrderType: (OrderType) -> Unit,
@@ -135,6 +147,8 @@ private fun HomeScreen(
                 )
 
                 HomeTab.PRINCIPLE -> PrincipleSection(
+                    recommendedUiState = recommendedUiState,
+                    defaultsUiState = defaultsUiState,
                     selected = selectedOrderType,
                     onSelect = onChangePrincipleOrderType,
                     principleGroupsUiState = principleGroupsUiState
@@ -159,8 +173,10 @@ private fun HomeScreen(
 @Composable
 private fun HomePreview() {
     HomeScreen(
-        userStatsUiState = HedgeUiState.Loading(UserStatsSummary(0, 0, 0, 0, 0)),
+        userStatsUiState = HedgeUiState.Loading(UserStatsInfo(0, 0, 0, 0, 0)),
         retrospectionListUiState = HedgeUiState.Loading(emptyList()),
+        recommendedUiState = HedgeUiState.Loading(emptyList()),
+        defaultsUiState = HedgeUiState.Loading(emptyList()),
         selectedOrderType = OrderType.BUY,
         principleGroupsUiState = HedgeUiState.Loading(emptyList()),
         onChangePrincipleOrderType = {},

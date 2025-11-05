@@ -35,6 +35,7 @@ import com.depromeet.team5.core.designsystem.foundation.HedgeColor
 import com.depromeet.team5.core.designsystem.foundation.HedgeColor.BLUE_500
 import com.depromeet.team5.core.designsystem.foundation.HedgeColor.RED_500
 import com.depromeet.team5.core.designsystem.foundation.HedgeTypography
+import com.depromeet.team5.core.domain.model.UserStatsInfo
 import com.depromeet.team5.core.domain.monad.HedgeUiState
 import com.depromeet.team5.core.ui.model.HedgeBadge
 import com.depromeet.team5.features.home.R
@@ -43,11 +44,10 @@ import com.depromeet.team5.features.home.component.RetrospectionMasterDetail
 import com.depromeet.team5.features.home.screen.RetrospectionSectionState
 import com.depromeet.team5.features.home.screen.RetrospectionState
 import com.depromeet.team5.features.home.screen.RetrospectionSymbolState
-import com.depromeet.team5.features.home.screen.UserStatsSummary
 
 @Composable
 fun HomeSection(
-    userStatsUiState: HedgeUiState<UserStatsSummary>,
+    userStatsUiState: HedgeUiState<UserStatsInfo>,
     retrospectionListUiState: HedgeUiState<List<RetrospectionSymbolState>>,
     onDashBoardClick: (Boolean) -> Unit,
     modifier: Modifier = Modifier,
@@ -315,7 +315,7 @@ private fun HomeSectionPreview() {
     )
 
     val successStats = HedgeUiState.Success(
-        UserStatsSummary(percentage = 72, hedge = 1, bronze = 2, silver = 5, gold = 3)
+        UserStatsInfo(percentage = 72, hedge = 1, bronze = 2, silver = 5, gold = 3)
     )
 
     HomeSection(

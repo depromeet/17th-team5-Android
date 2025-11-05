@@ -7,6 +7,7 @@ import com.depromeet.team5.core.remotedatasource.model.RetrospectionListRemoteDa
 import com.depromeet.team5.core.remotedatasource.model.RetrospectionRemoteData
 import com.depromeet.team5.core.remotedatasource.model.SearchRemoteData
 import com.depromeet.team5.core.remotedatasource.request.CreateRetrospectionRequestRemoteData
+import com.depromeet.team5.core.remotedatasource.model.SystemPrincipleRemoteData
 import com.depromeet.team5.core.remotedatasource.model.UserStatsRemoteData
 
 
@@ -29,4 +30,6 @@ interface HedgeApiSource {
     suspend fun userStats(): UserStatsRemoteData
 
     suspend fun retrospectionList(): RetrospectionListRemoteData
+
+    suspend fun systemPrincipleList(): SystemPrincipleRemoteData
 }

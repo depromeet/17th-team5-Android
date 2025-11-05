@@ -8,6 +8,7 @@ import com.depromeet.team5.core.retrofit.model.MyPrincipleGroupsResponse
 import com.depromeet.team5.core.retrofit.model.RetrospectionListResponse
 import com.depromeet.team5.core.retrofit.model.RetrospectionResponse
 import com.depromeet.team5.core.retrofit.model.SearchResponse
+import com.depromeet.team5.core.retrofit.model.SystemPrincipleResponse
 import com.depromeet.team5.core.retrofit.model.UserStatsResponse
 import okhttp3.RequestBody
 import okhttp3.MultipartBody
@@ -29,13 +30,13 @@ interface HedgeApi {
 
     @POST("api/v1/reports/{retrospectionId}/feedback")
     suspend fun createFeedback(
-        @Path("retrospectionId") retrospectionId: Int
+        @Path("retrospectionId") retrospectionId: Int,
     ): FeedbackResponse
 
     @GET("api/v1/principle-groups")
     suspend fun getPrincipleGroups(
         @Query("type")
-        orderType: String
+        orderType: String,
     ): MyPrincipleGroupsResponse
 
     @Multipart
@@ -50,4 +51,8 @@ interface HedgeApi {
 
     @GET("api/v1/retrospections")
     suspend fun retrospectionList(): RetrospectionListResponse
+
+    @GET("api/v1/principle-groups/systems")
+    suspend fun systemPrincipleList(): SystemPrincipleResponse
+
 }

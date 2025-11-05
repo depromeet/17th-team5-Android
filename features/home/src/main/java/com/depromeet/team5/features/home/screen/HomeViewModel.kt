@@ -1,6 +1,5 @@
 package com.depromeet.team5.features.home.screen
 
-import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.ViewModel
@@ -8,12 +7,16 @@ import androidx.lifecycle.viewModelScope
 import com.depromeet.team5.core.designsystem.foundation.HedgeColor.BLUE_500
 import com.depromeet.team5.core.designsystem.foundation.HedgeColor.GREY_400
 import com.depromeet.team5.core.designsystem.foundation.HedgeColor.RED_500
+import com.depromeet.team5.core.domain.model.DefaultPrinciple
 import com.depromeet.team5.core.domain.model.MyPrincipleGroup
 import com.depromeet.team5.core.domain.model.OrderType
+import com.depromeet.team5.core.domain.model.RecommendedPrinciple
+import com.depromeet.team5.core.domain.model.UserStatsInfo
 import com.depromeet.team5.core.domain.monad.HedgeUiState
 import com.depromeet.team5.core.domain.monad.asUiState
 import com.depromeet.team5.core.domain.usecase.GetPrincipleGroupsUseCase
 import com.depromeet.team5.core.domain.usecase.RetrospectionListUseCase
+import com.depromeet.team5.core.domain.usecase.SystemPrincipleUseCase
 import com.depromeet.team5.core.domain.usecase.UserStatsUseCase
 import com.depromeet.team5.features.home.R
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -43,72 +46,14 @@ enum class HomeTab(
     )
 }
 
-enum class RecommendPrinciple(
-    @DrawableRes val imgResId: Int,
-    @StringRes val celebResId: Int,
-    @StringRes val principleGroupTitleResId: Int,
-    val count: Int,
-) {
-    WARREN_BUFFETT(
-        imgResId = R.drawable.img_recommend_principle_1,
-        celebResId = R.string.principle_tab_recommend_celeb_1,
-        principleGroupTitleResId = R.string.principle_tab_recommend_principle_title_1,
-        count = 5
-    ),
-    BENJAMIN_GRAHAM(
-        imgResId = R.drawable.img_recommend_principle_2,
-        celebResId = R.string.principle_tab_recommend_celeb_2,
-        principleGroupTitleResId = R.string.principle_tab_recommend_principle_title_2,
-        count = 2
-    ),
-    CHARLES_MUNGER(
-        imgResId = R.drawable.img_recommend_principle_3,
-        celebResId = R.string.principle_tab_recommend_celeb_3,
-        principleGroupTitleResId = R.string.principle_tab_recommend_principle_title_3,
-        count = 3
-    ),
-    HOWARD_MARKS(
-        imgResId = R.drawable.img_recommend_principle_4,
-        celebResId = R.string.principle_tab_recommend_celeb_4,
-        principleGroupTitleResId = R.string.principle_tab_recommend_principle_title_4,
-        count = 4
-    ),
-    RAY_DALIO(
-        imgResId = R.drawable.img_recommend_principle_5,
-        celebResId = R.string.principle_tab_recommend_celeb_5,
-        principleGroupTitleResId = R.string.principle_tab_recommend_principle_title_5,
-        count = 3
-    ),
-    PETER_LYNCH(
-        imgResId = R.drawable.img_recommend_principle_6,
-        celebResId = R.string.principle_tab_recommend_celeb_6,
-        principleGroupTitleResId = R.string.principle_tab_recommend_principle_title_6,
-        count = 3
-    ),
-    JESSE_LIVERMORE(
-        imgResId = R.drawable.img_recommend_principle_7,
-        celebResId = R.string.principle_tab_recommend_celeb_7,
-        principleGroupTitleResId = R.string.principle_tab_recommend_principle_title_7,
-        count = 3
-    )
-}
-
-data class UserStatsSummary(
-    val percentage: Int,
-    val hedge: Int,
-    val bronze: Int,
-    val silver: Int,
-    val gold: Int,
-)
-
 data class RetrospectionSymbolState(
     val symbol: String,
-    val sections: List<RetrospectionSectionState>
+    val sections: List<RetrospectionSectionState>,
 )
 
 data class RetrospectionSectionState(
     val title: String,
-    val items: List<RetrospectionState>
+    val items: List<RetrospectionState>,
 )
 
 data class RetrospectionState(
@@ -117,7 +62,7 @@ data class RetrospectionState(
     val priceVolumeText: String,
     val tradeLabelRes: Int,
     val tradeColor: Color,
-    val orderDateText: String
+    val orderDateText: String,
 )
 
 @HiltViewModel
@@ -125,28 +70,19 @@ class HomeViewModel @Inject constructor(
     private val userStatsUseCase: UserStatsUseCase,
     private val retrospectionListUseCase: RetrospectionListUseCase,
     private val getPrincipleGroupsUseCase: GetPrincipleGroupsUseCase,
+    private val systemPrincipleUseCase: SystemPrincipleUseCase,
 ) : ViewModel() {
     private val _principleOrderType = MutableStateFlow<OrderType>(OrderType.BUY)
     val principleOrderType: StateFlow<OrderType> = _principleOrderType.asStateFlow()
 
-    val userStatsUiState: StateFlow<HedgeUiState<UserStatsSummary>> =
+    val userStatsUiState: StateFlow<HedgeUiState<UserStatsInfo>> =
         userStatsUseCase()
-            .map { result ->
-                UserStatsSummary(
-                    percentage = result.data.percentage,
-                    hedge = result.data.hedge,
-                    bronze = result.data.bronze,
-                    silver = result.data.silver,
-                    gold = result.data.gold
-                )
-            }
+            .map { it.data }
             .asUiState()
             .stateIn(
                 scope = viewModelScope,
                 started = SharingStarted.WhileSubscribed(5_000),
-                initialValue = HedgeUiState.Loading(
-                    UserStatsSummary(0, 0, 0, 0, 0)
-                )
+                initialValue = HedgeUiState.Loading(UserStatsInfo(0, 0, 0, 0, 0))
             )
 
     val retrospectionListUiState: StateFlow<HedgeUiState<List<RetrospectionSymbolState>>> =
@@ -172,7 +108,10 @@ class HomeViewModel @Inject constructor(
                                         RetrospectionState(
                                             id = r.id,
                                             dayText = r.retrospectionCreatedAt.toMonthDayOrRaw(),
-                                            priceVolumeText = "%,d원 • %d주".format(r.price, r.volume),
+                                            priceVolumeText = "%,d원 • %d주".format(
+                                                r.price,
+                                                r.volume
+                                            ),
                                             tradeLabelRes = if (isBuy)
                                                 R.string.home_tab_retrospection_trade_buy
                                             else
@@ -190,6 +129,26 @@ class HomeViewModel @Inject constructor(
                     }
                 }
             }
+            .asUiState()
+            .stateIn(
+                scope = viewModelScope,
+                started = SharingStarted.WhileSubscribed(5_000),
+                initialValue = HedgeUiState.Loading(emptyList())
+            )
+
+    val recommendedPrinciplesUiState: StateFlow<HedgeUiState<List<RecommendedPrinciple>>> =
+        systemPrincipleUseCase()
+            .map { it.data.recommended }
+            .asUiState()
+            .stateIn(
+                scope = viewModelScope,
+                started = SharingStarted.WhileSubscribed(5_000),
+                initialValue = HedgeUiState.Loading(emptyList())
+            )
+
+    val defaultPrinciplesUiState: StateFlow<HedgeUiState<List<DefaultPrinciple>>> =
+        systemPrincipleUseCase()
+            .map { it.data.defaults }
             .asUiState()
             .stateIn(
                 scope = viewModelScope,

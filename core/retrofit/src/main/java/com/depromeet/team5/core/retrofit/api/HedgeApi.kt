@@ -55,6 +55,11 @@ interface HedgeApi {
         groupId: Int
     )
 
+    @DELETE("api/v1/investment-principles/{principleId}")
+    suspend fun deletePrinciple(
+        @Path("principleId")
+        principleId: Int
+    )
     @Multipart
     @POST("api/v1/{domain}/images/upload")
     suspend fun imageUpload(

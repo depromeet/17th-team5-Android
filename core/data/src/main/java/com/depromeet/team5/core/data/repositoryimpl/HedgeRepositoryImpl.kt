@@ -48,6 +48,10 @@ internal class HedgeRepositoryImpl @Inject constructor(
         emit(remoteDataSource.deletePrincipleGroup(groupId))
     }
 
+    override fun deletePrinciple(principleId: Int): Flow<Unit> = flow {
+        emit(remoteDataSource.deletePrinciple(principleId))
+    }
+
     override suspend fun uploadImageUri(
         domain: String,
         uri: String,

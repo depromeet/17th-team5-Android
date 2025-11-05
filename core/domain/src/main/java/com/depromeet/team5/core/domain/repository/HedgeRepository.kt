@@ -27,6 +27,8 @@ interface HedgeRepository {
 
     fun deletePrincipleGroup(groupId: Int): Flow<Unit>
 
+    fun deletePrinciple(principleId: Int): Flow<Unit>
+
     suspend fun uploadImageUri(
         domain: String,
         uri: String,

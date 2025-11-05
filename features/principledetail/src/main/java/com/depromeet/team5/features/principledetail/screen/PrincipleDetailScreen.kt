@@ -1,5 +1,7 @@
 package com.depromeet.team5.features.principledetail.screen
 
+import androidx.compose.animation.core.TweenSpec
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -182,23 +184,42 @@ private fun PrincipleDetailScreen(
 
                     LazyColumn(
                         modifier = Modifier
-                            .padding(top = 10.dp)
                             .fillMaxWidth()
                     ) {
+                        item {
+                            Spacer(modifier.size(10.dp))
+                        }
+
                         itemsIndexed(
                             items = uiState.data.principles,
                             key = { index, principle -> principle.id }
                         ) { index, principle ->
-                            PrincipleItem(
-                                index = index + 1,
-                                principle = principle,
-                                onClickedItemModifyButton = onClickedItemModifyButton,
-                                onClickedItemRemoveButton = onClickedItemRemoveButton
-                            )
-                            HorizontalDivider(
-                                thickness = 1.dp,
-                                color = HedgeColor.Neutral.BackgroundSecondary
-                            )
+                            Column(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .animateItem(
+                                        fadeInSpec = TweenSpec(
+                                            durationMillis = 500
+                                        ),
+                                        fadeOutSpec = TweenSpec(
+                                            durationMillis = 500
+                                        ),
+                                        placementSpec = tween(
+                                            durationMillis = 500
+                                        )
+                                    )
+                            ) {
+                                PrincipleItem(
+                                    index = index + 1,
+                                    principle = principle,
+                                    onClickedItemModifyButton = onClickedItemModifyButton,
+                                    onClickedItemRemoveButton = onClickedItemRemoveButton
+                                )
+                                HorizontalDivider(
+                                    thickness = 1.dp,
+                                    color = HedgeColor.Neutral.BackgroundSecondary
+                                )
+                            }
                         }
                     }
                 }
@@ -526,23 +547,24 @@ private fun LoadingProgressbar() {
 @Preview
 @Composable
 fun PrincipleDetailScreenPreview() {
+    val list = mutableListOf<MyPrinciple>()
+
+    for (i in 0 until 20) {
+        list.add(
+            MyPrinciple.EMPTY.copy(
+                id = i,
+                principle = "종목 선택 시 최근 매출액 확인하기 종목 선택 시 최근 매출액 확인하기 ",
+                description = "상승장에서 눌림목 나오면 지지선 나올 때까지 기다렸다가 분할 매수하자. 몰빵은 절대 금지."
+            )
+        )
+    }
+
     PrincipleDetailScreen(
         uiState = HedgeUiState.Success(
             data = MyPrincipleGroup.EMPTY.copy(
                 groupName = "이건 좀 지키자 제발",
                 orderType = OrderType.BUY,
-                principles = listOf(
-                    MyPrinciple.EMPTY.copy(
-                        id = 1,
-                        principle = "종목 선택 시 최근 매출액 확인하기 종목 선택 시 최근 매출액 확인하기 ",
-                        description = "상승장에서 눌림목 나오면 지지선 나올 때까지 기다렸다가 분할 매수하자. 몰빵은 절대 금지."
-                    ),
-                    MyPrinciple.EMPTY.copy(
-                        id = 2,
-                        principle = "종목 선택 시 최근 매출액 확인하기 종목 선택 시 최근 매출액 확인하기 ",
-                        description = "상승장에서 눌림목 나오면 지지선 나올 때까지 기다렸다가 분할 매수하자. 몰빵은 절대 금지."
-                    )
-                )
+                principles = list
             )
         ),
         principleType = PrincipleType.MINE,

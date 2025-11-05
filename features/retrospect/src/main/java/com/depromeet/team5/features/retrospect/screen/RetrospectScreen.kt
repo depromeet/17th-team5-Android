@@ -67,7 +67,6 @@ import com.depromeet.team5.core.designsystem.component.HedgeSegment
 import com.depromeet.team5.core.designsystem.component.HedgeTopBar
 import com.depromeet.team5.core.designsystem.foundation.HedgeColor
 import com.depromeet.team5.core.designsystem.foundation.HedgeTypography
-import com.depromeet.team5.core.domain.model.MyPrinciple
 import com.depromeet.team5.core.domain.model.MyPrincipleGroup
 import com.depromeet.team5.core.domain.model.OrderType
 import com.depromeet.team5.core.domain.monad.HedgeUiState
@@ -203,7 +202,7 @@ fun RetrospectRoute(
             uiState = myPrincipleState,
             orderType = requestViewModel.request.orderType,
             onClickedClose = { isOpenBottomSheetDialog = false },
-            onClickedConfirmButton = { principles ->
+            onClickedConfirmButton = { myPrincipleGroup ->
                 with(retrospectionState) {
                     requestViewModel.request = requestViewModel.request.copy(
                         price = sellingTextFieldState.value.text.toInt(),
@@ -225,7 +224,7 @@ fun RetrospectRoute(
                         }
                     )
 
-                    requestViewModel.principles = principles
+                    requestViewModel.selectedMyPrincipleGroup = myPrincipleGroup
                 }
 
                 onClickedConfirmButton()
@@ -470,7 +469,7 @@ private fun PrincipleDialog(
     uiState: HedgeUiState<List<MyPrincipleGroup>>,
     orderType: OrderType,
     onClickedClose: () -> Unit,
-    onClickedConfirmButton: (List<MyPrinciple>) -> Unit,
+    onClickedConfirmButton: (MyPrincipleGroup) -> Unit,
     onShowErrorToast: @Composable (Throwable) -> Unit
 ) {
     when (val state = uiState) {

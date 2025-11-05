@@ -78,7 +78,7 @@ fun PrincipleBottomSheetDialog(
     modifier: Modifier = Modifier,
     isShowAddButton: Boolean = false,
     onClickedClose: () -> Unit,
-    onClickedConfirmButton: (List<MyPrinciple>) -> Unit,
+    onClickedConfirmButton: (MyPrincipleGroup) -> Unit,
     onClickedAddButton: () -> Unit = {}
 ) {
     val scope = rememberCoroutineScope()
@@ -112,11 +112,11 @@ fun PrincipleBottomSheetDialog(
                 orderType = orderType,
                 isShowAddButton = isShowAddButton,
                 onClickedClose = onClickedClose,
-                onClickedConfirmButton = { list ->
+                onClickedConfirmButton = { myPrincipleGroup ->
                     scope.launch {
                         sheetState.hide()
                         delay(100)
-                        onClickedConfirmButton(list)
+                        onClickedConfirmButton(myPrincipleGroup)
                     }
                 },
                 onClickedAddButton = onClickedAddButton
@@ -133,7 +133,7 @@ private fun HedgeModalBottomSheetScreen(
     modifier: Modifier = Modifier,
     isShowAddButton: Boolean = false,
     onClickedClose: () -> Unit,
-    onClickedConfirmButton: (List<MyPrinciple>) -> Unit,
+    onClickedConfirmButton: (MyPrincipleGroup) -> Unit,
     onClickedAddButton: () -> Unit
 ) {
     var selectedMyPrincipleItem by remember { mutableIntStateOf(-2) }
@@ -329,9 +329,9 @@ private fun HedgeModalBottomSheetScreen(
         }
 
         val target = if (selectedMyPrincipleItem == -1) {
-            beginnerPrinciple.principles.ifEmpty { return }
+            beginnerPrinciple
         } else if (selectedMyPrincipleItem != -2) {
-            groups.find { it.id == selectedMyPrincipleItem }?.principles ?: return
+            groups.find { it.id == selectedMyPrincipleItem } ?: return
         } else {
             return
         }

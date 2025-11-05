@@ -21,20 +21,6 @@
     <string name="home_tab_retrospection_trade_sell">매도</string>
 
     // principle
-    <string name="principle_tab_recommend_celeb_1">워렌 버핏</string>
-    <string name="principle_tab_recommend_principle_title_1">워렌 버핏의\n부자되는 꿀팁</string>
-    <string name="principle_tab_recommend_celeb_2">벤저민 그레이엄</string>
-    <string name="principle_tab_recommend_principle_title_2">워렌 버핏의\n부자되는 꿀팁</string>
-    <string name="principle_tab_recommend_celeb_3">찰리 멍거</string>
-    <string name="principle_tab_recommend_principle_title_3">워렌 버핏의\n부자되는 꿀팁</string>
-    <string name="principle_tab_recommend_celeb_4">하워드 막스</string>
-    <string name="principle_tab_recommend_principle_title_4">워렌 버핏의\n부자되는 꿀팁</string>
-    <string name="principle_tab_recommend_celeb_5">레이 달리오</string>
-    <string name="principle_tab_recommend_principle_title_5">워렌 버핏의\n부자되는 꿀팁</string>
-    <string name="principle_tab_recommend_celeb_6">피터 린치</string>
-    <string name="principle_tab_recommend_principle_title_6">워렌 버핏의\n부자되는 꿀팁</string>
-    <string name="principle_tab_recommend_celeb_7">제시 리버모어</string>
-    <string name="principle_tab_recommend_principle_title_7">워렌 버핏의\n부자되는 꿀팁</string>
     <string name="principle_tab_recommend_principle_count">원칙 %d개</string>
     <string name="principle_tab_default_title">기본</string>
     <string name="principle_tab_my_title">내가 만든</string>

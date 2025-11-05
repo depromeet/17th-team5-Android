@@ -1,20 +1,20 @@
 package com.depromeet.team5.core.retrofit.model
 
 import com.depromeet.team5.core.remotedatasource.model.MyPrincipleGroupRemoteData
-import com.depromeet.team5.core.remotedatasource.model.MyPrincipleGroupsRemoteData
+import com.depromeet.team5.core.remotedatasource.model.MyPrincipleGroupsInfoRemoteData
 import com.depromeet.team5.core.remotedatasource.model.MyPrincipleRemoteData
 import com.depromeet.team5.core.retrofit.mapper.RetrofitMapper
 import kotlinx.serialization.Serializable
 
 
 @Serializable
-data class MyPrincipleGroupsResponse(
+data class MyPrincipleGroupsInfoResponse(
     val code: String,
     val message: String,
     val data: List<MyPrincipleGroupResponse>
-) : RetrofitMapper<MyPrincipleGroupsRemoteData> {
+) : RetrofitMapper<MyPrincipleGroupsInfoRemoteData> {
 
-    override fun toRemoteData(): MyPrincipleGroupsRemoteData = MyPrincipleGroupsRemoteData(
+    override fun toRemoteData(): MyPrincipleGroupsInfoRemoteData = MyPrincipleGroupsInfoRemoteData(
         code = code,
         message = message,
         data = data.map { it.toRemoteData() }

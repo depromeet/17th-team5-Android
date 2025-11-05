@@ -4,7 +4,6 @@ import androidx.core.net.toUri
 import com.depromeet.team5.core.data.datasource.RemoteDataSource
 import com.depromeet.team5.core.data.model.FeedbackData
 import com.depromeet.team5.core.data.model.MyPrincipleGroupData
-import com.depromeet.team5.core.data.model.MyPrincipleGroupsData
 import com.depromeet.team5.core.data.model.RetrospectionData
 import com.depromeet.team5.core.data.model.RetrospectionListData
 import com.depromeet.team5.core.data.model.SearchData
@@ -19,7 +18,7 @@ import javax.inject.Singleton
 
 @Singleton
 internal class RemoteDataSourceImpl @Inject constructor(
-    private val hedgeApiSource: HedgeApiSource,
+    private val hedgeApiSource: HedgeApiSource
 ) : RemoteDataSource {
 
     override suspend fun search(query: String): SearchData =

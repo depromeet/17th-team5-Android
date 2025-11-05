@@ -2,7 +2,6 @@ package com.depromeet.team5.core.data.datasource
 
 import com.depromeet.team5.core.data.model.FeedbackData
 import com.depromeet.team5.core.data.model.MyPrincipleGroupData
-import com.depromeet.team5.core.data.model.MyPrincipleGroupsData
 import com.depromeet.team5.core.data.model.RetrospectionData
 import com.depromeet.team5.core.data.model.RetrospectionListData
 import com.depromeet.team5.core.data.model.SearchData

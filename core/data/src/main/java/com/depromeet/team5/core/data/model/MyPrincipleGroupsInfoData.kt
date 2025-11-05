@@ -6,7 +6,7 @@ import com.depromeet.team5.core.domain.model.MyPrincipleGroup
 import com.depromeet.team5.core.domain.model.OrderType
 
 
-data class MyPrincipleGroupsData(
+data class MyPrincipleGroupsInfoData(
     val code: String,
     val message: String,
     val data: List<MyPrincipleGroupData>

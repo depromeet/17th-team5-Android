@@ -1,9 +1,5 @@
 package com.depromeet.team5.core.logger
 
-import android.widget.Toast
-import androidx.compose.runtime.Composable
-import com.depromeet.team5.core.designsystem.component.HedgeToast
-import com.depromeet.team5.core.designsystem.foundation.HedgeIcon
 import com.depromeet.team5.core.logger.annotation.BuildVariant
 import timber.log.Timber
 
@@ -57,17 +53,4 @@ object Logger {
         Timber.e(throwable)
     }
 
-    @Composable
-    fun LogAndToast(throwable: Throwable) {
-        e(throwable)
-
-        HedgeToast(
-            text = ERROR_DEFAULT_MESSAGE,
-            icon = HedgeIcon.Error,
-            duration = Toast.LENGTH_SHORT
-        )
-    }
-
-
-    private const val ERROR_DEFAULT_MESSAGE = "에러가 발생했습니다. 잠시 후 다시 실행해주세요."
 }

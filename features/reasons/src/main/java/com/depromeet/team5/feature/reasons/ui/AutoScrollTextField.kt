@@ -18,6 +18,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.withFrameNanos
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.graphics.SolidColor
@@ -35,6 +37,7 @@ import com.depromeet.team5.feature.reasons.R
 fun AutoScrollTextField(
     content: TextFieldValue,
     isImeVisible: Boolean,
+    focusRequester: FocusRequester,
     onValueChange: (TextFieldValue) -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -92,6 +95,7 @@ fun AutoScrollTextField(
             value = content,
             onValueChange = onValueChange,
             modifier = Modifier
+                .focusRequester(focusRequester)
                 .fillMaxWidth()
                 .heightIn(maxHeight)
                 .onFocusChanged { isFocused = it.isFocused }

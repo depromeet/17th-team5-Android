@@ -35,9 +35,11 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
@@ -74,6 +76,7 @@ import com.depromeet.team5.feature.reasons.ui.LinkModal
 import com.depromeet.team5.feature.reasons.ui.LinkThumbnailContainer
 import com.depromeet.team5.feature.reasons.ui.PrincipleAdherenceContainer
 import com.depromeet.team5.feature.reasons.ui.RestrictionIndicatorContainer
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
 
 @Composable
@@ -279,7 +282,7 @@ private fun ReasonsScreen(
         onClickImage = { onClickImage(ImageDetail(principleGroup.principles[pagerState.currentPage].principleChecks.imageUrls, it)) },
         onClickDeleteImage = { onClickDeleteImage(pagerState.currentPage, it) },
         onClickDeleteLink = { onClickDeleteLink(pagerState.currentPage, it) },
-        onReasonChanged = { onReasonChanged(pagerState.currentPage, it) },
+        onReasonChanged = onReasonChanged,
         onAdherenceChanged = { onAdherenceChanged(pagerState.currentPage, it) },
         modifier = modifier
     )
@@ -299,7 +302,7 @@ private fun ReasonScreenContents(
     onClickDeleteImage: (Int) -> Unit,
     onClickDeleteLink: (Int) -> Unit,
     onAdherenceChanged: (PrincipleAdherence) -> Unit,
-    onReasonChanged: (TextFieldValue) -> Unit,
+    onReasonChanged: (Int, TextFieldValue) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Box(
@@ -309,7 +312,18 @@ private fun ReasonScreenContents(
     ) {
         val density = LocalDensity.current
         val isImeVisible = WindowInsets.ime.getBottom(density) > 0
-
+        val focusRequesters = remember(principleGroup.principles.size) {
+            List(principleGroup.principles.size) { FocusRequester() }
+        }
+        LaunchedEffect(pagerState, isImeVisible) {
+            snapshotFlow { pagerState.currentPage }
+                .distinctUntilChanged()
+                .collect { page ->
+                    if (isImeVisible) {
+                        focusRequesters[page].requestFocus()
+                    }
+                }
+        }
         Column(
             modifier = modifier
                 .fillMaxSize()
@@ -349,6 +363,7 @@ private fun ReasonScreenContents(
                 ReasonsPage(
                     principle = principleGroup.principles[page],
                     isImeVisible = isImeVisible,
+                    focusRequester = focusRequesters[page],
                     onClickAddImage = onClickAddImage,
                     onClickAddLink = onClickAddLink,
                     onClickAddMention = onClickAddMention,
@@ -356,7 +371,7 @@ private fun ReasonScreenContents(
                     onClickDeleteImage = onClickDeleteImage,
                     onClickDeleteLink = onClickDeleteLink,
                     onAdherenceChanged = onAdherenceChanged,
-                    onReasonChanged = onReasonChanged,
+                    onReasonChanged = { onReasonChanged(page, it) },
                 )
             }
         }
@@ -411,6 +426,7 @@ private fun TradeInfo(
 private fun ReasonsPage(
     principle: UiPrinciple,
     isImeVisible: Boolean,
+    focusRequester: FocusRequester,
     onClickAddImage: () -> Unit,
     onClickAddLink: () -> Unit,
     onClickAddMention: () -> Unit,
@@ -438,7 +454,6 @@ private fun ReasonsPage(
             )
         }
         val scrollState = rememberScrollState()
-
         Column(
             modifier = Modifier
                 .weight(1f)
@@ -449,6 +464,7 @@ private fun ReasonsPage(
                 content = principle.principleChecks.note,
                 onValueChange = onReasonChanged,
                 isImeVisible = isImeVisible,
+                focusRequester = focusRequester,
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(horizontal = 24.dp)

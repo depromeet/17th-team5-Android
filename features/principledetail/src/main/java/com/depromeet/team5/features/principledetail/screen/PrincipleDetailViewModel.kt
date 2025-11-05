@@ -53,7 +53,7 @@ class PrincipleDetailViewModel @Inject constructor(
                         _eventFlow.emit(PrincipleDetailEvent.Finish)
                     },
                     onError = {
-                        _eventFlow.emit(PrincipleDetailEvent.ShowErrorToast())
+                        _eventFlow.emit(PrincipleDetailEvent.ShowErrorToast(it))
                     }
                 )
         }

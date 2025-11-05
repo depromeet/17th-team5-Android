@@ -63,15 +63,9 @@ fun PrincipleDetailRoute(
     modifier: Modifier = Modifier,
     viewModel: PrincipleDetailViewModel = hiltViewModel(),
     onBackPressed: () -> Unit,
-    onShowErrorToast: @Composable (Throwable) -> Unit
+    onShowErrorToast: (Throwable) -> Unit
 ) {
     val uiState by viewModel.uiStateFlow.collectAsStateWithLifecycle()
-
-    var principleDetailEvent: PrincipleDetailEvent by remember { mutableStateOf(PrincipleDetailEvent.None) }
-
-//    val isShowErrorToast: Boolean by remember(principleDetailEvent) {
-//        derivedStateOf { principleDetailEvent is PrincipleDetailEvent.ShowErrorToast }
-//    }
 
     LaunchedEffect(Unit) {
         viewModel.eventFlow.collect { event ->
@@ -81,7 +75,7 @@ fun PrincipleDetailRoute(
                 }
 
                 is PrincipleDetailEvent.ShowErrorToast -> {
-                    principleDetailEvent = event
+                    onShowErrorToast(event.throwable)
                 }
 
                 else -> {}
@@ -109,12 +103,12 @@ fun PrincipleDetailRoute(
         onClickedItemRemoveButton = { principleId ->
 
         },
-        onBackPressed = onBackPressed
+        onBackPressed = onBackPressed,
+        onShowErrorToast = {
+            onBackPressed()
+            onShowErrorToast(it)
+        }
     )
-
-    if (principleDetailEvent is PrincipleDetailEvent.ShowErrorToast) {
-        onShowErrorToast(Throwable())
-    }
 }
 
 @Composable
@@ -127,7 +121,8 @@ private fun PrincipleDetailScreen(
     onClickedRemoveButton: (Int) -> Unit,
     onClickedItemModifyButton: (Int) -> Unit,
     onClickedItemRemoveButton: (Int) -> Unit,
-    onBackPressed: () -> Unit
+    onBackPressed: () -> Unit,
+    onShowErrorToast: (Throwable) -> Unit
 ) {
     if (uiState is HedgeUiState.Loading) {
         LoadingProgressbar()
@@ -233,9 +228,9 @@ private fun PrincipleDetailScreen(
         }
 
         is HedgeUiState.Error -> {
-            ErrorScreen(
-                onRetryButtonClicked = onRetryButtonClicked
-            )
+            uiState.throwable?.let {
+                onShowErrorToast(it)
+            }
         }
 
         else -> {}
@@ -579,7 +574,8 @@ fun PrincipleDetailScreenPreview() {
         onClickedRemoveButton = {},
         onClickedItemModifyButton = {},
         onClickedItemRemoveButton = {},
-        onBackPressed = {}
+        onBackPressed = {},
+        onShowErrorToast = {}
     )
 }
 

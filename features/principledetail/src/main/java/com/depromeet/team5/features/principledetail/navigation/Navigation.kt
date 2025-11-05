@@ -1,6 +1,5 @@
 package com.depromeet.team5.features.principledetail.navigation
 
-import androidx.compose.runtime.Composable
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavOptions
@@ -30,7 +29,7 @@ fun NavController.navigateToPrincipleDetail(
 
 fun NavGraphBuilder.principleDetail(
     onBackPressed: () -> Unit,
-    onShowErrorToast: @Composable (Throwable) -> Unit
+    onShowErrorToast: (Throwable) -> Unit
 ) {
     composable<PrincipleDetail> { backstackEntry ->
         val args = backstackEntry.toRoute<PrincipleDetail>()
@@ -38,7 +37,7 @@ fun NavGraphBuilder.principleDetail(
         PrincipleDetailRoute(
             principleType = args.principleType,
             onBackPressed = onBackPressed,
-            onShowErrorToast = onShowErrorToast
+            onShowErrorToast = onShowErrorToast,
         )
     }
 }

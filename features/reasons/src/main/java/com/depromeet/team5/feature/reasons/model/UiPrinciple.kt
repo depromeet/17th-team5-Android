@@ -1,0 +1,93 @@
+package com.depromeet.team5.feature.reasons.model
+
+import androidx.compose.runtime.Immutable
+import androidx.compose.ui.text.input.TextFieldValue
+import com.depromeet.team5.core.domain.model.MyPrinciple
+import com.depromeet.team5.core.domain.model.MyPrincipleGroup
+import com.depromeet.team5.core.domain.model.OrderType
+import com.depromeet.team5.core.domain.model.PrincipleChecks
+
+fun MyPrincipleGroup.toUi() = UiPrincipleGroup(
+    id = id,
+    groupName = groupName,
+    thumbnail = thumbnail,
+    orderType = orderType,
+    displayOrder = displayOrder,
+    principles = principles.map { it.toUi() },
+)
+
+fun MyPrinciple.toUi() = UiPrinciple(
+    id = id,
+    groupId = groupId,
+    principle = principle,
+    description = description,
+    principleChecks = principleChecks.toUi(),
+)
+
+fun PrincipleChecks.toUi() = UiPrincipleChecks(
+    adherence = PrincipleAdherence.fromStatus(status),
+    note = TextFieldValue(note),
+    imageUrls = imageUrls,
+    articles = links.map {
+        Article(
+            originUrl = it,
+            title = null,
+            thumbnail = null,
+            source = null,
+        )
+    },
+)
+
+@Immutable
+data class UiPrincipleGroup(
+    val id: Int,
+    val groupName: String,
+    val thumbnail: String,
+    val orderType: OrderType,
+    val displayOrder: Int,
+    val principles: List<UiPrinciple>
+) {
+
+    fun getIndexOfFirstUnselectedPrinciple(): Int {
+        return principles.indexOfFirst { it.principleChecks.adherence == PrincipleAdherence.UNSELECTED }
+    }
+
+    fun getCheckedPrincipleCount(): Int {
+        return principles.count { it.principleChecks.adherence != PrincipleAdherence.UNSELECTED }
+    }
+
+    fun isAllPrincipleChecked(): Boolean {
+        return getCheckedPrincipleCount() == principles.size
+    }
+}
+
+@Immutable
+data class UiPrinciple(
+    val id: Int,
+    val groupId: Int,
+    val principle: String,
+    val description: String,
+    val principleChecks: UiPrincipleChecks,
+)
+
+@Immutable
+data class UiPrincipleChecks(
+    val adherence: PrincipleAdherence,
+    val note: TextFieldValue,
+    val imageUrls: List<String>,
+    val articles: List<Article>,
+)
+
+@Immutable
+enum class PrincipleAdherence {
+    UNSELECTED, KEPT, NEUTRAL, NOT_KEPT;
+
+    companion object {
+        fun fromStatus(status: String): PrincipleAdherence = when (status) {
+            "KEPT" -> KEPT
+            "NEUTRAL" -> NEUTRAL
+            "NOT_KEPT" -> NOT_KEPT
+            else -> UNSELECTED
+        }
+    }
+}

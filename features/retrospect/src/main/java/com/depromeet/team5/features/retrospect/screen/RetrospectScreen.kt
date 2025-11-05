@@ -99,7 +99,7 @@ fun RetrospectRoute(
     modifier: Modifier = Modifier,
     onClickedConfirmButton: () -> Unit,
     onBackPressed: () -> Unit,
-    onShowErrorToast: @Composable (Throwable) -> Unit
+    onShowErrorToast: (Throwable) -> Unit
 ) {
     val context = LocalContext.current
 
@@ -231,6 +231,7 @@ fun RetrospectRoute(
             },
             onShowErrorToast = {
                 onShowErrorToast(it)
+                isOpenBottomSheetDialog = false
             }
         )
     }
@@ -470,7 +471,7 @@ private fun PrincipleDialog(
     orderType: OrderType,
     onClickedClose: () -> Unit,
     onClickedConfirmButton: (MyPrincipleGroup) -> Unit,
-    onShowErrorToast: @Composable (Throwable) -> Unit
+    onShowErrorToast: (Throwable) -> Unit
 ) {
     when (val state = uiState) {
         is HedgeUiState.Success<List<MyPrincipleGroup>> -> {

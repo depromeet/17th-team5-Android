@@ -3,7 +3,6 @@ package com.depromeet.team5.features.retrospect.screen
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.windowInsetsPadding
-import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -24,7 +23,7 @@ fun NavGraphBuilder.retrospectScreen(
     navController: NavController,
     onClickedConfirmButton: () -> Unit,
     onBackPressed: () -> Unit,
-    onShowErrorToast: @Composable (Throwable) -> Unit
+    onShowErrorToast: (Throwable) -> Unit
 ) {
     composable<Retrospect> { backStackEntry ->
         val parentEntry = remember(backStackEntry) {

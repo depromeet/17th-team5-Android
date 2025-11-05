@@ -6,16 +6,21 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.layout.systemBars
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
@@ -23,8 +28,11 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -39,6 +47,7 @@ import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.DpOffset
@@ -69,6 +78,8 @@ fun PrincipleDetailRoute(
 ) {
     val uiState by viewModel.uiStateFlow.collectAsStateWithLifecycle()
 
+    var isShowModalBottomSheet by remember { mutableStateOf(false) }
+
     LaunchedEffect(Unit) {
         viewModel.eventFlow.collect { event ->
             when (event) {
@@ -94,6 +105,7 @@ fun PrincipleDetailRoute(
 
         },
         onClickedRemoveButton = { groupId ->
+            //todo dialog가 뜨고 확인 누를 시 삭제 이벤트 진행하도록 추후에 변경하기
             viewModel.deletePrincipleGroup(groupId)
         },
         onClickedItemModifyButton = { principleId ->
@@ -102,12 +114,27 @@ fun PrincipleDetailRoute(
         onClickedItemRemoveButton = { principleId ->
             viewModel.deletePrinciple(principleId)
         },
+        onClickedConfirmButton = {
+            isShowModalBottomSheet = true
+        },
         onBackPressed = onBackPressed,
         onShowErrorToast = {
             onBackPressed()
             onShowErrorToast(it)
         }
     )
+
+    if (isShowModalBottomSheet) {
+        RecommendedModalBottomSheet(
+            onDismissRequest = {
+                isShowModalBottomSheet = false
+            },
+            onClickedButton = { orderType ->
+                //todo 내 원칙에 추천 원칙 추가하기
+                isShowModalBottomSheet = false
+            }
+        )
+    }
 }
 
 @Composable
@@ -119,6 +146,7 @@ private fun PrincipleDetailScreen(
     onClickedRemoveButton: (Int) -> Unit,
     onClickedItemModifyButton: (Int) -> Unit,
     onClickedItemRemoveButton: (Int) -> Unit,
+    onClickedConfirmButton: () -> Unit,
     onBackPressed: () -> Unit,
     onShowErrorToast: (Throwable) -> Unit
 ) {
@@ -237,7 +265,8 @@ private fun PrincipleDetailScreen(
 
                     PrincipleType.RECOMMENDED -> {
                         PrincipleDetailConfirmButton(
-                            modifier = Modifier.align(Alignment.BottomCenter)
+                            modifier = Modifier.align(Alignment.BottomCenter),
+                            onClickedConfirmButton = onClickedConfirmButton
                         )
                     }
                 }
@@ -329,7 +358,8 @@ fun PrincipleItem(
 
 @Composable
 fun PrincipleDetailConfirmButton(
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onClickedConfirmButton: () -> Unit
 ) {
     Box(
         modifier = modifier.fillMaxWidth()
@@ -376,7 +406,7 @@ fun PrincipleDetailConfirmButton(
                         .fillMaxWidth(),
                     text = "내 회고 템플릿에 추가하기",
                     size = HedgeButton.Action.Size.Large,
-                    onClick = {}
+                    onClick = onClickedConfirmButton
                 )
             }
         }
@@ -527,6 +557,171 @@ private fun ModifyAndRemoveDropdown(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun RecommendedModalBottomSheet(
+    modifier: Modifier = Modifier,
+    onDismissRequest: () -> Unit,
+    onClickedButton: (OrderType) -> Unit,
+) {
+    val sheetState = rememberModalBottomSheetState(
+        skipPartiallyExpanded = true
+    )
+    val screenHeight = LocalConfiguration.current.screenHeightDp.dp
+
+    ModalBottomSheet(
+        modifier = modifier,
+        sheetState = sheetState,
+        containerColor = HedgeColor.WHITE,
+        onDismissRequest = onDismissRequest,
+        dragHandle = null
+    ) {
+
+        RecommendedModalBottomSheetScreen(
+            modifier = Modifier
+                .windowInsetsPadding(WindowInsets.systemBars)
+                .fillMaxWidth()
+                .heightIn(max = screenHeight * 0.4f),
+            onClickedButton = onClickedButton,
+            onClickedClose = onDismissRequest
+        )
+    }
+}
+
+@Composable
+private fun RecommendedModalBottomSheetScreen(
+    modifier: Modifier = Modifier,
+    onClickedButton: (OrderType) -> Unit,
+    onClickedClose: () -> Unit
+) {
+    var selectedOrderType by remember { mutableStateOf(OrderType.NONE) }
+
+    Box(
+        modifier = modifier
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(HedgeColor.WHITE)
+        ) {
+            Row(
+                modifier = Modifier
+                    .padding(start = 20.dp, end = 20.dp, bottom = 10.dp)
+                    .fillMaxWidth()
+                    .background(HedgeColor.WHITE),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Absolute.SpaceBetween
+            ) {
+                Text(
+                    modifier = Modifier,
+                    text = stringResource(R.string.principle_detail_modal_bottom_sheet_title),
+                    style = HedgeTypography.Body1.SemiBold,
+                    color = HedgeColor.Text.Title
+                )
+
+                Box(
+                    modifier = Modifier
+                        .size(28.dp)
+                        .background(
+                            color = HedgeColor.Neutral.BackgroundSecondary,
+                            shape = RoundedCornerShape(39.dp)
+                        )
+                        .clickable(true) { onClickedClose() },
+                    contentAlignment = Alignment.Center
+                ) {
+                    Image(
+                        modifier = Modifier.size(14.dp),
+                        imageVector = HedgeIcon.CloseThick,
+                        contentDescription = null,
+                        colorFilter = ColorFilter.tint(color = HedgeColor.Text.Assistive)
+                    )
+                }
+            }
+
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(start = 20.dp, top = 12.dp, end = 12.dp, bottom = 12.dp)
+                    .clickable(
+                        enabled = true,
+                        indication = null,
+                        interactionSource = remember { MutableInteractionSource() }
+                    ) {
+                        selectedOrderType = OrderType.BUY
+                    },
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+
+                Text(
+                    text = stringResource(R.string.buy),
+                    style = HedgeTypography.Body3.SemiBold,
+                    color = HedgeColor.Text.Primary
+                )
+
+                Image(
+                    modifier = Modifier.size(24.dp),
+                    imageVector = HedgeIcon.Check,
+                    contentDescription = null,
+                    colorFilter = ColorFilter.tint(
+                        if (selectedOrderType == OrderType.BUY) {
+                            HedgeColor.Brand.Primary
+                        } else {
+                            HedgeColor.Text.Disabled
+                        }
+                    )
+                )
+            }
+
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(start = 20.dp, top = 12.dp, end = 12.dp, bottom = 12.dp)
+                    .clickable(
+                        enabled = true,
+                        indication = null,
+                        interactionSource = remember { MutableInteractionSource() }
+                    ) {
+                        selectedOrderType = OrderType.SELL
+                    },
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+
+                Text(
+                    text = stringResource(R.string.sell),
+                    style = HedgeTypography.Body3.SemiBold,
+                    color = HedgeColor.Text.Primary
+                )
+
+                Image(
+                    modifier = Modifier.size(24.dp),
+                    imageVector = HedgeIcon.Check,
+                    contentDescription = null,
+                    colorFilter = ColorFilter.tint(
+                        if (selectedOrderType == OrderType.SELL) {
+                            HedgeColor.Brand.Primary
+                        } else {
+                            HedgeColor.Text.Disabled
+                        }
+                    )
+                )
+            }
+
+            HedgeButton.Action.Filled(
+                modifier = Modifier
+                    .padding(start = 20.dp, top = 34.dp, end = 20.dp, bottom = 31.dp)
+                    .fillMaxWidth(),
+                enabled = selectedOrderType != OrderType.NONE,
+                text = stringResource(R.string.select),
+                size = HedgeButton.Action.Size.Large,
+                onClick = {
+                    onClickedButton(selectedOrderType)
+                },
+            )
+        }
+    }
+}
+
+
 @Composable
 private fun LoadingProgressbar() {
     Box(
@@ -567,11 +762,12 @@ fun PrincipleDetailScreenPreview() {
                 principles = list
             )
         ),
-        principleType = PrincipleType.MINE,
+        principleType = PrincipleType.RECOMMENDED,
         onClickedModifyButton = {},
         onClickedRemoveButton = {},
         onClickedItemModifyButton = {},
         onClickedItemRemoveButton = {},
+        onClickedConfirmButton = {},
         onBackPressed = {},
         onShowErrorToast = {}
     )
@@ -623,7 +819,9 @@ fun ConfirmButtonPreview() {
             .fillMaxWidth()
             .background(HedgeColor.WHITE)
     ) {
-        PrincipleDetailConfirmButton()
+        PrincipleDetailConfirmButton(
+            onClickedConfirmButton = {}
+        )
     }
 }
 
@@ -631,4 +829,14 @@ fun ConfirmButtonPreview() {
 @Composable
 fun LoadingProgressbarPreview() {
     LoadingProgressbar()
+}
+
+@Preview
+@Composable
+private fun RecommendedModalBottomSheetScreenPreview() {
+
+    RecommendedModalBottomSheetScreen(
+        onClickedButton = {},
+        onClickedClose = {}
+    )
 }

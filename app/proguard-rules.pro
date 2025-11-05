@@ -20,6 +20,7 @@
     public static final ** Companion;
 }
 -keep public class com.depromeet.team5.**.model.** { *; }
+-keep public class com.depromeet.team5.core.navigation.request.** { *;}
 
 -keepclasseswithmembernames,includedescriptorclasses class * {
     native <methods>;

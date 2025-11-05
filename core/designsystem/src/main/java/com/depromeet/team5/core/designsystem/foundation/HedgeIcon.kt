@@ -87,4 +87,8 @@ object HedgeIcon {
         @Composable
         get() = ImageVector.vectorResource(id = R.drawable.ic_link)
 
+    val COMPANY_LOGO: ImageVector
+        @Composable
+        get() = ImageVector.vectorResource(id = R.drawable.ic_company_logo)
+
 }

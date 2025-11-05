@@ -52,6 +52,7 @@ import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import coil.compose.AsyncImage
 import com.depromeet.team5.core.designsystem.component.HedgeButton
 import com.depromeet.team5.core.designsystem.component.HedgeToast
 import com.depromeet.team5.core.designsystem.component.HedgeTopBar
@@ -97,7 +98,6 @@ fun ReasonRoute(
         }
         viewModel.initTradeInfo(
             TradeInfo(
-                logoDrawableRes = R.drawable.ic_company_logo,
                 stockName = requestViewModel.request.companyName,
                 orderType = requestViewModel.request.orderType,
                 price = requestViewModel.request.price.toLong(),
@@ -394,8 +394,16 @@ private fun TradeInfo(
             .padding(vertical = 16.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        Icon(
-            painter = painterResource(id = tradeInfo.logoDrawableRes),
+        tradeInfo.logoUri?.let {
+            AsyncImage(
+                model = it,
+                contentDescription = null,
+                modifier = Modifier
+                    .size(22.dp)
+                    .clip(CircleShape)
+            )
+        } ?: Icon(
+            imageVector = HedgeIcon.COMPANY_LOGO,
             contentDescription = null,
             tint = Color.Unspecified,
             modifier = Modifier

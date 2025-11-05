@@ -68,7 +68,6 @@ val previewUiPrincipleGroup = UiPrincipleGroup(
 )
 
 val previewTradeInfo = TradeInfo(
-    logoDrawableRes = R.drawable.ic_company_logo,
     stockName = "Apple",
     orderType = OrderType.BUY,
     price = 65000,

@@ -159,7 +159,7 @@ private fun LinkThumbnail(
     ) {
         article.thumbnail?.let {
             AsyncImage(
-                model = article.thumbnail,
+                model = it,
                 contentDescription = article.title,
                 modifier = Modifier
                     .aspectRatio(1f),

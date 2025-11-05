@@ -88,9 +88,6 @@ fun PrincipleDetailRoute(
         modifier = modifier,
         uiState = uiState,
         principleType = principleType,
-        onRetryButtonClicked = {
-            viewModel.restart()
-        },
         onClickedModifyButton = { groupId ->
 
         },
@@ -116,7 +113,6 @@ private fun PrincipleDetailScreen(
     uiState: HedgeUiState<MyPrincipleGroup>,
     principleType: PrincipleType,
     modifier: Modifier = Modifier,
-    onRetryButtonClicked: () -> Unit,
     onClickedModifyButton: (Int) -> Unit,
     onClickedRemoveButton: (Int) -> Unit,
     onClickedItemModifyButton: (Int) -> Unit,
@@ -511,25 +507,6 @@ private fun ModifyAndRemoveDropdown(
 }
 
 @Composable
-private fun ErrorScreen(
-    onRetryButtonClicked: () -> Unit
-) {
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(HedgeColor.WHITE),
-        contentAlignment = Alignment.Center
-    ) {
-        HedgeButton.Action.Filled(
-            text = "재시도",
-            size = HedgeButton.Action.Size.Medium,
-            onClick = onRetryButtonClicked
-        )
-    }
-}
-
-
-@Composable
 private fun LoadingProgressbar() {
     Box(
         modifier = Modifier
@@ -569,7 +546,6 @@ fun PrincipleDetailScreenPreview() {
             )
         ),
         principleType = PrincipleType.MINE,
-        onRetryButtonClicked = {},
         onClickedModifyButton = {},
         onClickedRemoveButton = {},
         onClickedItemModifyButton = {},
@@ -633,10 +609,4 @@ fun ConfirmButtonPreview() {
 @Composable
 fun LoadingProgressbarPreview() {
     LoadingProgressbar()
-}
-
-@Preview
-@Composable
-fun ErrorScreenPreview() {
-    ErrorScreen {}
 }

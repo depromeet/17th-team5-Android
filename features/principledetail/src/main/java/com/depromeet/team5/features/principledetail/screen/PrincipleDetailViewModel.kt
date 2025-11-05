@@ -9,13 +9,13 @@ import com.depromeet.team5.core.domain.monad.asUiState
 import com.depromeet.team5.core.domain.usecase.DeletePrincipleGroupUseCase
 import com.depromeet.team5.core.domain.usecase.GetPrincipleGroupUseCase
 import com.depromeet.team5.core.ui.extensions.baseCollect
-import com.depromeet.team5.core.ui.restartflow.restartStateIn
 import com.depromeet.team5.features.principledetail.event.PrincipleDetailEvent
 import com.depromeet.team5.features.principledetail.navigation.PrincipleDetail
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -31,7 +31,7 @@ class PrincipleDetailViewModel @Inject constructor(
         savedStateHandle.toRoute<PrincipleDetail>().groupId
     )
         .asUiState()
-        .restartStateIn(
+        .stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5_000),
             initialValue = HedgeUiState.Loading()
@@ -40,10 +40,6 @@ class PrincipleDetailViewModel @Inject constructor(
     private val _eventFlow = MutableSharedFlow<PrincipleDetailEvent>()
     val eventFlow = _eventFlow.asSharedFlow()
 
-
-    fun restart() {
-        uiStateFlow.restart()
-    }
 
     fun deletePrincipleGroup(groupId: Int) {
         viewModelScope.launch {

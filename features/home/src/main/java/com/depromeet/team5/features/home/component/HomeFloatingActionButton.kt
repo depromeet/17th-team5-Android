@@ -50,7 +50,7 @@ fun HomeFloatingActionButton(
                 else
                     HedgeColor.Transparent
             )
-            .padding(end = 20.dp, bottom = 100.dp)
+            .padding(end = 20.dp, bottom = 24.dp)
             .fillMaxSize()
     ) {
         Column(

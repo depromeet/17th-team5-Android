@@ -11,10 +11,16 @@ plugins {
 android {
     namespace = "com.depromeet.team5"
 
+    defaultConfig {
+        applicationId = "com.depromeet.team5"
+        versionCode = 2
+        versionName = "0.0.2"
+
+        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+    }
+
     signingConfigs {
         create("release") {
-            // These values are read from the keystore.properties file.
-            // Do not check this file into version control.
             val keystorePropertiesFile = rootProject.file("keystore.properties")
             if (keystorePropertiesFile.exists()) {
                 val properties = Properties()
@@ -25,14 +31,6 @@ android {
                 storePassword = properties.getProperty("storePassword")
             }
         }
-    }
-
-    defaultConfig {
-        applicationId = "com.depromeet.team5"
-        versionCode = 1
-        versionName = "0.0.1"
-
-        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
     buildTypes {

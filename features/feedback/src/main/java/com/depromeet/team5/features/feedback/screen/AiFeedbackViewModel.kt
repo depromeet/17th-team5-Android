@@ -43,14 +43,12 @@ class AiFeedbackViewModel @Inject constructor(
                     "volume" to request.volume,
                     "orderDate" to formatDate(request.orderDate),
                     "returnRate" to request.returnRate,
-                    "content" to request.content,
                     "principleChecks" to request.principles.map {
                         PrincipleCheckParams(
                             principleId = it.id,
                             status = it.status,
                         )
                     },
-                    "emotion" to request.emotion?.name
                 )
             )
                 .flatMapConcat { createFeedbackUseCase(it.id) }

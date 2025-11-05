@@ -18,5 +18,23 @@ data class MyPrinciple(
     val id: Int,
     val groupId: Int,
     val principle: String,
-    val description: String
+    val description: String,
+    val principleChecks: PrincipleChecks,
 )
+
+@Immutable
+data class PrincipleChecks(
+    val status: String,
+    val note: String,
+    val imageUrls: List<String>,
+    val links: List<String>,
+) {
+    companion object {
+        val INIT = PrincipleChecks(
+            status = "UNSELECTED",
+            note = "",
+            imageUrls = emptyList(),
+            links = emptyList()
+        )
+    }
+}

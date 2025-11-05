@@ -64,6 +64,7 @@ import com.depromeet.team5.core.designsystem.foundation.HedgeTypography
 import com.depromeet.team5.core.domain.model.MyPrinciple
 import com.depromeet.team5.core.domain.model.MyPrincipleGroup
 import com.depromeet.team5.core.domain.model.OrderType
+import com.depromeet.team5.core.domain.model.PrincipleChecks
 import com.depromeet.team5.core.ui.R
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -525,19 +526,22 @@ fun HedgeModalBottomSheetPreview() {
                     id = 1,
                     groupId = 1,
                     principle = "안전마진을 확보하라",
-                    description = "안전마진을 확보하라 content"
+                    description = "안전마진을 확보하라 content",
+                    principleChecks = PrincipleChecks.INIT,
                 ),
                 MyPrinciple(
                     id = 2,
                     groupId = 1,
                     principle = "기업의 본질 가치보다 낮게 거래되는 주식을 찾아 장기 보유하기",
-                    description = "안전마진을 확보하라 content"
+                    description = "안전마진을 확보하라 content",
+                    principleChecks = PrincipleChecks.INIT,
                 ),
                 MyPrinciple(
                     id = 3,
                     groupId = 1,
                     principle = "정책 민감도가 높은 주식은 정책 잘 살펴보고 매매",
-                    description = "안전마진을 확보하라 content"
+                    description = "안전마진을 확보하라 content",
+                    principleChecks = PrincipleChecks.INIT,
                 )
             )
         )
@@ -593,7 +597,8 @@ private fun rememberBeginnerPrinciple(orderType: OrderType) = run {
                     id = index,
                     groupId = -1,
                     principle = principle,
-                    description = ""
+                    description = "",
+                    principleChecks = PrincipleChecks.INIT,
                 )
             }
 
@@ -611,7 +616,6 @@ private fun rememberBeginnerPrinciple(orderType: OrderType) = run {
         )
     }
 }
-
 
 
 @Preview
@@ -638,7 +642,8 @@ private fun SelectedMyPrincipleItemPreview() {
         id = 1,
         groupId = 1,
         principle = "안전마진을 확보하라",
-        description = "안전마진을 확보하라 content"
+        description = "안전마진을 확보하라 content",
+        principleChecks = PrincipleChecks.INIT,
     )
 
     Box(

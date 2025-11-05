@@ -1,6 +1,5 @@
 plugins {
     alias(libs.plugins.depromeet.team5.library)
-    alias(libs.plugins.depromeet.team5.library.compose)
     alias(libs.plugins.depromeet.team5.hilt)
 }
 
@@ -27,10 +26,6 @@ android {
 }
 
 dependencies {
-    implementation(projects.depromeet.core.designsystem)
-
     implementation(libs.timber)
     implementation(libs.firebase.crashlytics)
-
-    implementation(libs.androidx.ui)
 }

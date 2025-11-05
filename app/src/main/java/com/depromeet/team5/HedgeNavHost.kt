@@ -20,7 +20,7 @@ import com.depromeet.team5.features.search.searchScreen
 @Composable
 fun HedgeNavHost(
     modifier: Modifier = Modifier,
-    onShowErrorToast: @Composable (Throwable) -> Unit
+    onShowErrorToast: (Throwable) -> Unit
 ) {
     val navController = rememberNavController()
 

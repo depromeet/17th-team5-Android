@@ -20,11 +20,14 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Icon
-import androidx.compose.material.Text
+import androidx.compose.material3.Icon
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -39,31 +42,74 @@ import com.depromeet.team5.core.designsystem.R
 import com.depromeet.team5.core.designsystem.foundation.HedgeColor
 import com.depromeet.team5.core.designsystem.foundation.HedgeTypography
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
+
+
+class HedgeToastState {
+
+    val mutex = Mutex()
+
+    var isShow by mutableStateOf(false)
+        private set
+
+    var visuals: HedgeToastVisuals? = null
+        private set
+
+    suspend fun show(
+        text: CharSequence,
+        duration: Int = Toast.LENGTH_SHORT
+    ) = mutex.withLock {
+        visuals = HedgeToastVisualsImpl(text, duration)
+        isShow = true
+    }
+
+    suspend fun dismiss() = mutex.withLock {
+        isShow = false
+    }
+}
+
+interface HedgeToastVisuals {
+    val text: CharSequence
+    val duration: Int
+}
+
+private class HedgeToastVisualsImpl(
+    override val text: CharSequence,
+    override val duration: Int
+) : HedgeToastVisuals
 
 @Composable
 fun HedgeToast(
-    text: CharSequence,
+    hedgeToastState: HedgeToastState,
     modifier: Modifier = Modifier,
     backgroundColor: Color = HedgeColor.Text.Secondary,
     textColor: Color = HedgeColor.Neutral.BackgroundSecondary,
     textStyle: TextStyle = HedgeTypography.Body3.Medium,
     icon: ImageVector? = null,
     iconTint: Color = Color.Unspecified,
-    duration: Int = Toast.LENGTH_SHORT,
     topOffset: Dp = 52.dp,
     fadeInMs: Int = 800,
     fadeOutMs: Int = 800,
     onDismiss: (() -> Unit)? = null,
 ) {
     val visibleState = remember { MutableTransitionState(false) }
-    val durationMillis = if (duration == Toast.LENGTH_SHORT) 2000L else 3500L
-
-    LaunchedEffect(Unit) {
-        visibleState.targetState = true
-        delay(durationMillis)
-        visibleState.targetState = false
-        onDismiss?.invoke()
+    val durationMillis = when (hedgeToastState.visuals?.duration) {
+        Toast.LENGTH_SHORT -> 2000L
+        Toast.LENGTH_LONG -> 3500L
+        else -> 2000L
     }
+    val text = hedgeToastState.visuals?.text ?: ""
+
+    LaunchedEffect(hedgeToastState.isShow) {
+        if (hedgeToastState.isShow) {
+            delay(durationMillis)
+            hedgeToastState.dismiss()
+            onDismiss?.invoke()
+        }
+    }
+
+    visibleState.targetState = hedgeToastState.isShow
 
     AnimatedVisibility(
         visibleState = visibleState,
@@ -119,15 +165,16 @@ fun HedgeToast(
 @Composable
 @Preview(showBackground = true)
 fun HedgeToastPreview() {
+    val hedgeToastState = remember { HedgeToastState() }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
             .windowInsetsPadding(WindowInsets.statusBars)
     ) {
         HedgeToast(
-            text = "매도 기록을 모두 입력해 주세요",
-            icon = ImageVector.vectorResource(R.drawable.ic_toast_error),
-            duration = Toast.LENGTH_SHORT
+            hedgeToastState = hedgeToastState,
+            icon = ImageVector.vectorResource(R.drawable.ic_toast_error)
         )
     }
 }

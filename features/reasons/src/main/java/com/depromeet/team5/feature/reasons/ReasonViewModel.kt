@@ -1,156 +1,67 @@
 package com.depromeet.team5.feature.reasons
 
-import androidx.annotation.DrawableRes
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.depromeet.team5.core.domain.model.OrderType
+import com.depromeet.team5.core.domain.monad.HedgeUiState
+import com.depromeet.team5.core.ui.lazy.HedgeState
 import com.depromeet.team5.core.ui.lazy.hedgeState
+import com.depromeet.team5.feature.reasons.model.Article
+import com.depromeet.team5.feature.reasons.model.PrincipleAdherence
+import com.depromeet.team5.feature.reasons.model.TradeInfo
+import com.depromeet.team5.feature.reasons.model.UiPrincipleChecks
+import com.depromeet.team5.feature.reasons.model.UiPrincipleGroup
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.jsoup.Jsoup
 import java.net.URI
 import javax.inject.Inject
 
-data class TradeInfo(
-    @DrawableRes
-    val logoDrawableRes: Int,
-    val stockName: String,
-    val orderType: OrderType,
-    val price: Long,
-    val currency: String,
-    val volume: Int,
-    val orderDate: String,
-)
-
-/*
-* 업데이트시켜야 할 params
-* principle
-*   adherence
-*   note (비고)
-*   List<uri>
-*   List<article>
-* */
-
-data class Principle(
-    val id: Int,
-    val title: String,
-    val description: String,
-    val adherence: PrincipleAdherence,
-    val note: TextFieldValue,
-    val images: List<String>,
-    val articles: List<Article>,
-)
-
-enum class PrincipleAdherence {
-    UNSELECTED, KEEP, NEUTRAL, BREAK,
-}
-
-enum class RestrictionAttachment {
-    IMAGE, LINK,
-}
-
-data class PrincipleTemplate(
-    val id: Int,
-    val name: String,
-    val emoji: String,
-    val principles: List<Principle>
-) {
-
-    fun getIndexOfFirstUnselectedPrinciple(): Int {
-        return principles.indexOfFirst { it.adherence == PrincipleAdherence.UNSELECTED }
-    }
-
-    fun getCheckedPrincipleCount(): Int {
-        return principles.count { it.adherence != PrincipleAdherence.UNSELECTED }
-    }
-
-    fun isAllPrincipleChecked(): Boolean {
-        return getCheckedPrincipleCount() == principles.size
-    }
-
-    companion object {
-        val RETROSPECT_ENTRY = PrincipleTemplate(
-            id = 0,
-            name = "이건 진짜 지켜야 해",
-            emoji = "👍",
-            principles = listOf(
-                Principle(
-                    id = 0,
-                    title = "종목 선택 시 최근 매출액 확인하기",
-                    description = "상승장에서 눌림목 나오면 지지선 나올 때까지 기다렸다가 분할 매수하자. 몰빵은 절대 금지",
-                    adherence = PrincipleAdherence.KEEP,
-                    note = TextFieldValue(""),
-                    images = emptyList(),
-                    articles = emptyList(),
-                ),
-                Principle(
-                    id = 1,
-                    title = "커뮤니티 반응 보고 투자 금지",
-                    description = "description",
-                    adherence = PrincipleAdherence.UNSELECTED,
-                    note = TextFieldValue(""),
-                    images = emptyList(),
-                    articles = emptyList(),
-                ),
-                Principle(
-                    id = 2,
-                    title = "감정 로그 활용하기",
-                    description = "감정 로그를 활용해 ‘불안 시점 vs 실제 하락률’을 비교하면 정확도가 높아진다고 한다. 감정 로그를 꼭 확인하자!",
-                    adherence = PrincipleAdherence.UNSELECTED,
-                    note = TextFieldValue(""),
-                    images = emptyList(),
-                    articles = emptyList(),
-                ),
-                Principle(
-                    id = 3,
-                    title = "본질 가치보다 낮게 거래되는 주식 찾아 장기 보유하기",
-                    description = "기업의 본질 가치보다 낮게 거래되는 주식을 찾아 장기 보유하기",
-                    adherence = PrincipleAdherence.UNSELECTED,
-                    note = TextFieldValue(""),
-                    images = emptyList(),
-                    articles = emptyList(),
-                )
-            ),
-        )
-    }
-}
-
-data class Article(
-    val originUrl: String,
-    val title: String?,
-    val thumbnail: String?,
-    val source: String?
-)
-
 @HiltViewModel
 class ReasonViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
 
-    val tradeInfo by hedgeState(dummyTradeInfo)
-    val initialPrincipleTemplate = PrincipleTemplate.RETROSPECT_ENTRY
-    val principleTemplate by hedgeState(initialPrincipleTemplate)
+    var initialPrincipleGroup: UiPrincipleGroup? = null
+    private val tradeInfo: HedgeState<TradeInfo?> by hedgeState(null)
+    private val principleGroup by hedgeState(initialPrincipleGroup)
+
+    val hedgeUiState = combine(tradeInfo.stateFlow, principleGroup.stateFlow) { tradeInfo, principleTemplate ->
+        if (tradeInfo == null || principleTemplate == null) HedgeUiState.Loading(null)
+        else HedgeUiState.Success(tradeInfo to principleTemplate)
+    }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5000),
+        initialValue = HedgeUiState.Loading(null)
+    )
 
     fun initTradeInfo(tradeInfo: TradeInfo) = this.tradeInfo.update { tradeInfo }
 
-    fun onAdherenceChanged(id: Int, value: PrincipleAdherence) = updatePrincipleTemplate(id) { it.copy(adherence = value) }
+    fun initPrincipleGroup(principleTemplate: UiPrincipleGroup) {
+        initialPrincipleGroup = principleTemplate
+        this.principleGroup.update { principleTemplate }
+    }
 
-    fun onNoteChanged(id: Int, value: TextFieldValue) = updatePrincipleTemplate(id) { it.copy(note = value) }
+    fun onAdherenceChanged(id: Int, value: PrincipleAdherence) = updatePrincipleGroup(id) { it.copy(adherence = value) }
 
-    fun onAddImages(id: Int, url: List<String>) = updatePrincipleTemplate(id) { it.copy(images = it.images + url) }
+    fun onNoteChanged(id: Int, value: TextFieldValue) = updatePrincipleGroup(id) { it.copy(note = value) }
 
-    fun onRemoveImage(id: Int, index: Int) = updatePrincipleTemplate(id) {
-        it.copy(images = it.images.toMutableList().apply { if (index in indices) removeAt(index) })
+    fun onAddImages(id: Int, url: List<String>) = updatePrincipleGroup(id) { it.copy(imageUrls = it.imageUrls + url) }
+
+    fun onRemoveImage(id: Int, index: Int) = updatePrincipleGroup(id) {
+        it.copy(imageUrls = it.imageUrls.toMutableList().apply { if (index in indices) removeAt(index) })
     }
 
     fun onAddArticle(id: Int, link: String) {
         viewModelScope.launch {
-            val article = fetchHtmlAndParse(link)
-            updatePrincipleTemplate(id) {
+            val article = parseArticle(link)
+            updatePrincipleGroup(id) {
                 it.copy(
                     articles = it.articles + article
                 )
@@ -158,11 +69,11 @@ class ReasonViewModel @Inject constructor(
         }
     }
 
-    fun onRemoveArticle(id: Int, index: Int) = updatePrincipleTemplate(id) {
+    fun onRemoveArticle(id: Int, index: Int) = updatePrincipleGroup(id) {
         it.copy(articles = it.articles.toMutableList().apply { if (index in indices) removeAt(index) })
     }
 
-    private suspend fun fetchHtmlAndParse(url: String): Article = withContext(Dispatchers.IO) {
+    private suspend fun parseArticle(url: String): Article = withContext(Dispatchers.IO) {
         val doc = kotlin.runCatching { Jsoup.connect(url).get() }.getOrNull() ?: return@withContext Article(url, null, null, null)
 
         val title = doc.selectFirst("meta[property=og:title]")?.attr("content")
@@ -184,35 +95,22 @@ class ReasonViewModel @Inject constructor(
         )
     }
 
-    private inline fun updatePrincipleTemplate(
-        id: Int,
-        crossinline transform: (Principle) -> Principle
+    private inline fun updatePrincipleGroup(
+        idx: Int,
+        crossinline transform: (UiPrincipleChecks) -> UiPrincipleChecks
     ) {
-        principleTemplate.update { template ->
-            val idx = template.principles.indexOfFirst { it.id == id }
-            if (idx < 0) template else {
-                val old = template.principles[idx]
+        principleGroup.update {
+            it?.let { template ->
+                val old = template.principles[idx].principleChecks
                 val newItem = transform(old)
-                val newList = template.principles.toMutableList().apply { set(idx, newItem) }
-                template.copy(
-                    principles = newList,
-                )
+                val newList =
+                    template.principles.toMutableList().apply { set(idx, template.principles[idx].copy(principleChecks = newItem)) }
+                template.copy(principles = newList)
             }
         }
     }
 
     companion object {
-
         const val PRINCIPLE_ATTACHMENT_LIMIT = 3
-
-        val dummyTradeInfo = TradeInfo(
-            logoDrawableRes = R.drawable.ic_company_logo,
-            stockName = "Apple",
-            orderType = OrderType.BUY,
-            price = 65000,
-            currency = "$",
-            volume = 3,
-            orderDate = "2023년 8월 25일",
-        )
     }
 }

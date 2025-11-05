@@ -26,8 +26,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.depromeet.team5.core.designsystem.foundation.HedgeColor
 import com.depromeet.team5.core.designsystem.foundation.HedgeTypography
-import com.depromeet.team5.feature.reasons.PrincipleAdherence
 import com.depromeet.team5.feature.reasons.R
+import com.depromeet.team5.feature.reasons.model.PrincipleAdherence
 
 
 @Composable
@@ -41,10 +41,10 @@ fun PrincipleAdherenceContainer(
         horizontalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         PrincipleAdherence(
-            checked = checkedPrincipleAdherence == PrincipleAdherence.KEEP,
+            checked = checkedPrincipleAdherence == PrincipleAdherence.KEPT,
             painter = painterResource(R.drawable.ic_circle),
             label = stringResource(R.string.principle_followed),
-            onClick = { onAdherenceChanged(PrincipleAdherence.KEEP) },
+            onClick = { onAdherenceChanged(PrincipleAdherence.KEPT) },
         )
         PrincipleAdherence(
             checked = checkedPrincipleAdherence == PrincipleAdherence.NEUTRAL,
@@ -53,10 +53,10 @@ fun PrincipleAdherenceContainer(
             onClick = { onAdherenceChanged(PrincipleAdherence.NEUTRAL) },
         )
         PrincipleAdherence(
-            checked = checkedPrincipleAdherence == PrincipleAdherence.BREAK,
+            checked = checkedPrincipleAdherence == PrincipleAdherence.NOT_KEPT,
             painter = painterResource(R.drawable.ic_cross),
             label = stringResource(R.string.principle_not_followed),
-            onClick = { onAdherenceChanged(PrincipleAdherence.BREAK) },
+            onClick = { onAdherenceChanged(PrincipleAdherence.NOT_KEPT) },
         )
     }
 }
@@ -108,7 +108,7 @@ fun RowScope.PrincipleAdherence(
 @Preview(showBackground = true)
 private fun PrincipleCheckPreview() {
     PrincipleAdherenceContainer(
-        checkedPrincipleAdherence = PrincipleAdherence.KEEP,
+        checkedPrincipleAdherence = PrincipleAdherence.KEPT,
         onAdherenceChanged = {}
     )
 }

@@ -4,7 +4,6 @@ import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
@@ -58,8 +57,15 @@ import com.depromeet.team5.core.designsystem.foundation.HedgeColor
 import com.depromeet.team5.core.designsystem.foundation.HedgeIcon
 import com.depromeet.team5.core.designsystem.foundation.HedgeTypography
 import com.depromeet.team5.core.domain.model.OrderType
+import com.depromeet.team5.core.domain.monad.HedgeUiState
 import com.depromeet.team5.core.navigation.request.RequestViewModel
 import com.depromeet.team5.core.ui.HedgeModal
+import com.depromeet.team5.feature.reasons.model.PrincipleAdherence
+import com.depromeet.team5.feature.reasons.model.RestrictionAttachment
+import com.depromeet.team5.feature.reasons.model.TradeInfo
+import com.depromeet.team5.feature.reasons.model.UiPrinciple
+import com.depromeet.team5.feature.reasons.model.UiPrincipleGroup
+import com.depromeet.team5.feature.reasons.model.toUi
 import com.depromeet.team5.feature.reasons.ui.AutoScrollTextField
 import com.depromeet.team5.feature.reasons.ui.ImageThumbnailContainer
 import com.depromeet.team5.feature.reasons.ui.InputToolBar
@@ -79,43 +85,13 @@ fun ReasonRoute(
     requestViewModel: RequestViewModel,
     viewModel: ReasonViewModel = hiltViewModel(),
 ) {
-    val context = LocalContext.current
-    val coroutineScope = rememberCoroutineScope()
-    val principleTemplate by viewModel.principleTemplate.stateFlow.collectAsStateWithLifecycle()
-    val tradeInfo by viewModel.tradeInfo.stateFlow.collectAsStateWithLifecycle()
-    var toastMessage: String? by remember { mutableStateOf(null) }
-    var limitedAttachmentType: RestrictionAttachment? by remember { mutableStateOf(null) }
-    var showCompleteModal by remember { mutableStateOf(false) }
-    var showBackModal by remember { mutableStateOf(false) }
-    var showAddLinkModal by remember { mutableStateOf(false) }
-    var showAddMentionModal by remember { mutableStateOf(false) }
-    val pagerState = rememberPagerState(initialPage = 0) { principleTemplate.principles.size }
-
-    val pickMultipleMedia =
-        rememberLauncherForActivityResult(ActivityResultContracts.PickMultipleVisualMedia(3)) { uris ->
-            if (uris.isNotEmpty()) {
-                val remainCount =
-                    ReasonViewModel.PRINCIPLE_ATTACHMENT_LIMIT - principleTemplate.principles[pagerState.currentPage].images.size
-                if (remainCount == ReasonViewModel.PRINCIPLE_ATTACHMENT_LIMIT) {
-                    viewModel.onAddImages(pagerState.currentPage, uris.map { it.toString() })
-                } else {
-                    if (remainCount > 0) {
-                        viewModel.onAddImages(
-                            pagerState.currentPage,
-                            uris.subList(0, remainCount).map { it.toString() }
-                        )
-                    }
-                    if (remainCount < uris.size) limitedAttachmentType = RestrictionAttachment.IMAGE
-                }
-            }
-        }
-
-    BackHandler {
-        if (viewModel.initialPrincipleTemplate == principleTemplate) onClickBack()
-        else showBackModal = true
-    }
+    val uiState by viewModel.hedgeUiState.collectAsStateWithLifecycle()
 
     LaunchedEffect(Unit) {
+        if (uiState is HedgeUiState.Success) return@LaunchedEffect
+        requestViewModel.selectedMyPrincipleGroup?.let { myPrincipleGroup ->
+            viewModel.initPrincipleGroup(myPrincipleGroup.toUi())
+        }
         viewModel.initTradeInfo(
             TradeInfo(
                 logoDrawableRes = R.drawable.ic_company_logo,
@@ -127,6 +103,79 @@ fun ReasonRoute(
                 orderDate = requestViewModel.request.orderDate
             )
         )
+    }
+
+    when (val state = uiState) {
+        is HedgeUiState.Success -> {
+            ReasonsScreen(
+                initialPrincipleGroup = viewModel.initialPrincipleGroup,
+                principleGroup = state.data.second,
+                tradeInfo = state.data.first,
+                onClickBack = onClickBack,
+                onClickDone = onClickDone,
+                onClickImage = onClickImage,
+                onAddImages = { idx, uris -> viewModel.onAddImages(idx, uris) },
+                onAddArticle = { idx, link -> viewModel.onAddArticle(idx, link) },
+                onClickDeleteImage = { idx, index -> viewModel.onRemoveImage(idx, index) },
+                onClickDeleteLink = { idx, index -> viewModel.onRemoveArticle(idx, index) },
+                onAdherenceChanged = { idx, value -> viewModel.onAdherenceChanged(idx, value) },
+                onReasonChanged = { idx, value -> viewModel.onNoteChanged(idx, value) },
+                modifier = modifier,
+            )
+        }
+        else -> {}
+    }
+}
+
+@Composable
+private fun ReasonsScreen(
+    initialPrincipleGroup: UiPrincipleGroup?,
+    principleGroup: UiPrincipleGroup,
+    tradeInfo: TradeInfo,
+    onClickBack: () -> Unit,
+    onClickDone: () -> Unit,
+    onClickImage: (ImageDetail) -> Unit,
+    onAddImages: (Int, List<String>) -> Unit,
+    onAddArticle: (Int, String) -> Unit,
+    onClickDeleteImage: (Int, Int) -> Unit,
+    onClickDeleteLink: (Int, Int) -> Unit,
+    onAdherenceChanged: (Int, PrincipleAdherence) -> Unit,
+    onReasonChanged: (Int, TextFieldValue) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+
+    val context = LocalContext.current
+    val coroutineScope = rememberCoroutineScope()
+    var toastMessage: String? by remember { mutableStateOf(null) }
+    var limitedAttachmentType: RestrictionAttachment? by remember { mutableStateOf(null) }
+    var showCompleteModal by remember { mutableStateOf(false) }
+    var showBackModal by remember { mutableStateOf(false) }
+    var showAddLinkModal by remember { mutableStateOf(false) }
+    var showAddMentionModal by remember { mutableStateOf(false) }
+    val pagerState = rememberPagerState(initialPage = 0) { principleGroup.principles.size }
+
+    val pickMultipleMedia =
+        rememberLauncherForActivityResult(ActivityResultContracts.PickMultipleVisualMedia(3)) { uris ->
+            if (uris.isNotEmpty()) {
+                val remainCount =
+                    ReasonViewModel.PRINCIPLE_ATTACHMENT_LIMIT - principleGroup.principles[pagerState.currentPage].principleChecks.imageUrls.size
+                if (remainCount == ReasonViewModel.PRINCIPLE_ATTACHMENT_LIMIT) {
+                    onAddImages(pagerState.currentPage, uris.map { it.toString() })
+                } else {
+                    if (remainCount > 0) {
+                        onAddImages(
+                            pagerState.currentPage,
+                            uris.subList(0, remainCount).map { it.toString() }
+                        )
+                    }
+                    if (remainCount < uris.size) limitedAttachmentType = RestrictionAttachment.IMAGE
+                }
+            }
+        }
+
+    BackHandler {
+        if (initialPrincipleGroup == principleGroup) onClickBack()
+        else showBackModal = true
     }
 
     toastMessage?.let { HedgeToast(it) { toastMessage = null } }
@@ -193,7 +242,7 @@ fun ReasonRoute(
     LinkModal(
         showDialog = showAddLinkModal,
         onClickSubmit = { link ->
-            viewModel.onAddArticle(pagerState.currentPage, link)
+            onAddArticle(pagerState.currentPage, link)
             showAddLinkModal = false
         },
         onClickCancel = {
@@ -203,42 +252,42 @@ fun ReasonRoute(
             showAddLinkModal = false
         },
     )
-
-    ReasonsScreen(
-        principleTemplate = principleTemplate,
+    ReasonScreenContents(
+        principleGroup = principleGroup,
         tradeInfo = tradeInfo,
         pagerState = pagerState,
         onClickBack = {
-            if (viewModel.initialPrincipleTemplate == principleTemplate) onClickBack()
+            if (initialPrincipleGroup == principleGroup) onClickBack()
             else showBackModal = true
         },
         onClickDone = {
-            if (principleTemplate.isAllPrincipleChecked()) showCompleteModal = true
+            if (principleGroup.isAllPrincipleChecked()) showCompleteModal = true
             else {
                 coroutineScope.launch {
-                    pagerState.animateScrollToPage(principleTemplate.getIndexOfFirstUnselectedPrinciple())
+                    pagerState.animateScrollToPage(principleGroup.getIndexOfFirstUnselectedPrinciple())
                 }
                 toastMessage = context.getString(R.string.cannot_complete_restriction)
             }
         },
         onClickAddImage = { pickMultipleMedia.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageAndVideo)) },
         onClickAddLink = {
-            if (principleTemplate.principles[pagerState.currentPage].articles.size >= 3) limitedAttachmentType = RestrictionAttachment.LINK
+            if (principleGroup.principles[pagerState.currentPage].principleChecks.articles.size >= 3) limitedAttachmentType =
+                RestrictionAttachment.LINK
             else showAddLinkModal = true
         },
         onClickAddMention = { showAddMentionModal = true },
-        onClickImage = { onClickImage(ImageDetail(principleTemplate.principles[pagerState.currentPage].images, it)) },
-        onClickDeleteImage = { viewModel.onRemoveImage(pagerState.currentPage, it) },
-        onClickDeleteLink = { viewModel.onRemoveArticle(pagerState.currentPage, it) },
-        onReasonChanged = { viewModel.onNoteChanged(pagerState.currentPage, it) },
-        onAdherenceChanged = { viewModel.onAdherenceChanged(pagerState.currentPage, it) },
+        onClickImage = { onClickImage(ImageDetail(principleGroup.principles[pagerState.currentPage].principleChecks.imageUrls, it)) },
+        onClickDeleteImage = { onClickDeleteImage(pagerState.currentPage, it) },
+        onClickDeleteLink = { onClickDeleteLink(pagerState.currentPage, it) },
+        onReasonChanged = { onReasonChanged(pagerState.currentPage, it) },
+        onAdherenceChanged = { onAdherenceChanged(pagerState.currentPage, it) },
         modifier = modifier
     )
 }
 
 @Composable
-private fun ReasonsScreen(
-    principleTemplate: PrincipleTemplate,
+private fun ReasonScreenContents(
+    principleGroup: UiPrincipleGroup,
     tradeInfo: TradeInfo,
     pagerState: PagerState,
     onClickBack: () -> Unit,
@@ -269,7 +318,7 @@ private fun ReasonsScreen(
                 onClickBack = onClickBack,
                 title = {
                     Text(
-                        text = principleTemplate.name,
+                        text = principleGroup.groupName,
                         color = HedgeColor.Text.Primary,
                         style = HedgeTypography.Body3.SemiBold
                     )
@@ -277,7 +326,7 @@ private fun ReasonsScreen(
                 action = {
                     HedgeButton.Text(
                         text = stringResource(id = R.string.done),
-                        enabled = principleTemplate.isAllPrincipleChecked(),
+                        enabled = principleGroup.isAllPrincipleChecked(),
                         forceClickable = true,
                         imageVector = null,
                         onClick = onClickDone,
@@ -298,7 +347,7 @@ private fun ReasonsScreen(
                 state = pagerState
             ) { page ->
                 ReasonsPage(
-                    principle = principleTemplate.principles[page],
+                    principle = principleGroup.principles[page],
                     isImeVisible = isImeVisible,
                     onClickAddImage = onClickAddImage,
                     onClickAddLink = onClickAddLink,
@@ -312,7 +361,7 @@ private fun ReasonsScreen(
             }
         }
         RestrictionIndicatorContainer(
-            checkedAdherenceCount = principleTemplate.getCheckedPrincipleCount(),
+            checkedAdherenceCount = principleGroup.getCheckedPrincipleCount(),
             pagerState = pagerState,
             modifier = Modifier
                 .align(Alignment.BottomCenter),
@@ -360,7 +409,7 @@ private fun TradeInfo(
 
 @Composable
 private fun ReasonsPage(
-    principle: Principle,
+    principle: UiPrinciple,
     isImeVisible: Boolean,
     onClickAddImage: () -> Unit,
     onClickAddLink: () -> Unit,
@@ -377,15 +426,15 @@ private fun ReasonsPage(
     ) {
         if (isImeVisible.not()) {
             ExpandedPrincipleHeader(
-                title = principle.title,
+                title = principle.principle,
                 description = principle.description,
-                adherence = principle.adherence,
+                adherence = principle.principleChecks.adherence,
                 onAdherenceChanged = onAdherenceChanged,
             )
         } else {
             CompactPrincipleHeader(
-                title = principle.title,
-                adherence = principle.adherence,
+                title = principle.principle,
+                adherence = principle.principleChecks.adherence,
             )
         }
         val scrollState = rememberScrollState()
@@ -397,7 +446,7 @@ private fun ReasonsPage(
                 .padding(vertical = 24.dp),
         ) {
             AutoScrollTextField(
-                content = principle.note,
+                content = principle.principleChecks.note,
                 onValueChange = onReasonChanged,
                 isImeVisible = isImeVisible,
                 modifier = Modifier
@@ -406,18 +455,18 @@ private fun ReasonsPage(
                     .padding(bottom = 8.dp)
             )
             ImageThumbnailContainer(
-                images = principle.images.map { it.toUri() },
+                images = principle.principleChecks.imageUrls.map { it.toUri() },
                 onClickDeleteImage = onClickDeleteImage,
                 onClickImage = onClickImage,
             )
             LinkThumbnailContainer(
-                articles = principle.articles,
+                articles = principle.principleChecks.articles,
                 onClickDeleteLink = onClickDeleteLink,
             )
             if (isImeVisible.not()) {
                 InputToolBar(
-                    hasImages = principle.images.isNotEmpty(),
-                    hasLinks = principle.articles.isNotEmpty(),
+                    hasImages = principle.principleChecks.imageUrls.isNotEmpty(),
+                    hasLinks = principle.principleChecks.articles.isNotEmpty(),
                     onClickAddImage = onClickAddImage,
                     onClickAddLink = onClickAddLink,
                     onClickAddMention = onClickAddMention,
@@ -430,8 +479,8 @@ private fun ReasonsPage(
             InputToolBarIme(
                 modifier = Modifier
                     .imePadding(),
-                hasImages = principle.images.isNotEmpty(),
-                hasLinks = principle.articles.isNotEmpty(),
+                hasImages = principle.principleChecks.imageUrls.isNotEmpty(),
+                hasLinks = principle.principleChecks.articles.isNotEmpty(),
                 onClickAddImage = onClickAddImage,
                 onClickAddLink = onClickAddLink,
                 onClickAddMention = onClickAddMention,
@@ -558,9 +607,9 @@ private fun CompactPrincipleHeader(
                     modifier = Modifier
                         .size(18.dp),
                     painter = when (adherence) {
-                        PrincipleAdherence.KEEP -> painterResource(R.drawable.ic_circle)
+                        PrincipleAdherence.KEPT -> painterResource(R.drawable.ic_circle)
                         PrincipleAdherence.NEUTRAL -> painterResource(R.drawable.ic_triangle)
-                        PrincipleAdherence.BREAK -> painterResource(R.drawable.ic_cross)
+                        PrincipleAdherence.NOT_KEPT -> painterResource(R.drawable.ic_cross)
                         else -> error("UNSELECTED should never reach here")
                     },
                     tint = HedgeColor.Brand.Primary,
@@ -570,9 +619,9 @@ private fun CompactPrincipleHeader(
             Spacer(Modifier.size(4.dp))
             Text(
                 text = when (adherence) {
-                    PrincipleAdherence.KEEP -> stringResource(R.string.principle_followed)
+                    PrincipleAdherence.KEPT -> stringResource(R.string.principle_followed)
                     PrincipleAdherence.NEUTRAL -> stringResource(R.string.principle_neutral)
-                    PrincipleAdherence.BREAK -> stringResource(R.string.principle_not_followed)
+                    PrincipleAdherence.NOT_KEPT -> stringResource(R.string.principle_not_followed)
                     else -> stringResource(R.string.selecte_before)
                 },
                 style = if (adherence == PrincipleAdherence.UNSELECTED) HedgeTypography.Body3.Medium else HedgeTypography.Body3.SemiBold,
@@ -589,24 +638,21 @@ private fun CompactPrincipleHeader(
 @Composable
 @Preview
 private fun ReasonScreenPreview() {
-    val principleTemplate by remember { mutableStateOf(PrincipleTemplate.RETROSPECT_ENTRY) }
-    val tradeInfo by remember { mutableStateOf(ReasonViewModel.dummyTradeInfo) }
+    val principleGroup by remember { mutableStateOf(previewUiPrincipleGroup) }
+    val tradeInfo by remember { mutableStateOf(previewTradeInfo) }
     var reason by remember { mutableStateOf(TextFieldValue("")) }
-    val pagerState = rememberPagerState(initialPage = 0) { principleTemplate.principles.size }
     ReasonsScreen(
-        principleTemplate = principleTemplate,
+        initialPrincipleGroup = principleGroup,
+        principleGroup = principleGroup,
         tradeInfo = tradeInfo,
-        pagerState = pagerState,
-        modifier = Modifier.background(HedgeColor.Neutral.BackgroundDefault),
         onClickBack = {},
         onClickDone = {},
-        onClickAddImage = {},
-        onClickAddLink = {},
-        onClickAddMention = {},
         onClickImage = {},
-        onClickDeleteImage = {},
-        onClickDeleteLink = {},
-        onAdherenceChanged = {},
-        onReasonChanged = { reason = it },
+        onAddImages = { idx, uris -> },
+        onAddArticle = { idx, link -> },
+        onClickDeleteImage = { idx, index -> },
+        onClickDeleteLink = { idx, index -> },
+        onAdherenceChanged = { idx, value -> },
+        onReasonChanged = { idx, value -> reason = value },
     )
 }

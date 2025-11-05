@@ -13,19 +13,21 @@ fun MyPrincipleGroup.toUi() = UiPrincipleGroup(
     thumbnail = thumbnail,
     orderType = orderType,
     displayOrder = displayOrder,
-    principles = principles.map { it.toUi() },
+    principles = principles.mapIndexed { idx, item -> item.toUi(idx) },
 )
 
-fun MyPrinciple.toUi() = UiPrinciple(
+fun MyPrinciple.toUi(idx: Int) = UiPrinciple(
     id = id,
     groupId = groupId,
     principle = principle,
     description = description,
-    principleChecks = principleChecks.toUi(),
+    principleChecks = principleChecks.toUi(idx),
 )
 
-fun PrincipleChecks.toUi() = UiPrincipleChecks(
-    adherence = PrincipleAdherence.fromStatus(status),
+fun PrincipleChecks.toUi(idx: Int) = UiPrincipleChecks(
+    adherence = PrincipleAdherence.fromStatus(status).run {
+        if (idx == 0 && this == PrincipleAdherence.UNSELECTED) PrincipleAdherence.KEPT else this
+    },
     note = TextFieldValue(note),
     imageUrls = imageUrls,
     articles = links.map {

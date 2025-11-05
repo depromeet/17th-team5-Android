@@ -1,5 +1,6 @@
 package com.depromeet.team5.features.home.screen
 
+import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.ViewModel
@@ -7,21 +8,22 @@ import androidx.lifecycle.viewModelScope
 import com.depromeet.team5.core.designsystem.foundation.HedgeColor.BLUE_500
 import com.depromeet.team5.core.designsystem.foundation.HedgeColor.GREY_400
 import com.depromeet.team5.core.designsystem.foundation.HedgeColor.RED_500
+import com.depromeet.team5.core.domain.model.MyPrincipleGroup
+import com.depromeet.team5.core.domain.model.OrderType
+import com.depromeet.team5.core.domain.monad.HedgeUiState
+import com.depromeet.team5.core.domain.monad.asUiState
+import com.depromeet.team5.core.domain.usecase.GetPrincipleGroupsUseCase
 import com.depromeet.team5.core.domain.usecase.RetrospectionListUseCase
 import com.depromeet.team5.core.domain.usecase.UserStatsUseCase
 import com.depromeet.team5.features.home.R
-import com.depromeet.team5.features.home.RetrospectionListUiState
-import com.depromeet.team5.features.home.RetrospectionSectionState
-import com.depromeet.team5.features.home.RetrospectionState
-import com.depromeet.team5.features.home.RetrospectionSymbolState
-import com.depromeet.team5.features.home.UserStatsUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.onStart
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.stateIn
 import java.time.LocalDate
 import java.time.YearMonth
 import java.time.format.DateTimeFormatter
@@ -31,7 +33,7 @@ import javax.inject.Inject
 enum class HomeTab(
     @StringRes val title: Int,
     val selectedColor: Color = Color.Black,
-    val unselectedColor: Color = GREY_400
+    val unselectedColor: Color = GREY_400,
 ) {
     HOME(
         title = R.string.home_tab_title_home
@@ -41,92 +43,173 @@ enum class HomeTab(
     )
 }
 
+enum class RecommendPrinciple(
+    @DrawableRes val imgResId: Int,
+    @StringRes val celebResId: Int,
+    @StringRes val principleGroupTitleResId: Int,
+    val count: Int,
+) {
+    WARREN_BUFFETT(
+        imgResId = R.drawable.img_recommend_principle_1,
+        celebResId = R.string.principle_tab_recommend_celeb_1,
+        principleGroupTitleResId = R.string.principle_tab_recommend_principle_title_1,
+        count = 5
+    ),
+    BENJAMIN_GRAHAM(
+        imgResId = R.drawable.img_recommend_principle_2,
+        celebResId = R.string.principle_tab_recommend_celeb_2,
+        principleGroupTitleResId = R.string.principle_tab_recommend_principle_title_2,
+        count = 2
+    ),
+    CHARLES_MUNGER(
+        imgResId = R.drawable.img_recommend_principle_3,
+        celebResId = R.string.principle_tab_recommend_celeb_3,
+        principleGroupTitleResId = R.string.principle_tab_recommend_principle_title_3,
+        count = 3
+    ),
+    HOWARD_MARKS(
+        imgResId = R.drawable.img_recommend_principle_4,
+        celebResId = R.string.principle_tab_recommend_celeb_4,
+        principleGroupTitleResId = R.string.principle_tab_recommend_principle_title_4,
+        count = 4
+    ),
+    RAY_DALIO(
+        imgResId = R.drawable.img_recommend_principle_5,
+        celebResId = R.string.principle_tab_recommend_celeb_5,
+        principleGroupTitleResId = R.string.principle_tab_recommend_principle_title_5,
+        count = 3
+    ),
+    PETER_LYNCH(
+        imgResId = R.drawable.img_recommend_principle_6,
+        celebResId = R.string.principle_tab_recommend_celeb_6,
+        principleGroupTitleResId = R.string.principle_tab_recommend_principle_title_6,
+        count = 3
+    ),
+    JESSE_LIVERMORE(
+        imgResId = R.drawable.img_recommend_principle_7,
+        celebResId = R.string.principle_tab_recommend_celeb_7,
+        principleGroupTitleResId = R.string.principle_tab_recommend_principle_title_7,
+        count = 3
+    )
+}
+
+data class UserStatsSummary(
+    val percentage: Int,
+    val hedge: Int,
+    val bronze: Int,
+    val silver: Int,
+    val gold: Int,
+)
+
+data class RetrospectionSymbolState(
+    val symbol: String,
+    val sections: List<RetrospectionSectionState>
+)
+
+data class RetrospectionSectionState(
+    val title: String,
+    val items: List<RetrospectionState>
+)
+
+data class RetrospectionState(
+    val id: Int,
+    val dayText: String,
+    val priceVolumeText: String,
+    val tradeLabelRes: Int,
+    val tradeColor: Color,
+    val orderDateText: String
+)
+
 @HiltViewModel
 class HomeViewModel @Inject constructor(
     private val userStatsUseCase: UserStatsUseCase,
-    private val retrospectionListUseCase: RetrospectionListUseCase
+    private val retrospectionListUseCase: RetrospectionListUseCase,
+    private val getPrincipleGroupsUseCase: GetPrincipleGroupsUseCase,
 ) : ViewModel() {
-    private val _userStatsUiStateFlow: MutableStateFlow<UserStatsUiState> =
-        MutableStateFlow(UserStatsUiState.Loading)
-    val userStatsUiStateFlow: StateFlow<UserStatsUiState> = _userStatsUiStateFlow
+    private val _principleOrderType = MutableStateFlow<OrderType>(OrderType.BUY)
+    val principleOrderType: StateFlow<OrderType> = _principleOrderType.asStateFlow()
 
-    private val _retrospectionListUiStateFlow: MutableStateFlow<RetrospectionListUiState> =
-        MutableStateFlow(RetrospectionListUiState.Loading)
-    val retrospectionListUiStateFlow: StateFlow<RetrospectionListUiState> =
-        _retrospectionListUiStateFlow
+    val userStatsUiState: StateFlow<HedgeUiState<UserStatsSummary>> =
+        userStatsUseCase()
+            .map { result ->
+                UserStatsSummary(
+                    percentage = result.data.percentage,
+                    hedge = result.data.hedge,
+                    bronze = result.data.bronze,
+                    silver = result.data.silver,
+                    gold = result.data.gold
+                )
+            }
+            .asUiState()
+            .stateIn(
+                scope = viewModelScope,
+                started = SharingStarted.WhileSubscribed(5_000),
+                initialValue = HedgeUiState.Loading(
+                    UserStatsSummary(0, 0, 0, 0, 0)
+                )
+            )
 
-    init {
-        userStats()
-        getRetrospectionList()
-    }
-
-    fun userStats() {
-        viewModelScope.launch {
-            userStatsUseCase()
-                .map {
-                    UserStatsUiState.Success(
-                        percentage = it.data.percentage,
-                        hedge = it.data.hedge,
-                        bronze = it.data.bronze,
-                        silver = it.data.silver,
-                        gold = it.data.gold
-                    )
-                }
-                .onStart { _userStatsUiStateFlow.value = UserStatsUiState.Loading }
-                .catch { t -> _userStatsUiStateFlow.value = UserStatsUiState.Failure(t) }
-                .collect { success -> _userStatsUiStateFlow.value = success }
-        }
-    }
-
-    fun getRetrospectionList() {
-        viewModelScope.launch {
-            retrospectionListUseCase()
-                .map { result ->
-                    if (result.data.isEmpty()) {
-                        RetrospectionListUiState.Empty
-                    } else {
-                        val uiSymbols = result.data.map { symbol ->
-                            val items = symbol.retrospections
-                            val sections = items
-                                .sortedByDescending {
-                                    it.retrospectionCreatedAt.flexLocalDateOrNull() ?: LocalDate.MIN
-                                }
-                                .groupBy {
-                                    it.retrospectionCreatedAt.flexLocalDateOrNull().toSectionLabel()
-                                }
-                                .map { (title, group) ->
-                                    RetrospectionSectionState(
-                                        title = title,
-                                        items = group.map { r ->
-                                            val isBuy = r.orderType == "BUY"
-                                            RetrospectionState(
-                                                id = r.id,
-                                                dayText = r.retrospectionCreatedAt.toMonthDayOrRaw(),
-                                                priceVolumeText = "%,d원 • %d주".format(
-                                                    r.price,
-                                                    r.volume
-                                                ),
-                                                tradeLabelRes = if (isBuy) R.string.home_tab_retrospection_trade_buy else R.string.home_tab_retrospection_trade_sell,
-                                                tradeColor = if (isBuy) RED_500 else BLUE_500,
-                                                orderDateText = r.orderCreatedAt.toYMDOrRaw()
-                                            )
-                                        }
-                                    )
-                                }
-                            RetrospectionSymbolState(
-                                symbol = symbol.symbol,
-                                sections = sections
-                            )
-                        }
-                        RetrospectionListUiState.Success(symbols = uiSymbols)
+    val retrospectionListUiState: StateFlow<HedgeUiState<List<RetrospectionSymbolState>>> =
+        retrospectionListUseCase()
+            .map { result ->
+                if (result.data.isEmpty()) {
+                    emptyList()
+                } else {
+                    result.data.map { symbol ->
+                        val items = symbol.retrospections
+                        val sections = items
+                            .sortedByDescending {
+                                it.retrospectionCreatedAt.flexLocalDateOrNull() ?: LocalDate.MIN
+                            }
+                            .groupBy {
+                                it.retrospectionCreatedAt.flexLocalDateOrNull().toSectionLabel()
+                            }
+                            .map { (title, group) ->
+                                RetrospectionSectionState(
+                                    title = title,
+                                    items = group.map { r ->
+                                        val isBuy = r.orderType == "BUY"
+                                        RetrospectionState(
+                                            id = r.id,
+                                            dayText = r.retrospectionCreatedAt.toMonthDayOrRaw(),
+                                            priceVolumeText = "%,d원 • %d주".format(r.price, r.volume),
+                                            tradeLabelRes = if (isBuy)
+                                                R.string.home_tab_retrospection_trade_buy
+                                            else
+                                                R.string.home_tab_retrospection_trade_sell,
+                                            tradeColor = if (isBuy) RED_500 else BLUE_500,
+                                            orderDateText = r.orderCreatedAt.toYMDOrRaw()
+                                        )
+                                    }
+                                )
+                            }
+                        RetrospectionSymbolState(
+                            symbol = symbol.symbol,
+                            sections = sections
+                        )
                     }
                 }
-                .onStart { _retrospectionListUiStateFlow.value = RetrospectionListUiState.Loading }
-                .catch { t ->
-                    _retrospectionListUiStateFlow.value = RetrospectionListUiState.Failure(t)
-                }
-                .collect { s -> _retrospectionListUiStateFlow.value = s }
-        }
+            }
+            .asUiState()
+            .stateIn(
+                scope = viewModelScope,
+                started = SharingStarted.WhileSubscribed(5_000),
+                initialValue = HedgeUiState.Loading(emptyList())
+            )
+
+    val principleGroupsUiState: StateFlow<HedgeUiState<List<MyPrincipleGroup>>> =
+        _principleOrderType
+            .map { it.name }
+            .flatMapLatest { order -> getPrincipleGroupsUseCase(order) }
+            .asUiState()
+            .stateIn(
+                scope = viewModelScope,
+                started = SharingStarted.WhileSubscribed(5_000),
+                initialValue = HedgeUiState.Loading(emptyList())
+            )
+
+    fun setPrincipleOrderType(type: OrderType) {
+        if (_principleOrderType.value != type) _principleOrderType.value = type
     }
 
     private val INPUT_DATE_FORMATTERS = listOf(
@@ -136,7 +219,7 @@ class HomeViewModel @Inject constructor(
     )
 
     private val OUT_YMD = DateTimeFormatter.ofPattern("yyyy.MM.dd", Locale.KOREA)
-    private val OUT_MD  = DateTimeFormatter.ofPattern("M월 d일", Locale.KOREA)
+    private val OUT_MD = DateTimeFormatter.ofPattern("M월 d일", Locale.KOREA)
     private val OUT_YYM = DateTimeFormatter.ofPattern("yy년 M월", Locale.KOREA)
 
     private fun String.flexLocalDateOrNull(): LocalDate? {

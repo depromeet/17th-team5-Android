@@ -24,14 +24,14 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.depromeet.team5.core.domain.model.OrderType
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.depromeet.team5.core.designsystem.foundation.HedgeColor
 import com.depromeet.team5.core.designsystem.foundation.HedgeTypography
+import com.depromeet.team5.core.domain.model.MyPrincipleGroup
+import com.depromeet.team5.core.domain.model.OrderType
+import com.depromeet.team5.core.domain.monad.HedgeUiState
 import com.depromeet.team5.core.navigation.request.RequestViewModel
 import com.depromeet.team5.features.home.R
-import com.depromeet.team5.features.home.RetrospectionListUiState
-import com.depromeet.team5.features.home.UserStatsUiState
 import com.depromeet.team5.features.home.component.DashBoardDialog
 import com.depromeet.team5.features.home.component.HomeFloatingActionButton
 import com.depromeet.team5.features.home.section.HomeSection
@@ -43,60 +43,45 @@ fun HomeRoute(
     onSellClick: () -> Unit,
     modifier: Modifier = Modifier,
     requestViewModel: RequestViewModel = hiltViewModel(),
-    homeViewModel: HomeViewModel = hiltViewModel()
+    homeViewModel: HomeViewModel = hiltViewModel(),
 ) {
-    val userStatsUiState by homeViewModel.userStatsUiStateFlow.collectAsStateWithLifecycle()
-    val retrospectionListUiState by homeViewModel.retrospectionListUiStateFlow.collectAsStateWithLifecycle()
+    val userStatsUiState by homeViewModel.userStatsUiState.collectAsStateWithLifecycle()
+    val retrospectionListUiState by homeViewModel.retrospectionListUiState.collectAsStateWithLifecycle()
 
-    when (val uiState = userStatsUiState) {
-        is UserStatsUiState.Success -> {
-            HomeScreen(
-                percentage = uiState.percentage,
-                hedge = uiState.hedge,
-                bronze = uiState.bronze,
-                silver = uiState.silver,
-                gold = uiState.gold,
-                retrospectionListUiState = retrospectionListUiState,
-                onBuyClick = {
-                    requestViewModel.request =
-                        requestViewModel.request.copy(orderType = OrderType.BUY)
-                    onBuyClick()
-                },
-                onSellClick = {
-                    requestViewModel.request =
-                        requestViewModel.request.copy(orderType = OrderType.SELL)
-                    onSellClick()
-                },
-                modifier = modifier
-            )
-        }
+    val selectedOrderType by homeViewModel.principleOrderType.collectAsStateWithLifecycle()
+    val principleGroupsUiState by homeViewModel.principleGroupsUiState.collectAsStateWithLifecycle()
 
-        is UserStatsUiState.Loading -> {
 
-        }
-
-        is UserStatsUiState.Error -> {
-
-        }
-
-        is UserStatsUiState.Failure -> {
-
-        }
-
-    }
+    HomeScreen(
+        userStatsUiState = userStatsUiState,
+        retrospectionListUiState = retrospectionListUiState,
+        selectedOrderType = selectedOrderType,
+        principleGroupsUiState = principleGroupsUiState,
+        onChangePrincipleOrderType = { homeViewModel.setPrincipleOrderType(it) },
+        onBuyClick = {
+            requestViewModel.request =
+                requestViewModel.request.copy(orderType = OrderType.BUY)
+            onBuyClick()
+        },
+        onSellClick = {
+            requestViewModel.request =
+                requestViewModel.request.copy(orderType = OrderType.SELL)
+            onSellClick()
+        },
+        modifier = modifier
+    )
 }
 
 @Composable
 private fun HomeScreen(
-    percentage: Int,
-    hedge: Int,
-    bronze: Int,
-    silver: Int,
-    gold: Int,
-    retrospectionListUiState: RetrospectionListUiState,
+    userStatsUiState: HedgeUiState<UserStatsSummary>,
+    retrospectionListUiState: HedgeUiState<List<RetrospectionSymbolState>>,
+    selectedOrderType: OrderType,
+    principleGroupsUiState: HedgeUiState<List<MyPrincipleGroup>>,
+    onChangePrincipleOrderType: (OrderType) -> Unit,
     onBuyClick: () -> Unit,
     onSellClick: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     var fabChecked by rememberSaveable { mutableStateOf(false) }
     var selectedTab by rememberSaveable { mutableStateOf(HomeTab.HOME) }
@@ -144,26 +129,28 @@ private fun HomeScreen(
 
             when (selectedTab) {
                 HomeTab.HOME -> HomeSection(
-                    percentage = percentage,
-                    bronze = bronze,
-                    silver = silver,
-                    gold = gold,
-                    platinum = hedge,
+                    userStatsUiState = userStatsUiState,
                     retrospectionListUiState = retrospectionListUiState,
                     onDashBoardClick = { isDashBoardVisible = it }
                 )
 
-                HomeTab.PRINCIPLE -> PrincipleSection()
+                HomeTab.PRINCIPLE -> PrincipleSection(
+                    selected = selectedOrderType,
+                    onSelect = onChangePrincipleOrderType,
+                    principleGroupsUiState = principleGroupsUiState
+                )
             }
         }
 
-        HomeFloatingActionButton(
-            fabChecked = fabChecked,
-            onCheckedChange = { fabChecked = !fabChecked },
-            onBuyClick = onBuyClick,
-            onSellClick = onSellClick,
-            modifier = Modifier.align(Alignment.BottomEnd)
-        )
+        if (selectedTab == HomeTab.HOME) {
+            HomeFloatingActionButton(
+                fabChecked = fabChecked,
+                onCheckedChange = { fabChecked = !fabChecked },
+                onBuyClick = onBuyClick,
+                onSellClick = onSellClick,
+                modifier = Modifier.align(Alignment.BottomEnd)
+            )
+        }
     }
 }
 
@@ -172,12 +159,11 @@ private fun HomeScreen(
 @Composable
 private fun HomePreview() {
     HomeScreen(
-        percentage = 10,
-        hedge = 1,
-        bronze = 2,
-        silver = 3,
-        gold = 4,
-        retrospectionListUiState = RetrospectionListUiState.Loading,
+        userStatsUiState = HedgeUiState.Loading(UserStatsSummary(0, 0, 0, 0, 0)),
+        retrospectionListUiState = HedgeUiState.Loading(emptyList()),
+        selectedOrderType = OrderType.BUY,
+        principleGroupsUiState = HedgeUiState.Loading(emptyList()),
+        onChangePrincipleOrderType = {},
         onBuyClick = {},
         onSellClick = {}
     )

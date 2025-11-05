@@ -29,16 +29,14 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.depromeet.team5.core.designsystem.foundation.HedgeColor
 import com.depromeet.team5.core.designsystem.foundation.HedgeTypography
-import com.depromeet.team5.features.home.RetrospectionSectionState
-import com.depromeet.team5.features.home.RetrospectionState
-import com.depromeet.team5.features.home.RetrospectionSymbolState
-import kotlin.collections.component1
-import kotlin.collections.component2
+import com.depromeet.team5.features.home.screen.RetrospectionSectionState
+import com.depromeet.team5.features.home.screen.RetrospectionState
+import com.depromeet.team5.features.home.screen.RetrospectionSymbolState
 
 @Composable
 fun RetrospectionMasterDetail(
     symbols: List<RetrospectionSymbolState>,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     var selectedSymbol by rememberSaveable(symbols) {
         mutableStateOf(symbols.firstOrNull()?.symbol)
@@ -114,7 +112,7 @@ private fun SymbolRailItem(
 @Composable
 private fun RetrospectionDetailList(
     sections: List<RetrospectionSectionState>,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     LazyColumn(
         modifier = modifier
@@ -169,7 +167,7 @@ private fun RetrospectionDetailList(
 @Composable
 private fun RetrospectionRow(
     item: RetrospectionState,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     Column(
         modifier = modifier
@@ -185,7 +183,7 @@ private fun RetrospectionRow(
         Row(
             modifier = Modifier.padding(top = 2.dp),
             verticalAlignment = Alignment.CenterVertically
-        ){
+        ) {
             Text(
                 text = stringResource(id = item.tradeLabelRes),
                 style = HedgeTypography.Label2.Medium,

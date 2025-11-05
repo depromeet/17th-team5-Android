@@ -35,176 +35,186 @@ import com.depromeet.team5.core.designsystem.foundation.HedgeColor
 import com.depromeet.team5.core.designsystem.foundation.HedgeColor.BLUE_500
 import com.depromeet.team5.core.designsystem.foundation.HedgeColor.RED_500
 import com.depromeet.team5.core.designsystem.foundation.HedgeTypography
+import com.depromeet.team5.core.domain.monad.HedgeUiState
 import com.depromeet.team5.core.ui.model.HedgeBadge
 import com.depromeet.team5.features.home.R
-import com.depromeet.team5.features.home.RetrospectionListUiState
-import com.depromeet.team5.features.home.RetrospectionSectionState
-import com.depromeet.team5.features.home.RetrospectionState
-import com.depromeet.team5.features.home.RetrospectionSymbolState
 import com.depromeet.team5.features.home.component.DashBoardCountItem
 import com.depromeet.team5.features.home.component.RetrospectionMasterDetail
+import com.depromeet.team5.features.home.screen.RetrospectionSectionState
+import com.depromeet.team5.features.home.screen.RetrospectionState
+import com.depromeet.team5.features.home.screen.RetrospectionSymbolState
+import com.depromeet.team5.features.home.screen.UserStatsSummary
 
 @Composable
 fun HomeSection(
-    percentage: Int,
-    bronze: Int,
-    silver: Int,
-    gold: Int,
-    platinum: Int,
-    retrospectionListUiState: RetrospectionListUiState,
+    userStatsUiState: HedgeUiState<UserStatsSummary>,
+    retrospectionListUiState: HedgeUiState<List<RetrospectionSymbolState>>,
     onDashBoardClick: (Boolean) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     Column(
         modifier = modifier
             .padding(top = 16.dp)
             .fillMaxWidth()
     ) {
-        Box(
-            modifier = Modifier
-                .padding(horizontal = 20.dp)
-                .shadow(
-                    elevation = 20.dp,
-                    shape = RoundedCornerShape(22.dp),
-                    spotColor = Color(0x140D0F26),
-                    clip = false
-                )
-                .background(
-                    color = HedgeColor.Neutral.BackgroundDefault,
-                    shape = RoundedCornerShape(22.dp)
-                )
-                .border(width = 1.dp, color = Color(0xFFF1F2F4), shape = RoundedCornerShape(22.dp))
-                .clip(RoundedCornerShape(22.dp))
-                .clickable {
-                    onDashBoardClick(true)
-                }
-                .fillMaxWidth()
-        ) {
-            Box(
-                modifier = Modifier
-                    .matchParentSize()
-                    .align(Alignment.TopEnd)
-                    .drawWithCache {
-                        val centerColor = Color(0xFF1CCAFF).copy(alpha = 0.24f)
-                        val edgeColor = Color(0xFF1CCAFF).copy(alpha = 0f)
-                        val radius = size.width * 0.55f
-                        val center = Offset(
-                            x = size.width * 0.85f,
-                            y = -size.height * 0.55f
-                        )
-
-                        val brush = Brush.radialGradient(
-                            colors = listOf(centerColor, edgeColor),
-                            center = center,
-                            radius = radius
-                        )
-                        onDrawBehind { drawRect(brush) }
-                    }
-            )
-
-            Box(
-                modifier = Modifier
-                    .matchParentSize()
-                    .align(Alignment.TopStart)
-                    .drawWithCache {
-                        val centerColor = Color(0xFF29F980).copy(alpha = 0.16f)
-                        val edgeColor = Color(0xFF29F980).copy(alpha = 0f)
-                        val radius = size.width * 0.55f
-                        val center = Offset(
-                            x = size.width * 0.15f,
-                            y = -size.height * 0.55f
-                        )
-
-                        val brush = Brush.radialGradient(
-                            colors = listOf(centerColor, edgeColor),
-                            center = center,
-                            radius = radius
-                        )
-                        onDrawBehind { drawRect(brush) }
-                    }
-            )
-
-            Column(
-                modifier = Modifier
-                    .padding(20.dp)
-            ) {
-                Text(
-                    text = stringResource(
-                        dashboardTitleRes(
-                            percentage = percentage,
-                            platinum = platinum,
-                            gold = gold,
-                            silver = silver,
-                            bronze = bronze
-                        )
-                    ),
-                    style = HedgeTypography.Body2.SemiBold,
-                    color = HedgeColor.Text.Primary
-                )
-
-                Row(
+        when (val userStats = userStatsUiState) {
+            is HedgeUiState.Success -> {
+                Box(
                     modifier = Modifier
-                        .padding(top = 20.dp)
-                        .padding(horizontal = 12.dp)
+                        .padding(horizontal = 20.dp)
+                        .shadow(
+                            elevation = 20.dp,
+                            shape = RoundedCornerShape(22.dp),
+                            spotColor = Color(0x140D0F26),
+                            clip = false
+                        )
+                        .background(
+                            color = HedgeColor.Neutral.BackgroundDefault,
+                            shape = RoundedCornerShape(22.dp)
+                        )
+                        .border(
+                            width = 1.dp,
+                            color = Color(0xFFF1F2F4),
+                            shape = RoundedCornerShape(22.dp)
+                        )
+                        .clip(RoundedCornerShape(22.dp))
+                        .clickable {
+                            onDashBoardClick(true)
+                        }
                         .fillMaxWidth()
-                        .height(IntrinsicSize.Min),
-                    horizontalArrangement = Arrangement.Center
                 ) {
-                    DashBoardCountItem(
-                        imgResId = HedgeBadge.PLATINUM.iconRes,
-                        count = platinum,
-                        modifier = Modifier.weight(1f)
+                    Box(
+                        modifier = Modifier
+                            .matchParentSize()
+                            .align(Alignment.TopEnd)
+                            .drawWithCache {
+                                val centerColor = Color(0xFF1CCAFF).copy(alpha = 0.24f)
+                                val edgeColor = Color(0xFF1CCAFF).copy(alpha = 0f)
+                                val radius = size.width * 0.55f
+                                val center = Offset(
+                                    x = size.width * 0.85f,
+                                    y = -size.height * 0.55f
+                                )
+
+                                val brush = Brush.radialGradient(
+                                    colors = listOf(centerColor, edgeColor),
+                                    center = center,
+                                    radius = radius
+                                )
+                                onDrawBehind { drawRect(brush) }
+                            }
                     )
 
                     Box(
-                        modifier = modifier
-                            .padding(horizontal = 20.dp)
-                            .width(1.dp)
-                            .fillMaxHeight()
-                            .padding(vertical = 6.dp)
-                            .clip(RoundedCornerShape(2.dp))
-                            .background(HedgeColor.Neutral.BackgroundSecondary)
+                        modifier = Modifier
+                            .matchParentSize()
+                            .align(Alignment.TopStart)
+                            .drawWithCache {
+                                val centerColor = Color(0xFF29F980).copy(alpha = 0.16f)
+                                val edgeColor = Color(0xFF29F980).copy(alpha = 0f)
+                                val radius = size.width * 0.55f
+                                val center = Offset(
+                                    x = size.width * 0.15f,
+                                    y = -size.height * 0.55f
+                                )
+
+                                val brush = Brush.radialGradient(
+                                    colors = listOf(centerColor, edgeColor),
+                                    center = center,
+                                    radius = radius
+                                )
+                                onDrawBehind { drawRect(brush) }
+                            }
                     )
 
-                    DashBoardCountItem(
-                        imgResId = HedgeBadge.GOLD.iconRes,
-                        count = gold,
-                        modifier = Modifier.weight(1f)
-                    )
+                    Column(
+                        modifier = Modifier
+                            .padding(20.dp)
+                    ) {
+                        Text(
+                            text = stringResource(
+                                dashboardTitleRes(
+                                    percentage = userStats.data.percentage,
+                                    platinum = userStats.data.hedge,
+                                    gold = userStats.data.gold,
+                                    silver = userStats.data.silver,
+                                    bronze = userStats.data.bronze
+                                )
+                            ),
+                            style = HedgeTypography.Body2.SemiBold,
+                            color = HedgeColor.Text.Primary
+                        )
 
-                    Box(
-                        modifier = modifier
-                            .padding(horizontal = 20.dp)
-                            .width(1.dp)
-                            .fillMaxHeight()
-                            .padding(vertical = 6.dp)
-                            .clip(RoundedCornerShape(2.dp))
-                            .background(HedgeColor.Neutral.BackgroundSecondary)
-                    )
+                        Row(
+                            modifier = Modifier
+                                .padding(top = 20.dp)
+                                .padding(horizontal = 12.dp)
+                                .fillMaxWidth()
+                                .height(IntrinsicSize.Min),
+                            horizontalArrangement = Arrangement.Center
+                        ) {
+                            DashBoardCountItem(
+                                imgResId = HedgeBadge.PLATINUM.iconRes,
+                                count = userStats.data.hedge,
+                                modifier = Modifier.weight(1f)
+                            )
 
-                    DashBoardCountItem(
-                        imgResId = HedgeBadge.SILVER.iconRes,
-                        count = silver,
-                        modifier = Modifier.weight(1f)
-                    )
+                            Box(
+                                modifier = modifier
+                                    .padding(horizontal = 20.dp)
+                                    .width(1.dp)
+                                    .fillMaxHeight()
+                                    .padding(vertical = 6.dp)
+                                    .clip(RoundedCornerShape(2.dp))
+                                    .background(HedgeColor.Neutral.BackgroundSecondary)
+                            )
 
-                    Box(
-                        modifier = modifier
-                            .padding(horizontal = 20.dp)
-                            .width(1.dp)
-                            .fillMaxHeight()
-                            .padding(vertical = 6.dp)
-                            .clip(RoundedCornerShape(2.dp))
-                            .background(HedgeColor.Neutral.BackgroundSecondary)
-                    )
+                            DashBoardCountItem(
+                                imgResId = HedgeBadge.GOLD.iconRes,
+                                count = userStats.data.gold,
+                                modifier = Modifier.weight(1f)
+                            )
 
-                    DashBoardCountItem(
-                        imgResId = HedgeBadge.BRONZE.iconRes,
-                        count = bronze,
-                        modifier = Modifier.weight(1f)
-                    )
+                            Box(
+                                modifier = modifier
+                                    .padding(horizontal = 20.dp)
+                                    .width(1.dp)
+                                    .fillMaxHeight()
+                                    .padding(vertical = 6.dp)
+                                    .clip(RoundedCornerShape(2.dp))
+                                    .background(HedgeColor.Neutral.BackgroundSecondary)
+                            )
+
+                            DashBoardCountItem(
+                                imgResId = HedgeBadge.SILVER.iconRes,
+                                count = userStats.data.silver,
+                                modifier = Modifier.weight(1f)
+                            )
+
+                            Box(
+                                modifier = modifier
+                                    .padding(horizontal = 20.dp)
+                                    .width(1.dp)
+                                    .fillMaxHeight()
+                                    .padding(vertical = 6.dp)
+                                    .clip(RoundedCornerShape(2.dp))
+                                    .background(HedgeColor.Neutral.BackgroundSecondary)
+                            )
+
+                            DashBoardCountItem(
+                                imgResId = HedgeBadge.BRONZE.iconRes,
+                                count = userStats.data.bronze,
+                                modifier = Modifier.weight(1f)
+                            )
+                        }
+                    }
                 }
             }
+
+            is HedgeUiState.Loading -> {}
+
+            is HedgeUiState.Error -> {}
+
         }
         Spacer(modifier = Modifier.height(16.dp))
 
@@ -215,36 +225,34 @@ fun HomeSection(
             modifier = Modifier.padding(vertical = 10.dp, horizontal = 20.dp)
         )
 
-        when (retrospectionListUiState) {
-            is RetrospectionListUiState.Empty -> {
-                Text(
-                    text = stringResource(id = R.string.home_tab_retrospection_empty),
-                    style = HedgeTypography.Headline2.SemiBold,
-                    color = HedgeColor.Text.Assistive,
-                    modifier = Modifier
-                        .padding(bottom = 100.dp)
-                        .fillMaxSize()
-                        .wrapContentSize(Alignment.Center),
-                    textAlign = TextAlign.Center
-                )
+        when (val uiState = retrospectionListUiState) {
+            is HedgeUiState.Success -> {
+                val retrospectionList = uiState.data
+
+                if (retrospectionList.isEmpty()) {
+                    Text(
+                        text = stringResource(id = R.string.home_tab_retrospection_empty),
+                        style = HedgeTypography.Headline2.SemiBold,
+                        color = HedgeColor.Text.Assistive,
+                        modifier = Modifier
+                            .padding(bottom = 100.dp)
+                            .fillMaxSize()
+                            .wrapContentSize(Alignment.Center),
+                        textAlign = TextAlign.Center
+                    )
+                } else {
+                    RetrospectionMasterDetail(
+                        symbols = retrospectionList,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                }
             }
 
-            is RetrospectionListUiState.Success -> {
-                RetrospectionMasterDetail(
-                    symbols = retrospectionListUiState.symbols,
-                    modifier = Modifier.fillMaxWidth()
-                )
-            }
-
-            is RetrospectionListUiState.Loading -> {
+            is HedgeUiState.Loading -> {
 
             }
 
-            is RetrospectionListUiState.Error -> {
-
-            }
-
-            is RetrospectionListUiState.Failure -> {
+            is HedgeUiState.Error -> {
 
             }
         }
@@ -299,48 +307,20 @@ private fun HomeSectionPreview() {
         )
     )
 
-    val ui = RetrospectionListUiState.Success(
-        symbols = listOf(
-            RetrospectionSymbolState(
-                symbol = "삼성전자",
-                sections = sampleSections
-            ),
-            RetrospectionSymbolState(
-                symbol = "테슬라",
-                sections = listOf(
-                    RetrospectionSectionState(
-                        title = "이번달 회고",
-                        items = listOf(
-                            RetrospectionState(
-                                id = 4,
-                                dayText = "9월 25일",
-                                priceVolumeText = "350.00달러 • 3주",
-                                tradeLabelRes = R.string.home_tab_retrospection_trade_buy,
-                                tradeColor = RED_500,
-                                orderDateText = "2025.09.25"
-                            )
-                        )
-                    )
-                )
-            ),
-            RetrospectionSymbolState(
-                symbol = "팔란티어",
-                sections = sampleSections
-            ),
-            RetrospectionSymbolState(
-                symbol = "애플",
-                sections = sampleSections.take(1)
-            ),
+    val successList = HedgeUiState.Success(
+        listOf(
+            RetrospectionSymbolState(symbol = "삼성전자", sections = sampleSections),
+            RetrospectionSymbolState(symbol = "애플", sections = sampleSections)
         )
     )
 
+    val successStats = HedgeUiState.Success(
+        UserStatsSummary(percentage = 72, hedge = 1, bronze = 2, silver = 5, gold = 3)
+    )
+
     HomeSection(
-        percentage = 72,
-        bronze = 2,
-        silver = 5,
-        gold = 3,
-        platinum = 1,
-        retrospectionListUiState = ui,
+        userStatsUiState = successStats,
+        retrospectionListUiState = successList,
         onDashBoardClick = {}
     )
 }

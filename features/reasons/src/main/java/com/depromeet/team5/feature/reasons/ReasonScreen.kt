@@ -128,6 +128,7 @@ fun ReasonRoute(
                 orderDate = requestViewModel.request.orderDate
             )
         )
+        if(viewModel.initialPrincipleTemplate != principleTemplate) return@LaunchedEffect
         viewModel.initPrincipleTemplate(
             PrincipleTemplate(
                 id = requestViewModel.request.principles[0].groupId,

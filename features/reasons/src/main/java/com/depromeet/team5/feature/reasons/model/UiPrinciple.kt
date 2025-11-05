@@ -25,6 +25,7 @@ fun MyPrinciple.toUi(idx: Int) = UiPrinciple(
 )
 
 fun PrincipleChecks.toUi(idx: Int) = UiPrincipleChecks(
+    principleId = principleId,
     adherence = PrincipleAdherence.fromStatus(status).run {
         if (idx == 0 && this == PrincipleAdherence.UNSELECTED) PrincipleAdherence.KEPT else this
     },
@@ -74,6 +75,7 @@ data class UiPrinciple(
 
 @Immutable
 data class UiPrincipleChecks(
+    val principleId: Int,
     val adherence: PrincipleAdherence,
     val note: TextFieldValue,
     val imageUrls: List<String>,

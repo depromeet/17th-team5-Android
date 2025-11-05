@@ -54,6 +54,6 @@ data class MyPrincipleData(
         groupId = groupId,
         principle = principle,
         description = description,
-        principleChecks = PrincipleChecks.INIT
+        principleChecks = PrincipleChecks.createInit(id)
     )
 }

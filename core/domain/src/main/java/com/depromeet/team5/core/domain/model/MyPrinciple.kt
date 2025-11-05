@@ -24,13 +24,15 @@ data class MyPrinciple(
 
 @Immutable
 data class PrincipleChecks(
+    val principleId: Int,
     val status: String,
     val note: String,
     val imageUrls: List<String>,
     val links: List<String>,
 ) {
     companion object {
-        val INIT = PrincipleChecks(
+        fun createInit(principleId: Int) = PrincipleChecks(
+            principleId = principleId,
             status = "UNSELECTED",
             note = "",
             imageUrls = emptyList(),

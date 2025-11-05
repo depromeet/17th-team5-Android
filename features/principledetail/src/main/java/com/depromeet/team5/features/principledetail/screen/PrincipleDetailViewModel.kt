@@ -7,15 +7,16 @@ import androidx.navigation.toRoute
 import com.depromeet.team5.core.domain.monad.HedgeUiState
 import com.depromeet.team5.core.domain.monad.asUiState
 import com.depromeet.team5.core.domain.usecase.DeletePrincipleGroupUseCase
+import com.depromeet.team5.core.domain.usecase.DeletePrincipleUseCase
 import com.depromeet.team5.core.domain.usecase.GetPrincipleGroupUseCase
 import com.depromeet.team5.core.ui.extensions.baseCollect
+import com.depromeet.team5.core.ui.restartflow.restartStateIn
 import com.depromeet.team5.features.principledetail.event.PrincipleDetailEvent
 import com.depromeet.team5.features.principledetail.navigation.PrincipleDetail
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asSharedFlow
-import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -24,6 +25,7 @@ import javax.inject.Inject
 class PrincipleDetailViewModel @Inject constructor(
     getPrincipleUseCase: GetPrincipleGroupUseCase,
     private val deletePrincipleGroupUseCase: DeletePrincipleGroupUseCase,
+    private val deletePrincipleUseCase: DeletePrincipleUseCase,
     private val savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
@@ -31,7 +33,7 @@ class PrincipleDetailViewModel @Inject constructor(
         savedStateHandle.toRoute<PrincipleDetail>().groupId
     )
         .asUiState()
-        .stateIn(
+        .restartStateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5_000),
             initialValue = HedgeUiState.Loading()
@@ -47,6 +49,20 @@ class PrincipleDetailViewModel @Inject constructor(
                 .baseCollect(
                     onSuccess = {
                         _eventFlow.emit(PrincipleDetailEvent.Finish)
+                    },
+                    onError = {
+                        _eventFlow.emit(PrincipleDetailEvent.ShowErrorToast(it))
+                    }
+                )
+        }
+    }
+
+    fun deletePrinciple(principleId: Int) {
+        viewModelScope.launch {
+            deletePrincipleUseCase(principleId)
+                .baseCollect(
+                    onSuccess = {
+                        uiStateFlow.restart()
                     },
                     onError = {
                         _eventFlow.emit(PrincipleDetailEvent.ShowErrorToast(it))

@@ -98,7 +98,7 @@ fun PrincipleDetailRoute(
 
         },
         onClickedItemRemoveButton = { principleId ->
-
+            viewModel.deletePrinciple(principleId)
         },
         onBackPressed = onBackPressed,
         onShowErrorToast = {

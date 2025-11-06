@@ -4,6 +4,7 @@ import com.depromeet.team5.core.remotedatasource.request.CreateRetrospectionRequ
 import com.depromeet.team5.core.retrofit.model.BaseResponse
 import com.depromeet.team5.core.retrofit.model.FeedbackResponse
 import com.depromeet.team5.core.retrofit.model.ImageUploadResponse
+import com.depromeet.team5.core.retrofit.model.MyPrincipleGroupInfoResponse
 import com.depromeet.team5.core.retrofit.model.MyPrincipleGroupsInfoResponse
 import com.depromeet.team5.core.retrofit.model.MyPrincipleGroupsResponse
 import com.depromeet.team5.core.retrofit.model.MyPrincipleResponse
@@ -47,7 +48,7 @@ interface HedgeApi {
     suspend fun getPrincipleGroup(
         @Path("groupId")
         groupId: Int
-    ): MyPrincipleInfoResponse
+    ): MyPrincipleGroupInfoResponse
 
     @DELETE("api/v1/principle-groups/{groupId}")
     suspend fun deletePrincipleGroup(

@@ -22,7 +22,7 @@ data class MyPrincipleGroupsInfoResponse(
 }
 
 @Serializable
-data class MyPrincipleInfoResponse(
+data class MyPrincipleGroupInfoResponse(
     val code: String,
     val message: String,
     val data: MyPrincipleGroupResponse

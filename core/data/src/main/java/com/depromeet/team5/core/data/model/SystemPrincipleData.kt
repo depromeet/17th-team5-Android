@@ -34,14 +34,14 @@ data class RecommendedPrincipleData(
     val groupName: String,
     val thumbnail: String,
     val principleCount: Int,
-//    val userName: String,
+    val investorName: String,
 ) : DataMapper<RecommendedPrinciple> {
     override fun toDomain(): RecommendedPrinciple = RecommendedPrinciple(
         id = id,
         groupName = groupName,
         thumbnail = thumbnail,
         principleCount = principleCount,
-//        userName = userName
+        investorName = investorName
     )
 }
 

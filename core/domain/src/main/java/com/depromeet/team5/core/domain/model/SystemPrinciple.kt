@@ -16,7 +16,7 @@ data class RecommendedPrinciple(
     val groupName: String,
     val thumbnail: String,
     val principleCount: Int,
-//    val userName: String,
+    val investorName: String,
 )
 
 data class DefaultPrinciple(

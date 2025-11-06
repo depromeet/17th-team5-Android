@@ -110,7 +110,7 @@ fun RecommendPrincipleItem(
             )
 
             Text(
-                text = recommendPrinciple.groupName,
+                text = recommendPrinciple.investorName,
                 style = HedgeTypography.Label2.Medium,
                 color = Color(0xFF000000).copy(alpha = 0.7f)
             )
@@ -150,6 +150,7 @@ private fun RecommendPrincipleItemPreview() {
             groupName = "초보자를 위한 매수 원칙",
             principleCount = 10,
             id = 0,
+            investorName = "워렌 버핏"
         ),
         onClick = {}
     )

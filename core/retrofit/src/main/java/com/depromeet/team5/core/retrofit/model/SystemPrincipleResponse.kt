@@ -38,14 +38,14 @@ data class RecommendedPrincipleResponse(
     val groupName: String,
     val thumbnail: String,
     val principleCount: Int,
-//    val userName: String,
+    val investorName: String,
 ) : RetrofitMapper<RecommendedPrincipleRemoteData> {
     override fun toRemoteData(): RecommendedPrincipleRemoteData = RecommendedPrincipleRemoteData(
         id = id,
         groupName = groupName,
         thumbnail = thumbnail,
         principleCount = principleCount,
-//        userName = userName
+        investorName = investorName
     )
 }
 

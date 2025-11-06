@@ -34,14 +34,14 @@ data class RecommendedPrincipleRemoteData(
     val groupName: String,
     val thumbnail: String,
     val principleCount: Int,
-//    val userName: String,
+    val investorName: String,
 ) : RemoteDataMapper<RecommendedPrincipleData> {
     override fun toData(): RecommendedPrincipleData = RecommendedPrincipleData(
         id = id,
         groupName = groupName,
         thumbnail = thumbnail,
         principleCount = principleCount,
-//        userName = userName
+        investorName = investorName
     )
 }
 

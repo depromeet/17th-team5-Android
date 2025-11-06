@@ -55,6 +55,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
 import com.depromeet.team5.core.designsystem.component.HedgeButton
 import com.depromeet.team5.core.designsystem.component.HedgeToast
+import com.depromeet.team5.core.designsystem.component.HedgeToastState
 import com.depromeet.team5.core.designsystem.component.HedgeTopBar
 import com.depromeet.team5.core.designsystem.foundation.HedgeColor
 import com.depromeet.team5.core.designsystem.foundation.HedgeIcon
@@ -152,7 +153,7 @@ private fun ReasonsScreen(
 
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
-    var toastMessage: String? by remember { mutableStateOf(null) }
+    val hedgeToastState = remember { HedgeToastState() }
     var limitedAttachmentType: RestrictionAttachment? by remember { mutableStateOf(null) }
     var showCompleteModal by remember { mutableStateOf(false) }
     var showBackModal by remember { mutableStateOf(false) }
@@ -182,7 +183,7 @@ private fun ReasonsScreen(
         else showBackModal = true
     }
 
-    toastMessage?.let { HedgeToast(it) { toastMessage = null } }
+    HedgeToast(hedgeToastState)
 
     HedgeModal(
         showModal = limitedAttachmentType != null,
@@ -268,9 +269,9 @@ private fun ReasonsScreen(
             if (principleGroup.isAllPrincipleChecked()) showCompleteModal = true
             else {
                 coroutineScope.launch {
+                    hedgeToastState.show(context.getString(R.string.cannot_complete_restriction))
                     pagerState.animateScrollToPage(principleGroup.getIndexOfFirstUnselectedPrinciple())
                 }
-                toastMessage = context.getString(R.string.cannot_complete_restriction)
             }
         },
         onClickAddImage = { pickMultipleMedia.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageAndVideo)) },

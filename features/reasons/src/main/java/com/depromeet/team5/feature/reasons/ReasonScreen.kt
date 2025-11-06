@@ -79,6 +79,7 @@ import com.depromeet.team5.feature.reasons.ui.LinkThumbnailContainer
 import com.depromeet.team5.feature.reasons.ui.PrincipleAdherenceContainer
 import com.depromeet.team5.feature.reasons.ui.RestrictionIndicatorContainer
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.launch
 
 @Composable
@@ -320,6 +321,7 @@ private fun ReasonScreenContents(
         LaunchedEffect(pagerState, isImeVisible) {
             snapshotFlow { pagerState.currentPage }
                 .distinctUntilChanged()
+                .filter { isImeVisible }
                 .collect { page ->
                     if (isImeVisible) {
                         focusRequesters[page].requestFocus()

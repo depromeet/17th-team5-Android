@@ -4,12 +4,9 @@ import com.depromeet.team5.core.data.request.CreateRetrospectionRequestData
 import com.depromeet.team5.core.data.request.PrincipleCheckRequestData
 import com.depromeet.team5.core.remotedatasource.request.CreateRetrospectionRequestRemoteData
 import com.depromeet.team5.core.remotedatasource.request.PrincipleCheckRequestRemoteData
-import kotlinx.coroutines.async
-import kotlinx.coroutines.awaitAll
-import kotlinx.coroutines.coroutineScope
 
-suspend fun CreateRetrospectionRequestData.toRemoteData(
-    upload: suspend (String) -> Int
+fun CreateRetrospectionRequestData.toRemoteData(
+    principleChecks: List<PrincipleCheckRequestRemoteData>,
 ) = CreateRetrospectionRequestRemoteData(
     symbol = symbol,
     market = market,
@@ -19,20 +16,15 @@ suspend fun CreateRetrospectionRequestData.toRemoteData(
     price = price,
     volume = volume,
     returnRate = returnRate,
-    principleChecks = principleChecks.map { it.toRemoteData(upload) }
+    principleChecks = principleChecks,
 )
 
-suspend fun PrincipleCheckRequestData.toRemoteData(
-    upload: suspend (String) -> Int
-): PrincipleCheckRequestRemoteData = coroutineScope {
-    val ids: List<Int> =
-        if (imageUrls.isEmpty()) emptyList()
-        else imageUrls.map { url -> async { upload(url) } }.awaitAll()
-    PrincipleCheckRequestRemoteData(
-        principleId = principleId,
-        status = status,
-        reason = reason,
-        imageIds = ids,
-        links = links
-    )
-}
+fun PrincipleCheckRequestData.toRemoteData(
+    imageIds: List<Int>,
+) = PrincipleCheckRequestRemoteData(
+    principleId = principleId,
+    status = status,
+    reason = reason,
+    imageIds = imageIds,
+    links = links,
+)

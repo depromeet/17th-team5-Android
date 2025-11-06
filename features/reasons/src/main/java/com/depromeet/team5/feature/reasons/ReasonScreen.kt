@@ -163,18 +163,16 @@ private fun ReasonsScreen(
     val pickMultipleMedia =
         rememberLauncherForActivityResult(ActivityResultContracts.PickMultipleVisualMedia(3)) { uris ->
             if (uris.isNotEmpty()) {
-                val remainCount =
+                val remain =
                     ReasonViewModel.PRINCIPLE_ATTACHMENT_LIMIT - principleGroup.principles[pagerState.currentPage].principleChecks.imageUrls.size
-                if (remainCount == ReasonViewModel.PRINCIPLE_ATTACHMENT_LIMIT) {
-                    onAddImages(pagerState.currentPage, uris.map { it.toString() })
-                } else {
-                    if (remainCount > 0) {
-                        onAddImages(
-                            pagerState.currentPage,
-                            uris.subList(0, remainCount).map { it.toString() }
-                        )
-                    }
-                    if (remainCount < uris.size) limitedAttachmentType = RestrictionAttachment.IMAGE
+
+                val addCount = remain.coerceAtMost(uris.size)
+                if (addCount > 0) {
+                    onAddImages(pagerState.currentPage, uris.take(addCount).map { it.toString() })
+                }
+
+                if (uris.size > remain) {
+                    limitedAttachmentType = RestrictionAttachment.IMAGE
                 }
             }
         }

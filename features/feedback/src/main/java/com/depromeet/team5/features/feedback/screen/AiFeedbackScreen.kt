@@ -59,7 +59,9 @@ fun AiFeedbackRoute(
     val uiState by viewModel.feedbackStateFlow.collectAsStateWithLifecycle()
 
     LaunchedEffect(Unit) {
-        viewModel.createRetrospection(requestViewModel.request)
+        requestViewModel.selectedMyPrincipleGroup?.let {
+            viewModel.createRetrospection(requestViewModel.request, it)
+        }
     }
 
     when (val state = uiState) {

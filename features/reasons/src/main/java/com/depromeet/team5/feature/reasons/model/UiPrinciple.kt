@@ -29,7 +29,7 @@ fun PrincipleChecks.toUi(idx: Int) = UiPrincipleChecks(
     adherence = PrincipleAdherence.fromStatus(status).run {
         if (idx == 0 && this == PrincipleAdherence.UNSELECTED) PrincipleAdherence.KEPT else this
     },
-    note = TextFieldValue(note),
+    note = TextFieldValue(reason),
     imageUrls = imageUrls,
     articles = links.map {
         Article(
@@ -62,6 +62,15 @@ data class UiPrincipleGroup(
     fun isAllPrincipleChecked(): Boolean {
         return getCheckedPrincipleCount() == principles.size
     }
+
+    fun toDomain() = MyPrincipleGroup(
+        id = id,
+        groupName = groupName,
+        thumbnail = thumbnail,
+        orderType = orderType,
+        displayOrder = displayOrder,
+        principles = principles.map { it.toDomain() }
+    )
 }
 
 @Immutable
@@ -71,7 +80,15 @@ data class UiPrinciple(
     val principle: String,
     val description: String,
     val principleChecks: UiPrincipleChecks,
-)
+) {
+    fun toDomain() = MyPrinciple(
+        id = id,
+        groupId = groupId,
+        principle = principle,
+        description = description,
+        principleChecks = principleChecks.toDomain()
+    )
+}
 
 @Immutable
 data class UiPrincipleChecks(
@@ -80,7 +97,15 @@ data class UiPrincipleChecks(
     val note: TextFieldValue,
     val imageUrls: List<String>,
     val articles: List<Article>,
-)
+) {
+    fun toDomain() = PrincipleChecks(
+        principleId = principleId,
+        status = adherence.name,
+        reason = note.text,
+        imageUrls = imageUrls,
+        links = articles.map { it.originUrl }
+    )
+}
 
 @Immutable
 enum class PrincipleAdherence {

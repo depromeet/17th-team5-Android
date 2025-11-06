@@ -26,7 +26,7 @@ data class MyPrinciple(
 data class PrincipleChecks(
     val principleId: Int,
     val status: String,
-    val note: String,
+    val reason: String,
     val imageUrls: List<String>,
     val links: List<String>,
 ) {
@@ -34,7 +34,7 @@ data class PrincipleChecks(
         fun createInit(principleId: Int) = PrincipleChecks(
             principleId = principleId,
             status = "UNSELECTED",
-            note = "",
+            reason = "",
             imageUrls = emptyList(),
             links = emptyList()
         )

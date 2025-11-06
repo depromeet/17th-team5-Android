@@ -4,6 +4,7 @@ import com.depromeet.team5.core.domain.model.Feedback
 import com.depromeet.team5.core.domain.model.MyPrincipleGroup
 import com.depromeet.team5.core.domain.model.Retrospection
 import com.depromeet.team5.core.domain.model.Search
+import com.depromeet.team5.core.domain.request.CreateRetrospectionRequest
 import kotlinx.coroutines.flow.Flow
 
 
@@ -11,7 +12,7 @@ interface HedgeRepository {
 
     fun search(query: String): Flow<Search>
 
-    fun createRetrospection(body: Map<String, Any?>): Flow<Retrospection>
+    fun createRetrospection(request: CreateRetrospectionRequest): Flow<Retrospection>
 
     fun createFeedback(
         retrospectionId: Int

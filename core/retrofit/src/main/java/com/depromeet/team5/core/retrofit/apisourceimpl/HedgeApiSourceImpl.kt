@@ -4,6 +4,7 @@ import com.depromeet.team5.core.remotedatasource.apisource.HedgeApiSource
 import com.depromeet.team5.core.remotedatasource.model.FeedbackRemoteData
 import com.depromeet.team5.core.remotedatasource.model.MyPrincipleGroupsRemoteData
 import com.depromeet.team5.core.remotedatasource.model.SearchRemoteData
+import com.depromeet.team5.core.remotedatasource.request.CreateRetrospectionRequestRemoteData
 import com.depromeet.team5.core.retrofit.api.HedgeApi
 import com.depromeet.team5.core.retrofit.toRequestBody
 import javax.inject.Inject
@@ -19,8 +20,8 @@ internal class HedgeApiSourceImpl @Inject constructor(
         hedgeApi.search(query = query).toRemoteData()
 
     override suspend fun createRetrospection(
-        body: Map<String, Any?>
-    ) = hedgeApi.createRetrospection(body.toRequestBody()).toRemoteData()
+        request: CreateRetrospectionRequestRemoteData
+    ) = hedgeApi.createRetrospection(request).toRemoteData()
 
     override suspend fun createFeedback(retrospectionId: Int): FeedbackRemoteData = hedgeApi
         .createFeedback(retrospectionId = retrospectionId)

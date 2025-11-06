@@ -1,11 +1,13 @@
 package com.depromeet.team5.core.data.repositoryimpl
 
 import com.depromeet.team5.core.data.datasource.RemoteDataSource
+import com.depromeet.team5.core.data.mapper.toData
 import com.depromeet.team5.core.domain.model.Feedback
 import com.depromeet.team5.core.domain.model.MyPrincipleGroup
 import com.depromeet.team5.core.domain.model.Retrospection
 import com.depromeet.team5.core.domain.model.Search
 import com.depromeet.team5.core.domain.repository.HedgeRepository
+import com.depromeet.team5.core.domain.request.CreateRetrospectionRequest
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import javax.inject.Inject
@@ -19,8 +21,8 @@ internal class HedgeRepositoryImpl @Inject constructor(
         emit(remoteDataSource.search(query).toDomain())
     }
 
-    override fun createRetrospection(body: Map<String, Any?>): Flow<Retrospection> = flow {
-        emit(remoteDataSource.createRetrospection(body).toDomain())
+    override fun createRetrospection(request: CreateRetrospectionRequest): Flow<Retrospection> = flow {
+        emit(remoteDataSource.createRetrospection(request.toData()).toDomain())
     }
 
     override fun createFeedback(

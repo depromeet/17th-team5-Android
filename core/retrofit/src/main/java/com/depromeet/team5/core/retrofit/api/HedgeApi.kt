@@ -1,5 +1,6 @@
 package com.depromeet.team5.core.retrofit.api
 
+import com.depromeet.team5.core.remotedatasource.request.CreateRetrospectionRequestRemoteData
 import com.depromeet.team5.core.retrofit.model.FeedbackResponse
 import com.depromeet.team5.core.retrofit.model.MyPrincipleGroupsResponse
 import com.depromeet.team5.core.retrofit.model.RetrospectionResponse
@@ -18,7 +19,7 @@ interface HedgeApi {
     suspend fun search(@Query("query") query: String): SearchResponse
 
     @POST("api/v1/retrospections")
-    suspend fun createRetrospection(@Body body: RequestBody): RetrospectionResponse
+    suspend fun createRetrospection(@Body body: CreateRetrospectionRequestRemoteData): RetrospectionResponse
 
     @POST("api/v1/reports/{retrospectionId}/feedback")
     suspend fun createFeedback(

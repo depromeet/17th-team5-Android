@@ -115,7 +115,10 @@ fun ReasonRoute(
                 principleGroup = state.data.second,
                 tradeInfo = state.data.first,
                 onClickBack = onClickBack,
-                onClickDone = onClickDone,
+                onClickDone = {
+                    requestViewModel.selectedMyPrincipleGroup = state.data.second.toDomain()
+                    onClickDone()
+                },
                 onClickImage = onClickImage,
                 onAddImages = { idx, uris -> viewModel.onAddImages(idx, uris) },
                 onAddArticle = { idx, link -> viewModel.onAddArticle(idx, link) },

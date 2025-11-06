@@ -54,6 +54,9 @@ internal class RemoteDataSourceImpl @Inject constructor(
         hedgeApiSource.deletePrinciple(principleId)
     }
 
+    override suspend fun createPrincipleGroup(body: Map<String, Any?>): MyPrincipleGroupData =
+        hedgeApiSource.createPrincipleGroup(body).toData()
+
     override suspend fun userStats(): UserStatsData =
         hedgeApiSource.userStats().toData()
 

@@ -28,6 +28,8 @@ interface HedgeApiSource {
 
     suspend fun deletePrinciple(principleId: Int)
 
+    suspend fun createPrincipleGroup(body: Map<String, Any?>): MyPrincipleGroupRemoteData
+
     suspend fun uploadImageUri(
         domain: String,
         uri: Uri,

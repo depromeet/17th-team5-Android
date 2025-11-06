@@ -50,6 +50,9 @@ internal class HedgeApiSourceImpl @Inject constructor(
     override suspend fun deletePrinciple(principleId: Int) =
         hedgeApi.deletePrinciple(principleId)
 
+    override suspend fun createPrincipleGroup(body: Map<String, Any?>): MyPrincipleGroupRemoteData =
+        hedgeApi.createPrincipleGroup(body.toRequestBody()).toRemoteData()
+
     override suspend fun uploadImageUri(
         domain: String,
         uri: Uri,

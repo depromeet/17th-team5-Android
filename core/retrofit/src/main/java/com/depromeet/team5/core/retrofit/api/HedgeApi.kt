@@ -61,6 +61,12 @@ interface HedgeApi {
         @Path("principleId")
         principleId: Int
     )
+
+    @POST("api/v1/principle-groups")
+    suspend fun createPrincipleGroup(
+        @Body body: RequestBody
+    ): MyPrincipleGroupInfoResponse
+
     @Multipart
     @POST("api/v1/{domain}/images/upload")
     suspend fun imageUpload(

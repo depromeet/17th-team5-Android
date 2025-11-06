@@ -9,6 +9,8 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.platform.LocalContext
 import com.depromeet.team5.core.designsystem.component.HedgeToast
 import com.depromeet.team5.core.designsystem.component.HedgeToastState
+import com.depromeet.team5.core.designsystem.foundation.HedgeColor
+import com.depromeet.team5.core.designsystem.foundation.HedgeIcon
 import com.depromeet.team5.core.logger.Logger
 import com.depromeet.team5.ui.theme.DepromeetTheme
 import dagger.hilt.android.AndroidEntryPoint
@@ -29,22 +31,37 @@ class MainActivity : ComponentActivity() {
                 val context = LocalContext.current
                 val scope = rememberCoroutineScope()
 
-                val hedgeToastState = remember { HedgeToastState() }
+                val hedgeErrorToastState = remember { HedgeToastState() }
+                val hedgeRegularToastState = remember { HedgeToastState() }
 
                 HedgeNavHost(
                     onShowErrorToast = { throwable ->
                         scope.launch {
                             logger.e(throwable)
 
-                            hedgeToastState.show(
+                            hedgeErrorToastState.show(
                                 text = context.getString(R.string.error_message)
+                            )
+                        }
+                    },
+                    onShowToast = { message ->
+                        scope.launch {
+                            hedgeRegularToastState.show(
+                                text = message
                             )
                         }
                     }
                 )
 
                 HedgeToast(
-                    hedgeToastState = hedgeToastState
+                    hedgeToastState = hedgeErrorToastState
+                )
+
+                HedgeToast(
+                    hedgeToastState = hedgeRegularToastState,
+                    backgroundColor = HedgeColor.Text.Secondary,
+                    textColor = HedgeColor.Neutral.BackgroundSecondary,
+                    icon = HedgeIcon.ToastCheck
                 )
             }
         }

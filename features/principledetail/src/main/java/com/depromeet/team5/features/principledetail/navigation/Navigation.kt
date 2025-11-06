@@ -29,7 +29,8 @@ fun NavController.navigateToPrincipleDetail(
 
 fun NavGraphBuilder.principleDetail(
     onBackPressed: () -> Unit,
-    onShowErrorToast: (Throwable) -> Unit
+    onShowErrorToast: (Throwable) -> Unit,
+    onShowToast: (String) -> Unit
 ) {
     composable<PrincipleDetail> { backstackEntry ->
         val args = backstackEntry.toRoute<PrincipleDetail>()
@@ -38,6 +39,7 @@ fun NavGraphBuilder.principleDetail(
             principleType = args.principleType,
             onBackPressed = onBackPressed,
             onShowErrorToast = onShowErrorToast,
+            onShowToast = onShowToast
         )
     }
 }

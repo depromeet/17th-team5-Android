@@ -7,5 +7,7 @@ sealed class PrincipleDetailEvent {
 
     data class ShowErrorToast(val throwable: Throwable) : PrincipleDetailEvent()
 
+    object FinishAndShowToast : PrincipleDetailEvent()
+
     object None : PrincipleDetailEvent()
 }

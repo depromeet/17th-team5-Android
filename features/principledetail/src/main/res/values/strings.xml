@@ -7,4 +7,5 @@
     <string name="sell">매도</string>
 
     <string name="principle_detail_modal_bottom_sheet_title">어떤 카테고리에 추가할까요?</string>
+    <string name="principle_detail_create_principle_group_toast_message">새로운 회고 템플릿이 추가되었습니다</string>
 </resources>

@@ -5,8 +5,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.toRoute
 import com.depromeet.team5.core.domain.model.MyPrincipleGroup
+import com.depromeet.team5.core.domain.model.OrderType
 import com.depromeet.team5.core.domain.monad.HedgeUiState
 import com.depromeet.team5.core.domain.monad.asUiState
+import com.depromeet.team5.core.domain.usecase.CreatePrincipleGroupUseCase
 import com.depromeet.team5.core.domain.usecase.DeletePrincipleGroupUseCase
 import com.depromeet.team5.core.domain.usecase.DeletePrincipleUseCase
 import com.depromeet.team5.core.domain.usecase.GetPrincipleGroupUseCase
@@ -30,6 +32,7 @@ class PrincipleDetailViewModel @Inject constructor(
     private val getPrincipleUseCase: GetPrincipleGroupUseCase,
     private val deletePrincipleGroupUseCase: DeletePrincipleGroupUseCase,
     private val deletePrincipleUseCase: DeletePrincipleUseCase,
+    private val createPrincipleGroupUseCase: CreatePrincipleGroupUseCase,
     private val savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
@@ -91,6 +94,22 @@ class PrincipleDetailViewModel @Inject constructor(
                         _eventFlow.emit(PrincipleDetailEvent.ShowErrorToast(it))
                     }
                 )
+        }
+    }
+
+    fun createPrincipleGroup(orderType: OrderType) {
+        viewModelScope.launch {
+            (uiStateFlow.value as HedgeUiState.Success<MyPrincipleGroup>).run {
+                createPrincipleGroupUseCase(data.copy(orderType = orderType))
+                    .baseCollect(
+                        onSuccess = {
+                            _eventFlow.emit(PrincipleDetailEvent.FinishAndShowToast)
+                        },
+                        onError = {
+                            _eventFlow.emit(PrincipleDetailEvent.ShowErrorToast(it))
+                        }
+                    )
+            }
         }
     }
 }

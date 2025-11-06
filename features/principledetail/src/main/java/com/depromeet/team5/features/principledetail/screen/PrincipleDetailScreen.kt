@@ -54,6 +54,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.DpOffset
@@ -81,8 +82,10 @@ fun PrincipleDetailRoute(
     modifier: Modifier = Modifier,
     viewModel: PrincipleDetailViewModel = hiltViewModel(),
     onBackPressed: () -> Unit,
-    onShowErrorToast: (Throwable) -> Unit
+    onShowErrorToast: (Throwable) -> Unit,
+    onShowToast: (String) -> Unit
 ) {
+    val context = LocalContext.current
     val uiState by viewModel.uiStateFlow.collectAsStateWithLifecycle()
 
     var isShowModalBottomSheet by remember { mutableStateOf(false) }
@@ -96,6 +99,11 @@ fun PrincipleDetailRoute(
 
                 is PrincipleDetailEvent.ShowErrorToast -> {
                     onShowErrorToast(event.throwable)
+                }
+
+                is PrincipleDetailEvent.FinishAndShowToast -> {
+                    onShowToast(context.getString(R.string.principle_detail_create_principle_group_toast_message))
+                    onBackPressed()
                 }
 
                 else -> {}
@@ -137,7 +145,7 @@ fun PrincipleDetailRoute(
                 isShowModalBottomSheet = false
             },
             onClickedButton = { orderType ->
-                //todo 내 원칙에 추천 원칙 추가하기
+                viewModel.createPrincipleGroup(orderType)
                 isShowModalBottomSheet = false
             }
         )

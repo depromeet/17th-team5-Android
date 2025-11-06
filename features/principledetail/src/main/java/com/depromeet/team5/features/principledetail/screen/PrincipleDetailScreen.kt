@@ -1,10 +1,16 @@
 package com.depromeet.team5.features.principledetail.screen
 
+import androidx.compose.animation.core.AnimationState
+import androidx.compose.animation.core.DecayAnimationSpec
 import androidx.compose.animation.core.TweenSpec
+import androidx.compose.animation.core.animateDecay
 import androidx.compose.animation.core.tween
+import androidx.compose.animation.rememberSplineBasedDecay
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.FlingBehavior
+import androidx.compose.foundation.gestures.ScrollScope
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -66,6 +72,7 @@ import com.depromeet.team5.core.domain.monad.HedgeUiState
 import com.depromeet.team5.core.navigation.PrincipleType
 import com.depromeet.team5.features.principledetail.R
 import com.depromeet.team5.features.principledetail.event.PrincipleDetailEvent
+import kotlin.math.abs
 
 
 @Composable
@@ -212,7 +219,8 @@ private fun PrincipleDetailScreen(
 
                     LazyColumn(
                         modifier = Modifier
-                            .fillMaxWidth()
+                            .fillMaxWidth(),
+                        flingBehavior = rememberSlowFlingBehavior(0.5f)
                     ) {
                         item {
                             Spacer(modifier.size(10.dp))
@@ -735,6 +743,41 @@ private fun LoadingProgressbar() {
             strokeCap = StrokeCap.Round,
             trackColor = HedgeColor.Brand.Primary.copy(alpha = 0.1f),
         )
+    }
+}
+
+@Composable
+fun rememberSlowFlingBehavior(slowdownFactor: Float = 0.5f): FlingBehavior {
+    val flingDecay: DecayAnimationSpec<Float> = rememberSplineBasedDecay()
+
+    return remember(flingDecay, slowdownFactor) {
+        object : FlingBehavior {
+            override suspend fun ScrollScope.performFling(initialVelocity: Float): Float {
+                if (abs(initialVelocity) < 1f) {
+                    return initialVelocity
+                }
+
+                var velocityLeft = initialVelocity
+                var lastValue = 0f
+
+                AnimationState(
+                    initialValue = 0f,
+                    initialVelocity = initialVelocity * slowdownFactor,
+                ).animateDecay(flingDecay) {
+                    val delta = value - lastValue
+                    lastValue = value
+                    val consumed = scrollBy(delta)
+
+                    if (abs(delta - consumed) > 0.5f) {
+                        this.cancelAnimation()
+                    }
+
+                    velocityLeft = this.velocity
+                }
+
+                return velocityLeft
+            }
+        }
     }
 }
 

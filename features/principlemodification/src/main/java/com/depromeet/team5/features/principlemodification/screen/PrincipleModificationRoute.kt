@@ -2,6 +2,8 @@ package com.depromeet.team5.features.principlemodification.screen
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -17,6 +19,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -75,7 +78,8 @@ private fun PrincipleModificationScreen(
                 onClickedConfirmButton = {
                     onShowToast()
                     onBackClicked()
-                }
+                },
+                onBackClicked = onBackClicked
             )
         }
 
@@ -97,7 +101,8 @@ private fun PrincipleModificationScreen(
 private fun PrincipleModificationContent(
     principleModification: PrincipleModification,
     modifier: Modifier = Modifier,
-    onClickedConfirmButton: () -> Unit
+    onClickedConfirmButton: () -> Unit,
+    onBackClicked: () -> Unit
 ) {
     var text by rememberSaveable {
         mutableStateOf(principleModification.description)
@@ -110,7 +115,8 @@ private fun PrincipleModificationContent(
     ) {
         Topbar(
             title = principleModification.groupName,
-            onClickedButton = onClickedConfirmButton
+            onClickedButton = onClickedConfirmButton,
+            onBackClicked = onBackClicked
         )
 
         Spacer(
@@ -153,7 +159,8 @@ private fun PrincipleModificationContent(
 private fun Topbar(
     title: String,
     modifier: Modifier = Modifier,
-    onClickedButton: () -> Unit
+    onClickedButton: () -> Unit,
+    onBackClicked: () -> Unit = {},
 ) {
     Row(
         modifier = Modifier
@@ -165,7 +172,14 @@ private fun Topbar(
         Image(
             modifier = Modifier
                 .padding(8.dp)
-                .size(24.dp),
+                .size(24.dp)
+                .clickable(
+                    enabled = true,
+                    indication = null,
+                    interactionSource = remember { MutableInteractionSource() }
+                ) {
+                    onBackClicked()
+                },
             imageVector = HedgeIcon.ArrowLeftThick,
             contentDescription = null,
             colorFilter = ColorFilter.tint(HedgeColor.Text.Primary)
@@ -200,7 +214,7 @@ private fun PrincipleModificationScreenPreview(
             PrincipleModification(
                 principleId = 1,
                 groupName = "이건 좀 지키자 제발 이건 좀 지키자",
-                principle = "",
+                principle = "종목 선택 시 최근 매출액 확인!!!!",
                 description = ""
             )
         ),

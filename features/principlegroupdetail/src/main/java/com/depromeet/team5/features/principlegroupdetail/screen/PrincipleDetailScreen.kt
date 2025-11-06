@@ -84,7 +84,8 @@ fun PrincipleDetailRoute(
     viewModel: PrincipleDetailViewModel = hiltViewModel(),
     onBackPressed: () -> Unit,
     onShowErrorToast: (Throwable) -> Unit,
-    onShowToast: (String) -> Unit
+    onShowToast: (String) -> Unit,
+    onNavigatedPrincipleModification: (Int, String, String, String) -> Unit
 ) {
     val context = LocalContext.current
     val uiState by viewModel.uiState.stateFlow.collectAsStateWithLifecycle()
@@ -121,10 +122,16 @@ fun PrincipleDetailRoute(
             //todo 추후에 수정 기능 연결하기
         },
         onClickedRemoveButton = { groupId ->
+            //todo dialog가 뜨고 확인 누를 시 삭제 이벤트 진행하도록 추후에 변경하기
             viewModel.deletePrincipleGroup(groupId)
         },
-        onClickedItemModifyButton = { principleId ->
-
+        onClickedItemModifyButton = { principleId, groupName, principle, description ->
+            onNavigatedPrincipleModification(
+                principleId,
+                groupName,
+                principle,
+                description
+            )
         },
         onClickedItemRemoveButton = { principleId ->
             viewModel.deletePrinciple(principleId)
@@ -159,7 +166,7 @@ private fun PrincipleDetailScreen(
     modifier: Modifier = Modifier,
     onClickedModifyButton: (Int) -> Unit,
     onClickedRemoveButton: (Int) -> Unit,
-    onClickedItemModifyButton: (Int) -> Unit,
+    onClickedItemModifyButton: (Int, String, String, String) -> Unit,
     onClickedItemRemoveButton: (Int) -> Unit,
     onClickedConfirmButton: () -> Unit,
     onBackPressed: () -> Unit,
@@ -352,7 +359,7 @@ fun PrincipleItem(
     index: Int,
     principle: MyPrinciple,
     modifier: Modifier = Modifier,
-    onClickedItemModifyButton: (Int) -> Unit,
+    onClickedItemModifyButton: (MyPrinciple) -> Unit,
     onClickedItemRemoveButton: (Int) -> Unit,
 ) {
     var isExpanded by remember { mutableStateOf(false) }
@@ -407,7 +414,7 @@ fun PrincipleItem(
             ModifyAndRemoveDropdown(
                 expand = isExpanded,
                 onClickedModifyButton = {
-                    onClickedItemModifyButton(principle.id)
+                    onClickedItemModifyButton(principle)
                     isExpanded = false
                 },
                 onClickedRemoveButton = {
@@ -506,7 +513,7 @@ private fun Topbar(
     modifier: Modifier = Modifier,
     onBackPressed: () -> Unit,
     onClickedModifyButton: () -> Unit,
-    onShowDeleteModal: () -> Unit
+    onClickedRemoveButton: () -> Unit
 ) {
     var isExpanded by remember { mutableStateOf(false) }
 
@@ -556,7 +563,7 @@ private fun Topbar(
                             isExpanded = false
                         },
                         onClickedRemoveButton = {
-                            onShowDeleteModal()
+                            onClickedRemoveButton()
                             isExpanded = false
                         },
                         onDismissRequest = { isExpanded = false }
@@ -864,14 +871,13 @@ fun PrincipleDetailScreenPreview() {
         principleType = PrincipleType.RECOMMENDED,
         onClickedModifyButton = {},
         onClickedRemoveButton = {},
-        onClickedItemModifyButton = {},
+        onClickedItemModifyButton = { _, _, _, _ -> },
         onClickedItemRemoveButton = {},
         onClickedConfirmButton = {},
         onBackPressed = {},
         onShowErrorToast = {}
     )
 }
-
 
 @Preview(showBackground = true)
 @Composable

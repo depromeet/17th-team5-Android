@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="confirm">완료</string>
+    <string name="principle_modification_toast_message">원칙이 수정되었습니다</string>
 </resources>

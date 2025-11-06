@@ -1,4 +1,4 @@
-package com.depromeet.team5.features.principlemodification
+package com.depromeet.team5.features.principlemodification.screen
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.text.BasicTextField
@@ -21,36 +22,96 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.depromeet.team5.core.designsystem.component.HedgeButton
 import com.depromeet.team5.core.designsystem.foundation.HedgeColor
 import com.depromeet.team5.core.designsystem.foundation.HedgeIcon
 import com.depromeet.team5.core.designsystem.foundation.HedgeTypography
+import com.depromeet.team5.core.domain.monad.HedgeUiState
+import com.depromeet.team5.features.principlemodification.R
+import com.depromeet.team5.features.principlemodification.navigation.PrincipleModification
 
 
 @Composable
 fun PrincipleModificationRoute(
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    viewModel: PrincipleModificationViewModel = hiltViewModel(),
+    onBackClicked: () -> Unit = {},
+    onShowErrorToast: (Throwable) -> Unit,
+    onShowToast: (String) -> Unit
 ) {
+    val context = LocalContext.current
+    val uiState by viewModel.uiStateFlow.collectAsStateWithLifecycle()
 
+    PrincipleModificationScreen(
+        uiState = uiState,
+        modifier = modifier,
+        onBackClicked = onBackClicked,
+        onShowErrorToast = onShowErrorToast,
+        onShowToast = {
+            onShowToast(context.getString(R.string.principle_modification_toast_message))
+        }
+    )
 }
 
 @Composable
 private fun PrincipleModificationScreen(
-    modifier: Modifier = Modifier
+    uiState: HedgeUiState<PrincipleModification>,
+    modifier: Modifier = Modifier,
+    onBackClicked: () -> Unit = {},
+    onShowErrorToast: (Throwable) -> Unit,
+    onShowToast: () -> Unit
 ) {
-    var text by rememberSaveable { mutableStateOf("상승장에서 눌림목 나오면 지지선 나올 때까지 기다렸다가 분할 매수하자. 몰빵은 절대 금지다!!!!!") }
+    when (uiState) {
+        is HedgeUiState.Success<PrincipleModification> -> {
+            PrincipleModificationContent(
+                modifier = modifier.imePadding(),
+                principleModification = uiState.data,
+                onClickedConfirmButton = {
+                    onShowToast()
+                    onBackClicked()
+                }
+            )
+        }
+
+        is HedgeUiState.Loading -> {
+
+        }
+
+        is HedgeUiState.Error -> {
+            onBackClicked()
+
+            uiState.throwable?.let {
+                onShowErrorToast(it)
+            }
+        }
+    }
+}
+
+@Composable
+private fun PrincipleModificationContent(
+    principleModification: PrincipleModification,
+    modifier: Modifier = Modifier,
+    onClickedConfirmButton: () -> Unit
+) {
+    var text by rememberSaveable {
+        mutableStateOf(principleModification.description)
+    }
 
     Column(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxSize()
             .background(HedgeColor.WHITE)
     ) {
         Topbar(
-            title = ""
-        ) { }
+            title = principleModification.groupName,
+            onClickedButton = onClickedConfirmButton
+        )
 
         Spacer(
             modifier = Modifier
@@ -62,7 +123,7 @@ private fun PrincipleModificationScreen(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 20.dp, vertical = 10.dp),
-            text = "종목 선택 시 최근 매출액 확인!!!!",
+            text = principleModification.principle,
             style = HedgeTypography.Headline1.SemiBold,
             color = HedgeColor.Text.Title
         )
@@ -134,7 +195,19 @@ private fun Topbar(
 private fun PrincipleModificationScreenPreview(
     modifier: Modifier = Modifier
 ) {
-    PrincipleModificationScreen()
+    PrincipleModificationScreen(
+        uiState = HedgeUiState.Success(
+            PrincipleModification(
+                principleId = 1,
+                groupName = "이건 좀 지키자 제발 이건 좀 지키자",
+                principle = "",
+                description = ""
+            )
+        ),
+        modifier = modifier,
+        onShowErrorToast = {},
+        onShowToast = {}
+    )
 }
 
 @Preview

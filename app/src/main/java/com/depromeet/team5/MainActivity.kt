@@ -33,6 +33,7 @@ class MainActivity : ComponentActivity() {
 
                 val hedgeErrorToastState = remember { HedgeToastState() }
                 val hedgeRegularToastState = remember { HedgeToastState() }
+                val hedgeNoIconToastState = remember { HedgeToastState() }
 
                 HedgeNavHost(
                     onShowErrorToast = { throwable ->
@@ -50,6 +51,13 @@ class MainActivity : ComponentActivity() {
                                 text = message
                             )
                         }
+                    },
+                    onShowNoIconToast = { message ->
+                        scope.launch {
+                            hedgeNoIconToastState.show(
+                                text = message
+                            )
+                        }
                     }
                 )
 
@@ -62,6 +70,12 @@ class MainActivity : ComponentActivity() {
                     backgroundColor = HedgeColor.Text.Secondary,
                     textColor = HedgeColor.Neutral.BackgroundSecondary,
                     icon = HedgeIcon.ToastCheck
+                )
+
+                HedgeToast(
+                    hedgeToastState = hedgeNoIconToastState,
+                    backgroundColor = HedgeColor.Text.Secondary,
+                    textColor = HedgeColor.Neutral.BackgroundSecondary,
                 )
             }
         }

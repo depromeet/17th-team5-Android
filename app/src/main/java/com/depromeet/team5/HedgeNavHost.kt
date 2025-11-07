@@ -22,7 +22,8 @@ import com.depromeet.team5.features.search.searchScreen
 fun HedgeNavHost(
     modifier: Modifier = Modifier,
     onShowErrorToast: (Throwable) -> Unit,
-    onShowToast: (String) -> Unit
+    onShowToast: (String) -> Unit,
+    onShowNoIconToast: (String) -> Unit
 ) {
     val navController = rememberNavController()
 
@@ -71,7 +72,8 @@ fun HedgeNavHost(
         principleModification(
             onBackPressed = navController::popBackStack,
             onShowErrorToast = onShowErrorToast,
-            onShowToast = onShowToast
+            onShowToast = onShowToast,
+            onShowNoIconToast = onShowNoIconToast
         )
 
         reasonGraph(

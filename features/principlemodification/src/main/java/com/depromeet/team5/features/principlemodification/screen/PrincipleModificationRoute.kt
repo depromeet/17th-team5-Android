@@ -63,7 +63,8 @@ fun PrincipleModificationRoute(
     viewModel: PrincipleModificationViewModel = hiltViewModel(),
     onBackClicked: () -> Unit = {},
     onShowErrorToast: (Throwable) -> Unit,
-    onShowToast: (String) -> Unit
+    onShowToast: (String) -> Unit,
+    onShowNoIconToast: (String) -> Unit,
 ) {
     val context = LocalContext.current
     val uiState by viewModel.uiStateFlow.collectAsStateWithLifecycle()
@@ -75,6 +76,9 @@ fun PrincipleModificationRoute(
         onShowErrorToast = onShowErrorToast,
         onShowToast = {
             onShowToast(context.getString(R.string.principle_modification_toast_message))
+        },
+        onShowNoIconToast = { message ->
+            onShowNoIconToast(message)
         }
     )
 }
@@ -85,7 +89,8 @@ private fun PrincipleModificationScreen(
     modifier: Modifier = Modifier,
     onBackClicked: () -> Unit = {},
     onShowErrorToast: (Throwable) -> Unit,
-    onShowToast: () -> Unit
+    onShowToast: () -> Unit,
+    onShowNoIconToast: (String) -> Unit
 ) {
     when (uiState) {
         is HedgeUiState.Success<PrincipleModification> -> {
@@ -96,7 +101,8 @@ private fun PrincipleModificationScreen(
                     onShowToast()
                     onBackClicked()
                 },
-                onBackClicked = onBackClicked
+                onBackClicked = onBackClicked,
+                onShowNoIconToast = onShowNoIconToast
             )
         }
 
@@ -117,12 +123,15 @@ private fun PrincipleModificationContent(
     principleModification: PrincipleModification,
     modifier: Modifier = Modifier,
     onClickedConfirmButton: () -> Unit,
-    onBackClicked: () -> Unit
+    onBackClicked: () -> Unit,
+    onShowNoIconToast: (String) -> Unit
 ) {
+    val context = LocalContext.current
+
     var principle by remember {
         mutableStateOf(
             TextFieldState(
-                initialText = principleModification.principle
+                initialText = principleModification.principle,
             )
         )
     }
@@ -158,7 +167,27 @@ private fun PrincipleModificationContent(
             state = principle,
             textStyle = HedgeTypography.Headline1.SemiBold.copy(
                 color = HedgeColor.Text.Title
-            )
+            ),
+            decorator = { innerTextField ->
+                if (principle.text.isEmpty()) {
+                    Text(
+                        text = stringResource(R.string.principle_modification_principle_hint),
+                        style = HedgeTypography.Headline1.SemiBold,
+                        color = HedgeColor.Text.Assistive
+                    )
+                }
+
+                innerTextField()
+            },
+            inputTransformation = {
+                val newLength = this.length
+                val originalLength = this.originalText.length
+
+                if (newLength > 40 && newLength > originalLength) {
+                    onShowNoIconToast(context.getString(R.string.principle_modification_limit_group_name))
+                    revertAllChanges()
+                }
+            }
         )
 
         HorizontalDivider(
@@ -175,7 +204,18 @@ private fun PrincipleModificationContent(
             state = content,
             textStyle = HedgeTypography.Body3.Regular.copy(
                 color = HedgeColor.Text.Title
-            )
+            ),
+            decorator = { innerTextField ->
+                if (content.text.isEmpty()) {
+                    Text(
+                        text = stringResource(R.string.principle_modification_content_hint),
+                        style = HedgeTypography.Body3.Regular,
+                        color = HedgeColor.Text.Assistive
+                    )
+                }
+
+                innerTextField()
+            }
         )
     }
 }
@@ -288,13 +328,14 @@ private fun PrincipleModificationScreenPreview(
             PrincipleModification(
                 principleId = 1,
                 groupName = "이건 좀 지키자 제발 이건 좀 지키자",
-                principle = "종목 선택 시 최근 매출액 확인!!!!",
+                principle = "",
                 description = ""
             )
         ),
         modifier = modifier,
         onShowErrorToast = {},
-        onShowToast = {}
+        onShowToast = {},
+        onShowNoIconToast = {}
     )
 }
 

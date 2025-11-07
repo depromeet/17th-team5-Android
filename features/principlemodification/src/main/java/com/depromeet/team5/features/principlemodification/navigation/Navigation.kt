@@ -41,14 +41,16 @@ fun NavController.navigateToPrincipleModification(
 fun NavGraphBuilder.principleModification(
     onBackPressed: () -> Unit,
     onShowErrorToast: (Throwable) -> Unit,
-    onShowToast: (String) -> Unit
+    onShowToast: (String) -> Unit,
+    onShowNoIconToast: (String) -> Unit
 ) {
     composable<PrincipleModification> { backStackEntry ->
         PrincipleModificationRoute(
             modifier = Modifier.windowInsetsPadding(WindowInsets.systemBars),
             onBackClicked = onBackPressed,
             onShowErrorToast = onShowErrorToast,
-            onShowToast = onShowToast
+            onShowToast = onShowToast,
+            onShowNoIconToast = onShowNoIconToast
         )
     }
 }

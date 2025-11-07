@@ -1,6 +1,7 @@
 package com.depromeet.team5.features.principlemodification.screen
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -13,22 +14,37 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.text.input.InputTransformation
+import androidx.compose.foundation.text.input.KeyboardActionHandler
+import androidx.compose.foundation.text.input.OutputTransformation
+import androidx.compose.foundation.text.input.TextFieldDecorator
+import androidx.compose.foundation.text.input.TextFieldLineLimits
 import androidx.compose.foundation.text.input.TextFieldState
+import androidx.compose.foundation.text.selection.LocalTextSelectionColors
+import androidx.compose.foundation.text.selection.TextSelectionColors
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.TextLayoutResult
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -135,15 +151,14 @@ private fun PrincipleModificationContent(
                 .height(12.dp)
         )
 
-        BasicTextField(
+        DisableMarkerBasicTextField(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 20.dp, vertical = 10.dp),
             state = principle,
             textStyle = HedgeTypography.Headline1.SemiBold.copy(
                 color = HedgeColor.Text.Title
-            ),
-            cursorBrush = SolidColor(HedgeColor.Brand.Darken)
+            )
         )
 
         HorizontalDivider(
@@ -153,15 +168,14 @@ private fun PrincipleModificationContent(
             color = HedgeColor.Neutral.BackgroundSecondary
         )
 
-        BasicTextField(
+        DisableMarkerBasicTextField(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(horizontal = 20.dp, vertical = 24.dp),
             state = content,
             textStyle = HedgeTypography.Body3.Regular.copy(
                 color = HedgeColor.Text.Title
-            ),
-            cursorBrush = SolidColor(HedgeColor.Brand.Darken)
+            )
         )
     }
 }
@@ -211,6 +225,55 @@ private fun Topbar(
             imageVector = null,
             size = HedgeButton.Text.Size.Large,
             onClick = onClickedButton
+        )
+    }
+}
+
+@Composable
+fun DisableMarkerBasicTextField(
+    state: TextFieldState,
+    modifier: Modifier = Modifier,
+    enabled: Boolean = true,
+    readOnly: Boolean = false,
+    inputTransformation: InputTransformation? = null,
+    textStyle: TextStyle = TextStyle.Default,
+    keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
+    onKeyboardAction: KeyboardActionHandler? = null,
+    lineLimits: TextFieldLineLimits = TextFieldLineLimits.Default,
+    onTextLayout: (Density.(getResult: () -> TextLayoutResult?) -> Unit)? = null,
+    interactionSource: MutableInteractionSource? = null,
+    cursorBrush: Brush = SolidColor(HedgeColor.Brand.Darken),
+    outputTransformation: OutputTransformation? = null,
+    decorator: TextFieldDecorator? = null,
+    scrollState: ScrollState = rememberScrollState(),
+) {
+
+    val transparentSelectionColors = remember {
+        TextSelectionColors(
+            handleColor = Color.Transparent,
+            backgroundColor = Color.Transparent
+        )
+    }
+
+    CompositionLocalProvider(
+        LocalTextSelectionColors provides transparentSelectionColors
+    ) {
+        BasicTextField(
+            state = state,
+            modifier = modifier,
+            enabled = enabled,
+            readOnly = readOnly,
+            inputTransformation = inputTransformation,
+            textStyle = textStyle,
+            keyboardOptions = keyboardOptions,
+            onKeyboardAction = onKeyboardAction,
+            lineLimits = lineLimits,
+            onTextLayout = onTextLayout,
+            interactionSource = interactionSource,
+            cursorBrush = cursorBrush,
+            outputTransformation = outputTransformation,
+            decorator = decorator,
+            scrollState = scrollState
         )
     }
 }

@@ -59,7 +59,8 @@ data class RetrospectionSectionState(
 data class RetrospectionState(
     val id: Int,
     val dayText: String,
-    val priceVolumeText: String,
+    val price: Int,
+    val volume: Int,
     val tradeLabelRes: Int,
     val tradeColor: Color,
     val orderDateText: String,
@@ -82,7 +83,7 @@ class HomeViewModel @Inject constructor(
             .stateIn(
                 scope = viewModelScope,
                 started = SharingStarted.WhileSubscribed(5_000),
-                initialValue = HedgeUiState.Loading(UserStatsInfo(0, 0, 0, 0, 0))
+                initialValue = HedgeUiState.Loading(UserStatsInfo.EMPTY)
             )
 
     val retrospectionListUiState: StateFlow<HedgeUiState<List<RetrospectionSymbolState>>> =
@@ -104,14 +105,12 @@ class HomeViewModel @Inject constructor(
                                 RetrospectionSectionState(
                                     title = title,
                                     items = group.map { r ->
-                                        val isBuy = r.orderType == "BUY"
+                                        val isBuy = r.orderType == OrderType.BUY.name
                                         RetrospectionState(
                                             id = r.id,
                                             dayText = r.retrospectionCreatedAt.toMonthDayOrRaw(),
-                                            priceVolumeText = "%,d원 • %d주".format(
-                                                r.price,
-                                                r.volume
-                                            ),
+                                            price = r.price,
+                                            volume = r.volume,
                                             tradeLabelRes = if (isBuy)
                                                 R.string.home_tab_retrospection_trade_buy
                                             else
@@ -158,8 +157,7 @@ class HomeViewModel @Inject constructor(
 
     val principleGroupsUiState: StateFlow<HedgeUiState<List<MyPrincipleGroup>>> =
         _principleOrderType
-            .map { it.name }
-            .flatMapLatest { order -> getPrincipleGroupsUseCase(order) }
+            .flatMapLatest { order -> getPrincipleGroupsUseCase(order.name) }
             .asUiState()
             .stateIn(
                 scope = viewModelScope,

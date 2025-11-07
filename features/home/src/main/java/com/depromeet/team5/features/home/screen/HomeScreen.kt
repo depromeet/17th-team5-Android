@@ -78,7 +78,7 @@ fun HomeRoute(
                 requestViewModel.request.copy(orderType = OrderType.SELL)
             onSellClick()
         },
-        modifier = Modifier.windowInsetsPadding(WindowInsets.systemBars)
+        modifier = modifier.windowInsetsPadding(WindowInsets.systemBars)
     )
 }
 

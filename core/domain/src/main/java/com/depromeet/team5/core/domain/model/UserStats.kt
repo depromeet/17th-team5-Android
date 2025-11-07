@@ -12,4 +12,14 @@ data class UserStatsInfo(
     val silver: Int,
     val gold: Int,
     val percentage: Int,
-)
+){
+    companion object {
+        val EMPTY = UserStatsInfo(
+            hedge = 0,
+            bronze = 0,
+            silver = 0,
+            gold = 0,
+            percentage = 0
+        )
+    }
+}

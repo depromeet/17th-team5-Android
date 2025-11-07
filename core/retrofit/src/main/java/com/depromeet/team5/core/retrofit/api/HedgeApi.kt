@@ -30,13 +30,13 @@ interface HedgeApi {
 
     @POST("api/v1/reports/{retrospectionId}/feedback")
     suspend fun createFeedback(
-        @Path("retrospectionId") retrospectionId: Int,
+        @Path("retrospectionId") retrospectionId: Int
     ): FeedbackResponse
 
     @GET("api/v1/principle-groups")
     suspend fun getPrincipleGroups(
         @Query("type")
-        orderType: String,
+        orderType: String
     ): MyPrincipleGroupsResponse
 
     @Multipart

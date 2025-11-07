@@ -29,6 +29,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.depromeet.team5.core.designsystem.foundation.HedgeColor
 import com.depromeet.team5.core.designsystem.foundation.HedgeTypography
+import com.depromeet.team5.features.home.R
 import com.depromeet.team5.features.home.screen.RetrospectionSectionState
 import com.depromeet.team5.features.home.screen.RetrospectionState
 import com.depromeet.team5.features.home.screen.RetrospectionSymbolState
@@ -175,7 +176,7 @@ private fun RetrospectionRow(
             .padding(bottom = 20.dp)
     ) {
         Text(
-            text = item.priceVolumeText,
+            text = stringResource(R.string.home_tab_retrospection_price_volume, item.price, item.volume),
             style = HedgeTypography.Headline2.SemiBold,
             color = HedgeColor.Text.Primary
         )

@@ -269,7 +269,8 @@ private fun HomeSectionPreview() {
                 RetrospectionState(
                     id = 1,
                     dayText = "9월 15일",
-                    priceVolumeText = "85,000원 • 8주",
+                    price = 85000,
+                    volume = 8,
                     tradeLabelRes = R.string.home_tab_retrospection_trade_sell,
                     tradeColor = BLUE_500,
                     orderDateText = "2025.09.14"
@@ -277,7 +278,8 @@ private fun HomeSectionPreview() {
                 RetrospectionState(
                     id = 2,
                     dayText = "9월 15일",
-                    priceVolumeText = "85,000원 • 8주",
+                    price = 85000,
+                    volume = 8,
                     tradeLabelRes = R.string.home_tab_retrospection_trade_buy,
                     tradeColor = RED_500,
                     orderDateText = "2025.09.06"
@@ -285,7 +287,8 @@ private fun HomeSectionPreview() {
                 RetrospectionState(
                     id = 8,
                     dayText = "9월 8일",
-                    priceVolumeText = "85,000원 • 8주",
+                    price = 85000,
+                    volume = 8,
                     tradeLabelRes = R.string.home_tab_retrospection_trade_buy,
                     tradeColor = RED_500,
                     orderDateText = "2025.09.06"
@@ -298,7 +301,8 @@ private fun HomeSectionPreview() {
                 RetrospectionState(
                     id = 3,
                     dayText = "8월 14일",
-                    priceVolumeText = "85,000원 • 8주",
+                    price = 85000,
+                    volume = 8,
                     tradeLabelRes = R.string.home_tab_retrospection_trade_buy,
                     tradeColor = RED_500,
                     orderDateText = "2025.08.12"

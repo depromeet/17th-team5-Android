@@ -34,4 +34,10 @@ internal class HedgeRepositoryImpl @Inject constructor(
     override fun getPrincipleGroups(orderType: String): Flow<List<MyPrincipleGroup>> = flow {
         emit(remoteDataSource.getPrinciples(orderType).toDomain())
     }
+
+    override suspend fun uploadImageUri(
+        domain: String,
+        uri: String,
+        fileName: String?
+    ): Int = remoteDataSource.uploadImageUri(domain, uri, fileName)
 }

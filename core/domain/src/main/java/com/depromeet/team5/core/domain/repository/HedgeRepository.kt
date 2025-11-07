@@ -19,4 +19,10 @@ interface HedgeRepository {
     ): Flow<Feedback>
 
     fun getPrincipleGroups(orderType: String): Flow<List<MyPrincipleGroup>>
+
+    suspend fun uploadImageUri(
+        domain: String,
+        uri: String,
+        fileName: String? = null
+    ): Int
 }

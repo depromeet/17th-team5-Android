@@ -1,7 +1,6 @@
 package com.depromeet.team5.core.domain.request
 
 import com.depromeet.team5.core.domain.model.OrderType
-import com.depromeet.team5.core.domain.model.PrincipleChecks
 
 data class CreateRetrospectionRequest(
     val symbol: String,
@@ -13,7 +12,7 @@ data class CreateRetrospectionRequest(
     val price: Int,
     val volume: Int,
     val returnRate: Double?,
-    val principleChecks: List<PrincipleChecks>,
+    val principleChecks: List<PrincipleCheckRequest>,
 ) {
 
     companion object {
@@ -32,3 +31,11 @@ data class CreateRetrospectionRequest(
         )
     }
 }
+
+data class PrincipleCheckRequest(
+    val principleId: Int,
+    val status: String,
+    val reason: String,
+    val imageIds: List<Int>,
+    val links: List<String>,
+)

@@ -37,10 +37,8 @@ class AiFeedbackViewModel @Inject constructor(
     ) {
         viewModelScope.launch {
             createRetrospectionUseCase(
-                request.copy(
-                    orderDate = formatDate(request.orderDate),
-                    principleChecks = myPrincipleGroup.principles.map { it.principleChecks }
-                ),
+                request = request.copy(orderDate = formatDate(request.orderDate)),
+                principles = myPrincipleGroup.principles
             )
                 .flatMapConcat { createFeedbackUseCase(it.id) }
                 .map {

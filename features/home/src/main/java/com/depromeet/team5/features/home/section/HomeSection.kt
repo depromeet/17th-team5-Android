@@ -50,6 +50,7 @@ fun HomeSection(
     userStatsUiState: HedgeUiState<UserStatsInfo>,
     retrospectionListUiState: HedgeUiState<List<RetrospectionSymbolState>>,
     onDashBoardClick: (Boolean) -> Unit,
+    onShowErrorToast: (Throwable) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Column(
@@ -213,7 +214,11 @@ fun HomeSection(
 
             is HedgeUiState.Loading -> {}
 
-            is HedgeUiState.Error -> {}
+            is HedgeUiState.Error -> {
+                userStats.throwable?.let {
+                    onShowErrorToast(it)
+                }
+            }
 
         }
         Spacer(modifier = Modifier.height(16.dp))
@@ -253,7 +258,9 @@ fun HomeSection(
             }
 
             is HedgeUiState.Error -> {
-
+                uiState.throwable?.let {
+                    onShowErrorToast(it)
+                }
             }
         }
     }
@@ -325,6 +332,7 @@ private fun HomeSectionPreview() {
     HomeSection(
         userStatsUiState = successStats,
         retrospectionListUiState = successList,
-        onDashBoardClick = {}
+        onDashBoardClick = {},
+        onShowErrorToast = {}
     )
 }

@@ -31,7 +31,8 @@ fun HedgeNavHost(
         homeScreen(
             navController = navController,
             onBuyClick = { navController.navigateToSearch() },
-            onSellClick = { navController.navigateToSearch() }
+            onSellClick = { navController.navigateToSearch() },
+            onShowErrorToast = onShowErrorToast
         )
 
         searchScreen(

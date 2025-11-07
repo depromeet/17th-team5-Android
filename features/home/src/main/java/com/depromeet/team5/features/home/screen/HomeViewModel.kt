@@ -169,18 +169,18 @@ class HomeViewModel @Inject constructor(
         if (_principleOrderType.value != type) _principleOrderType.value = type
     }
 
-    private val INPUT_DATE_FORMATTERS = listOf(
+    private val inputDateFormatters = listOf(
         DateTimeFormatter.ISO_LOCAL_DATE_TIME,
         DateTimeFormatter.ISO_LOCAL_DATE,
         DateTimeFormatter.ofPattern("yyyy.MM.dd", Locale.KOREA)
     )
 
-    private val OUT_YMD = DateTimeFormatter.ofPattern("yyyy.MM.dd", Locale.KOREA)
-    private val OUT_MD = DateTimeFormatter.ofPattern("M월 d일", Locale.KOREA)
-    private val OUT_YYM = DateTimeFormatter.ofPattern("yy년 M월", Locale.KOREA)
+    private val patternYMD = DateTimeFormatter.ofPattern("yyyy.MM.dd", Locale.KOREA)
+    private val patternMD = DateTimeFormatter.ofPattern("M월 d일", Locale.KOREA)
+    private val patternYYM = DateTimeFormatter.ofPattern("yy년 M월", Locale.KOREA)
 
     private fun String.flexLocalDateOrNull(): LocalDate? {
-        for (fmt in INPUT_DATE_FORMATTERS) {
+        for (fmt in inputDateFormatters) {
             val parsed = runCatching {
                 if (fmt == DateTimeFormatter.ISO_LOCAL_DATE_TIME) {
                     java.time.LocalDateTime.parse(this, fmt).toLocalDate()
@@ -194,10 +194,10 @@ class HomeViewModel @Inject constructor(
     }
 
     private fun String.toMonthDayOrRaw(): String =
-        this.flexLocalDateOrNull()?.format(OUT_MD) ?: this
+        this.flexLocalDateOrNull()?.format(patternMD) ?: this
 
     private fun String.toYMDOrRaw(): String =
-        this.flexLocalDateOrNull()?.format(OUT_YMD) ?: this
+        this.flexLocalDateOrNull()?.format(patternYMD) ?: this
 
     private fun LocalDate?.toSectionLabel(now: LocalDate = LocalDate.now()): String {
         val thisMonth = YearMonth.from(now)
@@ -205,7 +205,7 @@ class HomeViewModel @Inject constructor(
         return when (target) {
             thisMonth -> "이번달 회고"
             thisMonth.minusMonths(1) -> "지난달 회고"
-            else -> target.format(OUT_YYM) + " 회고"
+            else -> target.format(patternYYM) + " 회고"
         }
     }
 }

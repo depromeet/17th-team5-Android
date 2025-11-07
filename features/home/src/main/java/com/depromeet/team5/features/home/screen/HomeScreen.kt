@@ -47,6 +47,7 @@ import com.depromeet.team5.features.home.section.PrincipleSection
 fun HomeRoute(
     onBuyClick: () -> Unit,
     onSellClick: () -> Unit,
+    onShowErrorToast: (Throwable) -> Unit,
     modifier: Modifier = Modifier,
     requestViewModel: RequestViewModel = hiltViewModel(),
     homeViewModel: HomeViewModel = hiltViewModel(),
@@ -78,6 +79,7 @@ fun HomeRoute(
                 requestViewModel.request.copy(orderType = OrderType.SELL)
             onSellClick()
         },
+        onShowErrorToast = { onShowErrorToast(it) },
         modifier = modifier.windowInsetsPadding(WindowInsets.systemBars)
     )
 }
@@ -93,6 +95,7 @@ private fun HomeScreen(
     onChangePrincipleOrderType: (OrderType) -> Unit,
     onBuyClick: () -> Unit,
     onSellClick: () -> Unit,
+    onShowErrorToast: (Throwable) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     var fabChecked by rememberSaveable { mutableStateOf(false) }
@@ -143,7 +146,8 @@ private fun HomeScreen(
                 HomeTab.HOME -> HomeSection(
                     userStatsUiState = userStatsUiState,
                     retrospectionListUiState = retrospectionListUiState,
-                    onDashBoardClick = { isDashBoardVisible = it }
+                    onDashBoardClick = { isDashBoardVisible = it },
+                    onShowErrorToast = { onShowErrorToast(it) }
                 )
 
                 HomeTab.PRINCIPLE -> PrincipleSection(
@@ -151,7 +155,8 @@ private fun HomeScreen(
                     defaultsUiState = defaultsUiState,
                     selected = selectedOrderType,
                     onSelect = onChangePrincipleOrderType,
-                    principleGroupsUiState = principleGroupsUiState
+                    principleGroupsUiState = principleGroupsUiState,
+                    onShowErrorToast = { onShowErrorToast(it) }
                 )
             }
         }
@@ -181,6 +186,7 @@ private fun HomePreview() {
         principleGroupsUiState = HedgeUiState.Loading(emptyList()),
         onChangePrincipleOrderType = {},
         onBuyClick = {},
-        onSellClick = {}
+        onSellClick = {},
+        onShowErrorToast = {}
     )
 }

@@ -44,6 +44,7 @@ fun PrincipleSection(
     selected: OrderType,
     onSelect: (OrderType) -> Unit,
     principleGroupsUiState: HedgeUiState<List<MyPrincipleGroup>>,
+    onShowErrorToast: (Throwable) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Column(
@@ -76,7 +77,9 @@ fun PrincipleSection(
             }
 
             is HedgeUiState.Error -> {
-
+                recommendPrinciple.throwable?.let {
+                    onShowErrorToast(it)
+                }
             }
         }
         Spacer(Modifier.height(20.dp))
@@ -124,7 +127,9 @@ fun PrincipleSection(
             }
 
             is HedgeUiState.Error -> {
-
+                defaultPrinciple.throwable?.let {
+                    onShowErrorToast(it)
+                }
             }
         }
 
@@ -180,7 +185,9 @@ fun PrincipleSection(
             }
 
             is HedgeUiState.Error -> {
-
+                ui.throwable?.let {
+                    onShowErrorToast(it)
+                }
             }
         }
 
@@ -195,6 +202,7 @@ private fun PrincipleSectionPreview() {
         defaultsUiState = HedgeUiState.Loading(emptyList()),
         selected = OrderType.BUY,
         onSelect = {},
-        principleGroupsUiState = HedgeUiState.Loading(emptyList())
+        principleGroupsUiState = HedgeUiState.Loading(emptyList()),
+        onShowErrorToast = {}
     )
 }

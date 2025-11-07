@@ -15,7 +15,8 @@ object Home
 fun NavGraphBuilder.homeScreen(
     navController: NavController,
     onBuyClick: () -> Unit,
-    onSellClick: () -> Unit
+    onSellClick: () -> Unit,
+    onShowErrorToast: (Throwable) -> Unit
 ) {
     composable<Home> { backStackEntry ->
         val parentEntry = remember(backStackEntry) {
@@ -27,7 +28,8 @@ fun NavGraphBuilder.homeScreen(
         HomeRoute(
             onBuyClick = onBuyClick,
             onSellClick = onSellClick,
-            requestViewModel = sharedViewModel
+            requestViewModel = sharedViewModel,
+            onShowErrorToast = onShowErrorToast
         )
     }
 }

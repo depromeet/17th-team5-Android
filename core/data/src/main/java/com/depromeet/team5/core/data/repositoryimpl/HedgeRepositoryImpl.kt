@@ -21,9 +21,8 @@ internal class HedgeRepositoryImpl @Inject constructor(
         emit(remoteDataSource.search(query).toDomain())
     }
 
-    override fun createRetrospection(request: CreateRetrospectionRequest): Flow<Retrospection> = flow {
-        emit(remoteDataSource.createRetrospection(request.toData()).toDomain())
-    }
+    override suspend fun createRetrospection(request: CreateRetrospectionRequest): Retrospection =
+        remoteDataSource.createRetrospection(request.toData()).toDomain()
 
     override fun createFeedback(
         retrospectionId: Int
@@ -34,4 +33,10 @@ internal class HedgeRepositoryImpl @Inject constructor(
     override fun getPrincipleGroups(orderType: String): Flow<List<MyPrincipleGroup>> = flow {
         emit(remoteDataSource.getPrinciples(orderType).toDomain())
     }
+
+    override suspend fun uploadImageUri(
+        domain: String,
+        uri: String,
+        fileName: String?
+    ): Int = remoteDataSource.uploadImageUri(domain, uri, fileName)
 }

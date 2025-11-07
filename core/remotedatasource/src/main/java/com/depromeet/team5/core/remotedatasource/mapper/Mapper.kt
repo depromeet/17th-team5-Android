@@ -5,9 +5,7 @@ import com.depromeet.team5.core.data.request.PrincipleCheckRequestData
 import com.depromeet.team5.core.remotedatasource.request.CreateRetrospectionRequestRemoteData
 import com.depromeet.team5.core.remotedatasource.request.PrincipleCheckRequestRemoteData
 
-fun CreateRetrospectionRequestData.toRemoteData(
-    principleChecks: List<PrincipleCheckRequestRemoteData>,
-) = CreateRetrospectionRequestRemoteData(
+fun CreateRetrospectionRequestData.toRemoteData() = CreateRetrospectionRequestRemoteData(
     symbol = symbol,
     market = market,
     currency = currency,
@@ -16,15 +14,13 @@ fun CreateRetrospectionRequestData.toRemoteData(
     price = price,
     volume = volume,
     returnRate = returnRate,
-    principleChecks = principleChecks,
+    principleChecks = principleChecks.map { it.toRemoteData() },
 )
 
-fun PrincipleCheckRequestData.toRemoteData(
-    imageIds: List<Int>,
-) = PrincipleCheckRequestRemoteData(
+fun PrincipleCheckRequestData.toRemoteData() = PrincipleCheckRequestRemoteData(
     principleId = principleId,
     status = status,
     reason = reason,
-    imageIds = imageIds,
+    imageIds = imageUrls,
     links = links,
 )

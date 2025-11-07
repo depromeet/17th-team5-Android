@@ -10,11 +10,14 @@ import com.depromeet.team5.core.domain.usecase.CreateRetrospectionUseCase
 import com.depromeet.team5.features.feedback.AiFeedbackUiState
 import com.depromeet.team5.features.feedback.PrincipleState
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.flatMapConcat
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
@@ -36,12 +39,15 @@ class AiFeedbackViewModel @Inject constructor(
         myPrincipleGroup: MyPrincipleGroup,
     ) {
         viewModelScope.launch {
-            createRetrospectionUseCase(
-                request.copy(
-                    orderDate = formatDate(request.orderDate),
-                    principleChecks = myPrincipleGroup.principles.map { it.principleChecks }
-                ),
-            )
+            flow {
+                emit(
+                    createRetrospectionUseCase(
+                        request = request,
+                        principles = myPrincipleGroup.principles
+                    )
+                )
+            }
+                .flowOn(Dispatchers.IO)
                 .flatMapConcat { createFeedbackUseCase(it.id) }
                 .map {
                     if (it.data != null) {

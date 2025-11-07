@@ -12,11 +12,17 @@ interface HedgeRepository {
 
     fun search(query: String): Flow<Search>
 
-    fun createRetrospection(request: CreateRetrospectionRequest): Flow<Retrospection>
+    suspend fun createRetrospection(request: CreateRetrospectionRequest): Retrospection
 
     fun createFeedback(
         retrospectionId: Int
     ): Flow<Feedback>
 
     fun getPrincipleGroups(orderType: String): Flow<List<MyPrincipleGroup>>
+
+    suspend fun uploadImageUri(
+        domain: String,
+        uri: String,
+        fileName: String? = null
+    ): Int
 }

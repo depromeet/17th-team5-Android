@@ -16,4 +16,10 @@ interface RemoteDataSource {
     suspend fun createFeedback(retrospectionId: Int): FeedbackData
 
     suspend fun getPrinciples(orderType: String): MyPrincipleGroupsData
+
+    suspend fun uploadImageUri(
+        domain: String,
+        uri: String,
+        fileName: String? = null
+    ): Int
 }

@@ -16,6 +16,6 @@ data class PrincipleCheckRequestData(
     val principleId: Int,
     val status: String,
     val reason: String,
-    val imageUrls: List<String>,
+    val imageUrls: List<Int>,
     val links: List<String>,
 )

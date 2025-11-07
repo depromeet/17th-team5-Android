@@ -2,8 +2,8 @@ package com.depromeet.team5.core.data.mapper
 
 import com.depromeet.team5.core.data.request.CreateRetrospectionRequestData
 import com.depromeet.team5.core.data.request.PrincipleCheckRequestData
-import com.depromeet.team5.core.domain.model.PrincipleChecks
 import com.depromeet.team5.core.domain.request.CreateRetrospectionRequest
+import com.depromeet.team5.core.domain.request.PrincipleCheckRequest
 
 fun CreateRetrospectionRequest.toData() = CreateRetrospectionRequestData(
     symbol = symbol,
@@ -17,7 +17,7 @@ fun CreateRetrospectionRequest.toData() = CreateRetrospectionRequestData(
     principleChecks = principleChecks.map { it.toData() }
 )
 
-fun PrincipleChecks.toData() = PrincipleCheckRequestData(
+fun PrincipleCheckRequest.toData() = PrincipleCheckRequestData(
     principleId = principleId,
     status = status,
     reason = reason,

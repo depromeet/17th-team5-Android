@@ -9,11 +9,6 @@ import com.depromeet.team5.core.data.model.SearchData
 import com.depromeet.team5.core.data.request.CreateRetrospectionRequestData
 import com.depromeet.team5.core.remotedatasource.apisource.HedgeApiSource
 import com.depromeet.team5.core.remotedatasource.mapper.toRemoteData
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
-import kotlinx.coroutines.awaitAll
-import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.withContext
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -27,26 +22,18 @@ internal class RemoteDataSourceImpl @Inject constructor(
         hedgeApiSource.search(query).toData()
 
     // 테스트를 위한 디스패치, todo di
-    override suspend fun createRetrospection(request: CreateRetrospectionRequestData): RetrospectionData = withContext(Dispatchers.IO) {
-        hedgeApiSource.createRetrospection(
-            request.toRemoteData(
-                request.principleChecks.map {
-                    it.toRemoteData(
-                        coroutineScope {
-                            it.imageUrls.map {
-                                async {
-                                    hedgeApiSource.uploadImageUri(
-                                        "retrospection",
-                                        it.toUri(),
-                                    )
-                                }
-                            }.awaitAll()
-                        }
-                    )
-                }
-            )
-        ).toData()
-    }
+    override suspend fun createRetrospection(request: CreateRetrospectionRequestData): RetrospectionData =
+        hedgeApiSource.createRetrospection(request.toRemoteData()).toData()
+
+    override suspend fun uploadImageUri(
+        domain: String,
+        uri: String,
+        fileName: String?
+    ) = hedgeApiSource.uploadImageUri(
+        domain = domain,
+        uri = uri.toUri(),
+        fileName = fileName
+    )
 
     override suspend fun createFeedback(retrospectionId: Int): FeedbackData =
         hedgeApiSource.createFeedback(retrospectionId).toData()

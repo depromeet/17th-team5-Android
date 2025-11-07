@@ -103,13 +103,9 @@ private fun HomeScreen(
     var isDashBoardVisible by rememberSaveable { mutableStateOf(false) }
 
     if (isDashBoardVisible) {
-        Dialog(
+        DashBoardDialog(
             onDismissRequest = { isDashBoardVisible = false }
-        ) {
-            DashBoardDialog(
-                onDismissRequest = { isDashBoardVisible = false }
-            )
-        }
+        )
     }
 
     Box(modifier = modifier.fillMaxSize()) {

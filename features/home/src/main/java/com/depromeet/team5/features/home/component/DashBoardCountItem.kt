@@ -39,8 +39,7 @@ fun DashBoardCountItem(
                 .size(
                     width = 32.dp,
                     height = 38.dp
-                ),
-            contentScale = ContentScale.Crop
+                )
         )
 
         Text(

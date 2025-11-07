@@ -23,6 +23,7 @@ import coil3.compose.AsyncImage
 import com.depromeet.team5.core.designsystem.foundation.HedgeColor
 import com.depromeet.team5.core.designsystem.foundation.HedgeIcon
 import com.depromeet.team5.core.designsystem.foundation.HedgeTypography
+import com.depromeet.team5.core.ui.component.PrincipleThumbnail
 
 @Composable
 fun PrincipleItem(
@@ -43,31 +44,7 @@ fun PrincipleItem(
         Row(
             verticalAlignment = Alignment.CenterVertically
         ) {
-            if (icon.startsWith("http")) {
-                AsyncImage(
-                    model = icon,
-                    contentDescription = null,
-                    modifier = Modifier
-                        .padding(end = 4.dp)
-                        .size(32.dp),
-                    contentScale = ContentScale.Crop
-                )
-            } else {
-                Box(
-                    modifier = Modifier
-                        .background(
-                            color = HedgeColor.Neutral.BackgroundSecondary,
-                            shape = CircleShape
-                        )
-                        .size(32.dp),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text(
-                        text = icon,
-                        style = HedgeTypography.Body3.SemiBold
-                    )
-                }
-            }
+            PrincipleThumbnail(icon)
             Spacer(Modifier.width(12.dp))
 
             Text(

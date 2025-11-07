@@ -13,17 +13,21 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Divider
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -39,6 +43,13 @@ fun RetrospectionMasterDetail(
     symbols: List<RetrospectionSymbolState>,
     modifier: Modifier = Modifier,
 ) {
+    val listState = rememberLazyListState()
+    val showTopGradient by remember {
+        derivedStateOf {
+            listState.firstVisibleItemIndex > 0 || listState.firstVisibleItemScrollOffset > 0
+        }
+    }
+
     var selectedSymbol by rememberSaveable(symbols) {
         mutableStateOf(symbols.firstOrNull()?.symbol)
     }
@@ -48,19 +59,41 @@ fun RetrospectionMasterDetail(
         modifier = modifier
             .fillMaxWidth()
     ) {
-        LazyColumn(
+        Box(
             modifier = Modifier
                 .padding(end = 16.dp)
                 .width(118.dp)
-        ) {
-            items(
-                items = symbols,
-                key = { item -> item.symbol }
-            ) { item ->
-                SymbolRailItem(
-                    symbol = item.symbol,
-                    selected = item.symbol == selectedSymbol,
-                    onClick = { selectedSymbol = item.symbol }
+        ){
+            LazyColumn(
+                state = listState,
+                modifier = Modifier
+            ) {
+                items(
+                    items = symbols,
+                    key = { item -> item.symbol }
+                ) { item ->
+                    SymbolRailItem(
+                        symbol = item.symbol,
+                        selected = item.symbol == selectedSymbol,
+                        onClick = { selectedSymbol = item.symbol }
+                    )
+                }
+            }
+
+            if (showTopGradient){
+                Box(
+                    modifier = Modifier
+                        .height(1400.dp)
+                        .fillMaxWidth()
+                        .align(Alignment.TopCenter)
+                        .background(
+                            brush = Brush.verticalGradient(
+                                colorStops = arrayOf(
+                                    0.0f to HedgeColor.WHITE,
+                                    0.15f to HedgeColor.WHITE.copy(alpha = 0f),
+                                )
+                            )
+                        )
                 )
             }
         }

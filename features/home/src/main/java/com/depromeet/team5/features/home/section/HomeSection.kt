@@ -58,170 +58,201 @@ fun HomeSection(
             .padding(top = 16.dp)
             .fillMaxWidth()
     ) {
-        when (val userStats = userStatsUiState) {
-            is HedgeUiState.Success -> {
+        UserStatsSection(
+            userStatsUiState = userStatsUiState,
+            onDashBoardClick = onDashBoardClick,
+            onShowErrorToast
+        )
+        Spacer(modifier = Modifier.height(16.dp))
+
+        RetrospectionHistorySection(
+            retrospectionListUiState = retrospectionListUiState,
+            onShowErrorToast = onShowErrorToast
+        )
+    }
+}
+
+@Composable
+private fun UserStatsSection(
+    userStatsUiState: HedgeUiState<UserStatsInfo>,
+    onDashBoardClick: (Boolean) -> Unit,
+    onShowErrorToast: (Throwable) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    when (val userStats = userStatsUiState) {
+        is HedgeUiState.Success -> {
+            Box(
+                modifier = Modifier
+                    .padding(horizontal = 20.dp)
+                    .shadow(
+                        elevation = 20.dp,
+                        shape = RoundedCornerShape(22.dp),
+                        spotColor = Color(0x140D0F26),
+                        clip = false
+                    )
+                    .background(
+                        color = HedgeColor.Neutral.BackgroundDefault,
+                        shape = RoundedCornerShape(22.dp)
+                    )
+                    .border(
+                        width = 1.dp,
+                        color = Color(0xFFF1F2F4),
+                        shape = RoundedCornerShape(22.dp)
+                    )
+                    .clip(RoundedCornerShape(22.dp))
+                    .clickable {
+                        onDashBoardClick(true)
+                    }
+                    .fillMaxWidth()
+            ) {
                 Box(
                     modifier = Modifier
-                        .padding(horizontal = 20.dp)
-                        .shadow(
-                            elevation = 20.dp,
-                            shape = RoundedCornerShape(22.dp),
-                            spotColor = Color(0x140D0F26),
-                            clip = false
-                        )
-                        .background(
-                            color = HedgeColor.Neutral.BackgroundDefault,
-                            shape = RoundedCornerShape(22.dp)
-                        )
-                        .border(
-                            width = 1.dp,
-                            color = Color(0xFFF1F2F4),
-                            shape = RoundedCornerShape(22.dp)
-                        )
-                        .clip(RoundedCornerShape(22.dp))
-                        .clickable {
-                            onDashBoardClick(true)
+                        .matchParentSize()
+                        .align(Alignment.TopEnd)
+                        .drawWithCache {
+                            val centerColor = Color(0xFF1CCAFF).copy(alpha = 0.24f)
+                            val edgeColor = Color(0xFF1CCAFF).copy(alpha = 0f)
+                            val radius = size.width * 0.55f
+                            val center = Offset(
+                                x = size.width * 0.85f,
+                                y = -size.height * 0.55f
+                            )
+
+                            val brush = Brush.radialGradient(
+                                colors = listOf(centerColor, edgeColor),
+                                center = center,
+                                radius = radius
+                            )
+                            onDrawBehind { drawRect(brush) }
                         }
-                        .fillMaxWidth()
+                )
+
+                Box(
+                    modifier = Modifier
+                        .matchParentSize()
+                        .align(Alignment.TopStart)
+                        .drawWithCache {
+                            val centerColor = Color(0xFF29F980).copy(alpha = 0.16f)
+                            val edgeColor = Color(0xFF29F980).copy(alpha = 0f)
+                            val radius = size.width * 0.55f
+                            val center = Offset(
+                                x = size.width * 0.15f,
+                                y = -size.height * 0.55f
+                            )
+
+                            val brush = Brush.radialGradient(
+                                colors = listOf(centerColor, edgeColor),
+                                center = center,
+                                radius = radius
+                            )
+                            onDrawBehind { drawRect(brush) }
+                        }
+                )
+
+                Column(
+                    modifier = Modifier
+                        .padding(20.dp)
                 ) {
-                    Box(
-                        modifier = Modifier
-                            .matchParentSize()
-                            .align(Alignment.TopEnd)
-                            .drawWithCache {
-                                val centerColor = Color(0xFF1CCAFF).copy(alpha = 0.24f)
-                                val edgeColor = Color(0xFF1CCAFF).copy(alpha = 0f)
-                                val radius = size.width * 0.55f
-                                val center = Offset(
-                                    x = size.width * 0.85f,
-                                    y = -size.height * 0.55f
-                                )
-
-                                val brush = Brush.radialGradient(
-                                    colors = listOf(centerColor, edgeColor),
-                                    center = center,
-                                    radius = radius
-                                )
-                                onDrawBehind { drawRect(brush) }
-                            }
+                    Text(
+                        text = stringResource(
+                            dashboardTitleRes(
+                                percentage = userStats.data.percentage,
+                                platinum = userStats.data.hedge,
+                                gold = userStats.data.gold,
+                                silver = userStats.data.silver,
+                                bronze = userStats.data.bronze
+                            )
+                        ),
+                        style = HedgeTypography.Body2.SemiBold,
+                        color = HedgeColor.Text.Primary
                     )
 
-                    Box(
+                    Row(
                         modifier = Modifier
-                            .matchParentSize()
-                            .align(Alignment.TopStart)
-                            .drawWithCache {
-                                val centerColor = Color(0xFF29F980).copy(alpha = 0.16f)
-                                val edgeColor = Color(0xFF29F980).copy(alpha = 0f)
-                                val radius = size.width * 0.55f
-                                val center = Offset(
-                                    x = size.width * 0.15f,
-                                    y = -size.height * 0.55f
-                                )
-
-                                val brush = Brush.radialGradient(
-                                    colors = listOf(centerColor, edgeColor),
-                                    center = center,
-                                    radius = radius
-                                )
-                                onDrawBehind { drawRect(brush) }
-                            }
-                    )
-
-                    Column(
-                        modifier = Modifier
-                            .padding(20.dp)
+                            .padding(top = 20.dp)
+                            .padding(horizontal = 12.dp)
+                            .fillMaxWidth()
+                            .height(IntrinsicSize.Min),
+                        horizontalArrangement = Arrangement.Center
                     ) {
-                        Text(
-                            text = stringResource(
-                                dashboardTitleRes(
-                                    percentage = userStats.data.percentage,
-                                    platinum = userStats.data.hedge,
-                                    gold = userStats.data.gold,
-                                    silver = userStats.data.silver,
-                                    bronze = userStats.data.bronze
-                                )
-                            ),
-                            style = HedgeTypography.Body2.SemiBold,
-                            color = HedgeColor.Text.Primary
+                        DashBoardCountItem(
+                            imgResId = HedgeBadge.PLATINUM.iconRes,
+                            count = userStats.data.hedge,
+                            modifier = Modifier.weight(1f)
                         )
 
-                        Row(
-                            modifier = Modifier
-                                .padding(top = 20.dp)
-                                .padding(horizontal = 12.dp)
-                                .fillMaxWidth()
-                                .height(IntrinsicSize.Min),
-                            horizontalArrangement = Arrangement.Center
-                        ) {
-                            DashBoardCountItem(
-                                imgResId = HedgeBadge.PLATINUM.iconRes,
-                                count = userStats.data.hedge,
-                                modifier = Modifier.weight(1f)
-                            )
+                        Box(
+                            modifier = modifier
+                                .padding(horizontal = 20.dp)
+                                .width(1.dp)
+                                .fillMaxHeight()
+                                .padding(vertical = 6.dp)
+                                .clip(RoundedCornerShape(2.dp))
+                                .background(HedgeColor.Neutral.BackgroundSecondary)
+                        )
 
-                            Box(
-                                modifier = modifier
-                                    .padding(horizontal = 20.dp)
-                                    .width(1.dp)
-                                    .fillMaxHeight()
-                                    .padding(vertical = 6.dp)
-                                    .clip(RoundedCornerShape(2.dp))
-                                    .background(HedgeColor.Neutral.BackgroundSecondary)
-                            )
+                        DashBoardCountItem(
+                            imgResId = HedgeBadge.GOLD.iconRes,
+                            count = userStats.data.gold,
+                            modifier = Modifier.weight(1f)
+                        )
 
-                            DashBoardCountItem(
-                                imgResId = HedgeBadge.GOLD.iconRes,
-                                count = userStats.data.gold,
-                                modifier = Modifier.weight(1f)
-                            )
+                        Box(
+                            modifier = modifier
+                                .padding(horizontal = 20.dp)
+                                .width(1.dp)
+                                .fillMaxHeight()
+                                .padding(vertical = 6.dp)
+                                .clip(RoundedCornerShape(2.dp))
+                                .background(HedgeColor.Neutral.BackgroundSecondary)
+                        )
 
-                            Box(
-                                modifier = modifier
-                                    .padding(horizontal = 20.dp)
-                                    .width(1.dp)
-                                    .fillMaxHeight()
-                                    .padding(vertical = 6.dp)
-                                    .clip(RoundedCornerShape(2.dp))
-                                    .background(HedgeColor.Neutral.BackgroundSecondary)
-                            )
+                        DashBoardCountItem(
+                            imgResId = HedgeBadge.SILVER.iconRes,
+                            count = userStats.data.silver,
+                            modifier = Modifier.weight(1f)
+                        )
 
-                            DashBoardCountItem(
-                                imgResId = HedgeBadge.SILVER.iconRes,
-                                count = userStats.data.silver,
-                                modifier = Modifier.weight(1f)
-                            )
+                        Box(
+                            modifier = modifier
+                                .padding(horizontal = 20.dp)
+                                .width(1.dp)
+                                .fillMaxHeight()
+                                .padding(vertical = 6.dp)
+                                .clip(RoundedCornerShape(2.dp))
+                                .background(HedgeColor.Neutral.BackgroundSecondary)
+                        )
 
-                            Box(
-                                modifier = modifier
-                                    .padding(horizontal = 20.dp)
-                                    .width(1.dp)
-                                    .fillMaxHeight()
-                                    .padding(vertical = 6.dp)
-                                    .clip(RoundedCornerShape(2.dp))
-                                    .background(HedgeColor.Neutral.BackgroundSecondary)
-                            )
-
-                            DashBoardCountItem(
-                                imgResId = HedgeBadge.BRONZE.iconRes,
-                                count = userStats.data.bronze,
-                                modifier = Modifier.weight(1f)
-                            )
-                        }
+                        DashBoardCountItem(
+                            imgResId = HedgeBadge.BRONZE.iconRes,
+                            count = userStats.data.bronze,
+                            modifier = Modifier.weight(1f)
+                        )
                     }
                 }
             }
-
-            is HedgeUiState.Loading -> {}
-
-            is HedgeUiState.Error -> {
-                userStats.throwable?.let {
-                    onShowErrorToast(it)
-                }
-            }
-
         }
-        Spacer(modifier = Modifier.height(16.dp))
+
+        is HedgeUiState.Loading -> {}
+
+        is HedgeUiState.Error -> {
+            userStats.throwable?.let {
+                onShowErrorToast(it)
+            }
+        }
+
+    }
+}
+
+@Composable
+private fun RetrospectionHistorySection(
+    retrospectionListUiState: HedgeUiState<List<RetrospectionSymbolState>>,
+    onShowErrorToast: (Throwable) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Column(
+        modifier = modifier
+    ) {
 
         Text(
             text = stringResource(id = R.string.home_tab_retrospection_history),

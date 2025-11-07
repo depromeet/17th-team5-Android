@@ -1,6 +1,8 @@
 package com.depromeet.team5.features.home.screen
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -16,19 +18,18 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.window.Dialog
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.depromeet.team5.core.designsystem.foundation.HedgeColor
+import com.depromeet.team5.core.designsystem.foundation.HedgeIcon
 import com.depromeet.team5.core.designsystem.foundation.HedgeTypography
 import com.depromeet.team5.core.domain.model.DefaultPrinciple
 import com.depromeet.team5.core.domain.model.MyPrincipleGroup
@@ -37,7 +38,6 @@ import com.depromeet.team5.core.domain.model.RecommendedPrinciple
 import com.depromeet.team5.core.domain.model.UserStatsInfo
 import com.depromeet.team5.core.domain.monad.HedgeUiState
 import com.depromeet.team5.core.navigation.request.RequestViewModel
-import com.depromeet.team5.features.home.R
 import com.depromeet.team5.features.home.component.DashBoardDialog
 import com.depromeet.team5.features.home.component.HomeFloatingActionButton
 import com.depromeet.team5.features.home.section.HomeSection
@@ -80,7 +80,9 @@ fun HomeRoute(
             onSellClick()
         },
         onShowErrorToast = { onShowErrorToast(it) },
-        modifier = modifier.windowInsetsPadding(WindowInsets.systemBars)
+        modifier = modifier
+            .background(HedgeColor.Neutral.BackgroundDefault)
+            .windowInsetsPadding(WindowInsets.systemBars)
     )
 }
 
@@ -98,6 +100,7 @@ private fun HomeScreen(
     onShowErrorToast: (Throwable) -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    val interaction = remember { MutableInteractionSource() }
     var fabChecked by rememberSaveable { mutableStateOf(false) }
     var selectedTab by rememberSaveable { mutableStateOf(HomeTab.HOME) }
     var isDashBoardVisible by rememberSaveable { mutableStateOf(false) }
@@ -111,7 +114,7 @@ private fun HomeScreen(
     Box(modifier = modifier.fillMaxSize()) {
         Column(Modifier.fillMaxWidth()) {
             Icon(
-                imageVector = ImageVector.vectorResource(R.drawable.ic_setting),
+                imageVector = HedgeIcon.Setting,
                 contentDescription = null,
                 modifier = Modifier
                     .padding(vertical = 11.dp, horizontal = 16.dp)
@@ -133,7 +136,10 @@ private fun HomeScreen(
                         color = if (selected) tab.selectedColor else tab.unselectedColor,
                         modifier = Modifier
                             .padding(end = 16.dp)
-                            .clickable { selectedTab = tab }
+                            .clickable(
+                                interactionSource = interaction,
+                                indication = null
+                            ) { selectedTab = tab }
                     )
                 }
             }

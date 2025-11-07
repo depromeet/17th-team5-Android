@@ -22,8 +22,8 @@ fun dashboardTitleRes(
 
     return when {
         validPercentage >= 60 -> R.string.home_tab_dashboard_60
-        validPercentage in 40..59 -> R.string.home_tab_dashboard_40_59
-        validPercentage in 20..39 -> R.string.home_tab_dashboard_20_39
+        validPercentage >= 40 -> R.string.home_tab_dashboard_40_59
+        validPercentage >= 20 -> R.string.home_tab_dashboard_20_39
         else -> R.string.home_tab_dashboard_20
     }
 }

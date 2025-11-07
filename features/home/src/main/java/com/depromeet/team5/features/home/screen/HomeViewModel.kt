@@ -18,6 +18,10 @@ import com.depromeet.team5.core.domain.usecase.GetPrincipleGroupsUseCase
 import com.depromeet.team5.core.domain.usecase.RetrospectionListUseCase
 import com.depromeet.team5.core.domain.usecase.SystemPrincipleUseCase
 import com.depromeet.team5.core.domain.usecase.UserStatsUseCase
+import com.depromeet.team5.core.ui.util.flexLocalDateOrNull
+import com.depromeet.team5.core.ui.util.toMonthDayOrRaw
+import com.depromeet.team5.core.ui.util.toSectionLabel
+import com.depromeet.team5.core.ui.util.toYMDOrRaw
 import com.depromeet.team5.features.home.R
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -28,9 +32,6 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import java.time.LocalDate
-import java.time.YearMonth
-import java.time.format.DateTimeFormatter
-import java.util.Locale
 import javax.inject.Inject
 
 enum class HomeTab(
@@ -68,10 +69,10 @@ data class RetrospectionState(
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
-    private val userStatsUseCase: UserStatsUseCase,
-    private val retrospectionListUseCase: RetrospectionListUseCase,
-    private val getPrincipleGroupsUseCase: GetPrincipleGroupsUseCase,
-    private val systemPrincipleUseCase: SystemPrincipleUseCase,
+    userStatsUseCase: UserStatsUseCase,
+    retrospectionListUseCase: RetrospectionListUseCase,
+    getPrincipleGroupsUseCase: GetPrincipleGroupsUseCase,
+    systemPrincipleUseCase: SystemPrincipleUseCase,
 ) : ViewModel() {
     private val _principleOrderType = MutableStateFlow<OrderType>(OrderType.BUY)
     val principleOrderType: StateFlow<OrderType> = _principleOrderType.asStateFlow()
@@ -167,45 +168,5 @@ class HomeViewModel @Inject constructor(
 
     fun setPrincipleOrderType(type: OrderType) {
         if (_principleOrderType.value != type) _principleOrderType.value = type
-    }
-
-    private val inputDateFormatters = listOf(
-        DateTimeFormatter.ISO_LOCAL_DATE_TIME,
-        DateTimeFormatter.ISO_LOCAL_DATE,
-        DateTimeFormatter.ofPattern("yyyy.MM.dd", Locale.KOREA)
-    )
-
-    private val patternYMD = DateTimeFormatter.ofPattern("yyyy.MM.dd", Locale.KOREA)
-    private val patternMD = DateTimeFormatter.ofPattern("M월 d일", Locale.KOREA)
-    private val patternYYM = DateTimeFormatter.ofPattern("yy년 M월", Locale.KOREA)
-
-    private fun String.flexLocalDateOrNull(): LocalDate? {
-        for (fmt in inputDateFormatters) {
-            val parsed = runCatching {
-                if (fmt == DateTimeFormatter.ISO_LOCAL_DATE_TIME) {
-                    java.time.LocalDateTime.parse(this, fmt).toLocalDate()
-                } else {
-                    LocalDate.parse(this, fmt)
-                }
-            }.getOrNull()
-            if (parsed != null) return parsed
-        }
-        return null
-    }
-
-    private fun String.toMonthDayOrRaw(): String =
-        this.flexLocalDateOrNull()?.format(patternMD) ?: this
-
-    private fun String.toYMDOrRaw(): String =
-        this.flexLocalDateOrNull()?.format(patternYMD) ?: this
-
-    private fun LocalDate?.toSectionLabel(now: LocalDate = LocalDate.now()): String {
-        val thisMonth = YearMonth.from(now)
-        val target = this?.let { YearMonth.from(it) } ?: return "기타"
-        return when (target) {
-            thisMonth -> "이번달 회고"
-            thisMonth.minusMonths(1) -> "지난달 회고"
-            else -> target.format(patternYYM) + " 회고"
-        }
     }
 }

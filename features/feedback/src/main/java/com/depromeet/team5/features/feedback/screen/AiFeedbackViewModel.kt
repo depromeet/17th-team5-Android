@@ -3,10 +3,10 @@ package com.depromeet.team5.features.feedback.screen
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.depromeet.team5.core.domain.model.MyPrincipleGroup
 import com.depromeet.team5.core.domain.request.CreateRetrospectionRequest
 import com.depromeet.team5.core.domain.usecase.CreateFeedbackUseCase
 import com.depromeet.team5.core.domain.usecase.CreateRetrospectionUseCase
+import com.depromeet.team5.core.navigation.request.model.PrincipleGroupState
 import com.depromeet.team5.features.feedback.AiFeedbackUiState
 import com.depromeet.team5.features.feedback.PrincipleState
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -33,12 +33,12 @@ class AiFeedbackViewModel @Inject constructor(
 
     fun createRetrospection(
         request: CreateRetrospectionRequest,
-        myPrincipleGroup: MyPrincipleGroup,
+        principleGroupState: PrincipleGroupState,
     ) {
         viewModelScope.launch {
             createRetrospectionUseCase(
                 request = request.copy(orderDate = formatDate(request.orderDate)),
-                principles = myPrincipleGroup.principles
+                principles = principleGroupState.principles,
             )
                 .flatMapConcat { createFeedbackUseCase(it.id) }
                 .map {

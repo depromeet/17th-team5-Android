@@ -2,12 +2,12 @@ package com.depromeet.team5.feature.reasons.model
 
 import androidx.compose.runtime.Immutable
 import androidx.compose.ui.text.input.TextFieldValue
-import com.depromeet.team5.core.domain.model.MyPrinciple
-import com.depromeet.team5.core.domain.model.MyPrincipleGroup
 import com.depromeet.team5.core.domain.model.OrderType
 import com.depromeet.team5.core.domain.model.PrincipleChecks
+import com.depromeet.team5.core.domain.model.PrincipleState
+import com.depromeet.team5.core.navigation.request.model.PrincipleGroupState
 
-fun MyPrincipleGroup.toUi() = UiPrincipleGroup(
+fun PrincipleGroupState.toUi() = UiPrincipleGroup(
     id = id,
     groupName = groupName,
     thumbnail = thumbnail,
@@ -16,7 +16,7 @@ fun MyPrincipleGroup.toUi() = UiPrincipleGroup(
     principles = principles.mapIndexed { idx, item -> item.toUi(idx) },
 )
 
-fun MyPrinciple.toUi(idx: Int) = UiPrinciple(
+fun PrincipleState.toUi(idx: Int) = UiPrinciple(
     id = id,
     groupId = groupId,
     principle = principle,
@@ -63,13 +63,13 @@ data class UiPrincipleGroup(
         return getCheckedPrincipleCount() == principles.size
     }
 
-    fun toDomain() = MyPrincipleGroup(
+    fun toState() = PrincipleGroupState(
         id = id,
         groupName = groupName,
         thumbnail = thumbnail,
         orderType = orderType,
         displayOrder = displayOrder,
-        principles = principles.map { it.toDomain() }
+        principles = principles.map { it.toState() }
     )
 }
 
@@ -81,12 +81,12 @@ data class UiPrinciple(
     val description: String,
     val principleChecks: UiPrincipleChecks,
 ) {
-    fun toDomain() = MyPrinciple(
+    fun toState() = PrincipleState(
         id = id,
         groupId = groupId,
         principle = principle,
         description = description,
-        principleChecks = principleChecks.toDomain()
+        principleChecks = principleChecks.toState(),
     )
 }
 
@@ -98,7 +98,7 @@ data class UiPrincipleChecks(
     val imageUrls: List<String>,
     val articles: List<Article>,
 ) {
-    fun toDomain() = PrincipleChecks(
+    fun toState() = PrincipleChecks(
         principleId = principleId,
         status = adherence.name,
         reason = note.text,

@@ -69,9 +69,12 @@ import com.depromeet.team5.core.designsystem.foundation.HedgeColor
 import com.depromeet.team5.core.designsystem.foundation.HedgeTypography
 import com.depromeet.team5.core.domain.model.MyPrincipleGroup
 import com.depromeet.team5.core.domain.model.OrderType
+import com.depromeet.team5.core.domain.model.PrincipleChecks
+import com.depromeet.team5.core.domain.model.PrincipleState
 import com.depromeet.team5.core.domain.monad.HedgeUiState
 import com.depromeet.team5.core.domain.request.CreateRetrospectionRequest
 import com.depromeet.team5.core.navigation.request.RequestViewModel
+import com.depromeet.team5.core.navigation.request.model.PrincipleGroupState
 import com.depromeet.team5.core.ui.component.PrincipleBottomSheetDialog
 import com.depromeet.team5.features.retrospect.R
 import com.depromeet.team5.features.retrospect.annotation.CurrencyType
@@ -224,7 +227,23 @@ fun RetrospectRoute(
                         }
                     )
 
-                    requestViewModel.selectedMyPrincipleGroup = myPrincipleGroup
+                    requestViewModel.selectedMyPrincipleGroupState = PrincipleGroupState(
+                        id = myPrincipleGroup.id,
+                        groupName = myPrincipleGroup.groupName,
+                        thumbnail = myPrincipleGroup.thumbnail,
+                        orderType = requestViewModel.request.orderType,
+                        displayOrder = myPrincipleGroup.displayOrder,
+                        principles = myPrincipleGroup.principles.map {
+                            PrincipleState(
+                                id = it.id,
+                                groupId = it.groupId,
+                                principle = it.principle,
+                                description = it.description,
+                                principleChecks = PrincipleChecks.createInit(it.id)
+                            )
+                        }
+
+                    )
                 }
 
                 onClickedConfirmButton()

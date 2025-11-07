@@ -95,8 +95,8 @@ fun ReasonRoute(
 
     LaunchedEffect(Unit) {
         if (uiState is HedgeUiState.Success) return@LaunchedEffect
-        requestViewModel.selectedMyPrincipleGroup?.let { myPrincipleGroup ->
-            viewModel.initPrincipleGroup(myPrincipleGroup.toUi())
+        requestViewModel.selectedMyPrincipleGroupState?.let { principleGroupState ->
+            viewModel.initPrincipleGroup(principleGroupState.toUi())
         }
         viewModel.initTradeInfo(
             TradeInfo(
@@ -118,7 +118,7 @@ fun ReasonRoute(
                 tradeInfo = state.data.first,
                 onClickBack = onClickBack,
                 onClickDone = {
-                    requestViewModel.selectedMyPrincipleGroup = state.data.second.toDomain()
+                    requestViewModel.selectedMyPrincipleGroupState = state.data.second.toState()
                     onClickDone()
                 },
                 onClickImage = onClickImage,

@@ -4,7 +4,6 @@ import com.depromeet.team5.core.data.mapper.DataMapper
 import com.depromeet.team5.core.domain.model.MyPrinciple
 import com.depromeet.team5.core.domain.model.MyPrincipleGroup
 import com.depromeet.team5.core.domain.model.OrderType
-import com.depromeet.team5.core.domain.model.PrincipleChecks
 
 
 data class MyPrincipleGroupsData(
@@ -54,6 +53,5 @@ data class MyPrincipleData(
         groupId = groupId,
         principle = principle,
         description = description,
-        principleChecks = PrincipleChecks.createInit(id)
     )
 }

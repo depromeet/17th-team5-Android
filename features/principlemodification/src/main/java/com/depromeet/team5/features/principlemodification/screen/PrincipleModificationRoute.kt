@@ -74,7 +74,7 @@ fun PrincipleModificationRoute(
         modifier = modifier,
         onBackClicked = onBackClicked,
         onShowErrorToast = onShowErrorToast,
-        onShowToast = {
+        onClickedConfirmButton = {
             onShowToast(context.getString(R.string.principle_modification_toast_message))
         },
         onShowNoIconToast = { message ->
@@ -87,9 +87,9 @@ fun PrincipleModificationRoute(
 private fun PrincipleModificationScreen(
     uiState: HedgeUiState<PrincipleModification>,
     modifier: Modifier = Modifier,
+    onClickedConfirmButton: () -> Unit,
     onBackClicked: () -> Unit = {},
     onShowErrorToast: (Throwable) -> Unit,
-    onShowToast: () -> Unit,
     onShowNoIconToast: (String) -> Unit
 ) {
     when (uiState) {
@@ -97,10 +97,7 @@ private fun PrincipleModificationScreen(
             PrincipleModificationContent(
                 modifier = modifier.imePadding(),
                 principleModification = uiState.data,
-                onClickedConfirmButton = {
-                    onShowToast()
-                    onBackClicked()
-                },
+                onClickedConfirmButton = onClickedConfirmButton,
                 onBackClicked = onBackClicked,
                 onShowNoIconToast = onShowNoIconToast
             )
@@ -131,14 +128,14 @@ private fun PrincipleModificationContent(
     var principle by remember {
         mutableStateOf(
             TextFieldState(
-                initialText = principleModification.principle,
+                initialText = principleModification.principle ?: "",
             )
         )
     }
     var content by remember {
         mutableStateOf(
             TextFieldState(
-                initialText = principleModification.description
+                initialText = principleModification.description ?: ""
             )
         )
     }
@@ -149,7 +146,7 @@ private fun PrincipleModificationContent(
             .background(HedgeColor.WHITE)
     ) {
         Topbar(
-            title = principleModification.groupName,
+            title = principleModification.groupName ?: "",
             onClickedButton = onClickedConfirmButton,
             onBackClicked = onBackClicked
         )
@@ -333,8 +330,8 @@ private fun PrincipleModificationScreenPreview(
             )
         ),
         modifier = modifier,
+        onClickedConfirmButton = {},
         onShowErrorToast = {},
-        onShowToast = {},
         onShowNoIconToast = {}
     )
 }

@@ -14,17 +14,17 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class PrincipleModification(
-    val principleId: Int,
-    val groupName: String,
-    val principle: String,
-    val description: String
+    val principleId: Int?,
+    val groupName: String?,
+    val principle: String?,
+    val description: String?
 )
 
 fun NavController.navigateToPrincipleModification(
-    principleId: Int,
-    groupName: String,
-    principle: String,
-    description: String,
+    principleId: Int?,
+    groupName: String?,
+    principle: String?,
+    description: String?,
     navOptions: NavOptions? = null
 ) {
     navigate(

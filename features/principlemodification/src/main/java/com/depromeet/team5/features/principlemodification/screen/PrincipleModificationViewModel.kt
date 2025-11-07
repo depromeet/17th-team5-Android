@@ -11,6 +11,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 
@@ -30,4 +31,33 @@ class PrincipleModificationViewModel @Inject constructor(
         )
 
 
+    fun modifyPrinciple() {
+        viewModelScope.launch {
+            when (val value = uiStateFlow.value) {
+                is HedgeUiState.Success<PrincipleModification> -> {
+                    value.data.principleId?.let { principleId ->
+
+                    }
+                }
+
+                else -> {}
+            }
+
+
+        }
+    }
+
+    fun addPrinciple() {
+        viewModelScope.launch {
+            when (val value = uiStateFlow.value) {
+                is HedgeUiState.Success<PrincipleModification> -> {
+                    value.data.groupName?.let { groupId ->
+
+                    }
+                }
+
+                else -> {}
+            }
+        }
+    }
 }

@@ -85,7 +85,7 @@ fun PrincipleDetailRoute(
     onBackPressed: () -> Unit,
     onShowErrorToast: (Throwable) -> Unit,
     onShowToast: (String) -> Unit,
-    onNavigatedPrincipleModification: (Int, String, String, String) -> Unit
+    onNavigatedPrincipleModification: (Int?, String?, String?, String?) -> Unit
 ) {
     val context = LocalContext.current
     val uiState by viewModel.uiState.stateFlow.collectAsStateWithLifecycle()
@@ -166,7 +166,7 @@ private fun PrincipleDetailScreen(
     modifier: Modifier = Modifier,
     onClickedModifyButton: (Int) -> Unit,
     onClickedRemoveButton: (Int) -> Unit,
-    onClickedItemModifyButton: (Int, String, String, String) -> Unit,
+    onClickedItemModifyButton: (Int?, String?, String?, String?) -> Unit,
     onClickedItemRemoveButton: (Int) -> Unit,
     onClickedConfirmButton: () -> Unit,
     onBackPressed: () -> Unit,
@@ -340,7 +340,12 @@ private fun PrincipleDetailContent(
                         .padding(end = 20.dp, bottom = 45.dp)
                         .align(alignment = Alignment.BottomEnd)
                 ) {
-                    //todo 버튼 클릭 시 원칙 추가 기능 넣기
+                    onClickedItemModifyButton(
+                        null,
+                        uiState.data.groupName,
+                        null,
+                        null
+                    )
                 }
             }
 
@@ -887,7 +892,7 @@ fun TopbarPreview() {
             .background(HedgeColor.Brand.Secondary),
         onBackPressed = {},
         onClickedModifyButton = {},
-        onShowDeleteModal = {}
+        onClickedRemoveButton = {}
     )
 }
 

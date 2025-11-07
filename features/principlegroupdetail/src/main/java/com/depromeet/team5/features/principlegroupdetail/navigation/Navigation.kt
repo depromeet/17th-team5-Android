@@ -31,7 +31,7 @@ fun NavGraphBuilder.principleGroupDetail(
     onBackPressed: () -> Unit,
     onShowErrorToast: (Throwable) -> Unit,
     onShowToast: (String) -> Unit,
-    onNavigatedPrincipleModification: (Int, String, String, String) -> Unit
+    onNavigatedPrincipleModification: (Int?, String?, String?, String?) -> Unit
 ) {
     composable<PrincipleGroupDetail> { backstackEntry ->
         val args = backstackEntry.toRoute<PrincipleGroupDetail>()

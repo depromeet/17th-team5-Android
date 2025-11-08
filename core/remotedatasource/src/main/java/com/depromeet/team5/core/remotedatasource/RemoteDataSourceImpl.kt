@@ -3,7 +3,8 @@ package com.depromeet.team5.core.remotedatasource
 import androidx.core.net.toUri
 import com.depromeet.team5.core.data.datasource.RemoteDataSource
 import com.depromeet.team5.core.data.model.FeedbackData
-import com.depromeet.team5.core.data.model.MyPrincipleGroupsData
+import com.depromeet.team5.core.data.model.MyPrincipleGroupData
+import com.depromeet.team5.core.data.model.MyPrincipleGroupsInfoData
 import com.depromeet.team5.core.data.model.RetrospectionData
 import com.depromeet.team5.core.data.model.RetrospectionListData
 import com.depromeet.team5.core.data.model.SearchData
@@ -18,7 +19,7 @@ import javax.inject.Singleton
 
 @Singleton
 internal class RemoteDataSourceImpl @Inject constructor(
-    private val hedgeApiSource: HedgeApiSource,
+    private val hedgeApiSource: HedgeApiSource
 ) : RemoteDataSource {
 
     override suspend fun search(query: String): SearchData =
@@ -40,8 +41,22 @@ internal class RemoteDataSourceImpl @Inject constructor(
     override suspend fun createFeedback(retrospectionId: Int): FeedbackData =
         hedgeApiSource.createFeedback(retrospectionId).toData()
 
-    override suspend fun getPrinciples(orderType: String): MyPrincipleGroupsData =
+    override suspend fun getPrinciples(orderType: String): MyPrincipleGroupsInfoData =
         hedgeApiSource.getPrincipleGroups(orderType).toData()
+
+    override suspend fun getPrincipleGroup(groupId: Int): MyPrincipleGroupData =
+        hedgeApiSource.getPrincipleGroup(groupId).toData()
+
+    override suspend fun deletePrincipleGroup(groupId: Int) {
+        hedgeApiSource.deletePrincipleGroup(groupId)
+    }
+
+    override suspend fun deletePrinciple(principleId: Int) {
+        hedgeApiSource.deletePrinciple(principleId)
+    }
+
+    override suspend fun createPrincipleGroup(body: Map<String, Any?>): MyPrincipleGroupData =
+        hedgeApiSource.createPrincipleGroup(body).toData()
 
     override suspend fun userStats(): UserStatsData =
         hedgeApiSource.userStats().toData()

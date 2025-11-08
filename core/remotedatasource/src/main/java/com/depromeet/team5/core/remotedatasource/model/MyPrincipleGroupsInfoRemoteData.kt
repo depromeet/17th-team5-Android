@@ -2,17 +2,17 @@ package com.depromeet.team5.core.remotedatasource.model
 
 import com.depromeet.team5.core.data.model.MyPrincipleData
 import com.depromeet.team5.core.data.model.MyPrincipleGroupData
-import com.depromeet.team5.core.data.model.MyPrincipleGroupsData
+import com.depromeet.team5.core.data.model.MyPrincipleGroupsInfoData
 import com.depromeet.team5.core.remotedatasource.mapper.RemoteDataMapper
 
 
-data class MyPrincipleGroupsRemoteData(
+data class MyPrincipleGroupsInfoRemoteData(
     val code: String,
     val message: String,
     val data: List<MyPrincipleGroupRemoteData>
-) : RemoteDataMapper<MyPrincipleGroupsData> {
+) : RemoteDataMapper<MyPrincipleGroupsInfoData> {
 
-    override fun toData(): MyPrincipleGroupsData = MyPrincipleGroupsData(
+    override fun toData(): MyPrincipleGroupsInfoData = MyPrincipleGroupsInfoData(
         code = code,
         message = message,
         data = data.map { it.toData() }

@@ -4,6 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.rememberNavController
+import com.depromeet.team5.core.navigation.PrincipleType
 import com.depromeet.team5.feature.reasons.navigateToReasonGraph
 import com.depromeet.team5.feature.reasons.reasonGraph
 import com.depromeet.team5.features.feedback.navigation.feedbackScreen
@@ -12,6 +13,8 @@ import com.depromeet.team5.features.home.Home
 import com.depromeet.team5.features.home.homeScreen
 import com.depromeet.team5.features.principle.navigation.navigateToPrinciple
 import com.depromeet.team5.features.principle.navigation.principleScreen
+import com.depromeet.team5.features.principlegroupdetail.navigation.navigateToPrincipleGroupDetail
+import com.depromeet.team5.features.principlegroupdetail.navigation.principleGroupDetail
 import com.depromeet.team5.features.retrospect.screen.navigateToRetrospect
 import com.depromeet.team5.features.retrospect.screen.retrospectScreen
 import com.depromeet.team5.features.search.navigateToSearch
@@ -21,6 +24,7 @@ import com.depromeet.team5.features.search.searchScreen
 fun HedgeNavHost(
     modifier: Modifier = Modifier,
     onShowErrorToast: (Throwable) -> Unit,
+    onShowToast: (String) -> Unit
 ) {
     val navController = rememberNavController()
 
@@ -56,6 +60,12 @@ fun HedgeNavHost(
             navController = navController,
             onBackPressed = { navController.popBackStack() },
             onClickNext = { navController.navigateToReasonGraph() }
+        )
+
+        principleGroupDetail(
+            onBackPressed = navController::popBackStack,
+            onShowErrorToast = onShowErrorToast,
+            onShowToast = onShowToast
         )
 
         reasonGraph(

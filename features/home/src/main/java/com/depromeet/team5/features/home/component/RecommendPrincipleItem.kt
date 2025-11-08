@@ -20,6 +20,7 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -57,6 +58,7 @@ fun RecommendPrincipleItem(
             modifier = Modifier
                 .matchParentSize()
                 .align(Alignment.TopEnd)
+                .graphicsLayer { alpha = 0.7f }
                 .drawWithCache {
                     val centerColor = Color(0xFF1CCAFF).copy(alpha = 0.24f)
                     val edgeColor = Color(0xFF1CCAFF).copy(alpha = 0f)
@@ -79,6 +81,7 @@ fun RecommendPrincipleItem(
             modifier = Modifier
                 .matchParentSize()
                 .align(Alignment.TopStart)
+                .graphicsLayer { alpha = 0.7f }
                 .drawWithCache {
                     val centerColor = Color(0xFF29F980).copy(alpha = 0.16f)
                     val edgeColor = Color(0xFF29F980).copy(alpha = 0f)

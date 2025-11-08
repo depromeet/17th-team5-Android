@@ -44,6 +44,8 @@ fun PrincipleSection(
     selected: OrderType,
     onSelect: (OrderType) -> Unit,
     principleGroupsUiState: HedgeUiState<List<MyPrincipleGroup>>,
+    onPrincipleClick: (Int) -> Unit,
+    onCreatePrincipleClick: () -> Unit,
     onShowErrorToast: (Throwable) -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -65,7 +67,7 @@ fun PrincipleSection(
                     ) {
                         RecommendPrincipleItem(
                             recommendPrinciple = it,
-                            onClick = {},
+                            onClick = onPrincipleClick,
                             modifier = Modifier.padding(bottom = 20.dp)
                         )
                     }
@@ -116,7 +118,7 @@ fun PrincipleSection(
                         id = group.id,
                         icon = group.thumbnail,
                         title = group.groupName,
-                        onClick = {}
+                        onClick = onPrincipleClick
                     )
                 }
 
@@ -158,7 +160,9 @@ fun PrincipleSection(
                 painter = painterResource(R.drawable.ic_plus),
                 contentDescription = null,
                 modifier = Modifier
-                    .clickable {}
+                    .clickable {
+                        onCreatePrincipleClick()
+                    }
                     .background(
                         color = HedgeColor.Brand.Primary,
                         shape = CircleShape
@@ -175,7 +179,9 @@ fun PrincipleSection(
                         id = group.id,
                         icon = group.thumbnail,
                         title = group.groupName,
-                        onClick = {}
+                        onClick = {
+                            onCreatePrincipleClick()
+                        }
                     )
                 }
             }
@@ -203,6 +209,8 @@ private fun PrincipleSectionPreview() {
         selected = OrderType.BUY,
         onSelect = {},
         principleGroupsUiState = HedgeUiState.Loading(emptyList()),
+        onPrincipleClick = {},
+        onCreatePrincipleClick = {},
         onShowErrorToast = {}
     )
 }

@@ -10,6 +10,7 @@ import com.depromeet.team5.features.feedback.navigation.feedbackScreen
 import com.depromeet.team5.features.feedback.navigation.navigateToFeedback
 import com.depromeet.team5.features.home.Home
 import com.depromeet.team5.features.home.homeScreen
+import com.depromeet.team5.features.principle.navigation.navigateToPrinciple
 import com.depromeet.team5.features.principle.navigation.principleScreen
 import com.depromeet.team5.features.retrospect.screen.navigateToRetrospect
 import com.depromeet.team5.features.retrospect.screen.retrospectScreen
@@ -32,7 +33,9 @@ fun HedgeNavHost(
             navController = navController,
             onBuyClick = { navController.navigateToSearch() },
             onSellClick = { navController.navigateToSearch() },
-            onClickRetrospect = { navController.navigateToReasonGraph() },
+            onRetrospectClick = { navController.navigateToReasonGraph() },
+            onPrincipleClick = { navController.navigateToPrinciple() },
+            onCreatePrincipleClick = { navController.navigateToPrinciple() },
             onShowErrorToast = onShowErrorToast
         )
 

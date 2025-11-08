@@ -6,15 +6,11 @@ import com.depromeet.team5.core.retrofit.model.FeedbackResponse
 import com.depromeet.team5.core.retrofit.model.ImageUploadResponse
 import com.depromeet.team5.core.retrofit.model.MyPrincipleGroupInfoResponse
 import com.depromeet.team5.core.retrofit.model.MyPrincipleGroupsInfoResponse
-import com.depromeet.team5.core.retrofit.model.MyPrincipleGroupsResponse
-import com.depromeet.team5.core.retrofit.model.MyPrincipleResponse
 import com.depromeet.team5.core.retrofit.model.RetrospectionListResponse
-import com.depromeet.team5.core.retrofit.model.MyPrincipleInfoResponse
 import com.depromeet.team5.core.retrofit.model.RetrospectionResponse
 import com.depromeet.team5.core.retrofit.model.SearchResponse
 import com.depromeet.team5.core.retrofit.model.SystemPrincipleResponse
 import com.depromeet.team5.core.retrofit.model.UserStatsResponse
-import okhttp3.RequestBody
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import retrofit2.http.Body

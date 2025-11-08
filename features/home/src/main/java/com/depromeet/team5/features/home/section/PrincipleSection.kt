@@ -34,6 +34,7 @@ import com.depromeet.team5.core.domain.model.MyPrincipleGroup
 import com.depromeet.team5.core.domain.model.OrderType
 import com.depromeet.team5.core.domain.model.RecommendedPrinciple
 import com.depromeet.team5.core.domain.monad.HedgeUiState
+import com.depromeet.team5.core.navigation.Path
 import com.depromeet.team5.core.ui.component.HedgeLoadingScreen
 import com.depromeet.team5.features.home.R
 import com.depromeet.team5.features.home.component.OrderTypeButton
@@ -47,7 +48,7 @@ fun PrincipleSection(
     selected: OrderType,
     onSelect: (OrderType) -> Unit,
     principleGroupsUiState: HedgeUiState<List<MyPrincipleGroup>>,
-    onClickPrincipleDetail: (Int) -> Unit,
+    onClickPrincipleDetail: (Int, Path) -> Unit,
     onClickCreatePrinciple: () -> Unit,
     onShowErrorToast: (Throwable) -> Unit,
     modifier: Modifier = Modifier,
@@ -72,7 +73,9 @@ fun PrincipleSection(
                     ) {
                         RecommendPrincipleItem(
                             recommendPrinciple = it,
-                            onClick = onClickPrincipleDetail,
+                            onClick = { groupId ->
+                                onClickPrincipleDetail(groupId, Path.PRINCIPLE_RECOMMENDED)
+                            },
                             modifier = Modifier.padding(bottom = 20.dp)
                         )
                     }
@@ -80,7 +83,7 @@ fun PrincipleSection(
             }
 
             is HedgeUiState.Loading -> {
-                HedgeLoadingScreen()
+
             }
 
             is HedgeUiState.Error -> {
@@ -123,7 +126,12 @@ fun PrincipleSection(
                         id = group.id,
                         icon = group.thumbnail,
                         title = group.groupName,
-                        onClick = onClickPrincipleDetail
+                        onClick = {
+                            onClickPrincipleDetail(
+                                group.id,
+                                Path.PRINCIPLE_RECOMMENDED //todo 이 부분 수정 될 수 있음
+                            )
+                        }
                     )
                 }
 
@@ -188,7 +196,10 @@ fun PrincipleSection(
                         icon = group.thumbnail,
                         title = group.groupName,
                         onClick = {
-                            onClickPrincipleDetail()
+                            onClickPrincipleDetail(
+                                group.id,
+                                Path.PRINCIPLE_MINE
+                            )
                         }
                     )
                 }
@@ -217,7 +228,7 @@ private fun PrincipleSectionPreview() {
         selected = OrderType.BUY,
         onSelect = {},
         principleGroupsUiState = HedgeUiState.Loading(emptyList()),
-        onClickPrincipleDetail = {},
+        onClickPrincipleDetail = { _, _ -> },
         onClickCreatePrinciple = {},
         onShowErrorToast = {}
     )

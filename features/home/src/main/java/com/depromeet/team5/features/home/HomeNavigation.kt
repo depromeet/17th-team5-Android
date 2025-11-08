@@ -6,6 +6,7 @@ import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import com.depromeet.team5.core.navigation.request.RequestViewModel
+import com.depromeet.team5.features.home.screen.HomeRoute
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -14,7 +15,11 @@ object Home
 fun NavGraphBuilder.homeScreen(
     navController: NavController,
     onBuyClick: () -> Unit,
-    onSellClick: () -> Unit
+    onSellClick: () -> Unit,
+    onClickRetrospectionDetail: (Int) -> Unit,
+    onClickPrincipleDetail: (Int) -> Unit,
+    onClickCreatePrinciple: () -> Unit,
+    onShowErrorToast: (Throwable) -> Unit
 ) {
     composable<Home> { backStackEntry ->
         val parentEntry = remember(backStackEntry) {
@@ -26,7 +31,11 @@ fun NavGraphBuilder.homeScreen(
         HomeRoute(
             onBuyClick = onBuyClick,
             onSellClick = onSellClick,
-            requestViewModel = sharedViewModel
+            requestViewModel = sharedViewModel,
+            onClickRetrospectionDetail = onClickRetrospectionDetail,
+            onClickPrincipleDetail = onClickPrincipleDetail,
+            onClickCreatePrinciple = onClickCreatePrinciple,
+            onShowErrorToast = onShowErrorToast
         )
     }
 }

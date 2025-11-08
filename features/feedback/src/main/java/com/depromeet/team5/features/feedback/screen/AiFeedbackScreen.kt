@@ -243,7 +243,8 @@ private fun AiFeedbackScreen(
                         text = stringResource(grade.descriptionRes),
                         style = HedgeTypography.Label1.Medium,
                         color = HedgeColor.Text.Secondary,
-                        textAlign = TextAlign.Center
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier.width(187.dp)
                     )
                 }
             }

@@ -5,8 +5,11 @@ import com.depromeet.team5.core.data.datasource.RemoteDataSource
 import com.depromeet.team5.core.data.model.FeedbackData
 import com.depromeet.team5.core.data.model.MyPrincipleGroupsData
 import com.depromeet.team5.core.data.model.RetrospectionData
+import com.depromeet.team5.core.data.model.RetrospectionListData
 import com.depromeet.team5.core.data.model.SearchData
 import com.depromeet.team5.core.data.request.CreateRetrospectionRequestData
+import com.depromeet.team5.core.data.model.SystemPrincipleData
+import com.depromeet.team5.core.data.model.UserStatsData
 import com.depromeet.team5.core.remotedatasource.apisource.HedgeApiSource
 import com.depromeet.team5.core.remotedatasource.mapper.toRemoteData
 import javax.inject.Inject
@@ -39,4 +42,14 @@ internal class RemoteDataSourceImpl @Inject constructor(
 
     override suspend fun getPrinciples(orderType: String): MyPrincipleGroupsData =
         hedgeApiSource.getPrincipleGroups(orderType).toData()
+
+    override suspend fun userStats(): UserStatsData =
+        hedgeApiSource.userStats().toData()
+
+    override suspend fun retrospectionList(): RetrospectionListData =
+        hedgeApiSource.retrospectionList().toData()
+
+    override suspend fun systemPrincipleList(): SystemPrincipleData =
+        hedgeApiSource.systemPrincipleList().toData()
+
 }

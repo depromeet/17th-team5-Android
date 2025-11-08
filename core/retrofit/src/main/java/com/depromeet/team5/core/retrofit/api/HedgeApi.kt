@@ -5,8 +5,12 @@ import com.depromeet.team5.core.retrofit.model.BaseResponse
 import com.depromeet.team5.core.retrofit.model.FeedbackResponse
 import com.depromeet.team5.core.retrofit.model.ImageUploadResponse
 import com.depromeet.team5.core.retrofit.model.MyPrincipleGroupsResponse
+import com.depromeet.team5.core.retrofit.model.RetrospectionListResponse
 import com.depromeet.team5.core.retrofit.model.RetrospectionResponse
 import com.depromeet.team5.core.retrofit.model.SearchResponse
+import com.depromeet.team5.core.retrofit.model.SystemPrincipleResponse
+import com.depromeet.team5.core.retrofit.model.UserStatsResponse
+import okhttp3.RequestBody
 import okhttp3.MultipartBody
 import retrofit2.http.Body
 import retrofit2.http.GET
@@ -41,5 +45,14 @@ interface HedgeApi {
         @Path("domain") domain: String,
         @Part file: MultipartBody.Part,
     ): BaseResponse<ImageUploadResponse>
+
+    @GET("api/v1/reports")
+    suspend fun userStats(): UserStatsResponse
+
+    @GET("api/v1/retrospections")
+    suspend fun retrospectionList(): RetrospectionListResponse
+
+    @GET("api/v1/principle-groups/systems")
+    suspend fun systemPrincipleList(): SystemPrincipleResponse
 
 }

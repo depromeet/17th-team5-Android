@@ -5,7 +5,10 @@ import com.depromeet.team5.core.data.mapper.toData
 import com.depromeet.team5.core.domain.model.Feedback
 import com.depromeet.team5.core.domain.model.MyPrincipleGroup
 import com.depromeet.team5.core.domain.model.Retrospection
+import com.depromeet.team5.core.domain.model.RetrospectionList
 import com.depromeet.team5.core.domain.model.Search
+import com.depromeet.team5.core.domain.model.SystemPrinciple
+import com.depromeet.team5.core.domain.model.UserStats
 import com.depromeet.team5.core.domain.repository.HedgeRepository
 import com.depromeet.team5.core.domain.request.CreateRetrospectionRequest
 import kotlinx.coroutines.flow.Flow
@@ -14,7 +17,7 @@ import javax.inject.Inject
 
 
 internal class HedgeRepositoryImpl @Inject constructor(
-    private val remoteDataSource: RemoteDataSource
+    private val remoteDataSource: RemoteDataSource,
 ) : HedgeRepository {
 
     override fun search(query: String): Flow<Search> = flow {
@@ -26,7 +29,7 @@ internal class HedgeRepositoryImpl @Inject constructor(
     }
 
     override fun createFeedback(
-        retrospectionId: Int
+        retrospectionId: Int,
     ): Flow<Feedback> = flow {
         emit(remoteDataSource.createFeedback(retrospectionId).toDomain())
     }
@@ -40,4 +43,16 @@ internal class HedgeRepositoryImpl @Inject constructor(
         uri: String,
         fileName: String?
     ): Int = remoteDataSource.uploadImageUri(domain, uri, fileName)
+
+    override fun userStats(): Flow<UserStats> = flow {
+        emit(remoteDataSource.userStats().toDomain())
+    }
+
+    override fun retrospectionList(): Flow<RetrospectionList> = flow {
+        emit(remoteDataSource.retrospectionList().toDomain())
+    }
+
+    override fun systemPrincipleList(): Flow<SystemPrinciple> = flow {
+        emit(remoteDataSource.systemPrincipleList().toDomain())
+    }
 }

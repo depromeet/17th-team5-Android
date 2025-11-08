@@ -1,4 +1,29 @@
 <resources>
     <string name="home_buy_button">매수 회고하기</string>
     <string name="home_sell_button">매도 회고하기</string>
+    <string name="home_tab_title_home">홈</string>
+    <string name="home_tab_title_principle">원칙</string>
+
+    // home
+    <string name="home_tab_dashboard_60">좋은 투자 흐름을 이어가고 있어요</string>
+    <string name="home_tab_dashboard_40_59">판단이 안정적으로 이어지고 있어요</string>
+    <string name="home_tab_dashboard_20_39">판단이 다소 흔들렸어요</string>
+    <string name="home_tab_dashboard_20">최근 투자에서 일관성이 낮았어요</string>
+    <string name="home_tab_dashboard_exception_0">아직 모은 뱃지가 없어요</string>
+    <string name="home_tab_dashboard_exception_NaN">투자 회고를 통해 나만의 감각을 쌓아가보세요</string>
+    <string name="home_tab_dashboard_exception_2">아직은 내 투자 기준을 다듬어가는 중이에요</string>
+    <string name="home_tab_dashboard_count">%d개</string>
+    <string name="home_tab_dialog_confirm_button">확인</string>
+    <string name="home_tab_retrospection_history">회고 기록</string>
+    <string name="home_tab_retrospection_price_volume">%,d원 • %d주</string>
+    <string name="home_tab_retrospection_month">%s 회고</string>
+    <string name="home_tab_retrospection_empty">아직 내 회고 기록이 없어요\n회고를 시작해볼까요?</string>
+    <string name="home_tab_retrospection_trade_buy">매수</string>
+    <string name="home_tab_retrospection_trade_sell">매도</string>
+
+    // principle
+    <string name="principle_tab_recommend_principle_count">원칙 %d개</string>
+    <string name="principle_tab_default_title">기본</string>
+    <string name="principle_tab_my_title">내가 만든</string>
+
 </resources>

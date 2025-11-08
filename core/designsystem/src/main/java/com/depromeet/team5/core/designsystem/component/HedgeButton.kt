@@ -110,6 +110,7 @@ object HedgeButton {
             buttonColors: ButtonColors = Color.Filled.Primary,
             size: Size = Size.Large,
             enabled: Boolean = true,
+            forceClickable: Boolean = true,
             interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
         ) {
             Button(
@@ -118,7 +119,7 @@ object HedgeButton {
                     .widthIn(min = size.minWidth)
                     .heightIn(min = size.minHeight),
                 colors = buttonColors,
-                enabled = enabled,
+                enabled = enabled || forceClickable,
                 interactionSource = interactionSource,
                 elevation = null,
                 shape = size.shape,
@@ -203,13 +204,14 @@ object HedgeButton {
         size: Text.Size = Text.Size.Large,
         color: Text.Color = Text.Color.Primary,
         enabled: Boolean = true,
+        forceClickable: Boolean = true,
         interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
     ) {
         Row(
             modifier = modifier
                 .clip(size.shape)
                 .clickable(
-                    enabled = enabled,
+                    enabled = enabled || forceClickable,
                     interactionSource = interactionSource,
                     indication = ripple(),
                     onClick = onClick

@@ -39,7 +39,6 @@ import com.depromeet.team5.core.designsystem.component.HedgeButton
 import com.depromeet.team5.core.designsystem.component.HedgeTopBar
 import com.depromeet.team5.core.designsystem.foundation.HedgeColor
 import com.depromeet.team5.core.designsystem.foundation.HedgeTypography
-import com.depromeet.team5.core.navigation.request.PrincipleCheckParams
 import com.depromeet.team5.core.navigation.request.RequestViewModel
 
 data class Principle(
@@ -62,29 +61,29 @@ fun PrincipleRoute(
         derivedStateOf { principles.any(Principle::checked) }
     }
     val orderType = requestViewModel.request.orderType
-
-    val handleNext = remember(principles) {
-        {
-            val selected = principles
-                .filter { it.checked }
-                .map { p ->
-                    PrincipleCheckParams(
-                        isFollowed = true,
-                        principleId = p.id.toInt()
-                    )
-                }
-
-            requestViewModel.request =
-                requestViewModel.request.copy(principleChecks = selected)
-
-            onClickNext()
-        }
-    }
+//
+//    val handleNext = remember(principles) {
+//        {
+//            val selected = principles
+//                .filter { it.checked }
+//                .map { p ->
+//                    PrincipleCheckParams(
+//                        isFollowed = true,
+//                        principleId = p.id.toInt()
+//                    )a
+//                }
+//
+//            requestViewModel.request =
+//                requestViewModel.request.copy(principleChecks = selected)
+//
+//            onClickNext()
+//        }
+//    }
 
     PrincipleScreen(
         orderType = orderType.toKorean(),
         onBackPressed = onBackPressed,
-        onClickNext = handleNext,
+        onClickNext = {},
         principles = principles,
         hasAnyChecked = hasAnyChecked,
         onClickPrinciple = { id -> viewModel.toggle(id) },

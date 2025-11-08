@@ -1,18 +1,20 @@
 package com.depromeet.team5.core.retrofit.api
 
-import com.depromeet.team5.core.retrofit.model.AnalysisResponse
+import com.depromeet.team5.core.remotedatasource.request.CreateRetrospectionRequestRemoteData
+import com.depromeet.team5.core.retrofit.model.BaseResponse
 import com.depromeet.team5.core.retrofit.model.FeedbackResponse
+import com.depromeet.team5.core.retrofit.model.ImageUploadResponse
 import com.depromeet.team5.core.retrofit.model.MyPrincipleGroupsResponse
 import com.depromeet.team5.core.retrofit.model.RetrospectionResponse
 import com.depromeet.team5.core.retrofit.model.SearchResponse
-import okhttp3.RequestBody
+import okhttp3.MultipartBody
 import retrofit2.http.Body
 import retrofit2.http.GET
+import retrofit2.http.Multipart
 import retrofit2.http.POST
+import retrofit2.http.Part
 import retrofit2.http.Path
 import retrofit2.http.Query
-import retrofit2.http.QueryMap
-
 
 interface HedgeApi {
 
@@ -20,20 +22,24 @@ interface HedgeApi {
     suspend fun search(@Query("query") query: String): SearchResponse
 
     @POST("api/v1/retrospections")
-    suspend fun createRetrospection(@Body body: RequestBody): RetrospectionResponse
+    suspend fun createRetrospection(@Body body: CreateRetrospectionRequestRemoteData): RetrospectionResponse
 
     @POST("api/v1/reports/{retrospectionId}/feedback")
     suspend fun createFeedback(
         @Path("retrospectionId") retrospectionId: Int
     ): FeedbackResponse
 
-    @GET("api/analysis/v1")
-    suspend fun createAnalysis(@QueryMap query: Map<String, String>): AnalysisResponse
-
     @GET("api/v1/principle-groups")
     suspend fun getPrincipleGroups(
         @Query("type")
         orderType: String
     ): MyPrincipleGroupsResponse
+
+    @Multipart
+    @POST("api/v1/{domain}/images/upload")
+    suspend fun imageUpload(
+        @Path("domain") domain: String,
+        @Part file: MultipartBody.Part,
+    ): BaseResponse<ImageUploadResponse>
 
 }

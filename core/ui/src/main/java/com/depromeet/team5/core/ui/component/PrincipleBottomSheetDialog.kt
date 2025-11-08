@@ -525,19 +525,19 @@ fun HedgeModalBottomSheetPreview() {
                     id = 1,
                     groupId = 1,
                     principle = "안전마진을 확보하라",
-                    description = "안전마진을 확보하라 content"
+                    description = "안전마진을 확보하라 content",
                 ),
                 MyPrinciple(
                     id = 2,
                     groupId = 1,
                     principle = "기업의 본질 가치보다 낮게 거래되는 주식을 찾아 장기 보유하기",
-                    description = "안전마진을 확보하라 content"
+                    description = "안전마진을 확보하라 content",
                 ),
                 MyPrinciple(
                     id = 3,
                     groupId = 1,
                     principle = "정책 민감도가 높은 주식은 정책 잘 살펴보고 매매",
-                    description = "안전마진을 확보하라 content"
+                    description = "안전마진을 확보하라 content",
                 )
             )
         )
@@ -593,7 +593,7 @@ private fun rememberBeginnerPrinciple(orderType: OrderType) = run {
                     id = index,
                     groupId = -1,
                     principle = principle,
-                    description = ""
+                    description = "",
                 )
             }
 
@@ -611,7 +611,6 @@ private fun rememberBeginnerPrinciple(orderType: OrderType) = run {
         )
     }
 }
-
 
 
 @Preview
@@ -638,7 +637,7 @@ private fun SelectedMyPrincipleItemPreview() {
         id = 1,
         groupId = 1,
         principle = "안전마진을 확보하라",
-        description = "안전마진을 확보하라 content"
+        description = "안전마진을 확보하라 content",
     )
 
     Box(

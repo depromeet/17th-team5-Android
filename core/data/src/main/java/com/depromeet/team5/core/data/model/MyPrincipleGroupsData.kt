@@ -52,6 +52,6 @@ data class MyPrincipleData(
         id = id,
         groupId = groupId,
         principle = principle,
-        description = description
+        description = description,
     )
 }

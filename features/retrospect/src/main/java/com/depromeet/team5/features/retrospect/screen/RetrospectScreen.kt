@@ -69,9 +69,12 @@ import com.depromeet.team5.core.designsystem.foundation.HedgeColor
 import com.depromeet.team5.core.designsystem.foundation.HedgeTypography
 import com.depromeet.team5.core.domain.model.MyPrincipleGroup
 import com.depromeet.team5.core.domain.model.OrderType
+import com.depromeet.team5.core.domain.model.PrincipleChecks
+import com.depromeet.team5.core.domain.model.PrincipleState
 import com.depromeet.team5.core.domain.monad.HedgeUiState
-import com.depromeet.team5.core.navigation.request.CreateRetrospectionParams
+import com.depromeet.team5.core.domain.request.CreateRetrospectionRequest
 import com.depromeet.team5.core.navigation.request.RequestViewModel
+import com.depromeet.team5.core.navigation.request.model.PrincipleGroupState
 import com.depromeet.team5.core.ui.component.PrincipleBottomSheetDialog
 import com.depromeet.team5.features.retrospect.R
 import com.depromeet.team5.features.retrospect.annotation.CurrencyType
@@ -224,7 +227,23 @@ fun RetrospectRoute(
                         }
                     )
 
-                    requestViewModel.selectedMyPrincipleGroup = myPrincipleGroup
+                    requestViewModel.selectedMyPrincipleGroupState = PrincipleGroupState(
+                        id = myPrincipleGroup.id,
+                        groupName = myPrincipleGroup.groupName,
+                        thumbnail = myPrincipleGroup.thumbnail,
+                        orderType = requestViewModel.request.orderType,
+                        displayOrder = myPrincipleGroup.displayOrder,
+                        principles = myPrincipleGroup.principles.map {
+                            PrincipleState(
+                                id = it.id,
+                                groupId = it.groupId,
+                                principle = it.principle,
+                                description = it.description,
+                                principleChecks = PrincipleChecks.createInit(it.id)
+                            )
+                        }
+
+                    )
                 }
 
                 onClickedConfirmButton()
@@ -239,7 +258,7 @@ fun RetrospectRoute(
 
 @Composable
 private fun rememberRetrospectionState(
-    requestParams: CreateRetrospectionParams,
+    requestParams: CreateRetrospectionRequest,
     context: Context = LocalContext.current
 ): RetrospectionState {
     val sellingTextFieldState = rememberSaveable {
@@ -292,7 +311,7 @@ private fun rememberRetrospectionState(
 @Composable
 private fun RetrospectScreen(
     retrospectionState: RetrospectionState,
-    requestParams: CreateRetrospectionParams,
+    requestParams: CreateRetrospectionRequest,
     modifier: Modifier = Modifier,
     buttonEnabled: Boolean = false,
     onUpdateSellingText: (String, Int) -> Unit,
@@ -499,7 +518,7 @@ private fun PrincipleDialog(
 private fun SellingTextField(
     state: State<TextFieldState>,
     currencyTypeState: State<CurrencyType>,
-    requestParams: CreateRetrospectionParams,
+    requestParams: CreateRetrospectionRequest,
     modifier: Modifier = Modifier,
     onUpdateSellingText: (String, Int) -> Unit,
     onUpdateCurrency: (CurrencyType) -> Unit
@@ -838,7 +857,7 @@ private fun RetrospectScreenPreview() {
 @Composable
 private fun RetrospectRoutePreview() {
     val retrospectionState = rememberRetrospectionState(
-        requestParams = CreateRetrospectionParams.EMPTY
+        requestParams = CreateRetrospectionRequest.EMPTY
     )
     val isButtonEnabled by remember {
         derivedStateOf {
@@ -865,7 +884,7 @@ private fun RetrospectRoutePreview() {
             modifier = Modifier.padding(paddingValues),
             retrospectionState = retrospectionState,
             buttonEnabled = isButtonEnabled,
-            requestParams = CreateRetrospectionParams.EMPTY.copy(orderType = OrderType.SELL),
+            requestParams = CreateRetrospectionRequest.EMPTY.copy(orderType = OrderType.SELL),
             onUpdateSellingText = { text, selection ->
                 retrospectionState.sellingTextFieldState.value =
                     retrospectionState.sellingTextFieldState.value.copy(

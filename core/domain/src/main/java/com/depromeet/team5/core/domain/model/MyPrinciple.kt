@@ -18,5 +18,5 @@ data class MyPrinciple(
     val id: Int,
     val groupId: Int,
     val principle: String,
-    val description: String
+    val description: String,
 )

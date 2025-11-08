@@ -3,9 +3,10 @@ package com.depromeet.team5.features.feedback.screen
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.depromeet.team5.core.domain.request.CreateRetrospectionRequest
 import com.depromeet.team5.core.domain.usecase.CreateFeedbackUseCase
 import com.depromeet.team5.core.domain.usecase.CreateRetrospectionUseCase
-import com.depromeet.team5.core.navigation.request.CreateRetrospectionParams
+import com.depromeet.team5.core.navigation.request.model.PrincipleGroupState
 import com.depromeet.team5.features.feedback.AiFeedbackUiState
 import com.depromeet.team5.features.feedback.PrincipleState
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -30,22 +31,14 @@ class AiFeedbackViewModel @Inject constructor(
         MutableStateFlow(AiFeedbackUiState.Loading)
     val feedbackStateFlow: StateFlow<AiFeedbackUiState> = _feedbackStateFlow
 
-    fun createRetrospection(request: CreateRetrospectionParams) {
+    fun createRetrospection(
+        request: CreateRetrospectionRequest,
+        principleGroupState: PrincipleGroupState,
+    ) {
         viewModelScope.launch {
             createRetrospectionUseCase(
-                body = mapOf(
-                    "symbol" to request.symbol,
-                    "market" to request.market,
-                    "orderType" to request.orderType.name,
-                    "price" to request.price,
-                    "currency" to request.currency,
-                    "volume" to request.volume,
-                    "orderDate" to formatDate(request.orderDate),
-                    "returnRate" to request.returnRate,
-                    "content" to request.content,
-                    "principleChecks" to request.principleChecks,
-                    "emotion" to request.emotion?.name
-                )
+                request = request.copy(orderDate = formatDate(request.orderDate)),
+                principles = principleGroupState.principles,
             )
                 .flatMapConcat { createFeedbackUseCase(it.id) }
                 .map {
@@ -74,13 +67,13 @@ class AiFeedbackViewModel @Inject constructor(
                 }
                 .onEach { _feedbackStateFlow.value = it }
                 .collect()
+        }
     }
-}
 
 
-fun updatePrinciple(title: String) {
-    when (_feedbackStateFlow.value) {
-        is AiFeedbackUiState.Success -> {
+    fun updatePrinciple(title: String) {
+        when (_feedbackStateFlow.value) {
+            is AiFeedbackUiState.Success -> {
 //                val index =
 //                    (_feedbackStateFlow.value as AiFeedbackUiState.Success).principles.indexOfFirst { it.title == title }
 //
@@ -101,26 +94,26 @@ fun updatePrinciple(title: String) {
 //                    )
 //                }
 
+            }
+
+            else -> {}
+        }
+    }
+
+    private fun formatDate(date: String): String {
+        val regex = """(\d{4})년\s*(\d{1,2})월\s*(\d{1,2})일""".toRegex()
+
+        val matchResult = regex.find(date)
+
+        if (matchResult != null) {
+            val (year, month, day) = matchResult.destructured
+
+            val formattedMonth = month.padStart(2, '0')
+            val formattedDay = day.padStart(2, '0')
+
+            return "$year-$formattedMonth-$formattedDay"
         }
 
-        else -> {}
+        error("잘못된 Date Format이 들어왔습니다. Params : { $date }")
     }
-}
-
-private fun formatDate(date: String): String {
-    val regex = """(\d{4})년\s*(\d{1,2})월\s*(\d{1,2})일""".toRegex()
-
-    val matchResult = regex.find(date)
-
-    if (matchResult != null) {
-        val (year, month, day) = matchResult.destructured
-
-        val formattedMonth = month.padStart(2, '0')
-        val formattedDay = day.padStart(2, '0')
-
-        return "$year-$formattedMonth-$formattedDay"
-    }
-
-    error("잘못된 Date Format이 들어왔습니다. Params : { $date }")
-}
 }

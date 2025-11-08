@@ -23,6 +23,14 @@ object HedgeIcon {
         @Composable
         get() = ImageVector.vectorResource(id = R.drawable.ic_arrow_right_thick)
 
+    val ArrowUp: ImageVector
+        @Composable
+        get() = ImageVector.vectorResource(id = R.drawable.ic_arrow_up)
+
+    val ArrowDown: ImageVector
+        @Composable
+        get() = ImageVector.vectorResource(id = R.drawable.ic_arrow_down)
+
     val CloseThin: ImageVector
         @Composable
         get() = ImageVector.vectorResource(id = R.drawable.ic_close_thin)
@@ -74,5 +82,13 @@ object HedgeIcon {
     val Trash: ImageVector
         @Composable
         get() = ImageVector.vectorResource(id = R.drawable.ic_trash)
+
+    val Link: ImageVector
+        @Composable
+        get() = ImageVector.vectorResource(id = R.drawable.ic_link)
+
+    val COMPANY_LOGO: ImageVector
+        @Composable
+        get() = ImageVector.vectorResource(id = R.drawable.ic_company_logo)
 
 }

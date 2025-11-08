@@ -1,11 +1,11 @@
 package com.depromeet.team5.feature.reasons
 
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
+import androidx.activity.compose.BackHandler
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.PickVisualMediaRequest
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -19,422 +19,499 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.PagerState
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.ripple
+import androidx.compose.material.Text
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.dropShadow
-import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.painter.Painter
-import androidx.compose.ui.graphics.shadow.Shadow
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.layout.onSizeChanged
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.input.TextFieldValue
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.DpOffset
-import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
+import androidx.core.net.toUri
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import coil.compose.AsyncImage
 import com.depromeet.team5.core.designsystem.component.HedgeButton
+import com.depromeet.team5.core.designsystem.component.HedgeToast
+import com.depromeet.team5.core.designsystem.component.HedgeToastState
 import com.depromeet.team5.core.designsystem.component.HedgeTopBar
 import com.depromeet.team5.core.designsystem.foundation.HedgeColor
 import com.depromeet.team5.core.designsystem.foundation.HedgeIcon
 import com.depromeet.team5.core.designsystem.foundation.HedgeTypography
+import com.depromeet.team5.core.domain.model.OrderType
+import com.depromeet.team5.core.domain.monad.HedgeUiState
 import com.depromeet.team5.core.navigation.request.RequestViewModel
-import com.depromeet.team5.feature.reasons.ui.AnalysisPip
+import com.depromeet.team5.core.ui.HedgeModal
+import com.depromeet.team5.feature.reasons.model.PrincipleAdherence
+import com.depromeet.team5.feature.reasons.model.RestrictionAttachment
+import com.depromeet.team5.feature.reasons.model.TradeInfo
+import com.depromeet.team5.feature.reasons.model.UiPrinciple
+import com.depromeet.team5.feature.reasons.model.UiPrincipleGroup
+import com.depromeet.team5.feature.reasons.model.toUi
 import com.depromeet.team5.feature.reasons.ui.AutoScrollTextField
-import com.depromeet.team5.feature.reasons.ui.EmotionBottomSheet
-import com.depromeet.team5.feature.reasons.ui.PrincipleBottomSheet
+import com.depromeet.team5.feature.reasons.ui.ImageThumbnailContainer
+import com.depromeet.team5.feature.reasons.ui.InputToolBar
+import com.depromeet.team5.feature.reasons.ui.InputToolBarIme
+import com.depromeet.team5.feature.reasons.ui.LinkModal
+import com.depromeet.team5.feature.reasons.ui.LinkThumbnailContainer
+import com.depromeet.team5.feature.reasons.ui.PrincipleAdherenceContainer
+import com.depromeet.team5.feature.reasons.ui.RestrictionIndicatorContainer
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.launch
 
-/*
-* todo
-*  config change/process kill
-*  refactoring
-* */
 @Composable
 fun ReasonRoute(
     onClickBack: () -> Unit,
     onClickDone: () -> Unit,
-    onClickEditTradeInfo: () -> Unit,
+    onClickImage: (ImageDetail) -> Unit,
     modifier: Modifier = Modifier,
     requestViewModel: RequestViewModel,
-    viewModel: ReasonsViewModel = hiltViewModel(),
+    viewModel: ReasonViewModel = hiltViewModel(),
 ) {
-    val principles by viewModel.principles.collectAsStateWithLifecycle()
-    val selectedEmotion by viewModel.selectedEmotion.collectAsStateWithLifecycle()
-    val tradeInfo by viewModel.tradeInfo.collectAsStateWithLifecycle()
-    val reason by viewModel.reason.collectAsStateWithLifecycle()
-    val analysisReport by viewModel.analysisReport.collectAsStateWithLifecycle()
+    val uiState by viewModel.hedgeUiState.collectAsStateWithLifecycle()
 
     LaunchedEffect(Unit) {
-        viewModel.initCreateAnalysisRequest(
-            AnalysisRequest(
-                market = requestViewModel.request.market,
-                symbol = requestViewModel.request.symbol,
-                time = requestViewModel.request.orderDate
-            )
-        )
-        requestViewModel.request.principleChecks?.let { checkedPrinciples ->
-            val updatedPrinciples = principles.map { principle ->
-                val matched = checkedPrinciples.any { it.principleId == principle.id.toInt() && it.isFollowed }
-                principle.copy(checked = matched)
-            }
-            viewModel.onPrincipleCheckedChanged(updatedPrinciples)
+        if (uiState is HedgeUiState.Success) return@LaunchedEffect
+        requestViewModel.selectedMyPrincipleGroupState?.let { principleGroupState ->
+            viewModel.initPrincipleGroup(principleGroupState.toUi())
         }
         viewModel.initTradeInfo(
             TradeInfo(
-                logoDrawableRes = R.drawable.ic_company_logo,
                 stockName = requestViewModel.request.companyName,
-                orderType = OrderType.BUY,
+                orderType = requestViewModel.request.orderType,
                 price = requestViewModel.request.price.toLong(),
-                currency = requestViewModel.request.currency.toUiCurrency,
+                currency = requestViewModel.request.currency,
                 volume = requestViewModel.request.volume,
                 orderDate = requestViewModel.request.orderDate
             )
         )
     }
 
-    ReasonScreen(
-        tradeInfo = tradeInfo,
-        selectedEmotion = selectedEmotion,
-        principles = principles,
-        reason = reason,
-        analysisReport = analysisReport,
-        onClickBack = onClickBack,
-        onClickDone = {
-            requestViewModel.request = requestViewModel.request.copy(
-                content = reason.text,
-                emotion = selectedEmotion?.toEmotionParams(),
-                principleChecks = principles.map { it.toPrincipleCheckParams() },
+    when (val state = uiState) {
+        is HedgeUiState.Success -> {
+            ReasonsScreen(
+                initialPrincipleGroup = viewModel.initialPrincipleGroup,
+                principleGroup = state.data.second,
+                tradeInfo = state.data.first,
+                onClickBack = onClickBack,
+                onClickDone = {
+                    requestViewModel.selectedMyPrincipleGroupState = state.data.second.toState()
+                    onClickDone()
+                },
+                onClickImage = onClickImage,
+                onAddImages = { idx, uris -> viewModel.onAddImages(idx, uris) },
+                onAddArticle = { idx, link -> viewModel.onAddArticle(idx, link) },
+                onClickDeleteImage = { idx, index -> viewModel.onRemoveImage(idx, index) },
+                onClickDeleteLink = { idx, index -> viewModel.onRemoveArticle(idx, index) },
+                onAdherenceChanged = { idx, value -> viewModel.onAdherenceChanged(idx, value) },
+                onReasonChanged = { idx, value -> viewModel.onNoteChanged(idx, value) },
+                modifier = modifier,
             )
+        }
+        else -> {}
+    }
+}
+
+@Composable
+private fun ReasonsScreen(
+    initialPrincipleGroup: UiPrincipleGroup?,
+    principleGroup: UiPrincipleGroup,
+    tradeInfo: TradeInfo,
+    onClickBack: () -> Unit,
+    onClickDone: () -> Unit,
+    onClickImage: (ImageDetail) -> Unit,
+    onAddImages: (Int, List<String>) -> Unit,
+    onAddArticle: (Int, String) -> Unit,
+    onClickDeleteImage: (Int, Int) -> Unit,
+    onClickDeleteLink: (Int, Int) -> Unit,
+    onAdherenceChanged: (Int, PrincipleAdherence) -> Unit,
+    onReasonChanged: (Int, TextFieldValue) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+
+    val context = LocalContext.current
+    val coroutineScope = rememberCoroutineScope()
+    val hedgeToastState = remember { HedgeToastState() }
+    var limitedAttachmentType: RestrictionAttachment? by remember { mutableStateOf(null) }
+    var showCompleteModal by remember { mutableStateOf(false) }
+    var showBackModal by remember { mutableStateOf(false) }
+    var showAddLinkModal by remember { mutableStateOf(false) }
+    var showAddMentionModal by remember { mutableStateOf(false) }
+    val pagerState = rememberPagerState(initialPage = 0) { principleGroup.principles.size }
+
+    val pickMultipleMedia =
+        rememberLauncherForActivityResult(ActivityResultContracts.PickMultipleVisualMedia(3)) { uris ->
+            if (uris.isNotEmpty()) {
+                val remain =
+                    ReasonViewModel.PRINCIPLE_ATTACHMENT_LIMIT - principleGroup.principles[pagerState.currentPage].principleChecks.imageUrls.size
+
+                val addCount = remain.coerceAtMost(uris.size)
+                if (addCount > 0) {
+                    onAddImages(pagerState.currentPage, uris.take(addCount).map { it.toString() })
+                }
+
+                if (uris.size > remain) {
+                    limitedAttachmentType = RestrictionAttachment.IMAGE
+                }
+            }
+        }
+
+    BackHandler {
+        if (initialPrincipleGroup == principleGroup) onClickBack()
+        else showBackModal = true
+    }
+
+    HedgeToast(hedgeToastState)
+
+    HedgeModal(
+        showModal = limitedAttachmentType != null,
+        icon = null,
+        title = stringResource(if (limitedAttachmentType == RestrictionAttachment.IMAGE) R.string.limited_image_modal_title else R.string.limited_link_modal_title),
+        description = stringResource(if (limitedAttachmentType == RestrictionAttachment.IMAGE) R.string.limited_image_modal_description else R.string.limited_link_modal_description),
+        submitButton = stringResource(R.string.submit) to { limitedAttachmentType = null },
+        cancelButton = null,
+        onDismissRequest = { limitedAttachmentType = null }
+    )
+
+    HedgeModal(
+        showModal = showCompleteModal,
+        icon = null,
+        title = stringResource(R.string.complete_modal_title),
+        description = stringResource(R.string.complete_modal_description),
+        submitButton = stringResource(R.string.complete) to {
+            showCompleteModal = false
             onClickDone()
         },
-        onClickEditTradeInfo = {
-            requestViewModel.request = requestViewModel.request.copy(
-                content = reason.text,
-                emotion = selectedEmotion?.toEmotionParams(),
-                principleChecks = principles.map { it.toPrincipleCheckParams() },
-            )
-            onClickEditTradeInfo()
+        cancelButton = stringResource(R.string.cancel) to {
+            showCompleteModal = false
         },
-        onReasonChanged = viewModel::onReasonChanged,
-        onEmotionChanged = viewModel::onEmotionChanged,
-        onPrincipleCheckedChanged = viewModel::onPrincipleCheckedChanged,
+        onDismissRequest = {
+            showCompleteModal = false
+        }
+    )
+
+    HedgeModal(
+        showModal = showBackModal,
+        title = stringResource(R.string.back_modal_title),
+        description = stringResource(R.string.back_modal_description),
+        submitButton = stringResource(R.string.go_back) to {
+            showBackModal = false
+            onClickBack()
+        },
+        cancelButton = stringResource(R.string.cancel) to {
+            showBackModal = false
+        },
+        onDismissRequest = {
+            showBackModal = false
+        },
+    )
+
+    HedgeModal(
+        showModal = showAddMentionModal,
+        icon = null,
+        title = stringResource(id = R.string.mention_modal_title),
+        description = stringResource(id = R.string.mention_modal_description),
+        submitButton = stringResource(R.string.excited) to {
+            showAddMentionModal = false
+        },
+        cancelButton = stringResource(R.string.not_needed) to {
+            showAddMentionModal = false
+        },
+        onDismissRequest = {
+            showAddMentionModal = false
+        },
+    )
+
+    LinkModal(
+        showDialog = showAddLinkModal,
+        onClickSubmit = { link ->
+            onAddArticle(pagerState.currentPage, link)
+            showAddLinkModal = false
+        },
+        onClickCancel = {
+            showAddLinkModal = false
+        },
+        onDismissRequest = {
+            showAddLinkModal = false
+        },
+    )
+    ReasonScreenContents(
+        principleGroup = principleGroup,
+        tradeInfo = tradeInfo,
+        pagerState = pagerState,
+        onClickBack = {
+            if (initialPrincipleGroup == principleGroup) onClickBack()
+            else showBackModal = true
+        },
+        onClickDone = {
+            if (principleGroup.isAllPrincipleChecked()) showCompleteModal = true
+            else {
+                coroutineScope.launch {
+                    hedgeToastState.show(context.getString(R.string.cannot_complete_restriction))
+                    pagerState.animateScrollToPage(principleGroup.getIndexOfFirstUnselectedPrinciple())
+                }
+            }
+        },
+        onClickAddImage = { pickMultipleMedia.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageAndVideo)) },
+        onClickAddLink = {
+            if (principleGroup.principles[pagerState.currentPage].principleChecks.articles.size >= 3) limitedAttachmentType =
+                RestrictionAttachment.LINK
+            else showAddLinkModal = true
+        },
+        onClickAddMention = { showAddMentionModal = true },
+        onClickImage = { onClickImage(ImageDetail(principleGroup.principles[pagerState.currentPage].principleChecks.imageUrls, it)) },
+        onClickDeleteImage = { onClickDeleteImage(pagerState.currentPage, it) },
+        onClickDeleteLink = { onClickDeleteLink(pagerState.currentPage, it) },
+        onReasonChanged = onReasonChanged,
+        onAdherenceChanged = { onAdherenceChanged(pagerState.currentPage, it) },
         modifier = modifier
     )
 }
 
 @Composable
-private fun ReasonScreen(
-    principles: List<Principle>,
-    selectedEmotion: Emotion?,
-    tradeInfo: TradeInfo,
-    reason: TextFieldValue,
-    analysisReport: String?,
-    onClickBack: () -> Unit,
-    onClickDone: () -> Unit,
-    onEmotionChanged: (Emotion) -> Unit,
-    onPrincipleCheckedChanged: (List<Principle>) -> Unit,
-    onClickEditTradeInfo: () -> Unit,
-    onReasonChanged: (TextFieldValue) -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    val density = LocalDensity.current
-    val isImeVisible = WindowInsets.ime.getBottom(density) > 0
-    var showPrinciplesBottomSheet by remember { mutableStateOf(false) }
-    var showEmotionBottomSheet by remember { mutableStateOf(false) }
-    var showAnalysisPip by remember { mutableStateOf(false) }
-
-    val selectedPrincipleCount = principles.count { it.checked }
-    val showToolBox by remember(showPrinciplesBottomSheet, showEmotionBottomSheet, isImeVisible) {
-        derivedStateOf { (showPrinciplesBottomSheet || showEmotionBottomSheet || showAnalysisPip || isImeVisible).not() }
-    }
-
-    Box(
-        modifier = modifier
-            .background(HedgeColor.Neutral.BackgroundDefault)
-            .fillMaxSize()
-            .windowInsetsPadding(WindowInsets.systemBars)
-
-    ) {
-        EmotionBottomSheet(
-            selected = selectedEmotion ?: Emotion.Anxious,
-            showEmotionBottomSheet = showEmotionBottomSheet,
-            onClickCancel = { showEmotionBottomSheet = false },
-            onClickDone = {
-                showEmotionBottomSheet = false
-                onEmotionChanged(it)
-            },
-            onDismissRequest = { showEmotionBottomSheet = false },
-            modifier = Modifier
-        )
-
-        PrincipleBottomSheet(
-            initialPrinciples = principles,
-            showPrinciplesBottomSheet = showPrinciplesBottomSheet,
-            onClickCancel = { showPrinciplesBottomSheet = false },
-            onClickDone = {
-                onPrincipleCheckedChanged(it)
-                showPrinciplesBottomSheet = false
-            },
-            onDismissRequest = { showPrinciplesBottomSheet = false },
-            modifier = Modifier
-                .windowInsetsPadding(WindowInsets.systemBars)
-        )
-
-        AnalysisPip(
-            showAnalysisPip = showAnalysisPip,
-            analysisReport = analysisReport,
-            onDismissRequest = { showAnalysisPip = false },
-            onClickCancel = { showAnalysisPip = false },
-            modifier = Modifier
-                .align(Alignment.BottomCenter)
-                .padding(horizontal = 10.dp)
-        )
-
-        ReasonScreenContents(
-            tradeInfo = tradeInfo,
-            selectedEmotion = selectedEmotion,
-            selectedPrincipleCount = selectedPrincipleCount,
-            reason = reason,
-            showToolBox = showToolBox,
-            onClickBack = onClickBack,
-            onClickDone = onClickDone,
-            onClickEditTradeInfo = onClickEditTradeInfo,
-            onClickAI = { showAnalysisPip = true },
-            onClickEmotion = { showEmotionBottomSheet = true },
-            onClickPrinciples = { showPrinciplesBottomSheet = true },
-            onReasonChanged = onReasonChanged,
-            modifier = Modifier,
-        )
-    }
-}
-
-@Composable
 private fun ReasonScreenContents(
+    principleGroup: UiPrincipleGroup,
     tradeInfo: TradeInfo,
-    selectedEmotion: Emotion?,
-    selectedPrincipleCount: Int,
-    reason: TextFieldValue,
-    showToolBox: Boolean,
+    pagerState: PagerState,
     onClickBack: () -> Unit,
     onClickDone: () -> Unit,
-    onClickEditTradeInfo: () -> Unit,
-    onClickAI: () -> Unit,
-    onClickEmotion: () -> Unit,
-    onClickPrinciples: () -> Unit,
-    onReasonChanged: (TextFieldValue) -> Unit,
+    onClickAddImage: () -> Unit,
+    onClickAddLink: () -> Unit,
+    onClickAddMention: () -> Unit,
+    onClickImage: (Int) -> Unit,
+    onClickDeleteImage: (Int) -> Unit,
+    onClickDeleteLink: (Int) -> Unit,
+    onAdherenceChanged: (PrincipleAdherence) -> Unit,
+    onReasonChanged: (Int, TextFieldValue) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val density = LocalDensity.current
-    val isImeVisible = WindowInsets.ime.getBottom(density) > 0
-    var toolboxContainerSize by remember { mutableStateOf(IntSize.Zero) }
-    val textFieldInsetFromToolboxDp = with(density) { (toolboxContainerSize.height * 0.9f).toDp() }
-    val scrollState = rememberScrollState()
-
     Box(
         modifier = modifier
+            .windowInsetsPadding(WindowInsets.systemBars)
             .fillMaxSize()
     ) {
+        val density = LocalDensity.current
+        val isImeVisible = WindowInsets.ime.getBottom(density) > 0
+        val focusRequesters = remember(principleGroup.principles.size) {
+            List(principleGroup.principles.size) { FocusRequester() }
+        }
+        LaunchedEffect(pagerState, isImeVisible) {
+            snapshotFlow { pagerState.currentPage }
+                .distinctUntilChanged()
+                .filter { isImeVisible }
+                .collect { page ->
+                    if (isImeVisible) {
+                        focusRequesters[page].requestFocus()
+                    }
+                }
+        }
         Column(
-            modifier = Modifier
+            modifier = modifier
                 .fillMaxSize()
-                .imePadding()
-                .verticalScroll(scrollState)
         ) {
             HedgeTopBar(
                 onClickBack = onClickBack,
+                title = {
+                    Text(
+                        text = principleGroup.groupName,
+                        color = HedgeColor.Text.Primary,
+                        style = HedgeTypography.Body3.SemiBold
+                    )
+                },
                 action = {
                     HedgeButton.Text(
                         text = stringResource(id = R.string.done),
+                        enabled = principleGroup.isAllPrincipleChecked(),
+                        forceClickable = true,
                         imageVector = null,
                         onClick = onClickDone,
                     )
                 }
             )
-            TradeInfo(
-                tradeInfo = tradeInfo,
-                onClickEditTradeInfo = onClickEditTradeInfo,
-            )
-            Spacer(Modifier.size(16.dp))
-            Image(
-                painter = painterResource(if (tradeInfo.orderType == OrderType.BUY) R.drawable.buy else R.drawable.sell),
-                contentDescription = "chart",
-                contentScale = ContentScale.FillBounds,
-                modifier = Modifier
-                    .fillMaxWidth(),
-            )
-            Spacer(Modifier.size(16.dp))
-            TagContainer(
-                selectedEmotion = selectedEmotion,
-                selectedPrincipleCount = selectedPrincipleCount,
-                modifier = Modifier.padding(bottom = 4.dp)
-            )
-            Spacer(Modifier.size(8.dp))
-
-            AutoScrollTextField(
-                content = reason,
-                onValueChange = onReasonChanged,
-                isImeVisible = isImeVisible,
-                modifier = Modifier
-                    .padding(bottom = if (isImeVisible) 8.dp else textFieldInsetFromToolboxDp)
-            )
+            if (isImeVisible.not()) {
+                TradeInfo(
+                    modifier = Modifier.padding(horizontal = 20.dp),
+                    tradeInfo = tradeInfo,
+                )
+                HorizontalDivider(
+                    modifier = Modifier.padding(horizontal = 20.dp),
+                    color = HedgeColor.Neutral.BackgroundSecondary
+                )
+            }
+            HorizontalPager(
+                state = pagerState
+            ) { page ->
+                ReasonsPage(
+                    principle = principleGroup.principles[page],
+                    isImeVisible = isImeVisible,
+                    focusRequester = focusRequesters[page],
+                    onClickAddImage = onClickAddImage,
+                    onClickAddLink = onClickAddLink,
+                    onClickAddMention = onClickAddMention,
+                    onClickImage = onClickImage,
+                    onClickDeleteImage = onClickDeleteImage,
+                    onClickDeleteLink = onClickDeleteLink,
+                    onAdherenceChanged = onAdherenceChanged,
+                    onReasonChanged = { onReasonChanged(page, it) },
+                )
+            }
         }
-        if (showToolBox) {
-            ToolboxContainer(
-                onClickAI = onClickAI,
-                onClickEmotion = onClickEmotion,
-                onClickPrinciples = onClickPrinciples,
-                modifier
-                    .align(Alignment.BottomCenter)
-                    .onSizeChanged { toolboxContainerSize = it }
-            )
-        }
+        RestrictionIndicatorContainer(
+            checkedAdherenceCount = principleGroup.getCheckedPrincipleCount(),
+            pagerState = pagerState,
+            modifier = Modifier
+                .align(Alignment.BottomCenter),
+        )
     }
 }
 
 @Composable
 private fun TradeInfo(
     tradeInfo: TradeInfo,
-    onClickEditTradeInfo: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Row(
+        modifier = modifier
+            .padding(vertical = 16.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        tradeInfo.logoUri?.let {
+            AsyncImage(
+                model = it,
+                contentDescription = null,
+                modifier = Modifier
+                    .size(22.dp)
+                    .clip(CircleShape)
+            )
+        } ?: Icon(
+            imageVector = HedgeIcon.COMPANY_LOGO,
+            contentDescription = null,
+            tint = Color.Unspecified,
+            modifier = Modifier
+                .size(22.dp),
+        )
+        Spacer(Modifier.size(12.dp))
+        Text(
+            text = tradeInfo.stockName,
+            color = HedgeColor.Text.Alternative,
+            style = HedgeTypography.Label1.Medium,
+        )
+        Spacer(Modifier.size(2.dp))
+        Text(
+            text = stringResource(
+                R.string.trade_info,
+                tradeInfo.price,
+                tradeInfo.currency,
+                tradeInfo.volume,
+                stringResource(if (tradeInfo.orderType == OrderType.BUY) R.string.buy else R.string.sell)
+            ),
+            color = HedgeColor.Trade.Sell,
+            style = HedgeTypography.Label1.SemiBold,
+        )
+    }
+}
+
+@Composable
+private fun ReasonsPage(
+    principle: UiPrinciple,
+    isImeVisible: Boolean,
+    focusRequester: FocusRequester,
+    onClickAddImage: () -> Unit,
+    onClickAddLink: () -> Unit,
+    onClickAddMention: () -> Unit,
+    onClickImage: (Int) -> Unit,
+    onClickDeleteImage: (Int) -> Unit,
+    onClickDeleteLink: (Int) -> Unit,
+    onAdherenceChanged: (PrincipleAdherence) -> Unit,
+    onReasonChanged: (TextFieldValue) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Column(
         modifier = modifier
-            .padding(start = 20.dp, top = 10.dp, bottom = 10.dp, end = 14.dp),
-        verticalArrangement = Arrangement.spacedBy(4.dp)
     ) {
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(7.dp)
-        ) {
-            Icon(
-                painter = painterResource(id = tradeInfo.logoDrawableRes),
-                contentDescription = null,
-                tint = Color.Unspecified,
-                modifier = Modifier
-                    .size(22.dp),
-            )
-            Text(
-                text = tradeInfo.stockName,
-                color = HedgeColor.Text.Title,
-                style = HedgeTypography.Body3.SemiBold,
-            )
-        }
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(4.dp)
-        ) {
-            Text(
-                text = stringResource(
-                    R.string.trade_info,
-                    tradeInfo.price,
-                    tradeInfo.currency,
-                    tradeInfo.volume,
-                    stringResource(if (tradeInfo.orderType == OrderType.BUY) R.string.buy else R.string.sell)
-                ),
-                color = HedgeColor.Text.Title,
-                style = HedgeTypography.Headline1.SemiBold,
-            )
-            Icon(
-                imageVector = HedgeIcon.Pencil,
-                contentDescription = "edit",
-                tint = HedgeColor.Text.Assistive,
-                modifier = Modifier
-                    .clip(CircleShape)
-                    .clickable(
-                        onClick = onClickEditTradeInfo,
-                        interactionSource = remember { MutableInteractionSource() },
-                    )
-                    .padding(3.dp)
-            )
-        }
-        Text(
-            text = tradeInfo.orderDate,
-            color = HedgeColor.Text.Alternative,
-            style = HedgeTypography.Label2.Regular,
-        )
-    }
-}
-
-@Composable
-private fun TagContainer(
-    selectedEmotion: Emotion?,
-    selectedPrincipleCount: Int,
-    modifier: Modifier = Modifier,
-) {
-    Row(
-        modifier = modifier
-            .padding(vertical = 4.dp, horizontal = 20.dp),
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        selectedEmotion?.let {
-            Tag(
-                text = stringResource(id = it.labelRes),
-                icon = painterResource(id = it.iconRes)
-            )
-        }
-        if (selectedPrincipleCount > 0) {
-            Tag(
-                text = stringResource(R.string.selected_principle_count, selectedPrincipleCount),
-                icon = painterResource(R.drawable.ic_book)
-            )
-        }
-    }
-}
-
-@Composable
-private fun Tag(
-    text: CharSequence,
-    icon: Painter,
-    modifier: Modifier = Modifier,
-) {
-    Row(
-        modifier = modifier
-            .background(
-                color = HedgeColor.Neutral.BackgroundSecondary,
-                shape = RoundedCornerShape(10.dp)
-            )
-            .padding(start = 6.dp, top = 8.dp, bottom = 8.dp, end = 8.dp),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(4.dp)
-    ) {
-        Icon(
-            painter = icon,
-            contentDescription = "emotion",
-            tint = HedgeColor.Text.Title,
-        )
-        if (text is AnnotatedString) {
-            Text(
-                text = text,
-                color = HedgeColor.Text.Primary,
-                style = HedgeTypography.Caption1.Semibold,
+        if (isImeVisible.not()) {
+            ExpandedPrincipleHeader(
+                title = principle.principle,
+                description = principle.description,
+                adherence = principle.principleChecks.adherence,
+                onAdherenceChanged = onAdherenceChanged,
             )
         } else {
-            Text(
-                text = text.toString(),
-                color = HedgeColor.Text.Primary,
-                style = HedgeTypography.Caption1.Semibold,
+            CompactPrincipleHeader(
+                title = principle.principle,
+                adherence = principle.principleChecks.adherence,
+            )
+        }
+        val scrollState = rememberScrollState()
+        Column(
+            modifier = Modifier
+                .weight(1f)
+                .verticalScroll(scrollState)
+                .padding(vertical = 24.dp),
+        ) {
+            AutoScrollTextField(
+                content = principle.principleChecks.note,
+                onValueChange = onReasonChanged,
+                isImeVisible = isImeVisible,
+                focusRequester = focusRequester,
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(horizontal = 24.dp)
+                    .padding(bottom = 8.dp)
+            )
+            ImageThumbnailContainer(
+                images = principle.principleChecks.imageUrls.map { it.toUri() },
+                onClickDeleteImage = onClickDeleteImage,
+                onClickImage = onClickImage,
+            )
+            LinkThumbnailContainer(
+                articles = principle.principleChecks.articles,
+                onClickDeleteLink = onClickDeleteLink,
+            )
+            if (isImeVisible.not()) {
+                InputToolBar(
+                    hasImages = principle.principleChecks.imageUrls.isNotEmpty(),
+                    hasLinks = principle.principleChecks.articles.isNotEmpty(),
+                    onClickAddImage = onClickAddImage,
+                    onClickAddLink = onClickAddLink,
+                    onClickAddMention = onClickAddMention,
+                    modifier = Modifier
+                        .padding(horizontal = 20.dp)
+                )
+            }
+        }
+        if (isImeVisible) {
+            InputToolBarIme(
+                modifier = Modifier
+                    .imePadding(),
+                hasImages = principle.principleChecks.imageUrls.isNotEmpty(),
+                hasLinks = principle.principleChecks.articles.isNotEmpty(),
+                onClickAddImage = onClickAddImage,
+                onClickAddLink = onClickAddLink,
+                onClickAddMention = onClickAddMention,
             )
         }
     }
@@ -442,124 +519,168 @@ private fun Tag(
 
 
 @Composable
-private fun ToolboxContainer(
-    onClickAI: () -> Unit,
-    onClickEmotion: () -> Unit,
-    onClickPrinciples: () -> Unit,
+private fun ExpandedPrincipleHeader(
+    title: String,
+    description: String,
+    adherence: PrincipleAdherence,
+    onAdherenceChanged: (PrincipleAdherence) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    Box(
-        modifier = modifier
-            .background(
-                brush = Brush.verticalGradient(
-                    0f to Color.Transparent,
-                    0.3577f to HedgeColor.Neutral.BackgroundDefault,
-                ),
-            )
-            .padding(top = 36.dp, bottom = 16.dp)
-            .fillMaxWidth(),
-        contentAlignment = Alignment.Center,
-    ) {
-        Toolbox(
-            onClickAI = onClickAI,
-            onClickEmotion = onClickEmotion,
-            onClickPrinciples = onClickPrinciples,
-        )
-    }
-}
-
-@Composable
-private fun Toolbox(
-    onClickAI: () -> Unit,
-    onClickEmotion: () -> Unit,
-    onClickPrinciples: () -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    val shape = RoundedCornerShape(29.dp)
-    Row(
-        modifier = modifier
-            .border(
-                width = (1.2).dp,
-                color = HedgeColor.Neutral.BackgroundDefault,
-                shape = shape
-            )
-            .dropShadow(
-                shape = shape,
-                shadow = Shadow(
-                    radius = 60.dp,
-                    spread = 0.dp,
-                    color = Color(0xFF0D0F26).copy(alpha = 0.14f),
-                    offset = DpOffset(x = 0.dp, y = 12.dp)
-                )
-            )
-            .background(
-                color = HedgeColor.Neutral.BackgroundDefault.copy(alpha = 0.7f),
-                shape = shape,
-            )
-            .padding(horizontal = 12.dp, vertical = 10.dp),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(4.dp)
-    ) {
-        ToolIcon(
-            painter = painterResource(R.drawable.ic_twinkle),
-            contentDescription = "ai assistant",
-            onClick = onClickAI
-        )
-        ToolIcon(
-            painter = painterResource(R.drawable.ic_add_emotion),
-            contentDescription = "emotion",
-            onClick = onClickEmotion
-        )
-        ToolIcon(
-            painter = painterResource(R.drawable.ic_checklist),
-            contentDescription = "principles",
-            onClick = onClickPrinciples
-        )
-    }
-}
-
-@Composable
-private fun ToolIcon(
-    painter: Painter,
-    onClick: () -> Unit,
-    modifier: Modifier = Modifier,
-    contentDescription: String? = null,
-) {
-    Icon(
-        painter = painter,
-        contentDescription = contentDescription,
-        modifier = modifier
-            .clip(RoundedCornerShape(9.dp))
+    var isExpanded by remember { mutableStateOf(false) }
+    Column(
+        modifier = Modifier
+            .padding(horizontal = 20.dp)
             .clickable(
-                onClick = onClick,
+                onClick = { isExpanded = !isExpanded },
                 interactionSource = remember { MutableInteractionSource() },
-                indication = ripple(
-                    color = HedgeColor.GREY_OPACITY_200
-                )
+                indication = null
             )
-            .padding(8.dp),
+            .padding(vertical = 10.dp)
+    ) {
+        Text(
+            text = stringResource(R.string.ask_adherence),
+            color = HedgeColor.Text.Title,
+            style = HedgeTypography.Body3.Medium,
+        )
+        Spacer(Modifier.size(4.dp))
+        Row(
+            modifier
+        ) {
+            Text(
+                modifier = Modifier
+                    .weight(1f),
+                text = title,
+                color = HedgeColor.Text.Title,
+                style = HedgeTypography.Headline1.SemiBold,
+                maxLines = if (isExpanded) Int.MAX_VALUE else 1,
+                overflow = TextOverflow.Ellipsis,
+            )
+            Spacer(Modifier.size(12.dp))
+            Icon(
+                modifier = Modifier
+                    .size(30.dp)
+                    .clip(CircleShape),
+                imageVector = if (isExpanded) HedgeIcon.ArrowUp else HedgeIcon.ArrowDown,
+                contentDescription = "expand",
+            )
+        }
+        if (isExpanded) {
+            Text(
+                modifier = Modifier.padding(vertical = 8.dp),
+                text = description,
+                style = HedgeTypography.Body3.Medium,
+                color = HedgeColor.Text.Alternative,
+            )
+        }
+    }
+    Spacer(Modifier.size(24.dp))
+    PrincipleAdherenceContainer(
+        checkedPrincipleAdherence = adherence,
+        modifier = Modifier
+            .padding(horizontal = 20.dp),
+        onAdherenceChanged = onAdherenceChanged
     )
+    Spacer(Modifier.size(8.dp))
+}
+
+@Composable
+private fun CompactPrincipleHeader(
+    title: String,
+    adherence: PrincipleAdherence,
+    modifier: Modifier = Modifier,
+) {
+    Column(
+        modifier = modifier
+            .padding(start = 20.dp, end = 20.dp, top = 28.dp)
+    ) {
+        Text(
+            modifier = Modifier
+                .fillMaxWidth(),
+            text = title,
+            color = HedgeColor.Text.Title,
+            style = HedgeTypography.Body2.SemiBold,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+        )
+        Spacer(Modifier.size(4.dp))
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            if (adherence == PrincipleAdherence.UNSELECTED) {
+                Icon(
+                    modifier = Modifier
+                        .size(18.dp),
+                    painter = painterResource(R.drawable.ic_circle),
+                    tint = HedgeColor.Brand.Disabled,
+                    contentDescription = null,
+                )
+                Spacer(Modifier.size(3.dp))
+                Icon(
+                    modifier = Modifier
+                        .size(18.dp),
+                    painter = painterResource(R.drawable.ic_triangle),
+                    tint = HedgeColor.Brand.Disabled,
+                    contentDescription = null,
+                )
+                Spacer(Modifier.size(3.dp))
+                Icon(
+                    modifier = Modifier
+                        .size(18.dp),
+                    painter = painterResource(R.drawable.ic_cross),
+                    tint = HedgeColor.Brand.Disabled,
+                    contentDescription = null,
+                )
+            } else {
+                Icon(
+                    modifier = Modifier
+                        .size(18.dp),
+                    painter = when (adherence) {
+                        PrincipleAdherence.KEPT -> painterResource(R.drawable.ic_circle)
+                        PrincipleAdherence.NEUTRAL -> painterResource(R.drawable.ic_triangle)
+                        PrincipleAdherence.NOT_KEPT -> painterResource(R.drawable.ic_cross)
+                        else -> error("UNSELECTED should never reach here")
+                    },
+                    tint = HedgeColor.Brand.Primary,
+                    contentDescription = null,
+                )
+            }
+            Spacer(Modifier.size(4.dp))
+            Text(
+                text = when (adherence) {
+                    PrincipleAdherence.KEPT -> stringResource(R.string.principle_followed)
+                    PrincipleAdherence.NEUTRAL -> stringResource(R.string.principle_neutral)
+                    PrincipleAdherence.NOT_KEPT -> stringResource(R.string.principle_not_followed)
+                    else -> stringResource(R.string.selecte_before)
+                },
+                style = if (adherence == PrincipleAdherence.UNSELECTED) HedgeTypography.Body3.Medium else HedgeTypography.Body3.SemiBold,
+                color = if (adherence == PrincipleAdherence.UNSELECTED) HedgeColor.Text.Assistive else HedgeColor.Brand.Darken,
+            )
+        }
+        Spacer(Modifier.size(12.dp))
+        HorizontalDivider(
+            color = HedgeColor.Neutral.BackgroundSecondary
+        )
+    }
 }
 
 @Composable
 @Preview
-private fun ReasonsScreenPreview() {
-
+private fun ReasonScreenPreview() {
+    val principleGroup by remember { mutableStateOf(previewUiPrincipleGroup) }
+    val tradeInfo by remember { mutableStateOf(previewTradeInfo) }
     var reason by remember { mutableStateOf(TextFieldValue("")) }
-
-    ReasonScreenContents(
-        modifier = Modifier.background(HedgeColor.Neutral.BackgroundDefault),
-        tradeInfo = ReasonsViewModel.dummyTradeInfo,
-        selectedEmotion = null,
-        selectedPrincipleCount = 0,
-        reason = reason,
-        showToolBox = true,
+    ReasonsScreen(
+        initialPrincipleGroup = principleGroup,
+        principleGroup = principleGroup,
+        tradeInfo = tradeInfo,
         onClickBack = {},
         onClickDone = {},
-        onClickEditTradeInfo = {},
-        onClickAI = {},
-        onClickEmotion = {},
-        onClickPrinciples = {},
-        onReasonChanged = { reason = it },
+        onClickImage = {},
+        onAddImages = { idx, uris -> },
+        onAddArticle = { idx, link -> },
+        onClickDeleteImage = { idx, index -> },
+        onClickDeleteLink = { idx, index -> },
+        onAdherenceChanged = { idx, value -> },
+        onReasonChanged = { idx, value -> reason = value },
     )
 }

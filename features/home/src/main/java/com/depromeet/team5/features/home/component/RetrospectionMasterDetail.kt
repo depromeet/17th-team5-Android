@@ -84,14 +84,14 @@ fun RetrospectionMasterDetail(
             if (showTopGradient){
                 Box(
                     modifier = Modifier
-                        .height(1400.dp)
+                        .height(70.dp)
                         .fillMaxWidth()
                         .align(Alignment.TopCenter)
                         .background(
                             brush = Brush.verticalGradient(
                                 colorStops = arrayOf(
-                                    0.0f to HedgeColor.WHITE,
-                                    0.15f to HedgeColor.WHITE.copy(alpha = 0f),
+                                    0.0f    to HedgeColor.Neutral.BackgroundDefault,
+                                    1.0f    to HedgeColor.Neutral.BackgroundDefault.copy(alpha = 0f),
                                 )
                             )
                         )

@@ -278,7 +278,7 @@ private fun RetrospectionHistorySection(
                     )
                 } else {
                     RetrospectionMasterDetail(
-                        symbols = retrospectionList,
+                        companyNames = retrospectionList,
                         modifier = Modifier.fillMaxWidth()
                     )
                 }
@@ -351,8 +351,8 @@ private fun HomeSectionPreview() {
 
     val successList = HedgeUiState.Success(
         listOf(
-            RetrospectionSymbolState(symbol = "삼성전자", sections = sampleSections),
-            RetrospectionSymbolState(symbol = "애플", sections = sampleSections)
+            RetrospectionSymbolState(companyName = "삼성전자", sections = sampleSections),
+            RetrospectionSymbolState(companyName = "애플", sections = sampleSections)
         )
     )
 

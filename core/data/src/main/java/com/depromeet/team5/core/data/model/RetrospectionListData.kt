@@ -18,11 +18,11 @@ data class RetrospectionListData(
 }
 
 data class RetrospectionListSymbolData(
-    val symbol: String,
+    val companyName: String,
     val retrospections: List<RetrospectionListItemData>
 ) : DataMapper<RetrospectionListSymbol> {
     override fun toDomain(): RetrospectionListSymbol = RetrospectionListSymbol(
-        symbol = symbol,
+        companyName = companyName,
         retrospections = retrospections.map { it.toDomain() }
     )
 }

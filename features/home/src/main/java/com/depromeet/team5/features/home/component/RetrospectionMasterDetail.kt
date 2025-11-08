@@ -40,7 +40,7 @@ import com.depromeet.team5.features.home.screen.RetrospectionSymbolState
 
 @Composable
 fun RetrospectionMasterDetail(
-    symbols: List<RetrospectionSymbolState>,
+    companyNames: List<RetrospectionSymbolState>,
     modifier: Modifier = Modifier,
 ) {
     val listState = rememberLazyListState()
@@ -50,10 +50,10 @@ fun RetrospectionMasterDetail(
         }
     }
 
-    var selectedSymbol by rememberSaveable(symbols) {
-        mutableStateOf(symbols.firstOrNull()?.symbol)
+    var selectedCompanyName by rememberSaveable(companyNames) {
+        mutableStateOf(companyNames.firstOrNull()?.companyName)
     }
-    val selected = symbols.firstOrNull { it.symbol == selectedSymbol }
+    val selected = companyNames.firstOrNull { it.companyName == selectedCompanyName }
 
     Row(
         modifier = modifier
@@ -69,13 +69,13 @@ fun RetrospectionMasterDetail(
                 modifier = Modifier
             ) {
                 items(
-                    items = symbols,
-                    key = { item -> item.symbol }
+                    items = companyNames,
+                    key = { item -> item.companyName }
                 ) { item ->
                     SymbolRailItem(
-                        symbol = item.symbol,
-                        selected = item.symbol == selectedSymbol,
-                        onClick = { selectedSymbol = item.symbol }
+                        symbol = item.companyName,
+                        selected = item.companyName == selectedCompanyName,
+                        onClick = { selectedCompanyName = item.companyName }
                     )
                 }
             }

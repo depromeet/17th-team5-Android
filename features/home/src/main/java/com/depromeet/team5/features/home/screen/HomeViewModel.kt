@@ -48,7 +48,7 @@ enum class HomeTab(
 }
 
 data class RetrospectionSymbolState(
-    val symbol: String,
+    val companyName: String,
     val sections: List<RetrospectionSectionState>,
 )
 
@@ -93,8 +93,8 @@ class HomeViewModel @Inject constructor(
                 if (result.data.isEmpty()) {
                     emptyList()
                 } else {
-                    result.data.map { symbol ->
-                        val items = symbol.retrospections
+                    result.data.map { companyName ->
+                        val items = companyName.retrospections
                         val sections = items
                             .sortedByDescending {
                                 it.retrospectionCreatedAt.flexLocalDateOrNull() ?: LocalDate.MIN
@@ -123,7 +123,7 @@ class HomeViewModel @Inject constructor(
                                 )
                             }
                         RetrospectionSymbolState(
-                            symbol = symbol.symbol,
+                            companyName = companyName.companyName,
                             sections = sections
                         )
                     }

@@ -21,11 +21,11 @@ data class RetrospectionListResponse(
 
 @Serializable
 data class RetrospectionListSymbolResponse(
-    val symbol: String,
+    val companyName: String,
     val retrospections: List<RetrospectionListItemResponse>
 ) : RetrofitMapper<RetrospectionListSymbolRemoteData> {
     override fun toRemoteData(): RetrospectionListSymbolRemoteData = RetrospectionListSymbolRemoteData(
-        symbol = symbol,
+        companyName = companyName,
         retrospections = retrospections.map { it.toRemoteData() }
     )
 }

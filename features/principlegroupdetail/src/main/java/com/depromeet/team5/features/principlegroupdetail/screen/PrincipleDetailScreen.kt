@@ -71,6 +71,7 @@ import com.depromeet.team5.core.domain.model.MyPrincipleGroup
 import com.depromeet.team5.core.domain.model.OrderType
 import com.depromeet.team5.core.domain.monad.HedgeUiState
 import com.depromeet.team5.core.navigation.PrincipleType
+import com.depromeet.team5.core.ui.HedgeModal
 import com.depromeet.team5.features.principlegroupdetail.R
 import com.depromeet.team5.features.principlegroupdetail.event.PrincipleDetailEvent
 import kotlin.math.abs
@@ -117,10 +118,9 @@ fun PrincipleDetailRoute(
         uiState = uiState,
         principleType = principleType,
         onClickedModifyButton = { groupId ->
-
+            //todo 추후에 수정 기능 연결하기
         },
         onClickedRemoveButton = { groupId ->
-            //todo dialog가 뜨고 확인 누를 시 삭제 이벤트 진행하도록 추후에 변경하기
             viewModel.deletePrincipleGroup(groupId)
         },
         onClickedItemModifyButton = { principleId ->
@@ -165,127 +165,47 @@ private fun PrincipleDetailScreen(
     onBackPressed: () -> Unit,
     onShowErrorToast: (Throwable) -> Unit
 ) {
+    var isShowDeleteModal by remember { mutableStateOf(false) }
+
     if (uiState is HedgeUiState.Loading) {
         LoadingProgressbar()
     }
 
     when (uiState) {
         is HedgeUiState.Success<MyPrincipleGroup> -> {
-            Box(
-                modifier = modifier
-                    .fillMaxSize()
-            ) {
-                Column(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .background(HedgeColor.WHITE)
-                ) {
-                    Topbar(
-                        modifier = Modifier.background(HedgeColor.Brand.Secondary),
-                        onBackPressed = onBackPressed,
-                        onClickedModifyButton = {
-                            onClickedModifyButton(uiState.data.id)
-                        },
-                        onClickedRemoveButton = {
-                            onClickedRemoveButton(uiState.data.id)
-                        }
-                    )
-
-                    Column(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .background(HedgeColor.Brand.Secondary)
-                            .padding(horizontal = 20.dp)
-                    ) {
-                        Box(
-                            modifier = Modifier
-                                .padding(top = 44.dp)
-                                .size(56.dp)
-                                .clip(CircleShape)
-                                .background(HedgeColor.WHITE),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            if (uiState.data.thumbnail.startsWith("http")) {
-                                AsyncImage(
-                                    model = uiState.data.thumbnail,
-                                    contentDescription = null
-                                )
-                            } else {
-                                Text(
-                                    text = uiState.data.thumbnail
-                                )
-                            }
-                        }
-
-                        Text(
-                            modifier = Modifier.padding(top = 20.dp, bottom = 30.dp),
-                            text = uiState.data.groupName,
-                            style = HedgeTypography.Headline1.SemiBold,
-                            color = HedgeColor.Text.Title
-                        )
-                    }
-
-                    LazyColumn(
-                        modifier = Modifier
-                            .fillMaxWidth(),
-                        flingBehavior = rememberSlowFlingBehavior(0.5f)
-                    ) {
-                        item {
-                            Spacer(modifier.size(10.dp))
-                        }
-
-                        itemsIndexed(
-                            items = uiState.data.principles,
-                            key = { index, principle -> principle.id }
-                        ) { index, principle ->
-                            Column(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .animateItem(
-                                        fadeInSpec = TweenSpec(
-                                            durationMillis = 500
-                                        ),
-                                        fadeOutSpec = TweenSpec(
-                                            durationMillis = 500
-                                        ),
-                                        placementSpec = tween(
-                                            durationMillis = 500
-                                        )
-                                    )
-                            ) {
-                                PrincipleItem(
-                                    index = index + 1,
-                                    principle = principle,
-                                    onClickedItemModifyButton = onClickedItemModifyButton,
-                                    onClickedItemRemoveButton = onClickedItemRemoveButton
-                                )
-                                HorizontalDivider(
-                                    thickness = 1.dp,
-                                    color = HedgeColor.Neutral.BackgroundSecondary
-                                )
-                            }
-                        }
-                    }
+            PrincipleDetailContent(
+                modifier = modifier,
+                myPrincipleGroup = uiState.data,
+                principleType = principleType,
+                onClickedModifyButton = onClickedModifyButton,
+                onClickedItemModifyButton = onClickedItemModifyButton,
+                onClickedItemRemoveButton = onClickedItemRemoveButton,
+                onBackPressed = onBackPressed,
+                onClickedConfirmButton = onClickedConfirmButton,
+                onShowDeleteModal = {
+                    isShowDeleteModal = true
                 }
+            )
 
-                when (principleType) {
-                    PrincipleType.MINE -> {
-                        PrincipleDetailFloatingButton(
-                            modifier = Modifier
-                                .padding(end = 20.dp, bottom = 45.dp)
-                                .align(alignment = Alignment.BottomEnd)
-                        ) {
-                            //todo 버튼 클릭 시 원칙 추가 기능 넣기
-                        }
-                    }
-
-                    PrincipleType.RECOMMENDED -> {
-                        PrincipleDetailConfirmButton(
-                            modifier = Modifier.align(Alignment.BottomCenter),
-                            onClickedConfirmButton = onClickedConfirmButton
-                        )
-                    }
-                }
+            if (isShowDeleteModal) {
+                HedgeModal(
+                    showModal = isShowDeleteModal,
+                    title = stringResource(
+                        R.string.principle_detail_modal_delete_title,
+                        uiState.data.groupName
+                    ),
+                    description = stringResource(R.string.principle_detail_modal_delete_content),
+                    submitButton = stringResource(R.string.delete) to {
+                        onClickedRemoveButton(uiState.data.id)
+                    },
+                    cancelButton = stringResource(R.string.cancel) to {
+                        isShowDeleteModal = false
+                    },
+                    onDismissRequest = {
+                        isShowDeleteModal = false
+                    },
+                    icon = null
+                )
             }
         }
 
@@ -296,6 +216,134 @@ private fun PrincipleDetailScreen(
         }
 
         else -> {}
+    }
+}
+
+@Composable
+private fun PrincipleDetailContent(
+    modifier: Modifier = Modifier,
+    myPrincipleGroup: MyPrincipleGroup,
+    principleType: PrincipleType,
+    onClickedModifyButton: (Int) -> Unit,
+    onClickedItemModifyButton: (Int) -> Unit,
+    onClickedItemRemoveButton: (Int) -> Unit,
+    onBackPressed: () -> Unit,
+    onClickedConfirmButton: () -> Unit,
+    onShowDeleteModal: () -> Unit
+) {
+    Box(
+        modifier = modifier
+            .fillMaxSize()
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(HedgeColor.WHITE)
+        ) {
+            Topbar(
+                modifier = Modifier.background(HedgeColor.Brand.Secondary),
+                onBackPressed = onBackPressed,
+                onClickedModifyButton = {
+                    onClickedModifyButton(myPrincipleGroup.id)
+                },
+                onShowDeleteModal = onShowDeleteModal
+            )
+
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(HedgeColor.Brand.Secondary)
+                    .padding(horizontal = 20.dp)
+            ) {
+                Box(
+                    modifier = Modifier
+                        .padding(top = 44.dp)
+                        .size(56.dp)
+                        .clip(CircleShape)
+                        .background(HedgeColor.WHITE),
+                    contentAlignment = Alignment.Center
+                ) {
+                    if (myPrincipleGroup.thumbnail.startsWith("http")) {
+                        AsyncImage(
+                            model = myPrincipleGroup.thumbnail,
+                            contentDescription = null
+                        )
+                    } else {
+                        Text(
+                            text = myPrincipleGroup.thumbnail
+                        )
+                    }
+                }
+
+                Text(
+                    modifier = Modifier.padding(top = 20.dp, bottom = 30.dp),
+                    text = myPrincipleGroup.groupName,
+                    style = HedgeTypography.Headline1.SemiBold,
+                    color = HedgeColor.Text.Title
+                )
+            }
+
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxWidth(),
+                flingBehavior = rememberSlowFlingBehavior(0.5f)
+            ) {
+                item {
+                    Spacer(modifier.size(10.dp))
+                }
+
+                itemsIndexed(
+                    items = myPrincipleGroup.principles,
+                    key = { index, principle -> principle.id }
+                ) { index, principle ->
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .animateItem(
+                                fadeInSpec = TweenSpec(
+                                    durationMillis = 500
+                                ),
+                                fadeOutSpec = TweenSpec(
+                                    durationMillis = 500
+                                ),
+                                placementSpec = tween(
+                                    durationMillis = 500
+                                )
+                            )
+                    ) {
+                        PrincipleItem(
+                            index = index + 1,
+                            principle = principle,
+                            onClickedItemModifyButton = onClickedItemModifyButton,
+                            onClickedItemRemoveButton = onClickedItemRemoveButton
+                        )
+                        HorizontalDivider(
+                            thickness = 1.dp,
+                            color = HedgeColor.Neutral.BackgroundSecondary
+                        )
+                    }
+                }
+            }
+        }
+
+        when (principleType) {
+            PrincipleType.MINE -> {
+                PrincipleDetailFloatingButton(
+                    modifier = Modifier
+                        .padding(end = 20.dp, bottom = 45.dp)
+                        .align(alignment = Alignment.BottomEnd)
+                ) {
+                    //todo 버튼 클릭 시 원칙 추가 기능 넣기
+                }
+            }
+
+            PrincipleType.RECOMMENDED -> {
+                PrincipleDetailConfirmButton(
+                    modifier = Modifier.align(Alignment.BottomCenter),
+                    onClickedConfirmButton = onClickedConfirmButton
+                )
+            }
+        }
     }
 }
 
@@ -458,7 +506,7 @@ private fun Topbar(
     modifier: Modifier = Modifier,
     onBackPressed: () -> Unit,
     onClickedModifyButton: () -> Unit,
-    onClickedRemoveButton: () -> Unit
+    onShowDeleteModal: () -> Unit
 ) {
     var isExpanded by remember { mutableStateOf(false) }
 
@@ -508,7 +556,7 @@ private fun Topbar(
                             isExpanded = false
                         },
                         onClickedRemoveButton = {
-                            onClickedRemoveButton()
+                            onShowDeleteModal()
                             isExpanded = false
                         },
                         onDismissRequest = { isExpanded = false }
@@ -833,7 +881,7 @@ fun TopbarPreview() {
             .background(HedgeColor.Brand.Secondary),
         onBackPressed = {},
         onClickedModifyButton = {},
-        onClickedRemoveButton = {}
+        onShowDeleteModal = {}
     )
 }
 

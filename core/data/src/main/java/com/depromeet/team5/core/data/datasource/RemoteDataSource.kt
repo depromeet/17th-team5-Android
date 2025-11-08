@@ -2,6 +2,7 @@ package com.depromeet.team5.core.data.datasource
 
 import com.depromeet.team5.core.data.model.FeedbackData
 import com.depromeet.team5.core.data.model.MyPrincipleGroupData
+import com.depromeet.team5.core.data.model.MyPrincipleGroupsInfoData
 import com.depromeet.team5.core.data.model.RetrospectionData
 import com.depromeet.team5.core.data.model.RetrospectionListData
 import com.depromeet.team5.core.data.model.SearchData
@@ -18,7 +19,7 @@ interface RemoteDataSource {
 
     suspend fun createFeedback(retrospectionId: Int): FeedbackData
 
-    suspend fun getPrinciples(orderType: String): MyPrincipleGroupsData
+    suspend fun getPrinciples(orderType: String): MyPrincipleGroupsInfoData
 
     suspend fun getPrincipleGroup(groupId: Int): MyPrincipleGroupData
 

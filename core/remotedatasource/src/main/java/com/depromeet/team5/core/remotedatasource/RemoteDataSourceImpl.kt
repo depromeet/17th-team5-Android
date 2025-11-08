@@ -4,6 +4,7 @@ import androidx.core.net.toUri
 import com.depromeet.team5.core.data.datasource.RemoteDataSource
 import com.depromeet.team5.core.data.model.FeedbackData
 import com.depromeet.team5.core.data.model.MyPrincipleGroupData
+import com.depromeet.team5.core.data.model.MyPrincipleGroupsInfoData
 import com.depromeet.team5.core.data.model.RetrospectionData
 import com.depromeet.team5.core.data.model.RetrospectionListData
 import com.depromeet.team5.core.data.model.SearchData
@@ -40,7 +41,7 @@ internal class RemoteDataSourceImpl @Inject constructor(
     override suspend fun createFeedback(retrospectionId: Int): FeedbackData =
         hedgeApiSource.createFeedback(retrospectionId).toData()
 
-    override suspend fun getPrinciples(orderType: String): MyPrincipleGroupsData =
+    override suspend fun getPrinciples(orderType: String): MyPrincipleGroupsInfoData =
         hedgeApiSource.getPrincipleGroups(orderType).toData()
 
     override suspend fun getPrincipleGroup(groupId: Int): MyPrincipleGroupData =

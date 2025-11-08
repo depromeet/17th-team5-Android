@@ -16,6 +16,7 @@ import com.depromeet.team5.core.retrofit.model.SystemPrincipleResponse
 import com.depromeet.team5.core.retrofit.model.UserStatsResponse
 import okhttp3.RequestBody
 import okhttp3.MultipartBody
+import okhttp3.RequestBody
 import retrofit2.http.Body
 import retrofit2.http.DELETE
 import retrofit2.http.GET

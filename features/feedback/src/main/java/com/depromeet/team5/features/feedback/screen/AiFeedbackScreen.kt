@@ -44,6 +44,7 @@ import com.depromeet.team5.core.designsystem.component.HedgeButton
 import com.depromeet.team5.core.designsystem.foundation.HedgeColor
 import com.depromeet.team5.core.designsystem.foundation.HedgeTypography
 import com.depromeet.team5.core.navigation.request.RequestViewModel
+import com.depromeet.team5.core.ui.component.HedgeLoadingScreen
 import com.depromeet.team5.core.ui.model.HedgeBadge
 import com.depromeet.team5.features.feedback.AiFeedbackUiState
 import com.depromeet.team5.features.feedback.PrincipleState
@@ -77,44 +78,11 @@ fun AiFeedbackRoute(
         }
 
         is AiFeedbackUiState.Loading -> {
-            AiLoadingProgress()
+            HedgeLoadingScreen()
         }
 
         is AiFeedbackUiState.Error -> {}
         is AiFeedbackUiState.Failure -> {}
-    }
-}
-
-@Composable
-private fun AiLoadingProgress(
-    modifier: Modifier = Modifier
-) {
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .background(
-                color = HedgeColor.Feedback.AI.copy(alpha = 0.05f)
-            )
-            .padding(start = 20.dp, end = 20.dp, bottom = 22.dp),
-    ) {
-        Row(
-            modifier = modifier.padding(top = 22.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            CircularProgressIndicator(
-                modifier = Modifier.size(20.dp),
-                strokeWidth = 2.5.dp,
-                color = HedgeColor.Feedback.AI,
-                strokeCap = StrokeCap.Round,
-                trackColor = HedgeColor.Feedback.AI.copy(alpha = 0.1f),
-            )
-            Text(
-                modifier = Modifier.padding(start = 12.dp),
-                text = stringResource(id = R.string.feedback_ai_feedback_in_progress),
-                style = HedgeTypography.Body3.Medium,
-                color = HedgeColor.Feedback.AI
-            )
-        }
     }
 }
 

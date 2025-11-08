@@ -11,8 +11,6 @@ import com.depromeet.team5.features.feedback.navigation.feedbackScreen
 import com.depromeet.team5.features.feedback.navigation.navigateToFeedback
 import com.depromeet.team5.features.home.Home
 import com.depromeet.team5.features.home.homeScreen
-import com.depromeet.team5.features.principle.navigation.navigateToPrinciple
-import com.depromeet.team5.features.principle.navigation.principleScreen
 import com.depromeet.team5.features.principlegroupdetail.navigation.navigateToPrincipleGroupDetail
 import com.depromeet.team5.features.principlegroupdetail.navigation.principleGroupDetail
 import com.depromeet.team5.features.retrospect.screen.navigateToRetrospect
@@ -54,12 +52,6 @@ fun HedgeNavHost(
             onBackPressed = { navController.popBackStack() },
             onClickedConfirmButton = { navController.navigateToReasonGraph() },
             onShowErrorToast = onShowErrorToast
-        )
-
-        principleScreen(
-            navController = navController,
-            onBackPressed = { navController.popBackStack() },
-            onClickNext = { navController.navigateToReasonGraph() }
         )
 
         principleGroupDetail(

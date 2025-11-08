@@ -68,7 +68,6 @@ dependencies {
     implementation(projects.core.logger)
     implementation(projects.core.ui)
     implementation(projects.features.search)
-    implementation(projects.features.principle)
     implementation(projects.features.retrospect)
     implementation(projects.features.home)
     implementation(projects.features.feedback)

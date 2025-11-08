@@ -1,11 +1,13 @@
 package com.depromeet.team5.core.domain.repository
 
 import com.depromeet.team5.core.domain.model.Feedback
+import com.depromeet.team5.core.domain.model.MyPrinciple
 import com.depromeet.team5.core.domain.model.MyPrincipleGroup
 import com.depromeet.team5.core.domain.model.RetrospectionList
 import com.depromeet.team5.core.domain.model.Search
 import com.depromeet.team5.core.domain.model.SystemPrinciple
 import com.depromeet.team5.core.domain.model.UserStats
+import com.depromeet.team5.core.domain.request.CreateRetrospectionRequest
 import kotlinx.coroutines.flow.Flow
 
 
@@ -24,6 +26,13 @@ interface HedgeRepository {
     fun deletePrincipleGroup(groupId: Int): Flow<Unit>
 
     fun deletePrinciple(principleId: Int): Flow<Unit>
+
+    fun modifyPrinciple(
+        principleId: Int,
+        principle: String,
+        description: String
+    ): Flow<MyPrinciple>
+
 
     fun createPrincipleGroup(body: Map<String, Any?>): Flow<MyPrincipleGroup>
 

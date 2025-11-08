@@ -2,6 +2,7 @@ package com.depromeet.team5.core.data.repositoryimpl
 
 import com.depromeet.team5.core.data.datasource.RemoteDataSource
 import com.depromeet.team5.core.domain.model.Feedback
+import com.depromeet.team5.core.domain.model.MyPrinciple
 import com.depromeet.team5.core.domain.model.MyPrincipleGroup
 import com.depromeet.team5.core.domain.model.RetrospectionList
 import com.depromeet.team5.core.domain.model.Search
@@ -44,6 +45,21 @@ internal class HedgeRepositoryImpl @Inject constructor(
     override fun deletePrinciple(principleId: Int): Flow<Unit> = flow {
         emit(remoteDataSource.deletePrinciple(principleId))
     }
+
+    override fun modifyPrinciple(
+        principleId: Int,
+        principle: String,
+        description: String
+    ): Flow<MyPrinciple> = flow {
+        emit(
+            remoteDataSource.modifyPrinciple(
+                principleId = principleId,
+                principle = principle,
+                description = description
+            )
+        )
+    }
+        .map { it.toDomain() }
 
     override fun createPrincipleGroup(body: Map<String, Any?>): Flow<MyPrincipleGroup> = flow {
         emit(remoteDataSource.createPrincipleGroup(body))

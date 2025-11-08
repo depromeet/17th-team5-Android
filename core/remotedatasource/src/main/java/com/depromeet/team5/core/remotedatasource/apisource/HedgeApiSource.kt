@@ -3,6 +3,7 @@ package com.depromeet.team5.core.remotedatasource.apisource
 import com.depromeet.team5.core.remotedatasource.model.FeedbackRemoteData
 import com.depromeet.team5.core.remotedatasource.model.MyPrincipleGroupRemoteData
 import com.depromeet.team5.core.remotedatasource.model.MyPrincipleGroupsInfoRemoteData
+import com.depromeet.team5.core.remotedatasource.model.MyPrincipleRemoteData
 import com.depromeet.team5.core.remotedatasource.model.RetrospectionListRemoteData
 import com.depromeet.team5.core.remotedatasource.model.SearchRemoteData
 import com.depromeet.team5.core.remotedatasource.model.SystemPrincipleRemoteData
@@ -22,6 +23,12 @@ interface HedgeApiSource {
     suspend fun deletePrincipleGroup(groupId: Int)
 
     suspend fun deletePrinciple(principleId: Int)
+
+    suspend fun modifyPrinciple(
+        principleId: Int,
+        principle: String,
+        description: String
+    ): MyPrincipleRemoteData
 
     suspend fun createPrincipleGroup(body: Map<String, Any?>): MyPrincipleGroupRemoteData
 

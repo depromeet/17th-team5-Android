@@ -3,12 +3,14 @@ package com.depromeet.team5.core.remotedatasource
 import androidx.core.net.toUri
 import com.depromeet.team5.core.data.datasource.RemoteDataSource
 import com.depromeet.team5.core.data.model.FeedbackData
+import com.depromeet.team5.core.data.model.MyPrincipleData
 import com.depromeet.team5.core.data.model.MyPrincipleGroupData
 import com.depromeet.team5.core.data.model.MyPrincipleGroupsInfoData
 import com.depromeet.team5.core.data.model.RetrospectionListData
 import com.depromeet.team5.core.data.model.SearchData
 import com.depromeet.team5.core.data.model.SystemPrincipleData
 import com.depromeet.team5.core.data.model.UserStatsData
+import com.depromeet.team5.core.data.request.CreateRetrospectionRequestData
 import com.depromeet.team5.core.remotedatasource.apisource.HedgeApiSource
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -38,6 +40,16 @@ internal class RemoteDataSourceImpl @Inject constructor(
     override suspend fun deletePrinciple(principleId: Int) {
         hedgeApiSource.deletePrinciple(principleId)
     }
+
+    override suspend fun modifyPrinciple(
+        principleId: Int,
+        principle: String,
+        description: String
+    ): MyPrincipleData = hedgeApiSource.modifyPrinciple(
+        principleId = principleId,
+        principle = principle,
+        description = description
+    ).toData()
 
     override suspend fun createPrincipleGroup(body: Map<String, Any?>): MyPrincipleGroupData =
         hedgeApiSource.createPrincipleGroup(body).toData()

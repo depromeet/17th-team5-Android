@@ -1,12 +1,14 @@
 package com.depromeet.team5.core.data.datasource
 
 import com.depromeet.team5.core.data.model.FeedbackData
+import com.depromeet.team5.core.data.model.MyPrincipleData
 import com.depromeet.team5.core.data.model.MyPrincipleGroupData
 import com.depromeet.team5.core.data.model.MyPrincipleGroupsInfoData
 import com.depromeet.team5.core.data.model.RetrospectionListData
 import com.depromeet.team5.core.data.model.SearchData
 import com.depromeet.team5.core.data.model.SystemPrincipleData
 import com.depromeet.team5.core.data.model.UserStatsData
+import com.depromeet.team5.core.data.request.CreateRetrospectionRequestData
 
 
 interface RemoteDataSource {
@@ -22,6 +24,12 @@ interface RemoteDataSource {
     suspend fun deletePrincipleGroup(groupId: Int)
 
     suspend fun deletePrinciple(principleId: Int)
+
+    suspend fun modifyPrinciple(
+        principleId: Int,
+        principle: String,
+        description: String
+    ): MyPrincipleData
 
     suspend fun createPrincipleGroup(body: Map<String, Any?>): MyPrincipleGroupData
 

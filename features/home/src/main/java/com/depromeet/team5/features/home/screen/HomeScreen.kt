@@ -47,6 +47,7 @@ import com.depromeet.team5.features.home.section.PrincipleSection
 fun HomeRoute(
     onBuyClick: () -> Unit,
     onSellClick: () -> Unit,
+    navigateToReason: (Int) -> Unit,
     onShowErrorToast: (Throwable) -> Unit,
     modifier: Modifier = Modifier,
     requestViewModel: RequestViewModel = hiltViewModel(),
@@ -69,6 +70,7 @@ fun HomeRoute(
         selectedOrderType = selectedOrderType,
         principleGroupsUiState = principleGroupsUiState,
         onChangePrincipleOrderType = { homeViewModel.setPrincipleOrderType(it) },
+        navigateToReason = navigateToReason,
         onBuyClick = {
             requestViewModel.request =
                 requestViewModel.request.copy(orderType = OrderType.BUY)
@@ -95,6 +97,7 @@ private fun HomeScreen(
     selectedOrderType: OrderType,
     principleGroupsUiState: HedgeUiState<List<MyPrincipleGroup>>,
     onChangePrincipleOrderType: (OrderType) -> Unit,
+    navigateToReason: (Int) -> Unit,
     onBuyClick: () -> Unit,
     onSellClick: () -> Unit,
     onShowErrorToast: (Throwable) -> Unit,
@@ -149,6 +152,7 @@ private fun HomeScreen(
                     userStatsUiState = userStatsUiState,
                     retrospectionListUiState = retrospectionListUiState,
                     onDashBoardClick = { isDashBoardVisible = it },
+                    navigateToReason = navigateToReason,
                     onShowErrorToast = { onShowErrorToast(it) }
                 )
 
@@ -187,6 +191,7 @@ private fun HomePreview() {
         selectedOrderType = OrderType.BUY,
         principleGroupsUiState = HedgeUiState.Loading(emptyList()),
         onChangePrincipleOrderType = {},
+        navigateToReason = {},
         onBuyClick = {},
         onSellClick = {},
         onShowErrorToast = {}

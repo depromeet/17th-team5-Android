@@ -50,6 +50,7 @@ fun HomeSection(
     userStatsUiState: HedgeUiState<UserStatsInfo>,
     retrospectionListUiState: HedgeUiState<List<RetrospectionSymbolState>>,
     onDashBoardClick: (Boolean) -> Unit,
+    navigateToReason: (Int) -> Unit,
     onShowErrorToast: (Throwable) -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -61,12 +62,13 @@ fun HomeSection(
         UserStatsSection(
             userStatsUiState = userStatsUiState,
             onDashBoardClick = onDashBoardClick,
-            onShowErrorToast
+            onShowErrorToast = onShowErrorToast
         )
         Spacer(modifier = Modifier.height(16.dp))
 
         RetrospectionHistorySection(
             retrospectionListUiState = retrospectionListUiState,
+            navigateToReason = navigateToReason,
             onShowErrorToast = onShowErrorToast
         )
     }
@@ -247,6 +249,7 @@ private fun UserStatsSection(
 @Composable
 private fun RetrospectionHistorySection(
     retrospectionListUiState: HedgeUiState<List<RetrospectionSymbolState>>,
+    navigateToReason: (Int) -> Unit,
     onShowErrorToast: (Throwable) -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -279,6 +282,7 @@ private fun RetrospectionHistorySection(
                 } else {
                     RetrospectionMasterDetail(
                         companyNames = retrospectionList,
+                        navigateToReason = navigateToReason,
                         modifier = Modifier.fillMaxWidth()
                     )
                 }
@@ -364,6 +368,7 @@ private fun HomeSectionPreview() {
         userStatsUiState = successStats,
         retrospectionListUiState = successList,
         onDashBoardClick = {},
-        onShowErrorToast = {}
+        navigateToReason = {},
+        onShowErrorToast = {},
     )
 }

@@ -32,6 +32,7 @@ fun HedgeNavHost(
             navController = navController,
             onBuyClick = { navController.navigateToSearch() },
             onSellClick = { navController.navigateToSearch() },
+            onClickRetrospect = { navController.navigateToReasonGraph() },
             onShowErrorToast = onShowErrorToast
         )
 

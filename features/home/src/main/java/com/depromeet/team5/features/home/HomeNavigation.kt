@@ -16,6 +16,7 @@ fun NavGraphBuilder.homeScreen(
     navController: NavController,
     onBuyClick: () -> Unit,
     onSellClick: () -> Unit,
+    onClickRetrospect: (Int) -> Unit,
     onShowErrorToast: (Throwable) -> Unit
 ) {
     composable<Home> { backStackEntry ->
@@ -29,6 +30,7 @@ fun NavGraphBuilder.homeScreen(
             onBuyClick = onBuyClick,
             onSellClick = onSellClick,
             requestViewModel = sharedViewModel,
+            navigateToReason = onClickRetrospect,
             onShowErrorToast = onShowErrorToast
         )
     }

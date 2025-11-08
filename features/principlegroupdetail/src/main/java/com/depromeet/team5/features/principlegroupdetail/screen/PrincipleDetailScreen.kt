@@ -86,7 +86,7 @@ fun PrincipleDetailRoute(
     onShowToast: (String) -> Unit
 ) {
     val context = LocalContext.current
-    val uiState by viewModel.uiStateFlow.collectAsStateWithLifecycle()
+    val uiState by viewModel.uiState.stateFlow.collectAsStateWithLifecycle()
 
     var isShowModalBottomSheet by remember { mutableStateOf(false) }
 

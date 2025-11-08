@@ -20,7 +20,7 @@ import com.depromeet.team5.features.search.searchScreen
 @Composable
 fun HedgeNavHost(
     modifier: Modifier = Modifier,
-    onShowErrorToast: (Throwable) -> Unit
+    onShowErrorToast: (Throwable) -> Unit,
 ) {
     val navController = rememberNavController()
 
@@ -33,9 +33,9 @@ fun HedgeNavHost(
             navController = navController,
             onBuyClick = { navController.navigateToSearch() },
             onSellClick = { navController.navigateToSearch() },
-            onRetrospectClick = { navController.navigateToReasonGraph() },
-            onPrincipleClick = { navController.navigateToPrinciple() },
-            onCreatePrincipleClick = { navController.navigateToPrinciple() },
+            onClickRetrospectionDetail = { },
+            onClickPrincipleDetail = { },
+            onClickCreatePrinciple = { },
             onShowErrorToast = onShowErrorToast
         )
 

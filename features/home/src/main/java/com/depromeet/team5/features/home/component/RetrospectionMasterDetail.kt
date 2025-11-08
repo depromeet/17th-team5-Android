@@ -41,7 +41,7 @@ import com.depromeet.team5.features.home.screen.RetrospectionSymbolState
 @Composable
 fun RetrospectionMasterDetail(
     companyNames: List<RetrospectionSymbolState>,
-    navigateToReason: (Int) -> Unit,
+    onClickRetrospectionDetail: (Int) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val listState = rememberLazyListState()
@@ -103,7 +103,7 @@ fun RetrospectionMasterDetail(
             selected?.let {
                 RetrospectionDetailList(
                     sections = it.sections,
-                    navigateToReason = navigateToReason,
+                    onClickRetrospectionDetail = onClickRetrospectionDetail,
                     modifier = Modifier.fillMaxWidth()
                 )
             }
@@ -148,7 +148,7 @@ private fun SymbolRailItem(
 @Composable
 private fun RetrospectionDetailList(
     sections: List<RetrospectionSectionState>,
-    navigateToReason: (Int) -> Unit,
+    onClickRetrospectionDetail: (Int) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     LazyColumn(
@@ -188,7 +188,7 @@ private fun RetrospectionDetailList(
                 ) { item ->
                     RetrospectionRow(
                         item = item,
-                        navigateToReason = navigateToReason
+                        onClickRetrospectionDetail = onClickRetrospectionDetail
                     )
                 }
 
@@ -207,14 +207,14 @@ private fun RetrospectionDetailList(
 @Composable
 private fun RetrospectionRow(
     item: RetrospectionState,
-    navigateToReason: (Int) -> Unit,
+    onClickRetrospectionDetail: (Int) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Column(
         modifier = modifier
             .fillMaxWidth()
             .padding(bottom = 20.dp)
-            .clickable { navigateToReason(item.id) }
+            .clickable { onClickRetrospectionDetail(item.id) }
     ) {
         Text(
             text = stringResource(R.string.home_tab_retrospection_price_volume, item.price, item.volume),

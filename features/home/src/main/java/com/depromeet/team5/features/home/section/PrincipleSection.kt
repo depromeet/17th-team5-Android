@@ -3,6 +3,7 @@ package com.depromeet.team5.features.home.section
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -19,6 +20,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.Divider
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
@@ -44,11 +46,13 @@ fun PrincipleSection(
     selected: OrderType,
     onSelect: (OrderType) -> Unit,
     principleGroupsUiState: HedgeUiState<List<MyPrincipleGroup>>,
-    onPrincipleClick: (Int) -> Unit,
-    onCreatePrincipleClick: () -> Unit,
+    onClickPrincipleDetail: (Int) -> Unit,
+    onClickCreatePrinciple: () -> Unit,
     onShowErrorToast: (Throwable) -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    val interaction = remember { MutableInteractionSource() }
+
     Column(
         modifier = modifier
             .padding(top = 20.dp)
@@ -67,7 +71,7 @@ fun PrincipleSection(
                     ) {
                         RecommendPrincipleItem(
                             recommendPrinciple = it,
-                            onClick = onPrincipleClick,
+                            onClick = onClickPrincipleDetail,
                             modifier = Modifier.padding(bottom = 20.dp)
                         )
                     }
@@ -118,7 +122,7 @@ fun PrincipleSection(
                         id = group.id,
                         icon = group.thumbnail,
                         title = group.groupName,
-                        onClick = onPrincipleClick
+                        onClick = onClickPrincipleDetail
                     )
                 }
 
@@ -160,8 +164,11 @@ fun PrincipleSection(
                 painter = painterResource(R.drawable.ic_plus),
                 contentDescription = null,
                 modifier = Modifier
-                    .clickable {
-                        onCreatePrincipleClick()
+                    .clickable(
+                        interactionSource = interaction,
+                        indication = null
+                    ) {
+                        onClickCreatePrinciple()
                     }
                     .background(
                         color = HedgeColor.Brand.Primary,
@@ -180,7 +187,7 @@ fun PrincipleSection(
                         icon = group.thumbnail,
                         title = group.groupName,
                         onClick = {
-                            onCreatePrincipleClick()
+                            onClickCreatePrinciple()
                         }
                     )
                 }
@@ -209,8 +216,8 @@ private fun PrincipleSectionPreview() {
         selected = OrderType.BUY,
         onSelect = {},
         principleGroupsUiState = HedgeUiState.Loading(emptyList()),
-        onPrincipleClick = {},
-        onCreatePrincipleClick = {},
+        onClickPrincipleDetail = {},
+        onClickCreatePrinciple = {},
         onShowErrorToast = {}
     )
 }

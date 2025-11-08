@@ -47,9 +47,9 @@ import com.depromeet.team5.features.home.section.PrincipleSection
 fun HomeRoute(
     onBuyClick: () -> Unit,
     onSellClick: () -> Unit,
-    onRetrospectClick: (Int) -> Unit,
-    onPrincipleClick: (Int) -> Unit,
-    onCreatePrincipleClick: () -> Unit,
+    onClickRetrospectionDetail: (Int) -> Unit,
+    onClickPrincipleDetail: (Int) -> Unit,
+    onClickCreatePrinciple: () -> Unit,
     onShowErrorToast: (Throwable) -> Unit,
     modifier: Modifier = Modifier,
     requestViewModel: RequestViewModel = hiltViewModel(),
@@ -72,9 +72,9 @@ fun HomeRoute(
         selectedOrderType = selectedOrderType,
         principleGroupsUiState = principleGroupsUiState,
         onChangePrincipleOrderType = { homeViewModel.setPrincipleOrderType(it) },
-        onRetrospectClick = onRetrospectClick,
-        onPrincipleClick = onPrincipleClick,
-        onCreatePrincipleClick = onCreatePrincipleClick,
+        onClickRetrospectionDetail = onClickRetrospectionDetail,
+        onClickPrincipleDetail = onClickPrincipleDetail,
+        onClickCreatePrinciple = onClickCreatePrinciple,
         onBuyClick = {
             requestViewModel.request =
                 requestViewModel.request.copy(orderType = OrderType.BUY)
@@ -101,9 +101,9 @@ private fun HomeScreen(
     selectedOrderType: OrderType,
     principleGroupsUiState: HedgeUiState<List<MyPrincipleGroup>>,
     onChangePrincipleOrderType: (OrderType) -> Unit,
-    onRetrospectClick: (Int) -> Unit,
-    onPrincipleClick: (Int) -> Unit,
-    onCreatePrincipleClick: () -> Unit,
+    onClickRetrospectionDetail: (Int) -> Unit,
+    onClickPrincipleDetail: (Int) -> Unit,
+    onClickCreatePrinciple: () -> Unit,
     onBuyClick: () -> Unit,
     onSellClick: () -> Unit,
     onShowErrorToast: (Throwable) -> Unit,
@@ -158,7 +158,7 @@ private fun HomeScreen(
                     userStatsUiState = userStatsUiState,
                     retrospectionListUiState = retrospectionListUiState,
                     onDashBoardClick = { isDashBoardVisible = it },
-                    navigateToReason = onRetrospectClick,
+                    onClickRetrospectionDetail = onClickRetrospectionDetail,
                     onShowErrorToast = { onShowErrorToast(it) }
                 )
 
@@ -168,6 +168,8 @@ private fun HomeScreen(
                     selected = selectedOrderType,
                     onSelect = onChangePrincipleOrderType,
                     principleGroupsUiState = principleGroupsUiState,
+                    onClickPrincipleDetail = onClickPrincipleDetail,
+                    onClickCreatePrinciple = onClickCreatePrinciple,
                     onShowErrorToast = { onShowErrorToast(it) }
                 )
             }
@@ -197,9 +199,9 @@ private fun HomePreview() {
         selectedOrderType = OrderType.BUY,
         principleGroupsUiState = HedgeUiState.Loading(emptyList()),
         onChangePrincipleOrderType = {},
-        onRetrospectClick = {},
-        onPrincipleClick = {},
-        onCreatePrincipleClick = {},
+        onClickRetrospectionDetail = {},
+        onClickPrincipleDetail = {},
+        onClickCreatePrinciple = {},
         onBuyClick = {},
         onSellClick = {},
         onShowErrorToast = {}

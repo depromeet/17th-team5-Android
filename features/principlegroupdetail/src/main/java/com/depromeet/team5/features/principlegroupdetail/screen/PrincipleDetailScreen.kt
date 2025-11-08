@@ -70,7 +70,7 @@ import com.depromeet.team5.core.domain.model.MyPrinciple
 import com.depromeet.team5.core.domain.model.MyPrincipleGroup
 import com.depromeet.team5.core.domain.model.OrderType
 import com.depromeet.team5.core.domain.monad.HedgeUiState
-import com.depromeet.team5.core.navigation.PrincipleType
+import com.depromeet.team5.core.navigation.Path
 import com.depromeet.team5.core.ui.HedgeModal
 import com.depromeet.team5.features.principlegroupdetail.R
 import com.depromeet.team5.features.principlegroupdetail.event.PrincipleDetailEvent
@@ -79,7 +79,7 @@ import kotlin.math.abs
 
 @Composable
 fun PrincipleDetailRoute(
-    principleType: PrincipleType,
+    path: Path,
     modifier: Modifier = Modifier,
     viewModel: PrincipleDetailViewModel = hiltViewModel(),
     onBackPressed: () -> Unit,
@@ -117,7 +117,7 @@ fun PrincipleDetailRoute(
     PrincipleDetailScreen(
         modifier = modifier,
         uiState = uiState,
-        principleType = principleType,
+        path = path,
         onClickedModifyButton = { groupId ->
             //todo 추후에 수정 기능 연결하기
         },
@@ -161,7 +161,7 @@ fun PrincipleDetailRoute(
 @Composable
 private fun PrincipleDetailScreen(
     uiState: HedgeUiState<MyPrincipleGroup>,
-    principleType: PrincipleType,
+    path: Path,
     modifier: Modifier = Modifier,
     onClickedModifyButton: (Int) -> Unit,
     onClickedRemoveButton: (Int) -> Unit,
@@ -182,7 +182,7 @@ private fun PrincipleDetailScreen(
             PrincipleDetailContent(
                 modifier = modifier,
                 myPrincipleGroup = uiState.data,
-                principleType = principleType,
+                path = path,
                 onClickedModifyButton = onClickedModifyButton,
                 onClickedItemModifyButton = onClickedItemModifyButton,
                 onClickedItemRemoveButton = onClickedItemRemoveButton,
@@ -229,7 +229,7 @@ private fun PrincipleDetailScreen(
 private fun PrincipleDetailContent(
     modifier: Modifier = Modifier,
     myPrincipleGroup: MyPrincipleGroup,
-    principleType: PrincipleType,
+    path: Path,
     onClickedModifyButton: (Int) -> Unit,
     onClickedItemModifyButton: (Int?, String?, String?, String?) -> Unit,
     onClickedItemRemoveButton: (Int) -> Unit,
@@ -339,8 +339,8 @@ private fun PrincipleDetailContent(
             }
         }
 
-        when (principleType) {
-            PrincipleType.MINE -> {
+        when (path) {
+            Path.PRINCIPLE_MINE -> {
                 PrincipleDetailFloatingButton(
                     modifier = Modifier
                         .padding(end = 20.dp, bottom = 45.dp)
@@ -355,7 +355,7 @@ private fun PrincipleDetailContent(
                 }
             }
 
-            PrincipleType.RECOMMENDED -> {
+            Path.PRINCIPLE_RECOMMENDED -> {
                 PrincipleDetailConfirmButton(
                     modifier = Modifier.align(Alignment.BottomCenter),
                     onClickedConfirmButton = onClickedConfirmButton
@@ -883,7 +883,7 @@ fun PrincipleDetailScreenPreview() {
                 principles = list
             )
         ),
-        principleType = PrincipleType.RECOMMENDED,
+        path = Path.PRINCIPLE_RECOMMENDED,
         onClickedModifyButton = {},
         onClickedRemoveButton = {},
         onClickedItemModifyButton = { _, _, _, _ -> },

@@ -5,7 +5,7 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavOptions
 import androidx.navigation.compose.composable
 import androidx.navigation.toRoute
-import com.depromeet.team5.core.navigation.PrincipleType
+import com.depromeet.team5.core.navigation.Path
 import com.depromeet.team5.features.principlegroupdetail.screen.PrincipleDetailRoute
 import kotlinx.serialization.Serializable
 
@@ -13,16 +13,16 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class PrincipleGroupDetail(
     val groupId: Int,
-    val principleType: PrincipleType
+    val path: Path
 )
 
 fun NavController.navigateToPrincipleGroupDetail(
     groupId: Int,
-    principleType: PrincipleType,
+    path: Path,
     options: NavOptions? = null
 ) {
     navigate(
-        route = PrincipleGroupDetail(groupId, principleType),
+        route = PrincipleGroupDetail(groupId, path),
         navOptions = options
     )
 }
@@ -37,7 +37,7 @@ fun NavGraphBuilder.principleGroupDetail(
         val args = backstackEntry.toRoute<PrincipleGroupDetail>()
 
         PrincipleDetailRoute(
-            principleType = args.principleType,
+            path = args.path,
             onBackPressed = onBackPressed,
             onShowErrorToast = onShowErrorToast,
             onShowToast = onShowToast,

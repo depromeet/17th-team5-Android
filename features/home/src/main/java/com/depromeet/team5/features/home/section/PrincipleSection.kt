@@ -188,7 +188,7 @@ fun PrincipleSection(
                         icon = group.thumbnail,
                         title = group.groupName,
                         onClick = {
-                            onClickCreatePrinciple()
+                            onClickPrincipleDetail()
                         }
                     )
                 }

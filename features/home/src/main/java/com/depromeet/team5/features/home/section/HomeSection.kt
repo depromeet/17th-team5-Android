@@ -37,6 +37,7 @@ import com.depromeet.team5.core.designsystem.foundation.HedgeColor.RED_500
 import com.depromeet.team5.core.designsystem.foundation.HedgeTypography
 import com.depromeet.team5.core.domain.model.UserStatsInfo
 import com.depromeet.team5.core.domain.monad.HedgeUiState
+import com.depromeet.team5.core.ui.component.HedgeLoadingScreen
 import com.depromeet.team5.core.ui.model.HedgeBadge
 import com.depromeet.team5.features.home.R
 import com.depromeet.team5.features.home.component.DashBoardCountItem
@@ -235,7 +236,9 @@ private fun UserStatsSection(
             }
         }
 
-        is HedgeUiState.Loading -> {}
+        is HedgeUiState.Loading -> {
+            HedgeLoadingScreen()
+        }
 
         is HedgeUiState.Error -> {
             userStats.throwable?.let {
@@ -289,7 +292,7 @@ private fun RetrospectionHistorySection(
             }
 
             is HedgeUiState.Loading -> {
-
+                HedgeLoadingScreen()
             }
 
             is HedgeUiState.Error -> {

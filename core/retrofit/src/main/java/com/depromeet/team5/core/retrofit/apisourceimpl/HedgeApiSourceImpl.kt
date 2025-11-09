@@ -41,6 +41,20 @@ internal class HedgeApiSourceImpl @Inject constructor(
     override suspend fun deletePrinciple(principleId: Int) =
         hedgeApi.deletePrinciple(principleId)
 
+    override suspend fun addPrinciple(
+        groupId: Int,
+        principle: String,
+        description: String
+    ) {
+        hedgeApi.addPrinciple(
+            mapOf(
+                "groupId" to groupId,
+                "principle" to principle,
+                "description" to description
+            ).toRequestBody()
+        )
+    }
+
     override suspend fun modifyPrinciple(
         principleId: Int,
         principle: String,

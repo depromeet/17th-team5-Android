@@ -62,6 +62,11 @@ interface HedgeApi {
         @Body body: RequestBody
     ): MyPrincipleInfoResponse
 
+    @POST("api/v1/investment-principles")
+    suspend fun addPrinciple(
+        @Body body: RequestBody
+    ): MyPrincipleInfoResponse
+
     @GET("api/v1/reports")
     suspend fun userStats(): UserStatsResponse
 

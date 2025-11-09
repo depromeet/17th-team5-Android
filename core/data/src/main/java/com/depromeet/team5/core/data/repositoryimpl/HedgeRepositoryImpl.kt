@@ -46,6 +46,20 @@ internal class HedgeRepositoryImpl @Inject constructor(
         emit(remoteDataSource.deletePrinciple(principleId))
     }
 
+    override fun addPrinciple(
+        groupId: Int,
+        principle: String,
+        description: String
+    ): Flow<Unit> = flow {
+        emit(
+            remoteDataSource.addPrinciple(
+                groupId = groupId,
+                principle = principle,
+                description = description
+            )
+        )
+    }
+
     override fun modifyPrinciple(
         principleId: Int,
         principle: String,

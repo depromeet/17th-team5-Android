@@ -41,6 +41,18 @@ internal class RemoteDataSourceImpl @Inject constructor(
         hedgeApiSource.deletePrinciple(principleId)
     }
 
+    override suspend fun addPrinciple(
+        groupId: Int,
+        principle: String,
+        description: String
+    ) {
+        hedgeApiSource.addPrinciple(
+            groupId = groupId,
+            principle = principle,
+            description = description
+        )
+    }
+
     override suspend fun modifyPrinciple(
         principleId: Int,
         principle: String,

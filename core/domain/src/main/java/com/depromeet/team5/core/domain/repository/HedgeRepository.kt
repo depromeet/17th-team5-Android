@@ -27,6 +27,12 @@ interface HedgeRepository {
 
     fun deletePrinciple(principleId: Int): Flow<Unit>
 
+    fun addPrinciple(
+        groupId: Int,
+        principle: String,
+        description: String
+    ): Flow<Unit>
+
     fun modifyPrinciple(
         principleId: Int,
         principle: String,

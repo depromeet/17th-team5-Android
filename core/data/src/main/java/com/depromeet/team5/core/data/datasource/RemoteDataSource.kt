@@ -25,6 +25,12 @@ interface RemoteDataSource {
 
     suspend fun deletePrinciple(principleId: Int)
 
+    suspend fun addPrinciple(
+        groupId: Int,
+        principle: String,
+        description: String
+    )
+
     suspend fun modifyPrinciple(
         principleId: Int,
         principle: String,

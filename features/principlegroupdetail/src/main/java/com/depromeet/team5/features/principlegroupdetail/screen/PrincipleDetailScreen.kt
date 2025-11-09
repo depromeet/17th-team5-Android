@@ -54,9 +54,12 @@ import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.vectorResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
@@ -291,62 +294,20 @@ private fun PrincipleDetailContent(
                 )
             }
 
-            LazyColumn(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .weight(1f),
-                contentPadding = when (path) {
-                    Path.PRINCIPLE_MINE -> PaddingValues(bottom = 0.dp)
-                    Path.PRINCIPLE_RECOMMENDED -> PaddingValues(
-                        bottom = HedgeButton.Action.Size.Large.minHeight * 2
-                    )
-                },
-                flingBehavior = rememberSlowFlingBehavior(0.5f)
-            ) {
-                item {
-                    Spacer(modifier.size(10.dp))
-                }
-
-                itemsIndexed(
-                    items = myPrincipleGroup.principles,
-                    key = { index, principle -> principle.id }
-                ) { index, principle ->
-                    Column(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .animateItem(
-                                fadeInSpec = TweenSpec(
-                                    durationMillis = 500
-                                ),
-                                fadeOutSpec = TweenSpec(
-                                    durationMillis = 500
-                                ),
-                                placementSpec = tween(
-                                    durationMillis = 500
-                                )
-                            )
-                    ) {
-                        PrincipleItem(
-                            index = index + 1,
-                            principle = principle,
-                            path = path,
-                            onClickedItemModifyButton = { id, principle, description ->
-                                onClickedItemModifyButton(
-                                    id,
-                                    myPrincipleGroup.groupName,
-                                    principle,
-                                    description
-                                )
-                            },
-                            onClickedItemRemoveButton = onClickedItemRemoveButton
-                        )
-                        HorizontalDivider(
-                            thickness = 1.dp,
-                            color = HedgeColor.Neutral.BackgroundSecondary
-                        )
-                    }
-                }
+            if (myPrincipleGroup.principles.isNotEmpty()) {
+                PrincipleList(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .weight(1f),
+                    myPrincipleGroup = myPrincipleGroup,
+                    path = path,
+                    onClickedItemModifyButton = onClickedItemModifyButton,
+                    onClickedItemRemoveButton = onClickedItemRemoveButton
+                )
+            } else {
+                PrincipleListEmpty()
             }
+
         }
 
         when (path) {
@@ -376,6 +337,98 @@ private fun PrincipleDetailContent(
 }
 
 @Composable
+fun PrincipleList(
+    myPrincipleGroup: MyPrincipleGroup,
+    path: Path,
+    modifier: Modifier = Modifier,
+    onClickedItemModifyButton: (Int?, String?, String?, String?) -> Unit,
+    onClickedItemRemoveButton: (Int) -> Unit,
+) {
+    LazyColumn(
+        modifier = modifier,
+        contentPadding = when (path) {
+            Path.PRINCIPLE_MINE -> PaddingValues(bottom = 0.dp)
+            Path.PRINCIPLE_RECOMMENDED -> PaddingValues(
+                bottom = HedgeButton.Action.Size.Large.minHeight * 2
+            )
+        },
+        flingBehavior = rememberSlowFlingBehavior(0.5f)
+    ) {
+        item {
+            Spacer(modifier.size(10.dp))
+        }
+
+        itemsIndexed(
+            items = myPrincipleGroup.principles,
+            key = { index, principle -> principle.id }
+        ) { index, principle ->
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .animateItem(
+                        fadeInSpec = TweenSpec(
+                            durationMillis = 500
+                        ),
+                        fadeOutSpec = TweenSpec(
+                            durationMillis = 500
+                        ),
+                        placementSpec = tween(
+                            durationMillis = 500
+                        )
+                    )
+            ) {
+                PrincipleItem(
+                    index = index + 1,
+                    principle = principle,
+                    path = path,
+                    onClickedItemModifyButton = { id, principle, description ->
+                        onClickedItemModifyButton(
+                            id,
+                            myPrincipleGroup.groupName,
+                            principle,
+                            description
+                        )
+                    },
+                    onClickedItemRemoveButton = onClickedItemRemoveButton
+                )
+                HorizontalDivider(
+                    thickness = 1.dp,
+                    color = HedgeColor.Neutral.BackgroundSecondary
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun PrincipleListEmpty(
+    modifier: Modifier = Modifier
+) {
+    Column(
+        modifier = modifier
+            .padding(top = 130.dp)
+            .fillMaxWidth()
+            .background(HedgeColor.WHITE),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+        Image(
+            modifier = Modifier.size(60.dp),
+            imageVector = ImageVector.vectorResource(id = R.drawable.img_check_list),
+            contentDescription = null,
+            colorFilter = ColorFilter.tint(HedgeColor.Text.Disabled)
+        )
+        Text(
+            modifier = Modifier.padding(top = 6.dp),
+            text = stringResource(R.string.principle_detail_principles_empty),
+            style = HedgeTypography.Body2.Medium,
+            color = HedgeColor.Text.Assistive,
+            textAlign = TextAlign.Center
+        )
+    }
+}
+
+@Composable
 fun PrincipleItem(
     index: Int,
     principle: MyPrinciple,
@@ -390,7 +443,12 @@ fun PrincipleItem(
         modifier = modifier
             .fillMaxWidth()
             .background(HedgeColor.WHITE)
-            .padding(start = 20.dp, top = 20.dp, end = 10.dp, bottom = 20.dp),
+            .padding(
+                start = 20.dp,
+                top = 20.dp,
+                end = if (path == Path.PRINCIPLE_MINE) 10.dp else 44.dp,
+                bottom = 20.dp
+            ),
     ) {
         Text(
             text = index.toString(),
@@ -939,6 +997,16 @@ fun PrincipleItemPreview() {
         onClickedItemModifyButton = { _, _, _ -> },
         onClickedItemRemoveButton = {}
     )
+}
+
+@Preview
+@Composable
+fun PrincipleListEmptyPreview() {
+    Box(
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        PrincipleListEmpty()
+    }
 }
 
 

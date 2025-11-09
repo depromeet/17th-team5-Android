@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="login_service_description">AI 피드백을 통해 나만의\n투자 원칙을 만드는 투자 회고 서비스</string>
+    <string name="login_kakao">카카오로 시작하기</string>
+</resources>

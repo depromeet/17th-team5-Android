@@ -127,6 +127,7 @@ private fun PrincipleModificationScreen(
     ) {
         Topbar(
             title = groupName,
+            enabled = principle.isNotEmpty() || content.isNotEmpty(),
             onClickedButton = onClickedConfirmButton,
             onBackClicked = onBackClicked
         )
@@ -198,6 +199,7 @@ private fun PrincipleModificationScreen(
 @Composable
 private fun Topbar(
     title: String,
+    enabled: Boolean = false,
     modifier: Modifier = Modifier,
     onClickedButton: () -> Unit,
     onBackClicked: () -> Unit = {},
@@ -237,6 +239,8 @@ private fun Topbar(
 
         HedgeButton.Text(
             text = stringResource(R.string.confirm),
+            enabled = enabled,
+            forceClickable = false,
             imageVector = null,
             size = HedgeButton.Text.Size.Large,
             onClick = onClickedButton

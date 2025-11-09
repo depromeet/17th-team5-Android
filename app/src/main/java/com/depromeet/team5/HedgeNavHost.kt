@@ -60,6 +60,7 @@ fun HedgeNavHost(
         )
 
         principleGroupDetail(
+            navController = navController,
             onBackPressed = navController::popBackStack,
             onShowErrorToast = onShowErrorToast,
             onShowToast = onShowToast,
@@ -74,7 +75,7 @@ fun HedgeNavHost(
         )
 
         principleModification(
-            onBackPressed = navController::popBackStack,
+            navController = navController,
             onShowErrorToast = onShowErrorToast,
             onShowToast = onShowToast,
             onShowNoIconToast = onShowNoIconToast

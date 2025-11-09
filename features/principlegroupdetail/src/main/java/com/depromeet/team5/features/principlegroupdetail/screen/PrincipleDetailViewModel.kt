@@ -44,10 +44,11 @@ class PrincipleDetailViewModel @Inject constructor(
         getPrinciple()
     }
 
-    private fun getPrinciple() {
+    fun getPrinciple() {
         getPrincipleUseCase(
             savedStateHandle.toRoute<PrincipleGroupDetail>().groupId
-        ).asUiState()
+        )
+            .asUiState()
             .onEach { uiState.emit(it) }
             .launchIn(viewModelScope)
     }

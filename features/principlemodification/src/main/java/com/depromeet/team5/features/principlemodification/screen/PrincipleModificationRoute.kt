@@ -55,7 +55,7 @@ import kotlinx.coroutines.launch
 fun PrincipleModificationRoute(
     modifier: Modifier = Modifier,
     viewModel: PrincipleModificationViewModel = hiltViewModel(),
-    onBackClicked: () -> Unit = {},
+    onBackClicked: (Boolean) -> Unit = {},
     onShowErrorToast: (Throwable) -> Unit,
     onShowToast: (String) -> Unit,
     onShowNoIconToast: (String) -> Unit,
@@ -74,7 +74,7 @@ fun PrincipleModificationRoute(
                     when (event) {
                         Event.Complete -> {
                             onShowToast(context.getString(R.string.principle_modification_toast_message))
-                            onBackClicked()
+                            onBackClicked(true)
                         }
 
                         is Event.ShowErrorToast -> {
@@ -115,7 +115,7 @@ private fun PrincipleModificationScreen(
     onClickedConfirmButton: () -> Unit,
     onUpdatedPrinciple: (String) -> Unit,
     onUpdatedContent: (String) -> Unit,
-    onBackClicked: () -> Unit = {},
+    onBackClicked: (Boolean) -> Unit = {},
     onShowNoIconToast: (String) -> Unit
 ) {
     val context = LocalContext.current
@@ -202,7 +202,7 @@ private fun Topbar(
     enabled: Boolean = false,
     modifier: Modifier = Modifier,
     onClickedButton: () -> Unit,
-    onBackClicked: () -> Unit = {},
+    onBackClicked: (Boolean) -> Unit = {},
 ) {
     Row(
         modifier = Modifier
@@ -220,7 +220,7 @@ private fun Topbar(
                     indication = null,
                     interactionSource = remember { MutableInteractionSource() }
                 ) {
-                    onBackClicked()
+                    onBackClicked(false)
                 },
             imageVector = HedgeIcon.ArrowLeftThick,
             contentDescription = null,

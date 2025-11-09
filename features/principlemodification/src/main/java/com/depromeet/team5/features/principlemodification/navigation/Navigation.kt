@@ -8,6 +8,7 @@ import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavOptions
 import androidx.navigation.compose.composable
+import com.depromeet.team5.core.navigation.IS_UPDATED
 import com.depromeet.team5.features.principlemodification.screen.PrincipleModificationRoute
 import kotlinx.serialization.Serializable
 
@@ -39,7 +40,7 @@ fun NavController.navigateToPrincipleModification(
 }
 
 fun NavGraphBuilder.principleModification(
-    onBackPressed: () -> Unit,
+    navController: NavController,
     onShowErrorToast: (Throwable) -> Unit,
     onShowToast: (String) -> Unit,
     onShowNoIconToast: (String) -> Unit
@@ -47,7 +48,13 @@ fun NavGraphBuilder.principleModification(
     composable<PrincipleModification> { backStackEntry ->
         PrincipleModificationRoute(
             modifier = Modifier.windowInsetsPadding(WindowInsets.systemBars),
-            onBackClicked = onBackPressed,
+            onBackClicked = { isUpdated ->
+                navController.previousBackStackEntry
+                    ?.savedStateHandle
+                    ?.set(IS_UPDATED, isUpdated)
+
+                navController.popBackStack()
+            },
             onShowErrorToast = onShowErrorToast,
             onShowToast = onShowToast,
             onShowNoIconToast = onShowNoIconToast

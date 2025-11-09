@@ -6,3 +6,5 @@ enum class Path {
     PRINCIPLE_RECOMMENDED
 
 }
+
+const val IS_UPDATED = "isUpdated"

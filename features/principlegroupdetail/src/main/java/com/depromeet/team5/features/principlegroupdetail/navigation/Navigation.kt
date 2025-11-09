@@ -28,6 +28,7 @@ fun NavController.navigateToPrincipleGroupDetail(
 }
 
 fun NavGraphBuilder.principleGroupDetail(
+    navController: NavController,
     onBackPressed: () -> Unit,
     onShowErrorToast: (Throwable) -> Unit,
     onShowToast: (String) -> Unit,
@@ -38,6 +39,7 @@ fun NavGraphBuilder.principleGroupDetail(
 
         PrincipleDetailRoute(
             path = args.path,
+            navController = navController,
             onBackPressed = onBackPressed,
             onShowErrorToast = onShowErrorToast,
             onShowToast = onShowToast,

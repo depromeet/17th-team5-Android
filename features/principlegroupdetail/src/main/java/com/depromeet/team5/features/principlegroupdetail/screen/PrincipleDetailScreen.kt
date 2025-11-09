@@ -65,6 +65,7 @@ import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation.NavController
 import coil3.compose.AsyncImage
 import com.depromeet.team5.core.designsystem.component.HedgeButton
 import com.depromeet.team5.core.designsystem.foundation.HedgeColor
@@ -74,8 +75,10 @@ import com.depromeet.team5.core.domain.model.MyPrinciple
 import com.depromeet.team5.core.domain.model.MyPrincipleGroup
 import com.depromeet.team5.core.domain.model.OrderType
 import com.depromeet.team5.core.domain.monad.HedgeUiState
+import com.depromeet.team5.core.navigation.IS_UPDATED
 import com.depromeet.team5.core.navigation.Path
 import com.depromeet.team5.core.ui.HedgeModal
+import com.depromeet.team5.core.ui.extensions.baseCollect
 import com.depromeet.team5.features.principlegroupdetail.R
 import com.depromeet.team5.features.principlegroupdetail.event.PrincipleDetailEvent
 import kotlin.math.abs
@@ -84,6 +87,7 @@ import kotlin.math.abs
 @Composable
 fun PrincipleDetailRoute(
     path: Path,
+    navController: NavController,
     modifier: Modifier = Modifier,
     viewModel: PrincipleDetailViewModel = hiltViewModel(),
     onBackPressed: () -> Unit,
@@ -95,6 +99,22 @@ fun PrincipleDetailRoute(
     val uiState by viewModel.uiState.stateFlow.collectAsStateWithLifecycle()
 
     var isShowModalBottomSheet by remember { mutableStateOf(false) }
+
+    LaunchedEffect(Unit) {
+        navController.currentBackStackEntry
+            ?.savedStateHandle
+            ?.getStateFlow<Boolean?>(IS_UPDATED, null)
+            ?.baseCollect(
+                onSuccess = {
+                    viewModel.getPrinciple()
+
+                    navController.currentBackStackEntry
+                        ?.savedStateHandle
+                        ?.remove<Boolean>(IS_UPDATED)
+                },
+                onError = {}
+            )
+    }
 
     LaunchedEffect(Unit) {
         viewModel.eventFlow.collect { event ->

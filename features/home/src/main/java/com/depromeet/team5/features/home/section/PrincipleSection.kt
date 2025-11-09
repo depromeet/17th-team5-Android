@@ -34,6 +34,7 @@ import com.depromeet.team5.core.domain.model.MyPrincipleGroup
 import com.depromeet.team5.core.domain.model.OrderType
 import com.depromeet.team5.core.domain.model.RecommendedPrinciple
 import com.depromeet.team5.core.domain.monad.HedgeUiState
+import com.depromeet.team5.core.ui.component.HedgeLoadingScreen
 import com.depromeet.team5.features.home.R
 import com.depromeet.team5.features.home.component.OrderTypeButton
 import com.depromeet.team5.features.home.component.PrincipleItem
@@ -79,7 +80,7 @@ fun PrincipleSection(
             }
 
             is HedgeUiState.Loading -> {
-
+                HedgeLoadingScreen()
             }
 
             is HedgeUiState.Error -> {
@@ -129,7 +130,7 @@ fun PrincipleSection(
             }
 
             is HedgeUiState.Loading -> {
-
+                HedgeLoadingScreen()
             }
 
             is HedgeUiState.Error -> {
@@ -194,7 +195,7 @@ fun PrincipleSection(
             }
 
             is HedgeUiState.Loading -> {
-
+                HedgeLoadingScreen()
             }
 
             is HedgeUiState.Error -> {

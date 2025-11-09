@@ -11,6 +11,8 @@ import com.depromeet.team5.features.feedback.navigation.feedbackScreen
 import com.depromeet.team5.features.feedback.navigation.navigateToFeedback
 import com.depromeet.team5.features.home.Home
 import com.depromeet.team5.features.home.homeScreen
+import com.depromeet.team5.features.login.LoginGraph
+import com.depromeet.team5.features.login.loginGraph
 import com.depromeet.team5.features.principlegroupdetail.navigation.navigateToPrincipleGroupDetail
 import com.depromeet.team5.features.principlegroupdetail.navigation.principleGroupDetail
 import com.depromeet.team5.features.retrospect.screen.navigateToRetrospect
@@ -28,9 +30,13 @@ fun HedgeNavHost(
 
     NavHost(
         navController = navController,
-        startDestination = Home,
+        startDestination = LoginGraph,
         modifier = modifier
     ) {
+        loginGraph(
+            navController = navController
+        )
+
         homeScreen(
             navController = navController,
             onBuyClick = { navController.navigateToSearch() },

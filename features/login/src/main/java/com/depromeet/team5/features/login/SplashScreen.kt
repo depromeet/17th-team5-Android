@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Icon
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
@@ -14,9 +15,22 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import kotlinx.coroutines.delay
 
 @Composable
-fun SplashScreen(
+fun SplashRoute(
+    navigateToLogin: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    LaunchedEffect(Unit) {
+        delay(1_500)
+        navigateToLogin()
+    }
+    SplashScreen(modifier = modifier)
+}
+
+@Composable
+private fun SplashScreen(
     modifier: Modifier = Modifier
 ) {
     Box(
@@ -31,7 +45,7 @@ fun SplashScreen(
                     )
                 )
             )
-            .padding(top = 227.dp),
+            .padding(top = 271.dp),
         contentAlignment = Alignment.TopCenter
     ) {
         Icon(

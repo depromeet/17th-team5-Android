@@ -1,16 +1,14 @@
 package com.depromeet.team5.features.login
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.statusBars
-import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Icon
 import androidx.compose.material.Text
@@ -29,15 +27,18 @@ import com.depromeet.team5.core.designsystem.foundation.HedgeTypography
 
 @Composable
 fun LoginRoute(
+    navigateToAgreements: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     LoginScreen(
-        modifier = modifier.windowInsetsPadding(WindowInsets.statusBars)
+        navigateToAgreements = navigateToAgreements,
+        modifier = modifier
     )
 }
 
 @Composable
 private fun LoginScreen(
+    navigateToAgreements: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Box(
@@ -45,7 +46,7 @@ private fun LoginScreen(
     ) {
         Column(
             modifier = Modifier
-                .padding(top = 227.dp)
+                .padding(top = 271.dp)
                 .align(Alignment.TopCenter),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
@@ -69,6 +70,7 @@ private fun LoginScreen(
                 .fillMaxWidth()
                 .padding(20.dp)
                 .background(color = Color(0xFFFEE500), shape = RoundedCornerShape(18.dp))
+                .clickable { navigateToAgreements() }
                 .align(Alignment.BottomCenter)
                 .padding(vertical = 16.dp),
             verticalAlignment = Alignment.CenterVertically,
@@ -93,5 +95,7 @@ private fun LoginScreen(
 @Preview(showBackground = true)
 @Composable
 private fun LoginScreenPreview() {
-    LoginScreen()
+    LoginScreen(
+        navigateToAgreements = {}
+    )
 }

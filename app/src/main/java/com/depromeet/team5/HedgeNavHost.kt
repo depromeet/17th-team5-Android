@@ -12,7 +12,6 @@ import com.depromeet.team5.features.home.Home
 import com.depromeet.team5.features.home.homeScreen
 import com.depromeet.team5.features.login.LoginGraph
 import com.depromeet.team5.features.login.loginGraph
-import com.depromeet.team5.features.principlegroupdetail.navigation.navigateToPrincipleGroupDetail
 import com.depromeet.team5.features.principlegroupdetail.navigation.principleGroupDetail
 import com.depromeet.team5.features.retrospect.screen.navigateToRetrospect
 import com.depromeet.team5.features.retrospect.screen.retrospectScreen
@@ -36,7 +35,8 @@ fun HedgeNavHost(
         modifier = modifier
     ) {
         loginGraph(
-            navController = navController
+            navController = navController,
+            onClickBack = navController::popBackStack,
         )
 
         homeScreen(

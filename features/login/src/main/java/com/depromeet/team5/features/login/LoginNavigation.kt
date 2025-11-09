@@ -19,7 +19,8 @@ object Splash
 object Agreements
 
 fun NavGraphBuilder.loginGraph(
-    navController: NavController
+    navController: NavController,
+    onClickBack: () -> Unit,
 ) {
     navigation<LoginGraph>(
         startDestination = Splash
@@ -31,11 +32,15 @@ fun NavGraphBuilder.loginGraph(
         }
 
         composable<Login> {
-            LoginRoute()
+            LoginRoute(
+                navigateToAgreements = { navController.navigate(Agreements) }
+            )
         }
 
         composable<Agreements> {
-            AgreementsRoute()
+            AgreementsRoute(
+                onClickBack = onClickBack
+            )
         }
     }
 }

@@ -4,7 +4,7 @@ plugins {
 }
 
 android {
-    namespace = "com.konkuk.login"
+    namespace = "com.depromeet.team5.features.login"
 
     defaultConfig {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"

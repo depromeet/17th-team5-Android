@@ -77,6 +77,7 @@ dependencies {
     implementation(projects.features.reasons)
     implementation(projects.features.principlegroupdetail)
     implementation(projects.features.principlemodification)
+    implementation(projects.features.login)
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.org.jetbrains.kotlinx.kotlinx.serialization.json)

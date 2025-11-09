@@ -15,6 +15,7 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
@@ -291,7 +292,14 @@ private fun PrincipleDetailContent(
 
             LazyColumn(
                 modifier = Modifier
-                    .fillMaxWidth(),
+                    .fillMaxWidth()
+                    .weight(1f),
+                contentPadding = when (path) {
+                    Path.PRINCIPLE_MINE -> PaddingValues(bottom = 0.dp)
+                    Path.PRINCIPLE_RECOMMENDED -> PaddingValues(
+                        bottom = HedgeButton.Action.Size.Large.minHeight * 2
+                    )
+                },
                 flingBehavior = rememberSlowFlingBehavior(0.5f)
             ) {
                 item {

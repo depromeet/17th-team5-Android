@@ -248,6 +248,7 @@ private fun PrincipleDetailContent(
                 .background(HedgeColor.WHITE)
         ) {
             Topbar(
+                path = path,
                 modifier = Modifier.background(HedgeColor.Brand.Secondary),
                 onBackPressed = onBackPressed,
                 onClickedModifyButton = {
@@ -328,6 +329,7 @@ private fun PrincipleDetailContent(
                         PrincipleItem(
                             index = index + 1,
                             principle = principle,
+                            path = path,
                             onClickedItemModifyButton = { id, principle, description ->
                                 onClickedItemModifyButton(
                                     id,
@@ -377,6 +379,7 @@ private fun PrincipleDetailContent(
 fun PrincipleItem(
     index: Int,
     principle: MyPrinciple,
+    path: Path,
     modifier: Modifier = Modifier,
     onClickedItemModifyButton: (Int?, String?, String?) -> Unit,
     onClickedItemRemoveButton: (Int) -> Unit,
@@ -414,39 +417,42 @@ fun PrincipleItem(
             )
         }
 
-        Box {
-            Image(
-                modifier = Modifier
-                    .padding(start = 10.dp)
-                    .clickable(
-                        enabled = true,
-                        indication = null,
-                        interactionSource = remember { MutableInteractionSource() }
-                    ) {
-                        isExpanded = !isExpanded
-                    },
-                imageVector = HedgeIcon.Menu,
-                contentDescription = null,
-                colorFilter = ColorFilter.tint(color = HedgeColor.Text.Disabled)
-            )
+        if (path == Path.PRINCIPLE_MINE) {
+            Box {
+                Image(
+                    modifier = Modifier
+                        .padding(start = 10.dp)
+                        .clickable(
+                            enabled = true,
+                            indication = null,
+                            interactionSource = remember { MutableInteractionSource() }
+                        ) {
+                            isExpanded = !isExpanded
+                        },
+                    imageVector = HedgeIcon.Menu,
+                    contentDescription = null,
+                    colorFilter = ColorFilter.tint(color = HedgeColor.Text.Disabled)
+                )
 
-            ModifyAndRemoveDropdown(
-                expand = isExpanded,
-                onClickedModifyButton = {
-                    onClickedItemModifyButton(
-                        principle.id,
-                        principle.principle,
-                        principle.description
-                    )
-                    isExpanded = false
-                },
-                onClickedRemoveButton = {
-                    onClickedItemRemoveButton(principle.id)
-                    isExpanded = false
-                },
-                onDismissRequest = { isExpanded = false }
-            )
+                ModifyAndRemoveDropdown(
+                    expand = isExpanded,
+                    onClickedModifyButton = {
+                        onClickedItemModifyButton(
+                            principle.id,
+                            principle.principle,
+                            principle.description
+                        )
+                        isExpanded = false
+                    },
+                    onClickedRemoveButton = {
+                        onClickedItemRemoveButton(principle.id)
+                        isExpanded = false
+                    },
+                    onDismissRequest = { isExpanded = false }
+                )
+            }
         }
+
     }
 }
 
@@ -533,6 +539,7 @@ fun PrincipleDetailFloatingButton(
 
 @Composable
 private fun Topbar(
+    path: Path,
     modifier: Modifier = Modifier,
     onBackPressed: () -> Unit,
     onClickedModifyButton: () -> Unit,
@@ -563,34 +570,36 @@ private fun Topbar(
                 modifier = Modifier.weight(1f)
             )
 
-            Box {
-                Image(
-                    modifier = Modifier
-                        .padding(end = 16.dp)
-                        .clickable(
-                            enabled = true,
-                            indication = null,
-                            interactionSource = remember { MutableInteractionSource() }
-                        ) {
-                            isExpanded = !isExpanded
-                        },
-                    imageVector = HedgeIcon.Menu,
-                    contentDescription = null,
-                    colorFilter = ColorFilter.tint(color = HedgeColor.Text.Primary)
-                )
-                if (isExpanded) {
-                    ModifyAndRemoveDropdown(
-                        expand = isExpanded,
-                        onClickedModifyButton = {
-                            onClickedModifyButton()
-                            isExpanded = false
-                        },
-                        onClickedRemoveButton = {
-                            onShowDeleteModal()
-                            isExpanded = false
-                        },
-                        onDismissRequest = { isExpanded = false }
+            if (path == Path.PRINCIPLE_MINE) {
+                Box {
+                    Image(
+                        modifier = Modifier
+                            .padding(end = 16.dp)
+                            .clickable(
+                                enabled = true,
+                                indication = null,
+                                interactionSource = remember { MutableInteractionSource() }
+                            ) {
+                                isExpanded = !isExpanded
+                            },
+                        imageVector = HedgeIcon.Menu,
+                        contentDescription = null,
+                        colorFilter = ColorFilter.tint(color = HedgeColor.Text.Primary)
                     )
+                    if (isExpanded) {
+                        ModifyAndRemoveDropdown(
+                            expand = isExpanded,
+                            onClickedModifyButton = {
+                                onClickedModifyButton()
+                                isExpanded = false
+                            },
+                            onClickedRemoveButton = {
+                                onShowDeleteModal()
+                                isExpanded = false
+                            },
+                            onDismissRequest = { isExpanded = false }
+                        )
+                    }
                 }
             }
         }
@@ -906,6 +915,7 @@ fun PrincipleDetailScreenPreview() {
 @Composable
 fun TopbarPreview() {
     Topbar(
+        path = Path.PRINCIPLE_MINE,
         modifier = Modifier
             .background(HedgeColor.Brand.Secondary),
         onBackPressed = {},
@@ -925,6 +935,7 @@ fun PrincipleItemPreview() {
     PrincipleItem(
         index = 1,
         principle = principle,
+        path = Path.PRINCIPLE_MINE,
         onClickedItemModifyButton = { _, _, _ -> },
         onClickedItemRemoveButton = {}
     )

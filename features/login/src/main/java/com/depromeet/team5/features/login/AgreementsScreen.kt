@@ -38,6 +38,7 @@ import com.depromeet.team5.core.ui.util.openWebView
 @Composable
 fun AgreementsRoute(
     onClickBack: () -> Unit,
+    navigateToHome: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: LoginViewModel = hiltViewModel(),
 ) {
@@ -46,6 +47,7 @@ fun AgreementsRoute(
     AgreementsScreen(
         state = state,
         onClickBack = onClickBack,
+        navigateToHome = navigateToHome,
         onCheckAll = viewModel::checkAll,
         onCheckItem = { id, checked -> viewModel.checkItem(id, checked) },
         modifier = modifier.windowInsetsPadding(WindowInsets.systemBars)
@@ -56,6 +58,7 @@ fun AgreementsRoute(
 private fun AgreementsScreen(
     state: AgreementsUiState,
     onClickBack: () -> Unit,
+    navigateToHome: () -> Unit,
     onCheckAll: (Boolean) -> Unit,
     onCheckItem: (ConsentId, Boolean) -> Unit,
     modifier: Modifier = Modifier,
@@ -107,7 +110,7 @@ private fun AgreementsScreen(
 
         HedgeButton.Action.Filled(
             text = stringResource(R.string.agreements_start_button),
-            onClick = {},
+            onClick = navigateToHome,
             modifier = Modifier
                 .padding(horizontal = 20.dp)
                 .fillMaxWidth()
@@ -181,6 +184,7 @@ private fun AgreementsScreenPreview() {
     AgreementsScreen(
         state = AgreementsUiState(),
         onClickBack = {},
+        navigateToHome = {},
         onCheckAll = {},
         onCheckItem = { _, _ -> }
     )

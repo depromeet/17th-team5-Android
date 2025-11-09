@@ -34,6 +34,7 @@ fun HedgeNavHost(
         loginGraph(
             navController = navController,
             onClickBack = navController::popBackStack,
+            onClickNext = { navController.navigate(Home) }
         )
 
         homeScreen(

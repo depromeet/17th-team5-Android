@@ -1,5 +1,6 @@
 package com.depromeet.team5.features.login
 
+import androidx.compose.ui.input.key.Key.Companion.Home
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
@@ -21,6 +22,7 @@ object Agreements
 fun NavGraphBuilder.loginGraph(
     navController: NavController,
     onClickBack: () -> Unit,
+    onClickNext: () -> Unit
 ) {
     navigation<LoginGraph>(
         startDestination = Splash
@@ -39,7 +41,8 @@ fun NavGraphBuilder.loginGraph(
 
         composable<Agreements> {
             AgreementsRoute(
-                onClickBack = onClickBack
+                onClickBack = onClickBack,
+                navigateToHome = onClickNext
             )
         }
     }

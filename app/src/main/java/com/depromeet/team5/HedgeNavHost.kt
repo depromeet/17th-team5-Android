@@ -10,6 +10,7 @@ import com.depromeet.team5.features.feedback.navigation.feedbackScreen
 import com.depromeet.team5.features.feedback.navigation.navigateToFeedback
 import com.depromeet.team5.features.home.Home
 import com.depromeet.team5.features.home.homeScreen
+import com.depromeet.team5.features.principlegroupdetail.navigation.navigateToPrincipleGroupDetail
 import com.depromeet.team5.features.principlegroupdetail.navigation.principleGroupDetail
 import com.depromeet.team5.features.principlemodification.navigation.navigateToPrincipleModification
 import com.depromeet.team5.features.principlemodification.navigation.principleModification

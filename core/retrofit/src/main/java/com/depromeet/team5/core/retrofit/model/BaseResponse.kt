@@ -15,22 +15,22 @@ data class BaseResponse<T>(
         BaseRemoteData(code, message, data)
 
     fun <R> toBaseRemoteData(): BaseRemoteData<R> {
-        val mapped: R? = when (val d = data) {
+        val convertedData: R? = when (val capturedData = data) {
             null -> null
-            is List<*> -> d.map { elem ->
-                when (elem) {
-                    is RetrofitMapper<*> -> elem.toRemoteData()
-                    else -> elem
+            is List<*> -> capturedData.map { element ->
+                when (element) {
+                    is RetrofitMapper<*> -> element.toRemoteData()
+                    else -> element
                 }
             } as R
-            is RetrofitMapper<*> -> d.toRemoteData() as R
-            else -> d as R
+            is RetrofitMapper<*> -> capturedData.toRemoteData() as R
+            else -> capturedData as R
         }
 
         return BaseRemoteData(
             code = code,
             message = message,
-            data = mapped
+            data = convertedData
         )
     }
 }

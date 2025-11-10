@@ -11,22 +11,22 @@ data class BaseRemoteData<T>(
 ) : RemoteDataMapper<BaseData<T>> {
     override fun toData(): BaseData<T> = BaseData(code, message, data)
     fun <R> toBaseData(): BaseData<R> {
-        val mapped: R? = when (val d = data) {
+        val convertedData: R? = when (val capturedData = data) {
             null -> null
-            is List<*> -> d.map { elem ->
-                when (elem) {
-                    is RemoteDataMapper<*> -> elem.toData()
-                    else -> elem
+            is List<*> -> capturedData.map { element ->
+                when (element) {
+                    is RemoteDataMapper<*> -> element.toData()
+                    else -> element
                 }
             } as R
-            is RemoteDataMapper<*> -> d.toData() as R
-            else -> d as R
+            is RemoteDataMapper<*> -> capturedData.toData() as R
+            else -> capturedData as R
         }
 
         return BaseData(
             code = code,
             message = message,
-            data = mapped
+            data = convertedData
         )
     }
 }

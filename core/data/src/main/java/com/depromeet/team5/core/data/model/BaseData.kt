@@ -12,22 +12,22 @@ data class BaseData<T>(
     override fun toDomain(): BaseDomain<T> = BaseDomain(code, message, data)
 
     fun <R> toBaseDomain(): BaseDomain<R> {
-        val mapped: R? = when (val d = data) {
+        val convertedData: R? = when (val capturedData = data) {
             null -> null
-            is List<*> -> d.map { elem ->
-                when (elem) {
-                    is DataMapper<*> -> elem.toDomain()
-                    else -> elem
+            is List<*> -> capturedData.map { element ->
+                when (element) {
+                    is DataMapper<*> -> element.toDomain()
+                    else -> element
                 }
             } as R
-            is DataMapper<*> -> d.toDomain() as R
-            else -> d as R
+            is DataMapper<*> -> capturedData.toDomain() as R
+            else -> capturedData as R
         }
 
         return BaseDomain(
             code = code,
             message = message,
-            data = mapped
+            data = convertedData
         )
     }
 }

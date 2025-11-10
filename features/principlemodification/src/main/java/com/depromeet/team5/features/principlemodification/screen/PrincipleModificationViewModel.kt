@@ -3,6 +3,7 @@ package com.depromeet.team5.features.principlemodification.screen
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.depromeet.team5.core.domain.model.MyPrincipleGroup
+import com.depromeet.team5.core.domain.usecase.AddPrincipleUseCase
 import com.depromeet.team5.core.domain.usecase.ModifyPrincipleUseCase
 import com.depromeet.team5.core.navigation.PrincipleModificationType
 import com.depromeet.team5.core.ui.extensions.baseCollect
@@ -16,6 +17,7 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.launch
@@ -24,12 +26,11 @@ import kotlinx.coroutines.launch
 @HiltViewModel(assistedFactory = PrincipleModificationViewModel.Factory::class)
 class PrincipleModificationViewModel @AssistedInject constructor(
     private val modifyPrincipleUseCase: ModifyPrincipleUseCase,
+    private val addPrincipleUseCase: AddPrincipleUseCase,
     @Assisted private val principleId: Int?,
-    @Assisted private val myPrincipleGroup: MyPrincipleGroup?,
-    @Assisted private val modificationType: PrincipleModificationType?
+    @Assisted myPrincipleGroup: MyPrincipleGroup?,
+    @Assisted modificationType: PrincipleModificationType?
 ) : ViewModel() {
-
-    val principleIdStateFlow by hedgeState<Int?>(null)
 
     val groupNameStateFlow by hedgeState<String?>(null)
     val principleStateFlow by hedgeState<String?>(null)
@@ -38,8 +39,20 @@ class PrincipleModificationViewModel @AssistedInject constructor(
     private val _eventFlow = MutableSharedFlow<Event>(extraBufferCapacity = 1)
     val eventFlow: SharedFlow<Event> = _eventFlow.asSharedFlow()
 
+    private lateinit var myPrincipleGroup: MyPrincipleGroup
+    private lateinit var modificationType: PrincipleModificationType
+
 
     init {
+        if (myPrincipleGroup != null && modificationType != null) {
+            this.myPrincipleGroup = myPrincipleGroup
+            this.modificationType = modificationType
+        } else {
+            _eventFlow.tryEmit(
+                Event.ShowErrorToast(NullPointerException(ERROR_MESSAGE))
+            )
+        }
+
         when (modificationType) {
             PrincipleModificationType.ADD -> {
                 groupNameStateFlow.update { myPrincipleGroup?.groupName }
@@ -62,23 +75,34 @@ class PrincipleModificationViewModel @AssistedInject constructor(
     fun modifyPrinciple() {
         viewModelScope.launch {
             combine(
-                principleIdStateFlow.stateFlow,
                 principleStateFlow.stateFlow,
                 contentStateFlow.stateFlow
-            ) { id, principle, content -> Triple(id, principle, content) }
-                .mapNotNull { (id, principle, content) ->
-                    if (id != null && principle != null && content != null) {
-                        Triple(id, principle, content)
-                    } else {
-                        error(ERROR_MESSAGE)
+            ) { principle, description -> principle to description }
+                .mapNotNull { (principle, description) ->
+                    when {
+                        principle != null && description != null -> principle to description
+                        else -> null
                     }
                 }
-                .flatMapLatest { (id, principle, content) ->
-                    modifyPrincipleUseCase(
-                        principleId = id,
-                        principle = principle,
-                        description = content
-                    )
+                .flatMapLatest { (principle, description) ->
+                    when (modificationType) {
+                        PrincipleModificationType.ADD -> {
+                            addPrincipleUseCase(
+                                groupId = myPrincipleGroup.id,
+                                principle = principle,
+                                description = description
+                            )
+                        }
+                        PrincipleModificationType.MODIFY -> {
+                            principleId?.let { id ->
+                                modifyPrincipleUseCase(
+                                    principleId = id,
+                                    principle = principle,
+                                    description = description
+                                )
+                            } ?: emptyFlow()
+                        }
+                    }
                 }
                 .baseCollect(
                     onSuccess = {
@@ -91,19 +115,6 @@ class PrincipleModificationViewModel @AssistedInject constructor(
         }
     }
 
-    fun addPrinciple() {
-//        viewModelScope.launch {
-//            when (val value = uiStateFlow.value) {
-//                is HedgeUiState.Success<PrincipleModification> -> {
-//                    value.data.groupName?.let { groupId ->
-//
-//                    }
-//                }
-//
-//                else -> {}
-//            }
-//        }
-    }
 
     @AssistedFactory
     interface Factory {
@@ -117,8 +128,7 @@ class PrincipleModificationViewModel @AssistedInject constructor(
 
     companion object {
 
-
-        private const val ERROR_MESSAGE = "principleId, principle, content must not be null"
+        private const val ERROR_MESSAGE = "MyPrincipleGroup 혹은 ModificationType이 null입니다."
         private const val ERROR_TOAST_MESSAGE = "예상하지 못한 에러가 발생했습니다\n잠시 후 다시 시도해주세요"
     }
 }

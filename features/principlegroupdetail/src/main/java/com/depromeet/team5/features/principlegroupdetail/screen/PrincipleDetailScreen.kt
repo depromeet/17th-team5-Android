@@ -94,6 +94,7 @@ fun PrincipleDetailRoute(
     onBackPressed: () -> Unit,
     onShowErrorToast: (Throwable) -> Unit,
     onShowToast: (String) -> Unit,
+    onShowNoIconToast: (String) -> Unit,
     onNavigatedPrincipleModification: () -> Unit,
     graphViewModel: PrincipleGraphViewModel,
     viewModel: PrincipleDetailViewModel = hiltViewModel()
@@ -174,6 +175,9 @@ fun PrincipleDetailRoute(
             isShowModalBottomSheet = true
         },
         onBackPressed = onBackPressed,
+        onShowNoIconToast = {
+            onShowNoIconToast(it)
+        },
         onShowErrorToast = {
             onBackPressed()
             onShowErrorToast(it)
@@ -205,6 +209,7 @@ private fun PrincipleDetailScreen(
     onClickedItemRemoveButton: (Int) -> Unit,
     onClickedConfirmButton: () -> Unit,
     onBackPressed: () -> Unit,
+    onShowNoIconToast: (String) -> Unit,
     onShowErrorToast: (Throwable) -> Unit
 ) {
     var isShowDeleteModal by remember { mutableStateOf(false) }
@@ -227,7 +232,8 @@ private fun PrincipleDetailScreen(
                 onClickedConfirmButton = onClickedConfirmButton,
                 onShowDeleteModal = {
                     isShowDeleteModal = true
-                }
+                },
+                onShowNoIconToast = onShowNoIconToast
             )
 
             if (isShowDeleteModal) {
@@ -273,8 +279,11 @@ private fun PrincipleDetailContent(
     onClickedItemRemoveButton: (Int) -> Unit,
     onBackPressed: () -> Unit,
     onClickedConfirmButton: () -> Unit,
-    onShowDeleteModal: () -> Unit
+    onShowDeleteModal: () -> Unit,
+    onShowNoIconToast: (String) -> Unit
 ) {
+    val context = LocalContext.current
+
     Box(
         modifier = modifier
             .fillMaxSize()
@@ -351,7 +360,11 @@ private fun PrincipleDetailContent(
                         .padding(end = 20.dp, bottom = 45.dp)
                         .align(alignment = Alignment.BottomEnd)
                 ) {
-                    onClickedFloatingButton()
+                    if (myPrincipleGroup.principles.size >= 5) {
+                        onShowNoIconToast(context.getString(R.string.principle_detail_limit_count))
+                    } else {
+                        onClickedFloatingButton()
+                    }
                 }
             }
 
@@ -987,6 +1000,7 @@ fun PrincipleDetailScreenPreview() {
         onClickedItemRemoveButton = {},
         onClickedConfirmButton = {},
         onBackPressed = {},
+        onShowNoIconToast = {},
         onShowErrorToast = {}
     )
 }

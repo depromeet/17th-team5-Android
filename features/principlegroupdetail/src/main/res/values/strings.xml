@@ -12,4 +12,5 @@
     <string name="principle_detail_modal_delete_content">한 번 삭제하면 되돌릴 수 없어요</string>
     <string name="principle_detail_create_principle_group_toast_message">새로운 회고 템플릿이 추가되었습니다</string>
     <string name="principle_detail_principles_empty">아직 원칙이 없어요\n나만의 원칙을 추가해보세요</string>
+    <string name="principle_detail_limit_count">원칙은 최대 5개까지 추가할 수 있어요</string>
 </resources>

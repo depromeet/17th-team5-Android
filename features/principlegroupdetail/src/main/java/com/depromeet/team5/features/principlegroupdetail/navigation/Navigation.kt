@@ -37,6 +37,7 @@ fun NavGraphBuilder.principleGroupDetail(
     onBackPressed: () -> Unit,
     onShowErrorToast: (Throwable) -> Unit,
     onShowToast: (String) -> Unit,
+    onShowNoIconToast: (String) -> Unit,
     onNavigatedPrincipleModification: () -> Unit
 ) {
     composable<PrincipleGroupDetail> { backstackEntry ->
@@ -54,6 +55,7 @@ fun NavGraphBuilder.principleGroupDetail(
             onBackPressed = onBackPressed,
             onShowErrorToast = onShowErrorToast,
             onShowToast = onShowToast,
+            onShowNoIconToast = onShowNoIconToast,
             graphViewModel = principleGraphViewModel,
             onNavigatedPrincipleModification = {
                 onNavigatedPrincipleModification()

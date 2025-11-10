@@ -11,7 +11,7 @@ data class Retrospection(
     val createdAt: String,
     val currency: String,
     val orderDate: String,
-    val orderType: String,
+    val orderType: OrderType,
     val returnRate: Double,
     val symbol: String,
     val updatedAt: String,

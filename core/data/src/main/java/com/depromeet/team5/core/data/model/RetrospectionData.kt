@@ -7,6 +7,7 @@ import com.depromeet.team5.core.domain.model.PrincipleGroupState
 import com.depromeet.team5.core.domain.model.PrincipleState
 import com.depromeet.team5.core.domain.model.PrincipleType
 import com.depromeet.team5.core.domain.model.Retrospection
+import com.depromeet.team5.core.domain.model.toOrderType
 
 data class RetrospectionData(
     val id: Int,
@@ -33,7 +34,7 @@ data class RetrospectionData(
         createdAt = createdAt,
         currency = currency,
         orderDate = orderDate,
-        orderType = orderType,
+        orderType = orderType.toOrderType(),
         returnRate = returnRate,
         symbol = symbol,
         updatedAt = updatedAt,

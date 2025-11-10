@@ -83,6 +83,7 @@ import com.depromeet.team5.core.ui.HedgeModal
 import com.depromeet.team5.core.ui.extensions.baseCollect
 import com.depromeet.team5.features.principlegroupdetail.R
 import com.depromeet.team5.features.principlegroupdetail.event.PrincipleDetailEvent
+import com.depromeet.team5.features.principlegroupdetail.state.ModalUiState
 import kotlin.math.abs
 
 
@@ -212,7 +213,7 @@ private fun PrincipleDetailScreen(
     onShowNoIconToast: (String) -> Unit,
     onShowErrorToast: (Throwable) -> Unit
 ) {
-    var isShowDeleteModal by remember { mutableStateOf(false) }
+    var modalUiState: ModalUiState by remember { mutableStateOf(ModalUiState.NotShown) }
 
     if (uiState is HedgeUiState.Loading) {
         LoadingProgressbar()
@@ -227,34 +228,54 @@ private fun PrincipleDetailScreen(
                 onClickedFloatingButton = onClickedFloatingButton,
                 onClickedModifyButton = onClickedModifyButton,
                 onClickedItemModifyButton = onClickedItemModifyButton,
-                onClickedItemRemoveButton = onClickedItemRemoveButton,
+                onClickedItemRemoveButton = { principleId ->
+                    modalUiState = ModalUiState.ForPrinciple(principleId)
+                },
                 onBackPressed = onBackPressed,
                 onClickedConfirmButton = onClickedConfirmButton,
-                onShowDeleteModal = {
-                    isShowDeleteModal = true
+                onShowDeleteModal = { state ->
+                    modalUiState = state
                 },
                 onShowNoIconToast = onShowNoIconToast
             )
 
-            if (isShowDeleteModal) {
-                HedgeModal(
-                    showModal = isShowDeleteModal,
-                    title = stringResource(
-                        R.string.principle_detail_modal_delete_title,
-                        uiState.data.groupName
-                    ),
-                    description = stringResource(R.string.principle_detail_modal_delete_content),
-                    submitButton = stringResource(R.string.delete) to {
-                        onClickedRemoveButton(uiState.data.id)
-                    },
-                    cancelButton = stringResource(R.string.cancel) to {
-                        isShowDeleteModal = false
-                    },
-                    onDismissRequest = {
-                        isShowDeleteModal = false
-                    },
-                    icon = null
-                )
+            when (modalUiState) {
+                is ModalUiState.ForPrinciple,
+                is ModalUiState.ForPrincipleGroup -> {
+                    HedgeModal(
+                        showModal = true,
+                        title = if (modalUiState is ModalUiState.ForPrinciple) {
+                            stringResource(
+                                R.string.principle_detail_modal_delete_title,
+                                uiState.data.groupName
+                            )
+                        } else {
+                            stringResource(
+                                R.string.principle_detail_group_modal_delete_title,
+                                uiState.data.groupName
+                            )
+                        },
+                        description = stringResource(R.string.principle_detail_modal_delete_content),
+                        submitButton = stringResource(R.string.delete) to {
+                            if (modalUiState is ModalUiState.ForPrinciple) {
+                                onClickedItemRemoveButton((modalUiState as ModalUiState.ForPrinciple).id)
+                            } else if (modalUiState is ModalUiState.ForPrincipleGroup) {
+                                onClickedRemoveButton((modalUiState as ModalUiState.ForPrincipleGroup).id)
+                            }
+
+                            modalUiState = ModalUiState.NotShown
+                        },
+                        cancelButton = stringResource(R.string.cancel) to {
+                            modalUiState = ModalUiState.NotShown
+                        },
+                        onDismissRequest = {
+                            modalUiState = ModalUiState.NotShown
+                        },
+                        icon = null
+                    )
+                }
+
+                else -> {}
             }
         }
 
@@ -279,7 +300,7 @@ private fun PrincipleDetailContent(
     onClickedItemRemoveButton: (Int) -> Unit,
     onBackPressed: () -> Unit,
     onClickedConfirmButton: () -> Unit,
-    onShowDeleteModal: () -> Unit,
+    onShowDeleteModal: (ModalUiState) -> Unit,
     onShowNoIconToast: (String) -> Unit
 ) {
     val context = LocalContext.current
@@ -300,7 +321,9 @@ private fun PrincipleDetailContent(
                 onClickedModifyButton = {
                     onClickedModifyButton(myPrincipleGroup.id)
                 },
-                onShowDeleteModal = onShowDeleteModal
+                onShowDeleteModal = {
+                    onShowDeleteModal(ModalUiState.ForPrincipleGroup(myPrincipleGroup.id))
+                }
             )
 
             Column(
@@ -350,7 +373,6 @@ private fun PrincipleDetailContent(
             } else {
                 PrincipleListEmpty()
             }
-
         }
 
         when (path) {
@@ -374,6 +396,7 @@ private fun PrincipleDetailContent(
                     onClickedConfirmButton = onClickedConfirmButton
                 )
             }
+
             else -> {}
         }
     }
@@ -393,6 +416,7 @@ fun PrincipleList(
             Path.PRINCIPLE_RECOMMENDED -> PaddingValues(
                 bottom = HedgeButton.Action.Size.Large.minHeight * 2
             )
+
             else -> PaddingValues(bottom = 0.dp)
         },
         flingBehavior = rememberSlowFlingBehavior(0.5f)

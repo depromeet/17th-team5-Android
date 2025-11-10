@@ -129,7 +129,7 @@ fun PrincipleSection(
                         onClick = {
                             onClickPrincipleDetail(
                                 group.id,
-                                Path.PRINCIPLE_RECOMMENDED //todo 이 부분 수정 될 수 있음
+                                Path.PRINCIPLE_DEFAULT
                             )
                         }
                     )

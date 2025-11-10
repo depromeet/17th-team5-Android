@@ -5,7 +5,9 @@ import com.depromeet.team5.core.remotedatasource.model.PrincipleCheckGroupsRemot
 import com.depromeet.team5.core.remotedatasource.model.PrincipleCheckRemoteData
 import com.depromeet.team5.core.remotedatasource.model.RetrospectionRemoteData
 import com.depromeet.team5.core.retrofit.mapper.RetrofitMapper
+import kotlinx.serialization.Serializable
 
+@Serializable
 data class RetrospectionResponse(
     val id: Int,
     val userId: Int,
@@ -19,7 +21,7 @@ data class RetrospectionResponse(
     val symbol: String,
     val updatedAt: String,
     val volume: Int,
-    val principleCheckGroupsResponse: PrincipleCheckGroupsResponse? = null,
+    val principleCheckGroups: PrincipleCheckGroupsResponse? = null,
     val memos: List<MemoResponse> = emptyList(),
 ) : RetrofitMapper<RetrospectionRemoteData> {
 
@@ -36,11 +38,12 @@ data class RetrospectionResponse(
         updatedAt = updatedAt,
         userId = userId,
         volume = volume,
-        principleCheckGroupsRemoteData = principleCheckGroupsResponse?.toRemoteData(),
+        principleCheckGroupsRemoteData = principleCheckGroups?.toRemoteData(),
         memos = memos.map { it.toRemoteData() },
     )
 }
 
+@Serializable
 data class PrincipleCheckGroupsResponse(
     val groupId: Int,
     val groupName: String,
@@ -57,6 +60,7 @@ data class PrincipleCheckGroupsResponse(
     )
 }
 
+@Serializable
 data class PrincipleCheckResponse(
     val principleId: Int,
     val principle: String,
@@ -75,6 +79,7 @@ data class PrincipleCheckResponse(
     )
 }
 
+@Serializable
 data class MemoResponse(
     val memoId: Int,
     val content: String,

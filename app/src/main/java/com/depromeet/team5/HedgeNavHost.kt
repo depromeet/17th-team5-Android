@@ -10,14 +10,12 @@ import com.depromeet.team5.features.feedback.navigation.feedbackScreen
 import com.depromeet.team5.features.feedback.navigation.navigateToFeedback
 import com.depromeet.team5.features.home.Home
 import com.depromeet.team5.features.home.homeScreen
-import com.depromeet.team5.features.principlegroupdetail.navigation.navigateToPrincipleGroupDetail
-import com.depromeet.team5.features.principlegroupdetail.navigation.principleGroupDetail
-import com.depromeet.team5.features.principlemodification.navigation.navigateToPrincipleModification
-import com.depromeet.team5.features.principlemodification.navigation.principleModification
 import com.depromeet.team5.features.retrospect.screen.navigateToRetrospect
 import com.depromeet.team5.features.retrospect.screen.retrospectScreen
 import com.depromeet.team5.features.search.navigateToSearch
 import com.depromeet.team5.features.search.searchScreen
+import com.depromeet.team5.graph.navigatePrincipleGraph
+import com.depromeet.team5.graph.principleGraph
 
 @Composable
 fun HedgeNavHost(
@@ -39,9 +37,7 @@ fun HedgeNavHost(
             onSellClick = { navController.navigateToSearch() },
             onClickRetrospectionDetail = { },
             onClickPrincipleDetail = { groupId, path ->
-                navController.navigateToPrincipleGroupDetail(
-                    groupId, path
-                )
+                navController.navigatePrincipleGraph(groupId, path)
             },
             onClickCreatePrinciple = { },
             onShowErrorToast = onShowErrorToast
@@ -60,22 +56,7 @@ fun HedgeNavHost(
             onShowErrorToast = onShowErrorToast
         )
 
-        principleGroupDetail(
-            navController = navController,
-            onBackPressed = navController::popBackStack,
-            onShowErrorToast = onShowErrorToast,
-            onShowToast = onShowToast,
-            onNavigatedPrincipleModification = { principleId, groupName, principle, description ->
-                navController.navigateToPrincipleModification(
-                    principleId = principleId,
-                    groupName = groupName,
-                    principle = principle,
-                    description = description
-                )
-            }
-        )
-
-        principleModification(
+        principleGraph(
             navController = navController,
             onShowErrorToast = onShowErrorToast,
             onShowToast = onShowToast,

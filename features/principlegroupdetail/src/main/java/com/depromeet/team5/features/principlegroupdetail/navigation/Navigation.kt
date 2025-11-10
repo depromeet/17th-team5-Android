@@ -6,6 +6,7 @@ import androidx.navigation.NavOptions
 import androidx.navigation.compose.composable
 import androidx.navigation.toRoute
 import com.depromeet.team5.core.navigation.Path
+
 import com.depromeet.team5.features.principlegroupdetail.screen.PrincipleDetailRoute
 import kotlinx.serialization.Serializable
 

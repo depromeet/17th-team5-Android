@@ -352,6 +352,7 @@ private fun PrincipleDetailContent(
                     onClickedConfirmButton = onClickedConfirmButton
                 )
             }
+            else -> {}
         }
     }
 }
@@ -367,10 +368,10 @@ fun PrincipleList(
     LazyColumn(
         modifier = modifier,
         contentPadding = when (path) {
-            Path.PRINCIPLE_MINE -> PaddingValues(bottom = 0.dp)
             Path.PRINCIPLE_RECOMMENDED -> PaddingValues(
                 bottom = HedgeButton.Action.Size.Large.minHeight * 2
             )
+            else -> PaddingValues(bottom = 0.dp)
         },
         flingBehavior = rememberSlowFlingBehavior(0.5f)
     ) {

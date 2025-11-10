@@ -9,4 +9,10 @@ enum class OrderType {
         SELL -> "매도"
         NONE -> ""
     }
+
+    fun toPrincipleType(): PrincipleType = when (this) {
+        BUY -> PrincipleType.BUY
+        SELL -> PrincipleType.SELL
+        else -> error("잘못된 OrderType이 들어왔습니다. Params : { $this }")
+    }
 }

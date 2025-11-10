@@ -1,45 +1,31 @@
 package com.depromeet.team5.core.remotedatasource.model
 
-import com.depromeet.team5.core.data.model.DataData
+import com.depromeet.team5.core.data.model.MemoData
+import com.depromeet.team5.core.data.model.PrincipleCheckData
+import com.depromeet.team5.core.data.model.PrincipleCheckGroupsData
 import com.depromeet.team5.core.data.model.RetrospectionData
 import com.depromeet.team5.core.remotedatasource.mapper.RemoteDataMapper
 
-
 data class RetrospectionRemoteData(
-    val code: String,
-    val message: String,
-    val data: DataRemoteData?
-) : RemoteDataMapper<RetrospectionData> {
-
-    override fun toData(): RetrospectionData = RetrospectionData(
-        code = code,
-        message = message,
-        data = data?.toData()
-    )
-}
-
-data class DataRemoteData(
-    val content: String,
+    val id: Int,
+    val userId: Int,
+    val market: String,
+    val price: Int,
     val createdAt: String,
     val currency: String,
-    val emotion: String,
-    val id: Int,
-    val market: String,
     val orderDate: String,
     val orderType: String,
-    val price: Int,
     val returnRate: Double,
     val symbol: String,
     val updatedAt: String,
-    val userId: Int,
-    val volume: Int
-) : RemoteDataMapper<DataData> {
+    val volume: Int,
+    val principleCheckGroupsRemoteData: PrincipleCheckGroupsRemoteData?,
+    val memos: List<MemoRemoteData>,
+) : RemoteDataMapper<RetrospectionData> {
 
-    override fun toData(): DataData = DataData(
-        content = content,
+    override fun toData(): RetrospectionData = RetrospectionData(
         createdAt = createdAt,
         currency = currency,
-        emotion = emotion,
         id = id,
         market = market,
         orderDate = orderDate,
@@ -49,6 +35,53 @@ data class DataRemoteData(
         symbol = symbol,
         updatedAt = updatedAt,
         userId = userId,
-        volume = volume
+        volume = volume,
+        principleCheckGroupsData = principleCheckGroupsRemoteData?.toData(),
+        memos = memos.map { it.toData() }
     )
 }
+
+data class PrincipleCheckGroupsRemoteData(
+    val groupId: Int,
+    val groupName: String,
+    val thumbnail: String,
+    val principleType: String,
+    val principleChecks: List<PrincipleCheckRemoteData>
+) : RemoteDataMapper<PrincipleCheckGroupsData> {
+    override fun toData() = PrincipleCheckGroupsData(
+        groupId = groupId,
+        groupName = groupName,
+        thumbnail = thumbnail,
+        principleType = principleType,
+        principleChecks = principleChecks.map { it.toData() },
+    )
+}
+
+data class PrincipleCheckRemoteData(
+    val principleId: Int,
+    val principle: String,
+    val status: String,
+    val reason: String,
+    val imageUrls: List<String>,
+    val links: List<String>,
+) : RemoteDataMapper<PrincipleCheckData> {
+    override fun toData() = PrincipleCheckData(
+        principleId = principleId,
+        principle = principle,
+        status = status,
+        reason = reason,
+        imageUrls = imageUrls,
+        links = links,
+    )
+}
+
+data class MemoRemoteData(
+    val memoId: Int,
+    val content: String,
+) : RemoteDataMapper<MemoData> {
+    override fun toData() = MemoData(
+        memoId = memoId,
+        content = content,
+    )
+}
+

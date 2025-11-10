@@ -2,6 +2,7 @@ package com.depromeet.team5.feature.reasons
 
 import androidx.compose.ui.text.input.TextFieldValue
 import com.depromeet.team5.core.domain.model.OrderType
+import com.depromeet.team5.core.domain.model.PrincipleType
 import com.depromeet.team5.feature.reasons.model.PrincipleAdherence
 import com.depromeet.team5.feature.reasons.model.TradeInfo
 import com.depromeet.team5.feature.reasons.model.UiPrinciple
@@ -12,8 +13,7 @@ val previewUiPrincipleGroup = UiPrincipleGroup(
     id = 0,
     groupName = "이건 진짜 지켜야 해",
     thumbnail = "👍",
-    displayOrder = 0,
-    orderType = OrderType.BUY,
+    principleType = PrincipleType.BUY,
     principles = listOf(
         UiPrinciple(
             groupId = 0,

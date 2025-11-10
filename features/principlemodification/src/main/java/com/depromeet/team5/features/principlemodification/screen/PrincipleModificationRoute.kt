@@ -46,6 +46,7 @@ import com.depromeet.team5.core.designsystem.component.HedgeButton
 import com.depromeet.team5.core.designsystem.foundation.HedgeColor
 import com.depromeet.team5.core.designsystem.foundation.HedgeIcon
 import com.depromeet.team5.core.designsystem.foundation.HedgeTypography
+import com.depromeet.team5.core.navigation.request.PrincipleGraphViewModel
 import com.depromeet.team5.features.principlemodification.R
 import com.depromeet.team5.features.principlemodification.event.Event
 import kotlinx.coroutines.launch
@@ -54,12 +55,22 @@ import kotlinx.coroutines.launch
 @Composable
 fun PrincipleModificationRoute(
     modifier: Modifier = Modifier,
-    viewModel: PrincipleModificationViewModel = hiltViewModel(),
     onBackClicked: (Boolean) -> Unit = {},
     onShowErrorToast: (Throwable) -> Unit,
     onShowToast: (String) -> Unit,
     onShowNoIconToast: (String) -> Unit,
+    graphViewModel: PrincipleGraphViewModel
 ) {
+    val viewModel: PrincipleModificationViewModel = hiltViewModel(
+        creationCallback = { factory: PrincipleModificationViewModel.Factory ->
+            factory.create(
+                principleId = graphViewModel.principleId,
+                myPrincipleGroup = graphViewModel.myPrincipleGroup,
+                modificationType = graphViewModel.modificationType
+            )
+        }
+    )
+
     val lifecycleOwner = LocalLifecycleOwner.current
     val context = LocalContext.current
     val groupName by viewModel.groupNameStateFlow.stateFlow.collectAsStateWithLifecycle()

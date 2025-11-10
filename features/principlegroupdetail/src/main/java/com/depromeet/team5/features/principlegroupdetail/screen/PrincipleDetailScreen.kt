@@ -77,6 +77,8 @@ import com.depromeet.team5.core.domain.model.OrderType
 import com.depromeet.team5.core.domain.monad.HedgeUiState
 import com.depromeet.team5.core.navigation.IS_UPDATED
 import com.depromeet.team5.core.navigation.Path
+import com.depromeet.team5.core.navigation.PrincipleModificationType
+import com.depromeet.team5.core.navigation.request.PrincipleGraphViewModel
 import com.depromeet.team5.core.ui.HedgeModal
 import com.depromeet.team5.core.ui.extensions.baseCollect
 import com.depromeet.team5.features.principlegroupdetail.R
@@ -89,16 +91,24 @@ fun PrincipleDetailRoute(
     path: Path,
     navController: NavController,
     modifier: Modifier = Modifier,
-    viewModel: PrincipleDetailViewModel = hiltViewModel(),
     onBackPressed: () -> Unit,
     onShowErrorToast: (Throwable) -> Unit,
     onShowToast: (String) -> Unit,
-    onNavigatedPrincipleModification: (Int?, String?, String?, String?) -> Unit
+    onNavigatedPrincipleModification: () -> Unit,
+    graphViewModel: PrincipleGraphViewModel,
+    viewModel: PrincipleDetailViewModel = hiltViewModel()
 ) {
     val context = LocalContext.current
     val uiState by viewModel.uiState.stateFlow.collectAsStateWithLifecycle()
 
     var isShowModalBottomSheet by remember { mutableStateOf(false) }
+
+    LaunchedEffect(uiState) {
+        if (uiState is HedgeUiState.Success<MyPrincipleGroup>) {
+            graphViewModel.myPrincipleGroup =
+                (uiState as HedgeUiState.Success<MyPrincipleGroup>).data
+        }
+    }
 
     LaunchedEffect(Unit) {
         navController.currentBackStackEntry
@@ -142,19 +152,20 @@ fun PrincipleDetailRoute(
         modifier = modifier,
         uiState = uiState,
         path = path,
+        onClickedFloatingButton = {
+            graphViewModel.modificationType = PrincipleModificationType.ADD
+            onNavigatedPrincipleModification()
+        },
         onClickedModifyButton = { groupId ->
             //todo 추후에 수정 기능 연결하기
         },
         onClickedRemoveButton = { groupId ->
             viewModel.deletePrincipleGroup(groupId)
         },
-        onClickedItemModifyButton = { principleId, groupName, principle, description ->
-            onNavigatedPrincipleModification(
-                principleId,
-                groupName,
-                principle,
-                description
-            )
+        onClickedItemModifyButton = { principleId ->
+            graphViewModel.principleId = principleId
+            graphViewModel.modificationType = PrincipleModificationType.MODIFY
+            onNavigatedPrincipleModification()
         },
         onClickedItemRemoveButton = { principleId ->
             viewModel.deletePrinciple(principleId)
@@ -187,9 +198,10 @@ private fun PrincipleDetailScreen(
     uiState: HedgeUiState<MyPrincipleGroup>,
     path: Path,
     modifier: Modifier = Modifier,
+    onClickedFloatingButton: () -> Unit,
     onClickedModifyButton: (Int) -> Unit,
     onClickedRemoveButton: (Int) -> Unit,
-    onClickedItemModifyButton: (Int?, String?, String?, String?) -> Unit,
+    onClickedItemModifyButton: (Int) -> Unit,
     onClickedItemRemoveButton: (Int) -> Unit,
     onClickedConfirmButton: () -> Unit,
     onBackPressed: () -> Unit,
@@ -207,6 +219,7 @@ private fun PrincipleDetailScreen(
                 modifier = modifier,
                 myPrincipleGroup = uiState.data,
                 path = path,
+                onClickedFloatingButton = onClickedFloatingButton,
                 onClickedModifyButton = onClickedModifyButton,
                 onClickedItemModifyButton = onClickedItemModifyButton,
                 onClickedItemRemoveButton = onClickedItemRemoveButton,
@@ -254,8 +267,9 @@ private fun PrincipleDetailContent(
     modifier: Modifier = Modifier,
     myPrincipleGroup: MyPrincipleGroup,
     path: Path,
+    onClickedFloatingButton: () -> Unit,
     onClickedModifyButton: (Int) -> Unit,
-    onClickedItemModifyButton: (Int?, String?, String?, String?) -> Unit,
+    onClickedItemModifyButton: (Int) -> Unit,
     onClickedItemRemoveButton: (Int) -> Unit,
     onBackPressed: () -> Unit,
     onClickedConfirmButton: () -> Unit,
@@ -337,12 +351,7 @@ private fun PrincipleDetailContent(
                         .padding(end = 20.dp, bottom = 45.dp)
                         .align(alignment = Alignment.BottomEnd)
                 ) {
-                    onClickedItemModifyButton(
-                        null,
-                        myPrincipleGroup.groupName,
-                        null,
-                        null
-                    )
+                    onClickedFloatingButton()
                 }
             }
 
@@ -362,7 +371,7 @@ fun PrincipleList(
     myPrincipleGroup: MyPrincipleGroup,
     path: Path,
     modifier: Modifier = Modifier,
-    onClickedItemModifyButton: (Int?, String?, String?, String?) -> Unit,
+    onClickedItemModifyButton: (Int) -> Unit,
     onClickedItemRemoveButton: (Int) -> Unit,
 ) {
     LazyColumn(
@@ -402,13 +411,8 @@ fun PrincipleList(
                     index = index + 1,
                     principle = principle,
                     path = path,
-                    onClickedItemModifyButton = { id, principle, description ->
-                        onClickedItemModifyButton(
-                            id,
-                            myPrincipleGroup.groupName,
-                            principle,
-                            description
-                        )
+                    onClickedItemModifyButton = { principleId ->
+                        onClickedItemModifyButton(principleId)
                     },
                     onClickedItemRemoveButton = onClickedItemRemoveButton
                 )
@@ -455,7 +459,7 @@ fun PrincipleItem(
     principle: MyPrinciple,
     path: Path,
     modifier: Modifier = Modifier,
-    onClickedItemModifyButton: (Int?, String?, String?) -> Unit,
+    onClickedItemModifyButton: (Int) -> Unit,
     onClickedItemRemoveButton: (Int) -> Unit,
 ) {
     var isExpanded by remember { mutableStateOf(false) }
@@ -516,11 +520,7 @@ fun PrincipleItem(
                 ModifyAndRemoveDropdown(
                     expand = isExpanded,
                     onClickedModifyButton = {
-                        onClickedItemModifyButton(
-                            principle.id,
-                            principle.principle,
-                            principle.description
-                        )
+                        onClickedItemModifyButton(principle.id)
                         isExpanded = false
                     },
                     onClickedRemoveButton = {
@@ -980,9 +980,10 @@ fun PrincipleDetailScreenPreview() {
             )
         ),
         path = Path.PRINCIPLE_RECOMMENDED,
+        onClickedFloatingButton = {},
         onClickedModifyButton = {},
         onClickedRemoveButton = {},
-        onClickedItemModifyButton = { _, _, _, _ -> },
+        onClickedItemModifyButton = {},
         onClickedItemRemoveButton = {},
         onClickedConfirmButton = {},
         onBackPressed = {},
@@ -1015,7 +1016,7 @@ fun PrincipleItemPreview() {
         index = 1,
         principle = principle,
         path = Path.PRINCIPLE_MINE,
-        onClickedItemModifyButton = { _, _, _ -> },
+        onClickedItemModifyButton = {},
         onClickedItemRemoveButton = {}
     )
 }

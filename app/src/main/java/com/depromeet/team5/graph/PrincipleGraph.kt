@@ -5,18 +5,13 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavOptions
 import androidx.navigation.compose.navigation
 import com.depromeet.team5.core.navigation.Path
+import com.depromeet.team5.core.navigation.graphkey.PrincipleGraph
 import com.depromeet.team5.features.principlegroupdetail.navigation.PrincipleGroupDetail
 import com.depromeet.team5.features.principlegroupdetail.navigation.principleGroupDetail
 import com.depromeet.team5.features.principlemodification.navigation.navigateToPrincipleModification
 import com.depromeet.team5.features.principlemodification.navigation.principleModification
-import kotlinx.serialization.Serializable
 
 
-@Serializable
-data class PrincipleGraph(
-    val groupId: Int,
-    val path: Path
-)
 
 fun NavController.navigatePrincipleGraph(
     groupId: Int,
@@ -44,13 +39,8 @@ fun NavGraphBuilder.principleGraph(
             onBackPressed = navController::popBackStack,
             onShowErrorToast = onShowErrorToast,
             onShowToast = onShowToast,
-            onNavigatedPrincipleModification = { principleId, groupName, principle, description ->
-                navController.navigateToPrincipleModification(
-                    principleId = principleId,
-                    groupName = groupName,
-                    principle = principle,
-                    description = description
-                )
+            onNavigatedPrincipleModification = {
+                navController.navigateToPrincipleModification()
             }
         )
 

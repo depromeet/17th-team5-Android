@@ -7,4 +7,8 @@ enum class Path {
     PRINCIPLE_RECOMMENDED
 }
 
+enum class PrincipleModificationType {
+    ADD, MODIFY
+}
+
 const val IS_UPDATED = "isUpdated"

@@ -1,11 +1,15 @@
 package com.depromeet.team5.features.principlegroupdetail.navigation
 
+import androidx.compose.runtime.remember
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavOptions
 import androidx.navigation.compose.composable
 import androidx.navigation.toRoute
 import com.depromeet.team5.core.navigation.Path
+import com.depromeet.team5.core.navigation.graphkey.PrincipleGraph
+import com.depromeet.team5.core.navigation.request.PrincipleGraphViewModel
 
 import com.depromeet.team5.features.principlegroupdetail.screen.PrincipleDetailRoute
 import kotlinx.serialization.Serializable
@@ -33,10 +37,16 @@ fun NavGraphBuilder.principleGroupDetail(
     onBackPressed: () -> Unit,
     onShowErrorToast: (Throwable) -> Unit,
     onShowToast: (String) -> Unit,
-    onNavigatedPrincipleModification: (Int?, String?, String?, String?) -> Unit
+    onNavigatedPrincipleModification: () -> Unit
 ) {
     composable<PrincipleGroupDetail> { backstackEntry ->
         val args = backstackEntry.toRoute<PrincipleGroupDetail>()
+
+        val subgraphBackstackEntry = remember(backstackEntry) {
+            navController.getBackStackEntry(route = PrincipleGraph::class)
+        }
+
+        val principleGraphViewModel = hiltViewModel<PrincipleGraphViewModel>(subgraphBackstackEntry)
 
         PrincipleDetailRoute(
             path = args.path,
@@ -44,13 +54,9 @@ fun NavGraphBuilder.principleGroupDetail(
             onBackPressed = onBackPressed,
             onShowErrorToast = onShowErrorToast,
             onShowToast = onShowToast,
-            onNavigatedPrincipleModification = { principleId, groupName, principle, description ->
-                onNavigatedPrincipleModification(
-                    principleId,
-                    groupName,
-                    principle,
-                    description
-                )
+            graphViewModel = principleGraphViewModel,
+            onNavigatedPrincipleModification = {
+                onNavigatedPrincipleModification()
             }
         )
     }

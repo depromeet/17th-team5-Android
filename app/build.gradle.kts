@@ -35,6 +35,7 @@ android {
 
     buildTypes {
         debug {
+            resValue("string", "app_name", "Hedge.dev")
             applicationIdSuffix = ".dev"
             isDebuggable = true
             isMinifyEnabled = false
@@ -42,6 +43,7 @@ android {
         }
 
         release {
+            resValue("string", "app_name", "Hedge")
             isDebuggable = false
             isMinifyEnabled = true
             isShrinkResources = true

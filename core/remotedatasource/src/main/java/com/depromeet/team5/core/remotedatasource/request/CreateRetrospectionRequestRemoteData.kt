@@ -1,5 +1,8 @@
 package com.depromeet.team5.core.remotedatasource.request
 
+import kotlinx.serialization.Serializable
+
+@Serializable
 data class CreateRetrospectionRequestRemoteData(
     val symbol: String,
     val market: String,
@@ -12,6 +15,7 @@ data class CreateRetrospectionRequestRemoteData(
     val principleChecks: List<PrincipleCheckRequestRemoteData>,
 )
 
+@Serializable
 data class PrincipleCheckRequestRemoteData(
     val principleId: Int,
     val status: String,

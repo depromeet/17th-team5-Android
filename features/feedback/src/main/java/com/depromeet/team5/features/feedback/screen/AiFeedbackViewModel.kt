@@ -40,7 +40,7 @@ class AiFeedbackViewModel @Inject constructor(
                 request = request.copy(orderDate = formatDate(request.orderDate)),
                 principles = principleGroupState.principles,
             )
-                .flatMapConcat { createFeedbackUseCase(it.id) }
+                .flatMapConcat { createFeedbackUseCase(it.data!!.id) }
                 .map {
                     if (it.data != null) {
                         AiFeedbackUiState.Success(

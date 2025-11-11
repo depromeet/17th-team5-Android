@@ -12,16 +12,16 @@ data class RetrospectionResponse(
     val id: Int,
     val userId: Int,
     val market: String,
-    val price: Int,
+    val price: Double,
     val createdAt: String,
     val currency: String,
     val orderDate: String,
     val orderType: String,
-    val returnRate: Double?,
+    val returnRate: Double? = null,
     val symbol: String,
     val updatedAt: String,
     val volume: Int,
-    val principleCheckGroups: PrincipleCheckGroupsResponse? = null,
+    val principleCheckGroup: PrincipleCheckGroupsResponse? = null,
     val memos: List<MemoResponse> = emptyList(),
 ) : RetrofitMapper<RetrospectionRemoteData> {
 
@@ -32,13 +32,13 @@ data class RetrospectionResponse(
         market = market,
         orderDate = orderDate,
         orderType = orderType,
-        price = price,
+        price = price.toInt(),
         returnRate = returnRate ?: 0.0,
         symbol = symbol,
         updatedAt = updatedAt,
         userId = userId,
         volume = volume,
-        principleCheckGroupsRemoteData = principleCheckGroups?.toRemoteData(),
+        principleCheckGroupsRemoteData = principleCheckGroup?.toRemoteData(),
         memos = memos.map { it.toRemoteData() },
     )
 }
@@ -83,6 +83,7 @@ data class PrincipleCheckResponse(
 data class MemoResponse(
     val memoId: Int,
     val content: String,
+    val createdAt: String,
 ) : RetrofitMapper<MemoRemoteData> {
     override fun toRemoteData() = MemoRemoteData(
         memoId = memoId,

@@ -16,13 +16,13 @@ internal object ApiModule {
     @Provides
     @Singleton
     fun provideHedgeApi(
-        retrofit: Retrofit
+        @GsonRetrofit retrofit: Retrofit
     ): HedgeApi = retrofit.create(HedgeApi::class.java)
 
     @Provides
     @Singleton
     fun provideRetrospectionApi(
-        retrofit: Retrofit
+        @SerializationRetrofit retrofit: Retrofit
     ): RetrospectionApi = retrofit.create(RetrospectionApi::class.java)
 
 }

@@ -1,6 +1,6 @@
 package com.depromeet.team5.core.domain.usecase
 
-import com.depromeet.team5.core.domain.repository.HedgeRepository
+import com.depromeet.team5.core.domain.repository.RetrospectionRepository
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
@@ -8,7 +8,7 @@ import javax.inject.Inject
 
 
 class UpdateImageUrisUseCase @Inject constructor(
-    private val hedgeRepository: HedgeRepository
+    private val retrospectionRepository: RetrospectionRepository
 ) {
     suspend operator fun invoke(
         domain: String,
@@ -18,7 +18,7 @@ class UpdateImageUrisUseCase @Inject constructor(
         imageUrls
             .map {
                 async {
-                    hedgeRepository.uploadImageUri(
+                    retrospectionRepository.uploadImageUri(
                         domain = domain,
                         uri = it,
                         fileName = fileName

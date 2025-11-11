@@ -1,10 +1,13 @@
 package com.depromeet.team5.core.remotedatasource.datasourceimpl
 
+import androidx.core.net.toUri
 import com.depromeet.team5.core.data.datasource.RetrospectionRemoteDataSource
 import com.depromeet.team5.core.data.model.BaseData
 import com.depromeet.team5.core.data.model.MemoData
 import com.depromeet.team5.core.data.model.RetrospectionData
+import com.depromeet.team5.core.data.request.CreateRetrospectionRequestData
 import com.depromeet.team5.core.remotedatasource.apisource.RetrospectionApiSource
+import com.depromeet.team5.core.remotedatasource.mapper.toRemoteData
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -14,11 +17,24 @@ internal class RetrospectionRemoteDataSourceImpl @Inject constructor(
     private val retrospectionApiSource: RetrospectionApiSource,
 ) : RetrospectionRemoteDataSource {
 
+    override suspend fun createRetrospection(request: CreateRetrospectionRequestData): BaseData<RetrospectionData> =
+        retrospectionApiSource.createRetrospection(request.toRemoteData()).toBaseData()
+
     override suspend fun getRetrospection(retrospectionId: Int): BaseData<RetrospectionData> =
         retrospectionApiSource.getRetrospection(retrospectionId).toBaseData()
 
     override suspend fun deleteRetrospection(retrospectionId: Int): BaseData<String> =
         retrospectionApiSource.deleteRetrospection(retrospectionId).toBaseData()
+
+    override suspend fun uploadImageUri(
+        domain: String,
+        uri: String,
+        fileName: String?
+    ) = retrospectionApiSource.uploadImageUri(
+        domain = domain,
+        uri = uri.toUri(),
+        fileName = fileName
+    )
 
     override suspend fun createMemo(retrospectionId: Int, content: String): BaseData<MemoData> =
         retrospectionApiSource.createMemo(retrospectionId, content).toBaseData()

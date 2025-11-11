@@ -129,7 +129,7 @@ fun PrincipleSection(
                         onClick = {
                             onClickPrincipleDetail(
                                 group.id,
-                                Path.PRINCIPLE_DEFAULT
+                                Path.PRINCIPLE_SYSTEM
                             )
                         }
                     )

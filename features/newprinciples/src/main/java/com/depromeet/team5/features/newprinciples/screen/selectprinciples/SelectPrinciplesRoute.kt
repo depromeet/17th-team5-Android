@@ -29,21 +29,32 @@ import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.depromeet.team5.core.designsystem.component.HedgeButton
 import com.depromeet.team5.core.designsystem.component.HedgeTopBar
 import com.depromeet.team5.core.designsystem.foundation.HedgeColor
 import com.depromeet.team5.core.designsystem.foundation.HedgeIcon
 import com.depromeet.team5.core.designsystem.foundation.HedgeTypography
+import com.depromeet.team5.core.domain.model.MyPrincipleGroup
+import com.depromeet.team5.core.domain.monad.HedgeUiState
+import com.depromeet.team5.core.ui.component.HedgeLoadingScreen
 import com.depromeet.team5.features.newprinciples.R
+import kotlin.math.abs
 
 
 @Composable
 fun SelectPrinciplesRoute(
     modifier: Modifier = Modifier,
-    onBackPressed: () -> Unit
+    onBackPressed: () -> Unit,
+    viewModel: SelectPrinciplesViewModel = hiltViewModel()
 ) {
+    val myPrincipleGroupUiState by viewModel.myPrincipleGroupUiState.collectAsStateWithLifecycle()
+    val newPrinciples by viewModel.newPrinciples.stateFlow.collectAsStateWithLifecycle()
+
     SelectPrinciplesScreen(
-        principles = emptyList(),
+        uiState = myPrincipleGroupUiState,
+        newPrinciples = newPrinciples,
         modifier = modifier,
         onClickedConfirmButton = { selectedPrinciples ->
             //todo 원칙 추가작성화면으로 이동
@@ -54,7 +65,33 @@ fun SelectPrinciplesRoute(
 
 @Composable
 private fun SelectPrinciplesScreen(
-    principles: List<String>,
+    uiState: HedgeUiState<MyPrincipleGroup>,
+    newPrinciples: List<String>,
+    modifier: Modifier = Modifier,
+    onClickedConfirmButton: (List<String>) -> Unit,
+    onBackPressed: () -> Unit
+) {
+    when (uiState) {
+        is HedgeUiState.Success<MyPrincipleGroup> -> {
+            SelectPrinciplesContent(
+                myPrincipleGroup = uiState.data,
+                newPrinciples = newPrinciples,
+                modifier = modifier,
+                onClickedConfirmButton = onClickedConfirmButton,
+                onBackPressed = onBackPressed
+            )
+        }
+        is HedgeUiState.Loading<*> -> {
+            HedgeLoadingScreen()
+        }
+        is HedgeUiState.Error -> {}
+    }
+}
+
+@Composable
+private fun SelectPrinciplesContent(
+    myPrincipleGroup: MyPrincipleGroup,
+    newPrinciples: List<String>,
     modifier: Modifier = Modifier,
     onClickedConfirmButton: (List<String>) -> Unit,
     onBackPressed: () -> Unit
@@ -95,7 +132,7 @@ private fun SelectPrinciplesScreen(
             )
 
             CheckPrincipleList(
-                principles = principles,
+                principles = newPrinciples,
                 onCheckedChange = { principle ->
                     if (selectedPrincipleSet.contains(principle)) {
                         selectedPrincipleSet.remove(principle)
@@ -107,10 +144,12 @@ private fun SelectPrinciplesScreen(
 
             Spacer(modifier = Modifier.weight(1f))
 
-            //todo 기존 그룹에 이미 포함된 principle와 계산해서 값 설정하기
             Text(
                 modifier = Modifier.align(Alignment.CenterHorizontally),
-                text = stringResource(R.string.new_principle_max_select_count, 1),
+                text = stringResource(
+                    R.string.new_principle_max_select_count,
+                    abs(myPrincipleGroup.principles.size - newPrinciples.size)
+                ),
                 style = HedgeTypography.Body3.Medium,
                 color = HedgeColor.Text.Assistive
             )
@@ -214,19 +253,14 @@ private fun CheckPrinciple(
 @Composable
 private fun SelectPrinciplesScreenPreview() {
     SelectPrinciplesScreen(
-        principles = listOf(
+        uiState = HedgeUiState.Success(MyPrincipleGroup.EMPTY),
+        newPrinciples = listOf(
             "다음엔 거래량 감소 구간을 명시적으로 기록해보세요.",
             "다음엔 거래량 감소 구간을 명시적으로 기록해보세요2."
         ),
         onClickedConfirmButton = {},
         onBackPressed = {}
     )
-}
-
-@Preview
-@Composable
-private fun TopbarPreview() {
-
 }
 
 @Preview

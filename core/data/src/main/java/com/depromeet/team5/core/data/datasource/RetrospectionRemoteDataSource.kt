@@ -1,5 +1,6 @@
 package com.depromeet.team5.core.data.datasource
 
+import com.depromeet.team5.core.data.model.ArticleData
 import com.depromeet.team5.core.data.model.BaseData
 import com.depromeet.team5.core.data.model.MemoData
 import com.depromeet.team5.core.data.model.RetrospectionData
@@ -35,4 +36,8 @@ interface RetrospectionRemoteDataSource {
         retrospectionId: Int,
         memoId: Int,
     ): BaseData<String>
+
+    suspend fun parseArticle(
+        url: String,
+    ): ArticleData
 }

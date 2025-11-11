@@ -41,8 +41,8 @@ import coil.request.ImageRequest
 import com.depromeet.team5.core.designsystem.foundation.HedgeColor
 import com.depromeet.team5.core.designsystem.foundation.HedgeIcon
 import com.depromeet.team5.core.designsystem.foundation.HedgeTypography
+import com.depromeet.team5.core.domain.model.Article
 import com.depromeet.team5.feature.reasons.R
-import com.depromeet.team5.feature.reasons.model.Article
 
 @Composable
 fun ImageThumbnailContainer(

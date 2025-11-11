@@ -29,6 +29,7 @@ dependencies {
     implementation(projects.depromeet.core.data)
 
     implementation(libs.org.jetbrains.kotlinx.kotlinx.serialization.json)
+    implementation(libs.org.jsoup.jsoup)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

@@ -42,7 +42,7 @@ fun AgreementsRoute(
     modifier: Modifier = Modifier,
     viewModel: LoginViewModel = hiltViewModel(),
 ) {
-    val state by viewModel.uiState.collectAsStateWithLifecycle()
+    val state by viewModel.agreements.collectAsStateWithLifecycle()
 
     AgreementsScreen(
         state = state,

@@ -1,12 +1,20 @@
 package com.depromeet.team5.features.login
 
+import android.content.Context
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.depromeet.team5.core.domain.model.SocialLogin
+import com.depromeet.team5.core.domain.monad.HedgeUiState
+import com.depromeet.team5.core.domain.usecase.SocialLoginUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import javax.inject.Inject
+import javax.inject.Named
 
 enum class AgreementRowVariant { All, Item }
 
@@ -15,7 +23,7 @@ enum class ConsentType { REQUIRED, OPTIONAL }
 enum class ConsentId(
     val titleRes: Int,
     val type: ConsentType,
-    val link: String? = null,
+    val link: String? = null
 ) {
     AGE_OVER_14(
         R.string.agreements_agree_age_over_14,
@@ -40,7 +48,7 @@ enum class ConsentId(
 
 data class ConsentItem(
     val id: ConsentId,
-    val checked: Boolean,
+    val checked: Boolean
 )
 
 data class AgreementsUiState(
@@ -54,22 +62,81 @@ data class AgreementsUiState(
 
 @HiltViewModel
 class LoginViewModel @Inject constructor(
+    private val kakaoAuth: KakaoAuthCodeManager,
+    private val socialLogin: SocialLoginUseCase,
+    @Named("kakaoAppKey") private val kakaoAppKey: String
 ) : ViewModel() {
-    private val _uiState = MutableStateFlow(AgreementsUiState())
-    val uiState: StateFlow<AgreementsUiState> = _uiState.asStateFlow()
+    private val _agreements = MutableStateFlow(AgreementsUiState())
+    val agreements: StateFlow<AgreementsUiState> = _agreements.asStateFlow()
+
+    private val _socialLoginUiState =
+        MutableStateFlow<HedgeUiState<SocialLogin>>(HedgeUiState.Loading(null))
+    val socialLoginUiState: StateFlow<HedgeUiState<SocialLogin>> = _socialLoginUiState.asStateFlow()
 
     fun checkAll(checked: Boolean) {
-        _uiState.update { state ->
+        _agreements.update { state ->
             state.copy(items = state.items.map { it.copy(checked = checked) })
         }
     }
 
     fun checkItem(id: ConsentId, checked: Boolean) {
-        _uiState.update { state ->
+        _agreements.update { state ->
             val newItems = state.items.map {
                 if (it.id == id) it.copy(checked = checked) else it
             }
             state.copy(items = newItems)
+        }
+    }
+
+    fun loginWithKakao(context: Context) {
+        _socialLoginUiState.value = HedgeUiState.Loading(null)
+
+        kakaoAuth.authorize(context, kakaoAppKey) { result ->
+            result.fold(
+                onSuccess = { (authCode, redirectUri) ->
+                    viewModelScope.launch {
+                        socialLogin(
+                            provider = "KAKAO",
+                            authCode = authCode,
+                            redirectUri = redirectUri,
+                            email = null,
+                            nickname = null
+                        )
+                            .catch { e ->
+                                _socialLoginUiState.value = HedgeUiState.Error(
+                                    message = e.message,
+                                    throwable = e
+                                )
+                            }
+                            .collect { login ->
+                                when (login) {
+                                    is SocialLogin.Success -> {
+                                        _socialLoginUiState.value = HedgeUiState.Success(login)
+                                    }
+
+                                    is SocialLogin.Failure -> {
+                                        val msg = buildString {
+                                            append(login.message)
+                                            login.data?.errorCode?.let {
+                                                append(" (").append(it).append(")")
+                                            }
+                                        }
+                                        _socialLoginUiState.value = HedgeUiState.Error(
+                                            code = login.code,
+                                            message = msg
+                                        )
+                                    }
+                                }
+                            }
+                    }
+                },
+                onFailure = { e ->
+                    _socialLoginUiState.value = HedgeUiState.Error(
+                        message = e.message,
+                        throwable = e
+                    )
+                }
+            )
         }
     }
 }

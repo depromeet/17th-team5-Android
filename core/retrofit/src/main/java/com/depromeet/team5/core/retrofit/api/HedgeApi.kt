@@ -1,14 +1,17 @@
 package com.depromeet.team5.core.retrofit.api
 
+import com.depromeet.team5.core.remotedatasource.request.SocialLoginRequestRemoteData
 import com.depromeet.team5.core.retrofit.model.FeedbackResponse
 import com.depromeet.team5.core.retrofit.model.MyPrincipleGroupInfoResponse
 import com.depromeet.team5.core.retrofit.model.MyPrincipleGroupsInfoResponse
 import com.depromeet.team5.core.retrofit.model.MyPrincipleInfoResponse
 import com.depromeet.team5.core.retrofit.model.RetrospectionListResponse
 import com.depromeet.team5.core.retrofit.model.StockSliceResponse
+import com.depromeet.team5.core.retrofit.model.SocialLoginSuccessResponse
 import com.depromeet.team5.core.retrofit.model.SystemPrincipleResponse
 import com.depromeet.team5.core.retrofit.model.UserStatsResponse
 import okhttp3.RequestBody
+import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.DELETE
 import retrofit2.http.GET
@@ -80,4 +83,8 @@ interface HedgeApi {
     @GET("api/v1/principle-groups/systems")
     suspend fun systemPrincipleList(): SystemPrincipleResponse
 
+    @POST("api/v1/auth/social-login")
+    suspend fun socialLogin(
+        @Body body: SocialLoginRequestRemoteData
+    ): Response<SocialLoginSuccessResponse>
 }

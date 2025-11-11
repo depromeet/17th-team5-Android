@@ -21,14 +21,18 @@ object Agreements
 fun NavGraphBuilder.loginGraph(
     navController: NavController,
     onClickBack: () -> Unit,
-    onClickNext: () -> Unit
+    onClickNext: () -> Unit,
 ) {
     navigation<LoginGraph>(
         startDestination = Splash
     ) {
         composable<Splash> {
             SplashRoute(
-                navigateToLogin = { navController.navigate(Login) }
+                navigateToLogin = {
+                    navController.navigate(Login) {
+                        popUpTo(Splash) { inclusive = true }
+                    }
+                }
             )
         }
 

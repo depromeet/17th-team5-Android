@@ -1,6 +1,7 @@
 package com.depromeet.team5.core.retrofit.api
 
 import com.depromeet.team5.core.remotedatasource.request.CreateRetrospectionRequestRemoteData
+import com.depromeet.team5.core.remotedatasource.request.SocialLoginRequestRemoteData
 import com.depromeet.team5.core.retrofit.model.BaseResponse
 import com.depromeet.team5.core.retrofit.model.FeedbackResponse
 import com.depromeet.team5.core.retrofit.model.ImageUploadResponse
@@ -9,10 +10,12 @@ import com.depromeet.team5.core.retrofit.model.MyPrincipleGroupsInfoResponse
 import com.depromeet.team5.core.retrofit.model.RetrospectionListResponse
 import com.depromeet.team5.core.retrofit.model.RetrospectionResponse
 import com.depromeet.team5.core.retrofit.model.SearchResponse
+import com.depromeet.team5.core.retrofit.model.SocialLoginSuccessResponse
 import com.depromeet.team5.core.retrofit.model.SystemPrincipleResponse
 import com.depromeet.team5.core.retrofit.model.UserStatsResponse
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
+import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.DELETE
 import retrofit2.http.GET
@@ -32,36 +35,36 @@ interface HedgeApi {
 
     @POST("api/v1/reports/{retrospectionId}/feedback")
     suspend fun createFeedback(
-        @Path("retrospectionId") retrospectionId: Int
+        @Path("retrospectionId") retrospectionId: Int,
     ): FeedbackResponse
 
     @GET("api/v1/principle-groups")
     suspend fun getPrincipleGroups(
         @Query("type")
-        orderType: String
+        orderType: String,
     ): MyPrincipleGroupsInfoResponse
 
     @GET("api/v1/principle-groups/{groupId}")
     suspend fun getPrincipleGroup(
         @Path("groupId")
-        groupId: Int
+        groupId: Int,
     ): MyPrincipleGroupInfoResponse
 
     @DELETE("api/v1/principle-groups/{groupId}")
     suspend fun deletePrincipleGroup(
         @Path("groupId")
-        groupId: Int
+        groupId: Int,
     )
 
     @DELETE("api/v1/investment-principles/{principleId}")
     suspend fun deletePrinciple(
         @Path("principleId")
-        principleId: Int
+        principleId: Int,
     )
 
     @POST("api/v1/principle-groups")
     suspend fun createPrincipleGroup(
-        @Body body: RequestBody
+        @Body body: RequestBody,
     ): MyPrincipleGroupInfoResponse
 
     @Multipart
@@ -80,4 +83,8 @@ interface HedgeApi {
     @GET("api/v1/principle-groups/systems")
     suspend fun systemPrincipleList(): SystemPrincipleResponse
 
+    @POST("api/v1/auth/social-login")
+    suspend fun socialLogin(
+        @Body body: SocialLoginRequestRemoteData,
+    ): Response<SocialLoginSuccessResponse>
 }

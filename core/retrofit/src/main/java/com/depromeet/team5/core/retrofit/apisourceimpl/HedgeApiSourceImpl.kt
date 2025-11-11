@@ -6,18 +6,24 @@ import com.depromeet.team5.core.remotedatasource.apisource.HedgeApiSource
 import com.depromeet.team5.core.remotedatasource.model.FeedbackRemoteData
 import com.depromeet.team5.core.remotedatasource.model.MyPrincipleGroupRemoteData
 import com.depromeet.team5.core.remotedatasource.model.MyPrincipleGroupsInfoRemoteData
-import com.depromeet.team5.core.remotedatasource.model.RetrospectionRemoteData
 import com.depromeet.team5.core.remotedatasource.model.RetrospectionListRemoteData
+import com.depromeet.team5.core.remotedatasource.model.RetrospectionRemoteData
 import com.depromeet.team5.core.remotedatasource.model.SearchRemoteData
-import com.depromeet.team5.core.remotedatasource.request.CreateRetrospectionRequestRemoteData
+import com.depromeet.team5.core.remotedatasource.model.SocialLoginRemoteData
 import com.depromeet.team5.core.remotedatasource.model.SystemPrincipleRemoteData
 import com.depromeet.team5.core.remotedatasource.model.UserStatsRemoteData
+import com.depromeet.team5.core.remotedatasource.request.CreateRetrospectionRequestRemoteData
+import com.depromeet.team5.core.remotedatasource.request.SocialLoginRequestRemoteData
 import com.depromeet.team5.core.retrofit.api.HedgeApi
+import com.depromeet.team5.core.retrofit.model.SocialLoginFailureResponse
+import com.depromeet.team5.core.retrofit.model.SocialLoginSuccessResponse
 import com.depromeet.team5.core.retrofit.toRequestBody
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.serialization.json.Json
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.toRequestBody
+import retrofit2.Response
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -25,14 +31,15 @@ import javax.inject.Singleton
 @Singleton
 internal class HedgeApiSourceImpl @Inject constructor(
     private val hedgeApi: HedgeApi,
-    @ApplicationContext private val context: Context
+    @ApplicationContext private val context: Context,
+    private val json: Json,
 ) : HedgeApiSource {
 
     override suspend fun search(query: String): SearchRemoteData =
         hedgeApi.search(query = query).toRemoteData()
 
     override suspend fun createRetrospection(
-        request: CreateRetrospectionRequestRemoteData
+        request: CreateRetrospectionRequestRemoteData,
     ): RetrospectionRemoteData = hedgeApi.createRetrospection(request).toRemoteData()
 
     override suspend fun createFeedback(retrospectionId: Int): FeedbackRemoteData = hedgeApi
@@ -57,7 +64,7 @@ internal class HedgeApiSourceImpl @Inject constructor(
     override suspend fun uploadImageUri(
         domain: String,
         uri: Uri,
-        fileName: String?
+        fileName: String?,
     ): Int {
         val mime = context.contentResolver.getType(uri) ?: "image/*"
         val name = fileName ?: guessFileName(mime)
@@ -93,4 +100,28 @@ internal class HedgeApiSourceImpl @Inject constructor(
             .systemPrincipleList()
             .toRemoteData()
 
+    override suspend fun socialLogin(body: SocialLoginRequestRemoteData): SocialLoginRemoteData {
+        val resp: Response<SocialLoginSuccessResponse> = hedgeApi.socialLogin(body)
+        return if (resp.isSuccessful) {
+            val success = resp.body()
+                ?: return SocialLoginRemoteData.Failure(
+                    code = "EMPTY_BODY",
+                    message = "Empty response body",
+                    data = null
+                )
+            success.toRemoteData()
+        } else {
+            val errorText = resp.errorBody()?.string().orEmpty()
+            val failure = runCatching {
+                json.decodeFromString(SocialLoginFailureResponse.serializer(), errorText)
+            }.getOrElse {
+                SocialLoginFailureResponse(
+                    code = resp.code().toString(),
+                    message = "HTTP ${resp.code()} ${resp.message()}",
+                    data = null
+                )
+            }
+            failure.toRemoteData()
+        }
+    }
 }

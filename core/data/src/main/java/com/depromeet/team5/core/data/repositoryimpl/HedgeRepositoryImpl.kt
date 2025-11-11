@@ -2,11 +2,13 @@ package com.depromeet.team5.core.data.repositoryimpl
 
 import com.depromeet.team5.core.data.datasource.RemoteDataSource
 import com.depromeet.team5.core.data.mapper.toData
+import com.depromeet.team5.core.data.request.SocialLoginRequestData
 import com.depromeet.team5.core.domain.model.Feedback
 import com.depromeet.team5.core.domain.model.MyPrincipleGroup
 import com.depromeet.team5.core.domain.model.Retrospection
 import com.depromeet.team5.core.domain.model.RetrospectionList
 import com.depromeet.team5.core.domain.model.Search
+import com.depromeet.team5.core.domain.model.SocialLogin
 import com.depromeet.team5.core.domain.model.SystemPrinciple
 import com.depromeet.team5.core.domain.model.UserStats
 import com.depromeet.team5.core.domain.repository.HedgeRepository
@@ -25,9 +27,10 @@ internal class HedgeRepositoryImpl @Inject constructor(
         emit(remoteDataSource.search(query).toDomain())
     }
 
-    override fun createRetrospection(request: CreateRetrospectionRequest): Flow<Retrospection> = flow {
-        emit(remoteDataSource.createRetrospection(request.toData()).toDomain())
-    }
+    override fun createRetrospection(request: CreateRetrospectionRequest): Flow<Retrospection> =
+        flow {
+            emit(remoteDataSource.createRetrospection(request.toData()).toDomain())
+        }
 
     override fun createFeedback(
         retrospectionId: Int,
@@ -73,5 +76,22 @@ internal class HedgeRepositoryImpl @Inject constructor(
 
     override fun systemPrincipleList(): Flow<SystemPrinciple> = flow {
         emit(remoteDataSource.systemPrincipleList().toDomain())
+    }
+
+    override fun socialLogin(
+        provider: String,
+        authCode: String,
+        redirectUri: String,
+        email: String?,
+        nickname: String?
+    ): Flow<SocialLogin> = flow {
+        val req = SocialLoginRequestData(
+            provider = provider,
+            authCode = authCode,
+            redirectUri = redirectUri,
+            email = email,
+            nickname = nickname
+        )
+        emit(remoteDataSource.socialLogin(req).toDomain())
     }
 }

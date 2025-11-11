@@ -13,32 +13,51 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Icon
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.depromeet.team5.core.designsystem.foundation.HedgeColor
 import com.depromeet.team5.core.designsystem.foundation.HedgeTypography
+import com.depromeet.team5.core.domain.model.SocialLogin
+import com.depromeet.team5.core.domain.monad.HedgeUiState
+
 
 @Composable
 fun LoginRoute(
     navigateToAgreements: () -> Unit,
     modifier: Modifier = Modifier,
+    viewModel: LoginViewModel = hiltViewModel()
 ) {
+    val context = LocalContext.current
+
+    val loginState by viewModel.socialLoginUiState.collectAsStateWithLifecycle()
+
+    LaunchedEffect(loginState) {
+        if (loginState is HedgeUiState.Success<SocialLogin>){
+            navigateToAgreements()
+        }
+    }
+
     LoginScreen(
-        navigateToAgreements = navigateToAgreements,
+        onClickKakao = { viewModel.loginWithKakao(context) },
         modifier = modifier
     )
 }
 
 @Composable
 private fun LoginScreen(
-    navigateToAgreements: () -> Unit,
+    onClickKakao: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Box(
@@ -70,7 +89,7 @@ private fun LoginScreen(
                 .fillMaxWidth()
                 .padding(20.dp)
                 .background(color = Color(0xFFFEE500), shape = RoundedCornerShape(18.dp))
-                .clickable { navigateToAgreements() }
+                .clickable { onClickKakao() }
                 .align(Alignment.BottomCenter)
                 .padding(vertical = 16.dp),
             verticalAlignment = Alignment.CenterVertically,
@@ -96,6 +115,6 @@ private fun LoginScreen(
 @Composable
 private fun LoginScreenPreview() {
     LoginScreen(
-        navigateToAgreements = {}
+        onClickKakao = {}
     )
 }

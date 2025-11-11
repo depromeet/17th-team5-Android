@@ -19,39 +19,65 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.flowWithLifecycle
+import androidx.lifecycle.lifecycleScope
 import com.depromeet.team5.core.designsystem.foundation.HedgeColor
 import com.depromeet.team5.core.designsystem.foundation.HedgeTypography
 import com.depromeet.team5.core.domain.model.SocialLogin
 import com.depromeet.team5.core.domain.monad.HedgeUiState
+import com.depromeet.team5.core.ui.extensions.baseCollect
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.launch
 
 
 @Composable
 fun LoginRoute(
     navigateToAgreements: () -> Unit,
+    onLoginKakao: suspend () -> Result<Pair<String, String>>,
     modifier: Modifier = Modifier,
     viewModel: LoginViewModel = hiltViewModel()
 ) {
-    val context = LocalContext.current
-
+    val lifecycleOwner = LocalLifecycleOwner.current
     val loginState by viewModel.socialLoginUiState.collectAsStateWithLifecycle()
 
     LaunchedEffect(loginState) {
-        if (loginState is HedgeUiState.Success<SocialLogin>){
+        if (loginState is HedgeUiState.Success<SocialLogin>) {
             navigateToAgreements()
             viewModel.consumeLoginResult()
         }
     }
 
+    LaunchedEffect(lifecycleOwner) {
+        lifecycleOwner.lifecycleScope.launch {
+            viewModel.eventFlow
+                .flowWithLifecycle(lifecycleOwner.lifecycle)
+                .flatMapLatest {
+                    flow {
+                        emit(onLoginKakao())
+                    }
+                }
+                .baseCollect(
+                    onSuccess = {
+                        viewModel.authorize(it)
+                    },
+                    onError = {
+                        //todo error 처리
+                    }
+                )
+        }
+    }
+
     LoginScreen(
-        onClickKakao = { viewModel.loginWithKakao(context) },
+        onClickKakao = { viewModel.loginWithKakao() },
         modifier = modifier
     )
 }

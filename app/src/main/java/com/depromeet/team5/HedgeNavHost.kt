@@ -21,6 +21,7 @@ import com.depromeet.team5.features.search.searchScreen
 @Composable
 fun HedgeNavHost(
     modifier: Modifier = Modifier,
+    onLoginKakao: suspend () -> Result<Pair<String, String>>,
     onShowErrorToast: (Throwable) -> Unit,
     onShowToast: (String) -> Unit,
 ) {
@@ -34,7 +35,8 @@ fun HedgeNavHost(
         loginGraph(
             navController = navController,
             onClickBack = navController::popBackStack,
-            onClickNext = { navController.navigate(Home) }
+            onClickNext = { navController.navigate(Home) },
+            onLoginKakao = onLoginKakao
         )
 
         homeScreen(

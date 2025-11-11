@@ -12,6 +12,7 @@ import com.depromeet.team5.core.designsystem.component.HedgeToastState
 import com.depromeet.team5.core.designsystem.foundation.HedgeColor
 import com.depromeet.team5.core.designsystem.foundation.HedgeIcon
 import com.depromeet.team5.core.logger.Logger
+import com.depromeet.team5.features.login.KakaoAuthCodeManager
 import com.depromeet.team5.ui.theme.DepromeetTheme
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -22,6 +23,9 @@ class MainActivity : ComponentActivity() {
 
     @Inject
     lateinit var logger: Logger
+
+    @Inject
+    lateinit var kakaoAuthCodeManager: KakaoAuthCodeManager
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -50,6 +54,9 @@ class MainActivity : ComponentActivity() {
                                 text = message
                             )
                         }
+                    },
+                    onLoginKakao = {
+                        kakaoAuthCodeManager.authorize()
                     }
                 )
 

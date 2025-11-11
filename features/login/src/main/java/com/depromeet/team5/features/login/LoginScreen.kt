@@ -46,6 +46,7 @@ fun LoginRoute(
     LaunchedEffect(loginState) {
         if (loginState is HedgeUiState.Success<SocialLogin>){
             navigateToAgreements()
+            viewModel.consumeLoginResult()
         }
     }
 

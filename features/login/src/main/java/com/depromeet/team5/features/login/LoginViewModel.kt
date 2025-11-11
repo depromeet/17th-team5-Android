@@ -139,4 +139,8 @@ class LoginViewModel @Inject constructor(
             )
         }
     }
+
+    fun consumeLoginResult(){
+        _socialLoginUiState.value = HedgeUiState.Loading(null)
+    }
 }

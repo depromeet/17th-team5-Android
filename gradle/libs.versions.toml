@@ -34,6 +34,7 @@ coroutineTest = "1.10.2"
 coilCompose = "3.3.0"
 coilNetworkOkhttp = "3.3.0"
 jsoup = "1.21.2"
+kakao = "2.21.0"
 
 [libraries]
 #androidx
@@ -109,6 +110,8 @@ kotlin-serialization-gradlePlugin = { group = "org.jetbrains.kotlin", name = "ko
 #coil
 coil = { module = "io.coil-kt:coil-compose", version.ref = "coil" }
 
+#kakao
+kakao-user = { group = "com.kakao.sdk", name = "v2-user", version.ref = "kakao" }
 
 [bundles]
 compose = [

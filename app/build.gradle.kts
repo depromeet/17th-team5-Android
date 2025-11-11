@@ -92,6 +92,7 @@ dependencies {
     implementation(projects.features.principlegroupmodification)
     implementation(projects.features.login)
     implementation(projects.features.setting)
+    implementation(projects.features.newprinciples)
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.org.jetbrains.kotlinx.kotlinx.serialization.json)

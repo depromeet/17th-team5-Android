@@ -1,6 +1,7 @@
 package com.depromeet.team5.core.retrofit.di
 
 import com.depromeet.team5.core.retrofit.api.HedgeApi
+import com.depromeet.team5.core.retrofit.api.RetrospectionApi
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -17,5 +18,11 @@ internal object ApiModule {
     fun provideHedgeApi(
         retrofit: Retrofit
     ): HedgeApi = retrofit.create(HedgeApi::class.java)
+
+    @Provides
+    @Singleton
+    fun provideRetrospectionApi(
+        retrofit: Retrofit
+    ): RetrospectionApi = retrofit.create(RetrospectionApi::class.java)
 
 }

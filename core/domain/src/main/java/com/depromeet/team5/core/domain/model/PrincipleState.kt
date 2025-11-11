@@ -3,6 +3,15 @@ package com.depromeet.team5.core.domain.model
 import androidx.compose.runtime.Immutable
 
 @Immutable
+data class PrincipleGroupState(
+    val id: Int,
+    val groupName: String,
+    val thumbnail: String,
+    val principleType: PrincipleType,
+    val principles: List<PrincipleState>
+)
+
+@Immutable
 data class PrincipleState(
     val id: Int,
     val groupId: Int,
@@ -28,4 +37,15 @@ data class PrincipleChecks(
             links = emptyList()
         )
     }
+}
+
+@Immutable
+data class Memo(
+    val memoId: Int,
+    val content: String,
+)
+
+@Immutable
+enum class PrincipleType {
+    BUY, SELL,
 }

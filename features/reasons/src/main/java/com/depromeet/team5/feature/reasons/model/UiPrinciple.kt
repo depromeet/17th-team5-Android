@@ -2,17 +2,16 @@ package com.depromeet.team5.feature.reasons.model
 
 import androidx.compose.runtime.Immutable
 import androidx.compose.ui.text.input.TextFieldValue
-import com.depromeet.team5.core.domain.model.OrderType
 import com.depromeet.team5.core.domain.model.PrincipleChecks
+import com.depromeet.team5.core.domain.model.PrincipleGroupState
 import com.depromeet.team5.core.domain.model.PrincipleState
-import com.depromeet.team5.core.navigation.request.model.PrincipleGroupState
+import com.depromeet.team5.core.domain.model.PrincipleType
 
 fun PrincipleGroupState.toUi() = UiPrincipleGroup(
     id = id,
     groupName = groupName,
     thumbnail = thumbnail,
-    orderType = orderType,
-    displayOrder = displayOrder,
+    principleType = principleType,
     principles = principles.mapIndexed { idx, item -> item.toUi(idx) },
 )
 
@@ -46,8 +45,7 @@ data class UiPrincipleGroup(
     val id: Int,
     val groupName: String,
     val thumbnail: String,
-    val orderType: OrderType,
-    val displayOrder: Int,
+    val principleType: PrincipleType,
     val principles: List<UiPrinciple>
 ) {
 
@@ -67,8 +65,7 @@ data class UiPrincipleGroup(
         id = id,
         groupName = groupName,
         thumbnail = thumbnail,
-        orderType = orderType,
-        displayOrder = displayOrder,
+        principleType = principleType,
         principles = principles.map { it.toState() }
     )
 }

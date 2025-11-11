@@ -8,13 +8,16 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Icon
@@ -52,6 +55,7 @@ import com.depromeet.team5.features.feedback.component.PrincipleCounter
 @Composable
 fun AiFeedbackRoute(
     requestViewModel: RequestViewModel,
+    onCompleteClick: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: AiFeedbackViewModel = hiltViewModel()
 ) {
@@ -71,7 +75,8 @@ fun AiFeedbackRoute(
                 companyName = requestViewModel.request.companyName,
                 price = requestViewModel.request.price.toLong(),
                 stock = requestViewModel.request.volume,
-                modifier = modifier
+                onCompleteClick = onCompleteClick,
+                modifier = modifier.windowInsetsPadding(WindowInsets.systemBars)
             )
         }
 
@@ -91,6 +96,7 @@ private fun AiFeedbackScreen(
     companyName: String,
     price: Long,
     stock: Int,
+    onCompleteClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val gradientGreenBlue = Brush.linearGradient(
@@ -179,7 +185,7 @@ private fun AiFeedbackScreen(
                         text = stringResource(R.string.feedback_complete),
                         style = HedgeTypography.Body1.SemiBold,
                         color = HedgeColor.Brand.Darken,
-                        modifier = Modifier.clickable {}
+                        modifier = Modifier.clickable { onCompleteClick() }
                     )
                 }
             }
@@ -446,6 +452,7 @@ private fun AiFeedbackScreenPreview() {
         grade = HedgeBadge.fromBadge(badge = "platinum"),
         companyName = "삼성전자",
         price = 65000,
-        stock = 3
+        stock = 3,
+        onCompleteClick = {}
     )
 }

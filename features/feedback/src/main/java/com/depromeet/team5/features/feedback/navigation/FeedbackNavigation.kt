@@ -15,7 +15,7 @@ object Feedback
 
 fun NavGraphBuilder.feedbackScreen(
     navController: NavController,
-    onRemoveClick: () -> Unit
+    onCompleteClick: () -> Unit
 ) {
     composable<Feedback> { entry ->
 
@@ -27,7 +27,7 @@ fun NavGraphBuilder.feedbackScreen(
 
         AiFeedbackRoute(
             requestViewModel = sharedViewModel,
-//            onRemoveClick = onRemoveClick
+            onCompleteClick = onCompleteClick
         )
     }
 }

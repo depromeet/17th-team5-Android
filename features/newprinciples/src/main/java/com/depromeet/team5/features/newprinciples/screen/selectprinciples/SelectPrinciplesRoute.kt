@@ -47,6 +47,7 @@ import kotlin.math.abs
 fun SelectPrinciplesRoute(
     modifier: Modifier = Modifier,
     onBackPressed: () -> Unit,
+    onShowErrorToast: (Throwable) -> Unit,
     viewModel: SelectPrinciplesViewModel = hiltViewModel()
 ) {
     val myPrincipleGroupUiState by viewModel.myPrincipleGroupUiState.collectAsStateWithLifecycle()
@@ -59,6 +60,7 @@ fun SelectPrinciplesRoute(
         onClickedConfirmButton = { selectedPrinciples ->
             //todo 원칙 추가작성화면으로 이동
         },
+        onShowErrorToast = onShowErrorToast,
         onBackPressed = onBackPressed
     )
 }
@@ -69,6 +71,7 @@ private fun SelectPrinciplesScreen(
     newPrinciples: List<String>,
     modifier: Modifier = Modifier,
     onClickedConfirmButton: (List<String>) -> Unit,
+    onShowErrorToast: (Throwable) -> Unit,
     onBackPressed: () -> Unit
 ) {
     when (uiState) {
@@ -84,7 +87,11 @@ private fun SelectPrinciplesScreen(
         is HedgeUiState.Loading<*> -> {
             HedgeLoadingScreen()
         }
-        is HedgeUiState.Error -> {}
+        is HedgeUiState.Error -> {
+            uiState.throwable?.let {
+                onShowErrorToast(it)
+            }
+        }
     }
 }
 
@@ -96,7 +103,8 @@ private fun SelectPrinciplesContent(
     onClickedConfirmButton: (List<String>) -> Unit,
     onBackPressed: () -> Unit
 ) {
-    val selectedPrincipleSet = remember { HashSet<String>() }
+    var selectedPrincipleSet by remember { mutableStateOf(emptySet<String>()) }
+    val isButtonEnabled = selectedPrincipleSet.isNotEmpty()
 
     Box(
         modifier = modifier
@@ -109,7 +117,7 @@ private fun SelectPrinciplesContent(
             HedgeTopBar(
                 title = {
                     Text(
-                        text = "",
+                        text = myPrincipleGroup.groupName,
                         style = HedgeTypography.Body3.SemiBold,
                         color = HedgeColor.Text.Primary
                     )
@@ -135,9 +143,9 @@ private fun SelectPrinciplesContent(
                 principles = newPrinciples,
                 onCheckedChange = { principle ->
                     if (selectedPrincipleSet.contains(principle)) {
-                        selectedPrincipleSet.remove(principle)
+                        selectedPrincipleSet = selectedPrincipleSet - principle
                     } else {
-                        selectedPrincipleSet.add(principle)
+                        selectedPrincipleSet = selectedPrincipleSet + principle
                     }
                 }
             )
@@ -159,7 +167,8 @@ private fun SelectPrinciplesContent(
                     .padding(start = 20.dp, top = 12.dp, end = 20.dp, bottom = 31.dp)
                     .fillMaxWidth(),
                 text = stringResource(R.string.new_principle_button_text),
-                enabled = selectedPrincipleSet.isNotEmpty(),
+                enabled = isButtonEnabled,
+                forceClickable = isButtonEnabled,
                 onClick = {
                     onClickedConfirmButton(selectedPrincipleSet.toList())
                 }
@@ -211,10 +220,17 @@ private fun CheckPrinciple(
         modifier = modifier
             .fillMaxWidth()
             .background(HedgeColor.WHITE)
-            .padding(horizontal = 20.dp, vertical = 22.dp),
+            .padding(horizontal = 20.dp, vertical = 22.dp)
+            .clickable(
+                enabled = true,
+                indication = null,
+                interactionSource = remember { MutableInteractionSource() }
+            ) {
+                isChecked = !isChecked
+                onCheckedChange()
+            },
         verticalAlignment = Alignment.CenterVertically
     ) {
-
         Box(
             modifier = Modifier
                 .size(24.dp)
@@ -222,15 +238,7 @@ private fun CheckPrinciple(
                     if (isChecked) HedgeColor.Brand.Primary
                     else HedgeColor.Neutral.BackgroundSecondary,
                     shape = RoundedCornerShape(8.dp)
-                )
-                .clickable(
-                    enabled = true,
-                    indication = null,
-                    interactionSource = remember { MutableInteractionSource() }
-                ) {
-                    isChecked = !isChecked
-                    onCheckedChange()
-                },
+                ),
             contentAlignment = Alignment.Center
         ) {
             Image(
@@ -259,6 +267,7 @@ private fun SelectPrinciplesScreenPreview() {
             "다음엔 거래량 감소 구간을 명시적으로 기록해보세요2."
         ),
         onClickedConfirmButton = {},
+        onShowErrorToast = {},
         onBackPressed = {}
     )
 }

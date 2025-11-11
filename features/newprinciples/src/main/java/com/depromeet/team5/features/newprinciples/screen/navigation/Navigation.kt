@@ -36,6 +36,7 @@ fun NavController.navigateToNewPrincipleGraph(
 }
 
 fun NavGraphBuilder.newPrincipleGraph(
+    onShowErrorToast: (Throwable) -> Unit,
     onBackPressed: () -> Unit
 ) {
     navigation<NewPrinciple>(
@@ -43,7 +44,8 @@ fun NavGraphBuilder.newPrincipleGraph(
     ) {
         composable<SelectPrinciple> { backStackEntry ->
             SelectPrinciplesRoute(
-                onBackPressed = onBackPressed
+                onBackPressed = onBackPressed,
+                onShowErrorToast = onShowErrorToast
             )
         }
     }

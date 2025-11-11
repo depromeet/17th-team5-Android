@@ -19,6 +19,7 @@ import com.depromeet.team5.features.feedback.navigation.navigateToFeedback
 import com.depromeet.team5.features.home.homeScreen
 import com.depromeet.team5.features.login.LoginGraph
 import com.depromeet.team5.features.login.loginGraph
+import com.depromeet.team5.features.newprinciples.screen.navigation.newPrincipleGraph
 import com.depromeet.team5.features.principlegroupmodification.navigation.navigateToPrincipleGroupModification
 import com.depromeet.team5.features.principlegroupmodification.navigation.principleGroupModification
 import com.depromeet.team5.features.retrospect.screen.navigateToRetrospect
@@ -156,6 +157,10 @@ fun HedgeNavHost(
         imageDetailNavigation(
             navController = navController,
             onClickBack = navController::popBackStack,
+        )
+
+        newPrincipleGraph(
+            onBackPressed = navController::popBackStack
         )
 
         feedbackScreen(

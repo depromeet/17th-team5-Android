@@ -30,4 +30,5 @@ dependencies {
     implementation(projects.core.navigation)
     implementation(projects.core.ui)
 
+    implementation(libs.org.jetbrains.kotlinx.kotlinx.serialization.json)
 }

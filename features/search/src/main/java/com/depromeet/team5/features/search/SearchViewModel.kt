@@ -2,6 +2,10 @@ package com.depromeet.team5.features.search
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.paging.Pager
+import androidx.paging.PagingConfig
+import androidx.paging.PagingData
+import androidx.paging.cachedIn
 import com.depromeet.team5.core.domain.usecase.GetStockSliceUseCase
 import com.depromeet.team5.core.domain.usecase.RetrospectionListUseCase
 import com.depromeet.team5.features.search.model.StockData
@@ -12,6 +16,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
@@ -31,7 +36,7 @@ class SearchViewModel @Inject constructor(
         _searchText.value = text
     }
 
-    private val recentsFlow: StateFlow<List<StockData>> =
+    val recents: StateFlow<List<StockData>> =
         retrospectionListUseCase()
             .map { list ->
                 list.data
@@ -54,37 +59,34 @@ class SearchViewModel @Inject constructor(
                 initialValue = emptyList()
             )
 
-    val searchUiState: StateFlow<UiState<List<StockData>>> =
+    val pagingDataFlow: StateFlow<PagingData<StockData>> =
         _searchText
             .debounce(300)
             .map { it.trim() }
             .flatMapLatest { query ->
                 if (query.isBlank()) {
-                    flowOf(UiState.Recents(recentsFlow.value))
+                    flowOf(PagingData.empty())
                 } else {
-                    getStockSliceUseCase(
-                        companyName = query,
-                        nextCursor = null,
-                        size = 10
-                    )
-                        .map { slice ->
-                            val list = slice.data.content.map { info ->
-                                StockData(
-                                    symbol = info.symbol,
-                                    stockName = info.companyName,
-                                    market = info.market,
-                                    stockImageUrl = info.logo
-                                )
-                            }
-                            if (list.isEmpty()) UiState.Empty else UiState.Results(list)
+                    Pager(
+                        config = PagingConfig(
+                            pageSize = 10,
+                            prefetchDistance = 3,
+                            enablePlaceholders = false
+                        ),
+                        pagingSourceFactory = {
+                            StockSlicePagingSource(
+                                getStockSliceUseCase = getStockSliceUseCase,
+                                query = query,
+                                pageSize = 10
+                            )
                         }
-                        .onStart { emit(UiState.Loading) }
-                        .catch { emit(UiState.Error) }
+                    ).flow
                 }
             }
+            .cachedIn(viewModelScope)
             .stateIn(
                 scope = viewModelScope,
                 started = SharingStarted.WhileSubscribed(5_000),
-                initialValue = UiState.Recents(recentsFlow.value)
+                initialValue = PagingData.empty()
             )
 }

@@ -31,6 +31,7 @@ fun SearchListItem(
         verticalAlignment = Alignment.CenterVertically
     ) {
         HedgeCompanyLogo(
+            logoUrl = stockData.stockImageUrl,
             modifier = Modifier
                 .padding(start = 20.dp, end = 16.dp, top = 12.dp, bottom = 12.dp)
                 .clip(shape = CircleShape)

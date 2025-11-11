@@ -160,6 +160,8 @@ fun HedgeNavHost(
 
         feedbackScreen(
             navController = navController,
+            onRemoveClick = { navController.popBackStack(Home, inclusive = false) },
+            onShowToast = onShowToast,
             onShowErrorToast = onShowErrorToast
         )
     }

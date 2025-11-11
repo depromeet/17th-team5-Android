@@ -19,7 +19,9 @@ data class Feedback(
 
 fun NavGraphBuilder.feedbackScreen(
     navController: NavController,
-    onShowErrorToast: (Throwable) -> Unit,
+    onRemoveClick: () -> Unit,
+    onShowToast: (String) -> Unit,
+    onShowErrorToast: (Throwable) -> Unit
 ) {
     composable<Feedback> { entry ->
 
@@ -38,6 +40,8 @@ fun NavGraphBuilder.feedbackScreen(
                     .savedStateHandle[HIGHLIGHT_RETROSPECTION_ID] = id
                 navController.popBackStack(Home, inclusive = false)
             },
+//            onRemoveClick = onRemoveClick,
+            onShowToast = onShowToast,
             onShowErrorToast = onShowErrorToast
         )
     }

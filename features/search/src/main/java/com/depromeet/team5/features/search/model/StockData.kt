@@ -4,5 +4,5 @@ data class StockData(
     val symbol: String,
     val stockName: String,
     val market: String,
-    val stockImageUrl: String?
+    val stockImageUrl: String? = null
 )

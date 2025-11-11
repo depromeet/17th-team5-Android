@@ -43,7 +43,7 @@ class SearchViewModel @Inject constructor(
                             symbol = "",
                             stockName = company,
                             market = "",
-                            stockImageUrl = ""
+                            stockImageUrl = null
                         )
                     }
             }
@@ -73,7 +73,7 @@ class SearchViewModel @Inject constructor(
                                     symbol = info.symbol,
                                     stockName = info.companyName,
                                     market = info.market,
-                                    stockImageUrl = info.logo ?: ""
+                                    stockImageUrl = info.logo
                                 )
                             }
                             if (list.isEmpty()) UiState.Empty else UiState.Results(list)

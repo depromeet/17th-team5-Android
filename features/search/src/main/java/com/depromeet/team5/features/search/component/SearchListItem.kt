@@ -1,8 +1,6 @@
 package com.depromeet.team5.features.search.component
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -17,6 +15,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.depromeet.team5.core.designsystem.foundation.HedgeColor
 import com.depromeet.team5.core.designsystem.foundation.HedgeTypography
+import com.depromeet.team5.core.ui.component.HedgeCompanyLogo
 import com.depromeet.team5.features.search.model.StockData
 
 @Composable
@@ -31,21 +30,11 @@ fun SearchListItem(
             .fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically
     ) {
-//        AsyncImage(
-//            model = stockData.stockImageUrl,
-//            contentDescription = null,
-//            modifier = Modifier
-//                .padding(start = 20.dp, end = 16.dp, top = 12.dp, bottom = 12.dp)
-//                .clip(shape = CircleShape)
-//                .size(32.dp)
-//        )
-
-        Box(
+        HedgeCompanyLogo(
             modifier = Modifier
                 .padding(start = 20.dp, end = 16.dp, top = 12.dp, bottom = 12.dp)
                 .clip(shape = CircleShape)
                 .size(32.dp)
-                .background(color = HedgeColor.GREY_200)
         )
 
         Text(
@@ -65,7 +54,7 @@ private fun SearchListItemPreview() {
             symbol = "005930",
             market = "KOSPI",
             stockName = "삼성전자",
-            stockImageUrl = ""
+            stockImageUrl = null
         )
     )
 }

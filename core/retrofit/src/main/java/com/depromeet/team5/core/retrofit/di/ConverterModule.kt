@@ -8,6 +8,7 @@ import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import kotlinx.serialization.json.Json
 import okhttp3.MediaType.Companion.toMediaType
+import retrofit2.Converter
 import retrofit2.converter.gson.GsonConverterFactory
 import javax.inject.Singleton
 
@@ -26,7 +27,7 @@ internal object ConverterModule {
     @Singleton
     fun provideConverterFactory(
         json: Json,
-    ) = json.asConverterFactory("application/json".toMediaType())
+    ): Converter.Factory = json.asConverterFactory("application/json".toMediaType())
 
     @Provides
     @Singleton

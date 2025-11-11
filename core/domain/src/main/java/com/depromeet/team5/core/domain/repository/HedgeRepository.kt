@@ -2,10 +2,8 @@ package com.depromeet.team5.core.domain.repository
 
 import com.depromeet.team5.core.domain.model.Feedback
 import com.depromeet.team5.core.domain.model.MyPrincipleGroup
-import com.depromeet.team5.core.domain.model.Retrospection
 import com.depromeet.team5.core.domain.model.RetrospectionList
 import com.depromeet.team5.core.domain.model.Search
-import com.depromeet.team5.core.domain.request.CreateRetrospectionRequest
 import com.depromeet.team5.core.domain.model.SystemPrinciple
 import com.depromeet.team5.core.domain.model.UserStats
 import kotlinx.coroutines.flow.Flow
@@ -14,8 +12,6 @@ import kotlinx.coroutines.flow.Flow
 interface HedgeRepository {
 
     fun search(query: String): Flow<Search>
-
-    fun createRetrospection(request: CreateRetrospectionRequest): Flow<Retrospection>
 
     fun createFeedback(
         retrospectionId: Int
@@ -30,12 +26,6 @@ interface HedgeRepository {
     fun deletePrinciple(principleId: Int): Flow<Unit>
 
     fun createPrincipleGroup(body: Map<String, Any?>): Flow<MyPrincipleGroup>
-
-    suspend fun uploadImageUri(
-        domain: String,
-        uri: String,
-        fileName: String? = null
-    ): Int
 
     fun userStats(): Flow<UserStats>
 

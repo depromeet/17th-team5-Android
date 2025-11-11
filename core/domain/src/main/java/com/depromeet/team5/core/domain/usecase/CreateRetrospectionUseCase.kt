@@ -1,8 +1,9 @@
 package com.depromeet.team5.core.domain.usecase
 
+import com.depromeet.team5.core.domain.model.BaseDomain
 import com.depromeet.team5.core.domain.model.PrincipleState
 import com.depromeet.team5.core.domain.model.Retrospection
-import com.depromeet.team5.core.domain.repository.HedgeRepository
+import com.depromeet.team5.core.domain.repository.RetrospectionRepository
 import com.depromeet.team5.core.domain.request.CreateRetrospectionRequest
 import com.depromeet.team5.core.domain.request.PrincipleCheckRequest
 import kotlinx.coroutines.Dispatchers
@@ -12,13 +13,13 @@ import javax.inject.Inject
 
 
 class CreateRetrospectionUseCase @Inject constructor(
-    private val hedgeRepository: HedgeRepository,
+    private val retrospectionRepository: RetrospectionRepository,
     private val updateImageUrisUseCase: UpdateImageUrisUseCase
 ) {
     suspend operator fun invoke(
         request: CreateRetrospectionRequest,
         principles: List<PrincipleState>,
-    ): Flow<Retrospection> = withContext(Dispatchers.IO) {
+    ): Flow<BaseDomain<Retrospection>> = withContext(Dispatchers.IO) {
         val principleChecks = principles.map {
             PrincipleCheckRequest(
                 principleId = it.id,
@@ -34,6 +35,6 @@ class CreateRetrospectionUseCase @Inject constructor(
                 links = it.principleChecks.links
             )
         }
-        hedgeRepository.createRetrospection(request.copy(principleChecks = principleChecks))
+        retrospectionRepository.createRetrospection(request.copy(principleChecks = principleChecks))
     }
 }

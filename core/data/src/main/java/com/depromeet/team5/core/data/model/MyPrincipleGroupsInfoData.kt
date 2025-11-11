@@ -19,6 +19,7 @@ data class MyPrincipleGroupData(
     val id: Int,
     val groupName: String,
     val thumbnail: String,
+    val imageId: Int?,
     val principleType: String,
     val displayOrder: Int,
     val principles: List<MyPrincipleData>
@@ -28,6 +29,7 @@ data class MyPrincipleGroupData(
         id = id,
         groupName = groupName,
         thumbnail = thumbnail,
+        imageId = imageId,
         orderType = when (principleType) {
             "BUY" -> OrderType.BUY
             "SELL" -> OrderType.SELL

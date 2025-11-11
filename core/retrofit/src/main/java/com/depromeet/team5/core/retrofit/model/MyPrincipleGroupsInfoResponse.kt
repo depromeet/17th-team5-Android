@@ -32,6 +32,7 @@ data class MyPrincipleGroupInfoResponse(
         id = data.id,
         groupName = data.groupName,
         thumbnail = data.thumbnail,
+        imageId = data.imageId,
         principleType = data.principleType,
         displayOrder = data.displayOrder,
         principles = data.principles.map { it.toRemoteData() },
@@ -60,6 +61,7 @@ data class MyPrincipleGroupResponse(
     val id: Int,
     val groupName: String,
     val thumbnail: String,
+    val imageId: Int?,
     val principleType: String,
     val displayOrder: Int,
     val principles: List<MyPrincipleResponse>
@@ -69,6 +71,7 @@ data class MyPrincipleGroupResponse(
         id = id,
         groupName = groupName,
         thumbnail = thumbnail,
+        imageId = imageId,
         principleType = principleType,
         displayOrder = displayOrder,
         principles = principles.map { it.toRemoteData() }

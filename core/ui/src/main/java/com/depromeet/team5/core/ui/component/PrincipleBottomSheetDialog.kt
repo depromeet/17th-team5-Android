@@ -519,6 +519,7 @@ fun HedgeModalBottomSheetPreview() {
             groupName = "이건 좀 지키자 제발$i",
             thumbnail = "\uD83D\uDCC8",
             displayOrder = 0,
+            imageId = null,
             orderType = OrderType.BUY,
             principles = listOf(
                 MyPrinciple(
@@ -605,6 +606,7 @@ private fun rememberBeginnerPrinciple(orderType: OrderType) = run {
                 context.getString(R.string.principle_bottom_sheet_dialog_beginner_sell_type)
             },
             thumbnail = "",
+            imageId = null,
             orderType = orderType,
             displayOrder = 0,
             principles = principles

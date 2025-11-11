@@ -5,14 +5,18 @@ import com.depromeet.team5.core.remotedatasource.model.MyPrincipleGroupRemoteDat
 import com.depromeet.team5.core.remotedatasource.model.MyPrincipleGroupsInfoRemoteData
 import com.depromeet.team5.core.remotedatasource.model.MyPrincipleRemoteData
 import com.depromeet.team5.core.remotedatasource.model.RetrospectionListRemoteData
-import com.depromeet.team5.core.remotedatasource.model.SearchRemoteData
+import com.depromeet.team5.core.remotedatasource.model.StockSliceRemoteData
 import com.depromeet.team5.core.remotedatasource.model.SystemPrincipleRemoteData
 import com.depromeet.team5.core.remotedatasource.model.UserStatsRemoteData
 
 
 interface HedgeApiSource {
 
-    suspend fun search(query: String): SearchRemoteData
+    suspend fun getStockSlice(
+        companyName: String,
+        nextCursor: String?,
+        size: Int?
+    ): StockSliceRemoteData
 
     suspend fun createFeedback(retrospectionId: Int): FeedbackRemoteData
 

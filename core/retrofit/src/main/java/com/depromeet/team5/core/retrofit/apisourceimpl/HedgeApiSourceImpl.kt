@@ -6,11 +6,9 @@ import com.depromeet.team5.core.remotedatasource.model.MyPrincipleGroupRemoteDat
 import com.depromeet.team5.core.remotedatasource.model.MyPrincipleGroupsInfoRemoteData
 import com.depromeet.team5.core.remotedatasource.model.MyPrincipleRemoteData
 import com.depromeet.team5.core.remotedatasource.model.RetrospectionListRemoteData
-import com.depromeet.team5.core.remotedatasource.model.RetrospectionRemoteData
-import com.depromeet.team5.core.remotedatasource.model.SearchRemoteData
+import com.depromeet.team5.core.remotedatasource.model.StockSliceRemoteData
 import com.depromeet.team5.core.remotedatasource.model.SystemPrincipleRemoteData
 import com.depromeet.team5.core.remotedatasource.model.UserStatsRemoteData
-import com.depromeet.team5.core.remotedatasource.request.CreateRetrospectionRequestRemoteData
 import com.depromeet.team5.core.retrofit.api.HedgeApi
 import com.depromeet.team5.core.retrofit.toRequestBody
 import javax.inject.Inject
@@ -22,8 +20,16 @@ internal class HedgeApiSourceImpl @Inject constructor(
     private val hedgeApi: HedgeApi
 ) : HedgeApiSource {
 
-    override suspend fun search(query: String): SearchRemoteData =
-        hedgeApi.search(query = query).toRemoteData()
+    override suspend fun getStockSlice(
+        companyName: String,
+        nextCursor: String?,
+        size: Int?
+    ): StockSliceRemoteData =
+        hedgeApi.getStockSlice(
+            companyName = companyName,
+            nextCursor = nextCursor,
+            size = size
+        ).toRemoteData()
 
     override suspend fun createFeedback(retrospectionId: Int): FeedbackRemoteData = hedgeApi
         .createFeedback(retrospectionId = retrospectionId)

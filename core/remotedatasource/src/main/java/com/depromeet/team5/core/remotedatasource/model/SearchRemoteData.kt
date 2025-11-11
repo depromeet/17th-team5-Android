@@ -1,32 +1,45 @@
 package com.depromeet.team5.core.remotedatasource.model
 
-import com.depromeet.team5.core.data.model.SearchData
-import com.depromeet.team5.core.data.model.SearchInfoData
+import com.depromeet.team5.core.data.model.StockSliceData
+import com.depromeet.team5.core.data.model.StockSlicePageData
+import com.depromeet.team5.core.data.model.StockInfoData
 import com.depromeet.team5.core.remotedatasource.mapper.RemoteDataMapper
 
-
-data class SearchRemoteData(
+data class StockSliceRemoteData(
     val code: String,
     val message: String,
-    val data: List<SearchInfoRemoteData>
-) : RemoteDataMapper<SearchData> {
+    val data: StockSlicePageRemoteData
+) : RemoteDataMapper<StockSliceData> {
 
-    override fun toData(): SearchData = SearchData(
+    override fun toData(): StockSliceData = StockSliceData(
         code = code,
         message = message,
-        data = data.map { it.toData() }
+        data = data.toData()
     )
 }
 
-data class SearchInfoRemoteData(
+data class StockSlicePageRemoteData(
+    val content: List<StockInfoRemoteData>,
+    val nextCursor: String?
+) : RemoteDataMapper<StockSlicePageData> {
+
+    override fun toData(): StockSlicePageData = StockSlicePageData(
+        content = content.map { it.toData() },
+        nextCursor = nextCursor
+    )
+}
+
+data class StockInfoRemoteData(
     val market: String,
     val symbol: String,
-    val title: String
-) : RemoteDataMapper<SearchInfoData> {
+    val companyName: String,
+    val logo: String?
+) : RemoteDataMapper<StockInfoData> {
 
-    override fun toData(): SearchInfoData = SearchInfoData(
+    override fun toData(): StockInfoData = StockInfoData(
         market = market,
         symbol = symbol,
-        title = title
+        companyName = companyName,
+        logo = logo
     )
 }

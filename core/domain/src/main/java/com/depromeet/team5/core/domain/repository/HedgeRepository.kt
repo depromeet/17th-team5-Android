@@ -4,7 +4,7 @@ import com.depromeet.team5.core.domain.model.Feedback
 import com.depromeet.team5.core.domain.model.MyPrinciple
 import com.depromeet.team5.core.domain.model.MyPrincipleGroup
 import com.depromeet.team5.core.domain.model.RetrospectionList
-import com.depromeet.team5.core.domain.model.Search
+import com.depromeet.team5.core.domain.model.StockSlice
 import com.depromeet.team5.core.domain.model.SystemPrinciple
 import com.depromeet.team5.core.domain.model.UserStats
 import com.depromeet.team5.core.domain.request.CreateRetrospectionRequest
@@ -13,7 +13,11 @@ import kotlinx.coroutines.flow.Flow
 
 interface HedgeRepository {
 
-    fun search(query: String): Flow<Search>
+    fun getStockSlice(
+        companyName: String,
+        nextCursor: String?,
+        size: Int?
+    ): Flow<StockSlice>
 
     fun createFeedback(
         retrospectionId: Int

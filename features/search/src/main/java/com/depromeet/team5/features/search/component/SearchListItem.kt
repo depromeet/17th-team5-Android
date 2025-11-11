@@ -64,7 +64,8 @@ private fun SearchListItemPreview() {
         stockData = StockData(
             symbol = "005930",
             market = "KOSPI",
-            stockName = "삼성전자"
+            stockName = "삼성전자",
+            stockImageUrl = ""
         )
     )
 }

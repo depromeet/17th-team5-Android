@@ -5,7 +5,7 @@ import com.depromeet.team5.core.data.model.MyPrincipleData
 import com.depromeet.team5.core.data.model.MyPrincipleGroupData
 import com.depromeet.team5.core.data.model.MyPrincipleGroupsInfoData
 import com.depromeet.team5.core.data.model.RetrospectionListData
-import com.depromeet.team5.core.data.model.SearchData
+import com.depromeet.team5.core.data.model.StockSliceData
 import com.depromeet.team5.core.data.model.SystemPrincipleData
 import com.depromeet.team5.core.data.model.UserStatsData
 import com.depromeet.team5.core.data.request.CreateRetrospectionRequestData
@@ -13,7 +13,11 @@ import com.depromeet.team5.core.data.request.CreateRetrospectionRequestData
 
 interface RemoteDataSource {
 
-    suspend fun search(query: String): SearchData
+    suspend fun getStockSlice(
+        companyName: String,
+        nextCursor: String?,
+        size: Int?
+    ): StockSliceData
 
     suspend fun createFeedback(retrospectionId: Int): FeedbackData
 

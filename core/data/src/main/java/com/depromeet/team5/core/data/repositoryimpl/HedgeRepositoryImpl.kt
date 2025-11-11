@@ -5,7 +5,7 @@ import com.depromeet.team5.core.domain.model.Feedback
 import com.depromeet.team5.core.domain.model.MyPrinciple
 import com.depromeet.team5.core.domain.model.MyPrincipleGroup
 import com.depromeet.team5.core.domain.model.RetrospectionList
-import com.depromeet.team5.core.domain.model.Search
+import com.depromeet.team5.core.domain.model.StockSlice
 import com.depromeet.team5.core.domain.model.SystemPrinciple
 import com.depromeet.team5.core.domain.model.UserStats
 import com.depromeet.team5.core.domain.repository.HedgeRepository
@@ -19,8 +19,16 @@ internal class HedgeRepositoryImpl @Inject constructor(
     private val remoteDataSource: RemoteDataSource,
 ) : HedgeRepository {
 
-    override fun search(query: String): Flow<Search> = flow {
-        emit(remoteDataSource.search(query).toDomain())
+    override fun getStockSlice(
+        companyName: String,
+        nextCursor: String?,
+        size: Int?
+    ): Flow<StockSlice> = flow {
+        emit(
+            remoteDataSource
+                .getStockSlice(companyName = companyName, nextCursor = nextCursor, size = size)
+                .toDomain()
+        )
     }
 
     override fun createFeedback(

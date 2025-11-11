@@ -1,5 +1,6 @@
 package com.depromeet.team5.features.search
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -53,7 +54,7 @@ fun SearchRoute(
                 )
             onItemClick()
         },
-        modifier = modifier
+        modifier = modifier.background(HedgeColor.Neutral.BackgroundDefault)
     )
 }
 
@@ -134,15 +135,18 @@ private fun RecentsContent(
             .fillMaxWidth()
             .padding(top = 4.dp)
     ) {
-        stickyHeader {
+        stickyHeader{
             Text(
                 text = stringResource(id = R.string.search_retrospect_list),
                 style = HedgeTypography.Body3.Medium,
                 color = HedgeColor.Text.Alternative,
-                modifier = Modifier.padding(start = 20.dp, top = 10.dp, bottom = 10.dp)
+                modifier = Modifier
+                    .background(HedgeColor.Neutral.BackgroundDefault)
+                    .padding(start = 20.dp, top = 10.dp, bottom = 10.dp)
+                    .fillMaxWidth()
             )
         }
-        items(items, key = { it.symbol }) { item ->
+        items(items, key = { it.stockName }) { item ->
             SearchListItem(stockData = item, onClick = { onItemClick(item) })
         }
     }
@@ -234,17 +238,20 @@ private fun RecentsPreview() {
         StockData(
             symbol = "005930",
             stockName = "삼성전자",
-            market = ""
+            market = "",
+            stockImageUrl = ""
         ),
         StockData(
             symbol = "000660",
             stockName = "SK하이닉스",
-            market = ""
+            market = "",
+            stockImageUrl = ""
         ),
         StockData(
             symbol = "035420",
             stockName = "NAVER",
-            market = ""
+            market = "",
+            stockImageUrl = ""
         ),
     )
 
@@ -265,12 +272,15 @@ private fun ResultsPreview() {
         StockData(
             symbol = "035720",
             stockName = "카카오",
-            market = ""
+            market = "",
+            stockImageUrl = ""
         ),
         StockData(
             symbol = "051910",
             stockName = "LG화학",
-            market = ""
+            market = "",
+            stockImageUrl = ""
+
         ),
     )
 

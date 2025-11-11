@@ -13,33 +13,39 @@ data class RetrospectionData(
     val id: Int,
     val userId: Int,
     val market: String,
+    val companyName: String,
+    val companyLogo: String,
     val price: Int,
     val createdAt: String,
     val currency: String,
     val orderDate: String,
     val orderType: String,
     val returnRate: Double,
+    val badge: String,
     val symbol: String,
     val updatedAt: String,
     val volume: Int,
-    val principleCheckGroupsData: PrincipleCheckGroupsData?,
+    val principleCheckGroupData: PrincipleCheckGroupsData?,
     val memos: List<MemoData>,
-): DataMapper<Retrospection> {
+) : DataMapper<Retrospection> {
 
     override fun toDomain(): Retrospection = Retrospection(
         id = id,
         userId = userId,
         market = market,
+        companyName = companyName,
+        companyLogo = companyLogo,
         price = price,
         createdAt = createdAt,
         currency = currency,
         orderDate = orderDate,
         orderType = orderType.toOrderType(),
         returnRate = returnRate,
+        badge = badge,
         symbol = symbol,
         updatedAt = updatedAt,
         volume = volume,
-        principleGroupState = principleCheckGroupsData?.toDomain(),
+        principleGroupState = principleCheckGroupData?.toDomain(),
         memos = memos.map { it.toDomain() }
     )
 }
@@ -91,9 +97,11 @@ data class PrincipleCheckData(
 data class MemoData(
     val memoId: Int,
     val content: String,
+    val createdAt: String,
 ) : DataMapper<Memo> {
     override fun toDomain() = Memo(
         memoId = memoId,
-        content = content
+        content = content,
+        createdAt = createdAt,
     )
 }

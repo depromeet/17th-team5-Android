@@ -10,16 +10,19 @@ data class RetrospectionRemoteData(
     val id: Int,
     val userId: Int,
     val market: String,
+    val companyName: String,
+    val companyLogo: String,
     val price: Int,
     val createdAt: String,
     val currency: String,
     val orderDate: String,
     val orderType: String,
     val returnRate: Double,
+    val badge: String,
     val symbol: String,
     val updatedAt: String,
     val volume: Int,
-    val principleCheckGroupsRemoteData: PrincipleCheckGroupsRemoteData?,
+    val principleCheckGroupRemoteData: PrincipleCheckGroupRemoteData?,
     val memos: List<MemoRemoteData>,
 ) : RemoteDataMapper<RetrospectionData> {
 
@@ -28,20 +31,23 @@ data class RetrospectionRemoteData(
         currency = currency,
         id = id,
         market = market,
+        companyName = companyName,
+        companyLogo = companyLogo,
         orderDate = orderDate,
         orderType = orderType,
         price = price,
         returnRate = returnRate,
+        badge = badge,
         symbol = symbol,
         updatedAt = updatedAt,
         userId = userId,
         volume = volume,
-        principleCheckGroupsData = principleCheckGroupsRemoteData?.toData(),
+        principleCheckGroupData = principleCheckGroupRemoteData?.toData(),
         memos = memos.map { it.toData() }
     )
 }
 
-data class PrincipleCheckGroupsRemoteData(
+data class PrincipleCheckGroupRemoteData(
     val groupId: Int,
     val groupName: String,
     val thumbnail: String,
@@ -78,10 +84,12 @@ data class PrincipleCheckRemoteData(
 data class MemoRemoteData(
     val memoId: Int,
     val content: String,
+    val createdAt: String,
 ) : RemoteDataMapper<MemoData> {
     override fun toData() = MemoData(
         memoId = memoId,
         content = content,
+        createdAt = createdAt,
     )
 }
 

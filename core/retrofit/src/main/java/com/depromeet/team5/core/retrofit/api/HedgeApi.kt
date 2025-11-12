@@ -69,6 +69,12 @@ interface HedgeApi {
         @Body body: RequestBody
     ): MyPrincipleInfoResponse
 
+    @PATCH("api/v1/principle-groups/{groupId}")
+    suspend fun modifyPrincipleGroup(
+        @Path("groupId") groupId: Int,
+        @Body body: RequestBody
+    ): MyPrincipleGroupInfoResponse
+
     @POST("api/v1/investment-principles")
     suspend fun addPrinciple(
         @Body body: RequestBody

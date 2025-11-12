@@ -42,6 +42,11 @@ interface HedgeApiSource {
         description: String
     ): MyPrincipleRemoteData
 
+    suspend fun modifyPrincipleGroup(
+        groupId: Int,
+        body: Map<String, Any?>
+    ): MyPrincipleGroupRemoteData
+
     suspend fun createPrincipleGroup(body: Map<String, Any?>): MyPrincipleGroupRemoteData
 
     suspend fun userStats(): UserStatsRemoteData

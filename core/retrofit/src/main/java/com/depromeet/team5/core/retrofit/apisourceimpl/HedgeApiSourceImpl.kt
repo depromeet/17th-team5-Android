@@ -81,6 +81,15 @@ internal class HedgeApiSourceImpl @Inject constructor(
             ).toRequestBody()
         ).toRemoteData()
 
+    override suspend fun modifyPrincipleGroup(
+        groupId: Int,
+        body: Map<String, Any?>
+    ): MyPrincipleGroupRemoteData =
+        hedgeApi.modifyPrincipleGroup(
+            groupId,
+            body.toRequestBody()
+        ).toRemoteData()
+
     override suspend fun createPrincipleGroup(body: Map<String, Any?>): MyPrincipleGroupRemoteData =
         hedgeApi.createPrincipleGroup(body.toRequestBody()).toRemoteData()
 

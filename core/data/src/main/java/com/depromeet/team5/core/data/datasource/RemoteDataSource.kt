@@ -42,6 +42,11 @@ interface RemoteDataSource {
         description: String
     ): MyPrincipleData
 
+    suspend fun modifyPrincipleGroup(
+        groupId: Int,
+        body: Map<String, Any?>
+    ): MyPrincipleGroupData
+
     suspend fun createPrincipleGroup(body: Map<String, Any?>): MyPrincipleGroupData
 
     suspend fun userStats(): UserStatsData

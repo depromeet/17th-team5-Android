@@ -43,6 +43,10 @@ interface HedgeRepository {
         description: String
     ): Flow<MyPrinciple>
 
+    fun modifyPrincipleGroup(
+        groupId: Int,
+        body: Map<String, Any?>
+    ): Flow<MyPrincipleGroup>
 
     fun createPrincipleGroup(body: Map<String, Any?>): Flow<MyPrincipleGroup>
 

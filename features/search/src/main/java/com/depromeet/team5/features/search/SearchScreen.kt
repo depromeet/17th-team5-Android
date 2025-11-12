@@ -1,5 +1,6 @@
 package com.depromeet.team5.features.search
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -19,6 +20,10 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.paging.LoadState
+import androidx.paging.PagingData
+import androidx.paging.compose.LazyPagingItems
+import androidx.paging.compose.collectAsLazyPagingItems
 import com.depromeet.team5.core.designsystem.component.HedgeTextField
 import com.depromeet.team5.core.designsystem.component.HedgeTopBar
 import com.depromeet.team5.core.designsystem.foundation.HedgeColor
@@ -27,6 +32,7 @@ import com.depromeet.team5.core.designsystem.foundation.HedgeTypography
 import com.depromeet.team5.core.navigation.request.RequestViewModel
 import com.depromeet.team5.features.search.component.SearchListItem
 import com.depromeet.team5.features.search.model.StockData
+import kotlinx.coroutines.flow.flowOf
 
 @Composable
 fun SearchRoute(
@@ -34,15 +40,17 @@ fun SearchRoute(
     onItemClick: () -> Unit,
     modifier: Modifier = Modifier,
     requestViewModel: RequestViewModel = hiltViewModel(),
-    viewModel: SearchViewModel = hiltViewModel()
+    viewModel: SearchViewModel = hiltViewModel(),
 ) {
     val searchText by viewModel.searchText.collectAsStateWithLifecycle()
-    val searchUiState by viewModel.searchUiState.collectAsStateWithLifecycle()
+    val recents by viewModel.recents.collectAsStateWithLifecycle()
+    val pagingItems = viewModel.pagingDataFlow.collectAsLazyPagingItems()
 
     SearchScreen(
         onBackClick = onBackClick,
         searchText = searchText,
-        searchUiState = searchUiState,
+        recents = recents,
+        pagingItems = pagingItems,
         onSearchTextChange = viewModel::updateSearchText,
         onItemClick = {
             requestViewModel.request =
@@ -53,7 +61,7 @@ fun SearchRoute(
                 )
             onItemClick()
         },
-        modifier = modifier
+        modifier = modifier.background(HedgeColor.Neutral.BackgroundDefault)
     )
 }
 
@@ -61,15 +69,18 @@ fun SearchRoute(
 private fun SearchScreen(
     onBackClick: () -> Unit,
     searchText: String,
-    searchUiState: UiState<List<StockData>>,
+    recents: List<StockData>,
+    pagingItems: LazyPagingItems<StockData>,
     onSearchTextChange: (String) -> Unit,
     onItemClick: (StockData) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
-    val showHeader = when (searchUiState) {
-        is UiState.Error -> false
-        else -> true
-    }
+    val showHeader =
+        if (searchText.isBlank()) {
+            true
+        } else {
+            pagingItems.loadState.refresh !is LoadState.Error
+        }
 
     SearchLayout(
         modifier = modifier,
@@ -78,12 +89,13 @@ private fun SearchScreen(
         searchText = searchText,
         onSearchTextChange = onSearchTextChange,
         content = {
-            when (searchUiState) {
-                is UiState.Recents -> RecentsContent(searchUiState.data, onItemClick)
-                is UiState.Results -> ResultsContent(searchUiState.data, onItemClick)
-                is UiState.Loading -> LoadingContent()
-                is UiState.Empty -> EmptyContent()
-                is UiState.Error -> ErrorContent()
+            if (searchText.isBlank()) {
+                RecentsContent(recents, onItemClick)
+            } else {
+                ResultsPagingContent(
+                    items = pagingItems,
+                    onItemClick = onItemClick
+                )
             }
         }
     )
@@ -96,7 +108,7 @@ private fun SearchLayout(
     searchText: String,
     onSearchTextChange: (String) -> Unit,
     content: @Composable () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     Column(modifier = modifier.fillMaxSize()) {
         HedgeTopBar(onClickBack = onBackClick)
@@ -127,7 +139,7 @@ private fun SearchLayout(
 @Composable
 private fun RecentsContent(
     items: List<StockData>,
-    onItemClick: (StockData) -> Unit
+    onItemClick: (StockData) -> Unit,
 ) {
     LazyColumn(
         modifier = Modifier
@@ -139,7 +151,10 @@ private fun RecentsContent(
                 text = stringResource(id = R.string.search_retrospect_list),
                 style = HedgeTypography.Body3.Medium,
                 color = HedgeColor.Text.Alternative,
-                modifier = Modifier.padding(start = 20.dp, top = 10.dp, bottom = 10.dp)
+                modifier = Modifier
+                    .background(HedgeColor.Neutral.BackgroundDefault)
+                    .padding(start = 20.dp, top = 10.dp, bottom = 10.dp)
+                    .fillMaxWidth()
             )
         }
         items(items, key = { it.symbol }) { item ->
@@ -149,13 +164,45 @@ private fun RecentsContent(
 }
 
 @Composable
-private fun ResultsContent(
-    items: List<StockData>,
-    onItemClick: (StockData) -> Unit
+private fun ResultsPagingContent(
+    items: LazyPagingItems<StockData>,
+    onItemClick: (StockData) -> Unit,
 ) {
+    val loadState = items.loadState
+
+    when {
+        loadState.refresh is LoadState.Loading -> {
+            LoadingContent()
+            return
+        }
+
+        loadState.refresh is LoadState.Error -> {
+            ErrorContent()
+            return
+        }
+
+        loadState.refresh is LoadState.NotLoading && items.itemCount == 0 -> {
+            EmptyContent()
+            return
+        }
+    }
+
     LazyColumn(modifier = Modifier.fillMaxWidth()) {
-        items(items, key = { it.symbol }) { item ->
-            SearchListItem(stockData = item, onClick = { onItemClick(item) })
+        items(
+            count = items.itemCount,
+            key = { index ->
+                val item = items[index]
+                if (item?.symbol?.isNotBlank() == true) item.symbol
+                else item?.stockName ?: index.toString()
+            }
+        ) { index ->
+            val item = items[index]
+            if (item != null) {
+                SearchListItem(
+                    stockData = item,
+                    onClick = { onItemClick(item) }
+                )
+            }
         }
     }
 }
@@ -234,24 +281,30 @@ private fun RecentsPreview() {
         StockData(
             symbol = "005930",
             stockName = "삼성전자",
-            market = ""
+            market = "",
+            stockImageUrl = ""
         ),
         StockData(
             symbol = "000660",
             stockName = "SK하이닉스",
-            market = ""
+            market = "",
+            stockImageUrl = ""
         ),
         StockData(
             symbol = "035420",
             stockName = "NAVER",
-            market = ""
+            market = "",
+            stockImageUrl = ""
         ),
     )
+
+    val dummyPagingItems = flowOf(PagingData.empty<StockData>()).collectAsLazyPagingItems()
 
     SearchScreen(
         onBackClick = {},
         searchText = "",
-        searchUiState = UiState.Recents(recent),
+        recents = recent,
+        pagingItems = dummyPagingItems,
         onSearchTextChange = {},
         onItemClick = {},
         modifier = Modifier
@@ -265,19 +318,25 @@ private fun ResultsPreview() {
         StockData(
             symbol = "035720",
             stockName = "카카오",
-            market = ""
+            market = "",
+            stockImageUrl = ""
         ),
         StockData(
             symbol = "051910",
             stockName = "LG화학",
-            market = ""
+            market = "",
+            stockImageUrl = ""
+
         ),
     )
+
+    val dummyPagingItems = flowOf(PagingData.empty<StockData>()).collectAsLazyPagingItems()
 
     SearchScreen(
         onBackClick = {},
         searchText = "카",
-        searchUiState = UiState.Results(results),
+        recents = emptyList(),
+        pagingItems = dummyPagingItems,
         onSearchTextChange = {},
         onItemClick = {},
         modifier = Modifier
@@ -296,10 +355,13 @@ private fun SearchPreview() {
 @Preview(showBackground = true)
 @Composable
 private fun SearchEmptyPreview() {
+    val pagingItems = flowOf(PagingData.empty<StockData>()).collectAsLazyPagingItems()
+
     SearchScreen(
         onBackClick = {},
         searchText = "",
-        searchUiState = UiState.Empty,
+        recents = emptyList(),
+        pagingItems = pagingItems,
         onSearchTextChange = {},
         onItemClick = {}
     )
@@ -308,11 +370,5 @@ private fun SearchEmptyPreview() {
 @Preview(showBackground = true)
 @Composable
 private fun SearchErrorPreview() {
-    SearchScreen(
-        onBackClick = {},
-        searchText = "",
-        searchUiState = UiState.Error,
-        onSearchTextChange = {},
-        onItemClick = {}
-    )
+    ErrorContent()
 }

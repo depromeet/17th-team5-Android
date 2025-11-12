@@ -7,7 +7,7 @@ import com.depromeet.team5.core.data.model.MyPrincipleData
 import com.depromeet.team5.core.data.model.MyPrincipleGroupData
 import com.depromeet.team5.core.data.model.MyPrincipleGroupsInfoData
 import com.depromeet.team5.core.data.model.RetrospectionListData
-import com.depromeet.team5.core.data.model.SearchData
+import com.depromeet.team5.core.data.model.StockSliceData
 import com.depromeet.team5.core.data.model.SystemPrincipleData
 import com.depromeet.team5.core.data.model.UserStatsData
 import com.depromeet.team5.core.data.request.CreateRetrospectionRequestData
@@ -21,8 +21,14 @@ internal class RemoteDataSourceImpl @Inject constructor(
     private val hedgeApiSource: HedgeApiSource
 ) : RemoteDataSource {
 
-    override suspend fun search(query: String): SearchData =
-        hedgeApiSource.search(query).toData()
+    override suspend fun getStockSlice(
+        companyName: String,
+        nextCursor: String?,
+        size: Int?
+    ): StockSliceData =
+        hedgeApiSource
+            .getStockSlice(companyName = companyName, nextCursor = nextCursor, size = size)
+            .toData()
 
     override suspend fun createFeedback(retrospectionId: Int): FeedbackData =
         hedgeApiSource.createFeedback(retrospectionId).toData()

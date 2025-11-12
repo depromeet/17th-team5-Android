@@ -19,10 +19,16 @@ data class RetrospectionListRemoteData(
 
 data class RetrospectionListSymbolRemoteData(
     val companyName: String,
+    val image: String?,
+    val symbol: String,
+    val market: String,
     val retrospections: List<RetrospectionListItemRemoteData>
 ) : RemoteDataMapper<RetrospectionListSymbolData> {
     override fun toData(): RetrospectionListSymbolData = RetrospectionListSymbolData(
         companyName = companyName,
+        image = image,
+        symbol = symbol,
+        market = market,
         retrospections = retrospections.map { it.toData() }
     )
 }

@@ -5,7 +5,7 @@ import com.depromeet.team5.core.retrofit.model.MyPrincipleGroupInfoResponse
 import com.depromeet.team5.core.retrofit.model.MyPrincipleGroupsInfoResponse
 import com.depromeet.team5.core.retrofit.model.MyPrincipleInfoResponse
 import com.depromeet.team5.core.retrofit.model.RetrospectionListResponse
-import com.depromeet.team5.core.retrofit.model.SearchResponse
+import com.depromeet.team5.core.retrofit.model.StockSliceResponse
 import com.depromeet.team5.core.retrofit.model.SystemPrincipleResponse
 import com.depromeet.team5.core.retrofit.model.UserStatsResponse
 import okhttp3.RequestBody
@@ -19,8 +19,12 @@ import retrofit2.http.Query
 
 interface HedgeApi {
 
-    @GET("api/v1/stock/search")
-    suspend fun search(@Query("query") query: String): SearchResponse
+    @GET("api/v1/stock/slice")
+    suspend fun getStockSlice(
+        @Query("companyName") companyName: String,
+        @Query("nextCursor") nextCursor: String? = null,
+        @Query("size") size: Int? = null
+    ): StockSliceResponse
 
     @POST("api/v1/reports/{retrospectionId}/feedback")
     suspend fun createFeedback(

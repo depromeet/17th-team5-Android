@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="complete">완료</string>
+
+
+    <string name="principle_group_modification_icon_title">아이콘 선택</string>
+    <string name="principle_group_modification_title">원칙 그룹 추가</string>
+    <string name="principle_group_modification_placeholder">원칙 그룹 이름</string>
+    <string name="principle_group_modification_limit_group_name_count">최대 20자까지 작성할 수 있어요</string>
+
+    <string-array name="emoji_array">
+        <item>😭</item>
+        <item>😡</item>
+        <item>😤</item>
+        <item>😎</item>
+        <item>🤑</item>
+        <item>💪</item>
+        <item>✅</item>
+        <item>💼</item>
+        <item>💵</item>
+        <item>🪙</item>
+        <item>📈</item>
+        <item>📉</item>
+        <item>📊</item>
+        <item>🌕</item>
+        <item>🔥</item>
+        <item>✏️</item>
+        <item>🚀</item>
+        <item>🚗</item>
+        <item>🚨</item>
+        <item>🇰🇷</item>
+        <item>🇺🇸</item>
+    </string-array>
+
+</resources>

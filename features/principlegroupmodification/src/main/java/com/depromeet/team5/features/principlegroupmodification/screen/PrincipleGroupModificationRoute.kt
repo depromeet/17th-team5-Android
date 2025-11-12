@@ -77,7 +77,11 @@ fun PrincipleGroupModificationRoute(
 
     val isConfirmButtonEnabled by remember {
         derivedStateOf {
-            viewModel.distinct(groupName, thumbnail)
+            if (viewModel.isNewPrincipleGroup()) {
+                groupName.isNotEmpty() && thumbnail.isNotEmpty()
+            } else {
+                viewModel.distinct(groupName, thumbnail)
+            }
         }
     }
 

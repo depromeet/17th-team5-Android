@@ -67,6 +67,8 @@ class PrincipleGroupModificationViewModel @Inject constructor(
         thumbnailState.update { thumbnail }
     }
 
+    fun isNewPrincipleGroup() = groupId == null
+
     fun distinct(groupName: String, thumbnail: String) =
         originalGroupName.groupName != groupName || originalGroupName.thumbnail != thumbnail
 }

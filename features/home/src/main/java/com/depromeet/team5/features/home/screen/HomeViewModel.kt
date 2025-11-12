@@ -14,6 +14,7 @@ import com.depromeet.team5.core.domain.model.RecommendedPrinciple
 import com.depromeet.team5.core.domain.model.UserStatsInfo
 import com.depromeet.team5.core.domain.monad.HedgeUiState
 import com.depromeet.team5.core.domain.monad.asUiState
+import com.depromeet.team5.core.domain.usecase.CheckAndConsumeBadgeDotUseCase
 import com.depromeet.team5.core.domain.usecase.GetPrincipleGroupsUseCase
 import com.depromeet.team5.core.domain.usecase.RetrospectionListUseCase
 import com.depromeet.team5.core.domain.usecase.SystemPrincipleUseCase
@@ -31,6 +32,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
 import java.time.LocalDate
 import javax.inject.Inject
 
@@ -76,9 +78,25 @@ class HomeViewModel @Inject constructor(
     retrospectionListUseCase: RetrospectionListUseCase,
     getPrincipleGroupsUseCase: GetPrincipleGroupsUseCase,
     systemPrincipleUseCase: SystemPrincipleUseCase,
+    private val checkAndConsumeBadgeDotUseCase: CheckAndConsumeBadgeDotUseCase
 ) : ViewModel() {
     private val _principleOrderType = MutableStateFlow<OrderType>(OrderType.BUY)
     val principleOrderType: StateFlow<OrderType> = _principleOrderType.asStateFlow()
+
+    private val _highlightIdOnce = MutableStateFlow<Int?>(null)
+    val highlightIdOnce: StateFlow<Int?> = _highlightIdOnce.asStateFlow()
+
+    fun prepareHighlight(incomingId: Int?) {
+        viewModelScope.launch {
+            if (incomingId != null) {
+                _highlightIdOnce.value = checkAndConsumeBadgeDotUseCase(incomingId)
+            }
+        }
+    }
+
+    fun clearHighlight() {
+        _highlightIdOnce.value = null
+    }
 
     val userStatsUiState: StateFlow<HedgeUiState<UserStatsInfo>> =
         userStatsUseCase()

@@ -4,6 +4,7 @@ package com.depromeet.team5.features.feedback
 sealed class AiFeedbackUiState {
 
     data class Success(
+        val retrospectionId: Int,
         val badge: String,
         val principleCheckSummary: PrincipleState,
         val keep: List<String>,

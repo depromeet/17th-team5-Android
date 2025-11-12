@@ -14,8 +14,7 @@ import kotlinx.serialization.Serializable
 object Feedback
 
 fun NavGraphBuilder.feedbackScreen(
-    navController: NavController,
-    onCompleteClick: () -> Unit
+    navController: NavController
 ) {
     composable<Feedback> { entry ->
 
@@ -27,7 +26,11 @@ fun NavGraphBuilder.feedbackScreen(
 
         AiFeedbackRoute(
             requestViewModel = sharedViewModel,
-            onCompleteClick = onCompleteClick
+            onCompleteClick = { id ->
+                navController.getBackStackEntry(Home)
+                    .savedStateHandle["HIGHLIGHT_RETROSPECTION_ID"] = id
+                navController.popBackStack(Home, inclusive = false)
+            }
         )
     }
 }

@@ -55,7 +55,7 @@ import com.depromeet.team5.features.feedback.component.PrincipleCounter
 @Composable
 fun AiFeedbackRoute(
     requestViewModel: RequestViewModel,
-    onCompleteClick: () -> Unit,
+    onCompleteClick: (Int) -> Unit,
     modifier: Modifier = Modifier,
     viewModel: AiFeedbackViewModel = hiltViewModel()
 ) {
@@ -75,7 +75,7 @@ fun AiFeedbackRoute(
                 companyName = requestViewModel.request.companyName,
                 price = requestViewModel.request.price.toLong(),
                 stock = requestViewModel.request.volume,
-                onCompleteClick = onCompleteClick,
+                onCompleteClick = { onCompleteClick(state.retrospectionId) },
                 modifier = modifier.windowInsetsPadding(WindowInsets.systemBars)
             )
         }
@@ -432,6 +432,7 @@ private fun AiFeedbackScreen(
 private fun AiFeedbackScreenPreview() {
     AiFeedbackScreen(
         state = AiFeedbackUiState.Success(
+            retrospectionId = 1,
             badge = "platinum",
             principleCheckSummary = PrincipleState(
                 keptCount = 1,

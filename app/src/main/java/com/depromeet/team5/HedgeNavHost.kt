@@ -95,8 +95,7 @@ fun HedgeNavHost(
         )
 
         feedbackScreen(
-            navController = navController,
-            onCompleteClick = { navController.popBackStack(Home, inclusive = false) }
+            navController = navController
         )
     }
 }

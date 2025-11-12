@@ -36,14 +36,18 @@ class AiFeedbackViewModel @Inject constructor(
         principleGroupState: PrincipleGroupState,
     ) {
         viewModelScope.launch {
+            var createdId = -1
+
             createRetrospectionUseCase(
                 request = request.copy(orderDate = formatDate(request.orderDate)),
                 principles = principleGroupState.principles,
             )
+                .onEach { createdId = it.data!!.id }
                 .flatMapConcat { createFeedbackUseCase(it.data!!.id) }
                 .map {
                     if (it.data != null) {
                         AiFeedbackUiState.Success(
+                            retrospectionId = createdId,
                             badge = it.data!!.badge,
                             principleCheckSummary = PrincipleState(
                                 keptCount = it.data!!.keptCount,

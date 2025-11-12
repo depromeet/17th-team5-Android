@@ -13,9 +13,6 @@ object LoginGraph
 object Login
 
 @Serializable
-object Splash
-
-@Serializable
 object Agreements
 
 fun NavGraphBuilder.loginGraph(
@@ -25,18 +22,8 @@ fun NavGraphBuilder.loginGraph(
     onLoginKakao: suspend () -> Result<Pair<String, String>>,
 ) {
     navigation<LoginGraph>(
-        startDestination = Splash
+        startDestination = Login
     ) {
-        composable<Splash> {
-            SplashRoute(
-                navigateToLogin = {
-                    navController.navigate(Login) {
-                        popUpTo(Splash) { inclusive = true }
-                    }
-                }
-            )
-        }
-
         composable<Login> {
             LoginRoute(
                 navigateToAgreements = { navController.navigate(Agreements) },

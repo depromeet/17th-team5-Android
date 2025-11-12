@@ -101,9 +101,13 @@ object HedgeIcon {
 
     val AgreementChecked: ImageVector
         @Composable
-        get() = ImageVector.vectorResource(id = R.drawable.ic_agreement_checked)
+        get() = ImageVector.vectorResource(id = R.drawable.ds_ic_agreement_checked)
 
     val AgreementUnchecked: ImageVector
         @Composable
-        get() = ImageVector.vectorResource(id = R.drawable.ic_agreement_unchecked)
+        get() = ImageVector.vectorResource(id = R.drawable.ds_ic_agreement_unchecked)
+
+    val Logo: ImageVector
+        @Composable
+        get() = ImageVector.vectorResource(id = R.drawable.ds_ic_hedge_logo)
 }

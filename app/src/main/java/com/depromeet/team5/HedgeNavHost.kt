@@ -4,6 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.rememberNavController
+import com.depromeet.team5.core.navigation.Splash
 import com.depromeet.team5.feature.reasons.navigateToReasonGraph
 import com.depromeet.team5.feature.reasons.reasonGraph
 import com.depromeet.team5.features.feedback.navigation.feedbackScreen
@@ -17,6 +18,7 @@ import com.depromeet.team5.features.retrospect.screen.navigateToRetrospect
 import com.depromeet.team5.features.retrospect.screen.retrospectScreen
 import com.depromeet.team5.features.search.navigateToSearch
 import com.depromeet.team5.features.search.searchScreen
+import com.depromeet.team5.splash.splashScreen
 import com.depromeet.team5.graph.navigatePrincipleGraph
 import com.depromeet.team5.graph.principleGraph
 
@@ -32,9 +34,13 @@ fun HedgeNavHost(
 
     NavHost(
         navController = navController,
-        startDestination = LoginGraph,
+        startDestination = Splash,
         modifier = modifier
     ) {
+        splashScreen(
+            navigateToLogin = { navController.navigate(LoginGraph) }
+        )
+
         loginGraph(
             navController = navController,
             onClickBack = navController::popBackStack,

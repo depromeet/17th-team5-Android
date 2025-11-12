@@ -1,5 +1,6 @@
 package com.depromeet.team5.features.feedback.screen
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -65,6 +66,11 @@ fun AiFeedbackRoute(
         requestViewModel.selectedMyPrincipleGroupState?.let {
             viewModel.createRetrospection(requestViewModel.request, it)
         }
+    }
+
+    val successId = (uiState as? AiFeedbackUiState.Success)?.retrospectionId
+    BackHandler(enabled = successId != null) {
+        onCompleteClick(successId!!)
     }
 
     when (val state = uiState) {

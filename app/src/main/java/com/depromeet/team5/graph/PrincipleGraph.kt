@@ -43,8 +43,10 @@ fun NavGraphBuilder.principleGraph(
             onNavigatedPrincipleModification = {
                 navController.navigateToPrincipleModification()
             },
-            onNavigatedPrincipleGroupModification = { groupId, type ->
-                navController.navigateToPrincipleGroupModification(groupId, type)
+            onNavigatedPrincipleGroupModification = { groupId ->
+                navController.navigateToPrincipleGroupModification(
+                    groupId
+                )
             }
         )
 

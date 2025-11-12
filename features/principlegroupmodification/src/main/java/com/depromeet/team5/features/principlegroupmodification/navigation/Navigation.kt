@@ -7,24 +7,21 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavOptions
 import androidx.navigation.compose.composable
 import com.depromeet.team5.core.navigation.IS_UPDATED
-import com.depromeet.team5.core.navigation.PrincipleModificationType
 import com.depromeet.team5.features.principlegroupmodification.screen.PrincipleGroupModificationRoute
 import kotlinx.serialization.Serializable
 
 
 @Serializable
 data class PrincipleGroupModification(
-    val groupId: Int,
-    val type: PrincipleModificationType
+    val groupId: Int?
 )
 
 fun NavController.navigateToPrincipleGroupModification(
-    groupId: Int,
-    type: PrincipleModificationType,
+    groupId: Int?,
     navOptions: NavOptions? = null
 ) {
     navigate(
-        route = PrincipleGroupModification(groupId, type),
+        route = PrincipleGroupModification(groupId),
         navOptions = navOptions
     )
 }

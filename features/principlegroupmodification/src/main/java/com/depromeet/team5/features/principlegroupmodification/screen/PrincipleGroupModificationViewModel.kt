@@ -12,6 +12,7 @@ import com.depromeet.team5.features.principlegroupmodification.navigation.Princi
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
@@ -23,6 +24,8 @@ class PrincipleGroupModificationViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle,
     private val getPrincipleGroupUseCase: GetPrincipleGroupUseCase
 ) : ViewModel() {
+
+    private val groupId = savedStateHandle.toRoute<PrincipleGroupModification>().groupId
 
     var originalGroupName = MyPrincipleGroup.EMPTY
         private set
@@ -37,10 +40,11 @@ class PrincipleGroupModificationViewModel @Inject constructor(
     init {
         viewModelScope.launch {
             flow {
-                emit(savedStateHandle.toRoute<PrincipleGroupModification>())
+                emit(groupId)
             }
+                .filterNotNull()
                 .flatMapLatest {
-                    getPrincipleGroupUseCase(it.groupId)
+                    getPrincipleGroupUseCase(it)
                 }
                 .baseCollect(
                     onSuccess = { myPrincipleGroup ->

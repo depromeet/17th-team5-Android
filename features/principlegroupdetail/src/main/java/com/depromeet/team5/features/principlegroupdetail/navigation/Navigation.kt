@@ -10,7 +10,6 @@ import androidx.navigation.NavOptions
 import androidx.navigation.compose.composable
 import androidx.navigation.toRoute
 import com.depromeet.team5.core.navigation.Path
-import com.depromeet.team5.core.navigation.PrincipleModificationType
 import com.depromeet.team5.core.navigation.graphkey.PrincipleGraph
 import com.depromeet.team5.core.navigation.request.PrincipleGraphViewModel
 import com.depromeet.team5.features.principlegroupdetail.screen.PrincipleDetailRoute
@@ -41,7 +40,7 @@ fun NavGraphBuilder.principleGroupDetail(
     onShowToast: (String) -> Unit,
     onShowNoIconToast: (String) -> Unit,
     onNavigatedPrincipleModification: () -> Unit,
-    onNavigatedPrincipleGroupModification: (Int, PrincipleModificationType) -> Unit
+    onNavigatedPrincipleGroupModification: (Int) -> Unit
 ) {
     composable<PrincipleGroupDetail> { backstackEntry ->
         val args = backstackEntry.toRoute<PrincipleGroupDetail>()

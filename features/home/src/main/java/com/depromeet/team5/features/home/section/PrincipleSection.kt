@@ -233,8 +233,8 @@ fun PrincipleSection(
 @Composable
 private fun PrincipleSectionPreview() {
     PrincipleSection(
-        recommendedUiState = HedgeUiState.Loading(emptyList()),
-        defaultsUiState = HedgeUiState.Loading(emptyList()),
+        recommendedUiState = HedgeUiState.Success(emptyList()),
+        defaultsUiState = HedgeUiState.Success(emptyList()),
         selected = OrderType.BUY,
         onSelect = {},
         principleGroupsUiState = HedgeUiState.Loading(emptyList()),

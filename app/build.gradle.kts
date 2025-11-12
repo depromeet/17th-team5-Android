@@ -89,6 +89,7 @@ dependencies {
     implementation(projects.features.reasons)
     implementation(projects.features.principlegroupdetail)
     implementation(projects.features.principlemodification)
+    implementation(projects.features.principlegroupmodification)
     implementation(projects.features.login)
 
     implementation(libs.androidx.core.ktx)

@@ -1,6 +1,8 @@
 package com.depromeet.team5.features.principlegroupdetail.navigation
 
+import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
@@ -10,7 +12,6 @@ import androidx.navigation.toRoute
 import com.depromeet.team5.core.navigation.Path
 import com.depromeet.team5.core.navigation.graphkey.PrincipleGraph
 import com.depromeet.team5.core.navigation.request.PrincipleGraphViewModel
-
 import com.depromeet.team5.features.principlegroupdetail.screen.PrincipleDetailRoute
 import kotlinx.serialization.Serializable
 
@@ -52,6 +53,7 @@ fun NavGraphBuilder.principleGroupDetail(
         PrincipleDetailRoute(
             path = args.path,
             navController = navController,
+            modifier = Modifier.systemBarsPadding(),
             onBackPressed = onBackPressed,
             onShowErrorToast = onShowErrorToast,
             onShowToast = onShowToast,

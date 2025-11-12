@@ -2,7 +2,6 @@ package com.depromeet.team5.features.principlemodification.screen
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -10,6 +9,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.text.BasicTextField
@@ -43,6 +43,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import com.depromeet.team5.core.designsystem.component.HedgeButton
+import com.depromeet.team5.core.designsystem.component.HedgeTopBar
 import com.depromeet.team5.core.designsystem.foundation.HedgeColor
 import com.depromeet.team5.core.designsystem.foundation.HedgeIcon
 import com.depromeet.team5.core.designsystem.foundation.HedgeTypography
@@ -135,12 +136,38 @@ private fun PrincipleModificationScreen(
         modifier = modifier
             .fillMaxSize()
             .background(HedgeColor.WHITE)
+            .imePadding()
     ) {
-        Topbar(
-            title = groupName,
-            enabled = principle.isNotEmpty() || content.isNotEmpty(),
-            onClickedButton = onClickedConfirmButton,
-            onBackClicked = onBackClicked
+        HedgeTopBar(
+            title = {
+                Text(
+                    text = groupName,
+                    style = HedgeTypography.Body3.SemiBold,
+                    color = HedgeColor.Text.Primary
+                )
+            },
+            back = {
+                Image(
+                    modifier = Modifier
+                        .size(24.dp),
+                    imageVector = HedgeIcon.ArrowLeftThick,
+                    contentDescription = null,
+                    colorFilter = ColorFilter.tint(HedgeColor.Text.Primary)
+                )
+            },
+            action = {
+                HedgeButton.Text(
+                    text = stringResource(R.string.confirm),
+                    enabled = principle.isNotEmpty() && content.isNotEmpty(),
+                    forceClickable = false,
+                    imageVector = null,
+                    size = HedgeButton.Text.Size.Large,
+                    onClick = onClickedConfirmButton
+                )
+            },
+            onClickBack = {
+                onBackClicked(false)
+            }
         )
 
         Spacer(
@@ -222,23 +249,9 @@ private fun Topbar(
             .padding(start = 4.dp, top = 2.dp, end = 16.dp, bottom = 2.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Image(
-            modifier = Modifier
-                .padding(8.dp)
-                .size(24.dp)
-                .clickable(
-                    enabled = true,
-                    indication = null,
-                    interactionSource = remember { MutableInteractionSource() }
-                ) {
-                    onBackClicked(false)
-                },
-            imageVector = HedgeIcon.ArrowLeftThick,
-            contentDescription = null,
-            colorFilter = ColorFilter.tint(HedgeColor.Text.Primary)
-        )
 
-        Spacer(modifier.weight(1f))
+
+    Spacer(modifier.weight(1f))
 
         Text(
             text = title,
@@ -248,14 +261,6 @@ private fun Topbar(
 
         Spacer(modifier.weight(1f))
 
-        HedgeButton.Text(
-            text = stringResource(R.string.confirm),
-            enabled = enabled,
-            forceClickable = false,
-            imageVector = null,
-            size = HedgeButton.Text.Size.Large,
-            onClick = onClickedButton
-        )
     }
 }
 

@@ -25,7 +25,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -68,6 +67,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import coil3.compose.AsyncImage
 import com.depromeet.team5.core.designsystem.component.HedgeButton
+import com.depromeet.team5.core.designsystem.component.HedgeTopBar
 import com.depromeet.team5.core.designsystem.foundation.HedgeColor
 import com.depromeet.team5.core.designsystem.foundation.HedgeIcon
 import com.depromeet.team5.core.designsystem.foundation.HedgeTypography
@@ -663,34 +663,22 @@ private fun Topbar(
 ) {
     var isExpanded by remember { mutableStateOf(false) }
 
-    Column(
-        modifier = modifier
-            .fillMaxWidth()
-            .statusBarsPadding()
-    ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
+    HedgeTopBar(
+        modifier = modifier,
+        back = {
             Image(
                 modifier = Modifier
-                    .padding(start = 4.dp)
-                    .clickable(enabled = true) { onBackPressed() },
+                    .padding(start = 4.dp),
                 imageVector = HedgeIcon.ArrowLeftThick,
                 contentDescription = null,
                 colorFilter = ColorFilter.tint(color = HedgeColor.Text.Primary)
             )
-
-            Spacer(
-                modifier = Modifier.weight(1f)
-            )
-
+        },
+        action = {
             if (path == Path.PRINCIPLE_MINE) {
                 Box {
                     Image(
                         modifier = Modifier
-                            .padding(end = 16.dp)
                             .clickable(
                                 enabled = true,
                                 indication = null,
@@ -718,8 +706,9 @@ private fun Topbar(
                     }
                 }
             }
-        }
-    }
+        },
+        onClickBack = onBackPressed
+    )
 }
 
 @Composable

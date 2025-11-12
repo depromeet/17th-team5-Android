@@ -9,94 +9,94 @@ object HedgeIcon {
 
     val ArrowLeftThin: ImageVector
         @Composable
-        get() = ImageVector.vectorResource(id = R.drawable.ic_arrow_left_thin)
+        get() = ImageVector.vectorResource(id = R.drawable.ds_ic_arrow_left_thin)
 
     val ArrowLeftThick: ImageVector
         @Composable
-        get() = ImageVector.vectorResource(id = R.drawable.ic_arrow_left_thick)
+        get() = ImageVector.vectorResource(id = R.drawable.ds_ic_arrow_left_thick)
 
     val ArrowRightThin: ImageVector
         @Composable
-        get() = ImageVector.vectorResource(id = R.drawable.ic_arrow_right_thin)
+        get() = ImageVector.vectorResource(id = R.drawable.ds_ic_arrow_right_thin)
 
     val ArrowRightThick: ImageVector
         @Composable
-        get() = ImageVector.vectorResource(id = R.drawable.ic_arrow_right_thick)
+        get() = ImageVector.vectorResource(id = R.drawable.ds_ic_arrow_right_thick)
 
     val ArrowUp: ImageVector
         @Composable
-        get() = ImageVector.vectorResource(id = R.drawable.ic_arrow_up)
+        get() = ImageVector.vectorResource(id = R.drawable.ds_ic_arrow_up)
 
     val ArrowDown: ImageVector
         @Composable
-        get() = ImageVector.vectorResource(id = R.drawable.ic_arrow_down)
+        get() = ImageVector.vectorResource(id = R.drawable.ds_ic_arrow_down)
 
     val CloseThin: ImageVector
         @Composable
-        get() = ImageVector.vectorResource(id = R.drawable.ic_close_thin)
+        get() = ImageVector.vectorResource(id = R.drawable.ds_ic_close_thin)
 
     val CloseThick: ImageVector
         @Composable
-        get() = ImageVector.vectorResource(id = R.drawable.ic_close_thick)
+        get() = ImageVector.vectorResource(id = R.drawable.ds_ic_close_thick)
 
     val CloseFill: ImageVector
         @Composable
-        get() = ImageVector.vectorResource(id = R.drawable.ic_close_fill)
+        get() = ImageVector.vectorResource(id = R.drawable.ds_ic_close_fill)
 
     val Copy: ImageVector
         @Composable
-        get() = ImageVector.vectorResource(id = R.drawable.ic_copy)
+        get() = ImageVector.vectorResource(id = R.drawable.ds_ic_copy)
 
     val Empty: ImageVector
         @Composable
-        get() = ImageVector.vectorResource(id = R.drawable.ic_notice)
+        get() = ImageVector.vectorResource(id = R.drawable.ds_ic_notice)
 
     val Error: ImageVector
         @Composable
-        get() = ImageVector.vectorResource(id = R.drawable.ic_error)
+        get() = ImageVector.vectorResource(id = R.drawable.ds_ic_error)
 
     val Search: ImageVector
         @Composable
-        get() = ImageVector.vectorResource(id = R.drawable.ic_search)
+        get() = ImageVector.vectorResource(id = R.drawable.ds_ic_search)
 
     val ToastCheck: ImageVector
         @Composable
-        get() = ImageVector.vectorResource(id = R.drawable.ic_toast_check)
+        get() = ImageVector.vectorResource(id = R.drawable.ds_ic_toast_check)
 
     val Check: ImageVector
         @Composable
-        get() = ImageVector.vectorResource(id = R.drawable.ic_check)
+        get() = ImageVector.vectorResource(id = R.drawable.ds_ic_check)
 
     val Add: ImageVector
         @Composable
-        get() = ImageVector.vectorResource(id = R.drawable.ic_add)
+        get() = ImageVector.vectorResource(id = R.drawable.ds_ic_add)
 
     val Pencil: ImageVector
         @Composable
-        get() = ImageVector.vectorResource(id = R.drawable.ic_pencil)
+        get() = ImageVector.vectorResource(id = R.drawable.ds_ic_pencil)
 
     val Edit: ImageVector
         @Composable
-        get() = ImageVector.vectorResource(id = R.drawable.ic_edit)
+        get() = ImageVector.vectorResource(id = R.drawable.ds_ic_edit)
 
     val Trash: ImageVector
         @Composable
-        get() = ImageVector.vectorResource(id = R.drawable.ic_trash)
+        get() = ImageVector.vectorResource(id = R.drawable.ds_ic_trash)
 
     val Link: ImageVector
         @Composable
-        get() = ImageVector.vectorResource(id = R.drawable.ic_link)
+        get() = ImageVector.vectorResource(id = R.drawable.ds_ic_link)
 
     val COMPANY_LOGO: ImageVector
         @Composable
-        get() = ImageVector.vectorResource(id = R.drawable.ic_company_logo)
+        get() = ImageVector.vectorResource(id = R.drawable.ds_ic_company_logo)
 
     val Setting: ImageVector
         @Composable
-        get() = ImageVector.vectorResource(id = R.drawable.ic_setting)
+        get() = ImageVector.vectorResource(id = R.drawable.ds_ic_setting)
 
     val Menu: ImageVector
         @Composable
-        get() = ImageVector.vectorResource(id = R.drawable.ic_menu)
+        get() = ImageVector.vectorResource(id = R.drawable.ds_ic_menu)
 
 }

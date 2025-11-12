@@ -96,7 +96,7 @@ fun HedgeNavHost(
 
         principleGroupModification(
             navController = navController,
-            onShowToast = onShowToast,
+            onShowNoIconToast = onShowNoIconToast,
             onShowErrorToast = onShowErrorToast
         )
 

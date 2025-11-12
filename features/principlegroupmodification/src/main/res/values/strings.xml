@@ -1,8 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="complete">완료</string>
-
-
     <string name="principle_group_modification_icon_title">아이콘 선택</string>
     <string name="principle_group_modification_title">원칙 그룹 추가</string>
     <string name="principle_group_modification_placeholder">원칙 그룹 이름</string>

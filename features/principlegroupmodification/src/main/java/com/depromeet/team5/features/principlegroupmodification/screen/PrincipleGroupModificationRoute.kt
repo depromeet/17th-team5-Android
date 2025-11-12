@@ -60,13 +60,14 @@ import com.depromeet.team5.core.designsystem.foundation.HedgeIcon
 import com.depromeet.team5.core.designsystem.foundation.HedgeTypography
 import com.depromeet.team5.features.principlegroupmodification.R
 import kotlinx.coroutines.launch
+import com.depromeet.team5.core.ui.R as UiR
 
 
 @Composable
 fun PrincipleGroupModificationRoute(
     modifier: Modifier = Modifier,
     viewModel: PrincipleGroupModificationViewModel = hiltViewModel(),
-    onShowToast: (String) -> Unit,
+    onShowNoIconToast: (String) -> Unit,
     onShowErrorToast: (Throwable) -> Unit,
     onBackPressed: (Boolean) -> Unit
 ) {
@@ -103,7 +104,7 @@ fun PrincipleGroupModificationRoute(
         onUpdateGroupName = { newGroupName ->
             viewModel.updateGroupName(newGroupName)
         },
-        onShowToast = onShowToast,
+        onShowToast = onShowNoIconToast,
         onBackPressed = onBackPressed
     )
 }
@@ -145,7 +146,7 @@ fun PrincipleGroupModificationScreen(
             },
             action = {
                 HedgeButton.Text(
-                    text = stringResource(id = R.string.complete),
+                    text = stringResource(id = UiR.string.completion),
                     enabled = isConfirmButtonEnabled,
                     forceClickable = isConfirmButtonEnabled,
                     imageVector = null,

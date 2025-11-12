@@ -31,13 +31,13 @@ fun NavController.navigateToPrincipleGroupModification(
 
 fun NavGraphBuilder.principleGroupModification(
     navController: NavController,
-    onShowToast: (String) -> Unit,
+    onShowNoIconToast: (String) -> Unit,
     onShowErrorToast: (Throwable) -> Unit,
 ) {
     composable<PrincipleGroupModification> {
         PrincipleGroupModificationRoute(
             modifier = Modifier.systemBarsPadding(),
-            onShowToast = onShowToast,
+            onShowNoIconToast = onShowNoIconToast,
             onShowErrorToast = onShowErrorToast,
             onBackPressed = { isUpdated ->
                 navController.previousBackStackEntry

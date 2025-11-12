@@ -19,6 +19,7 @@
 
     <string name="standard">기본</string>
     <string name="select">선택</string>
+    <string name="completion">완료</string>
 
     <string-array name="principle_bottom_sheet_dialog_beginner_buy_type_array">
         <item>안전마진을 확보하라</item>

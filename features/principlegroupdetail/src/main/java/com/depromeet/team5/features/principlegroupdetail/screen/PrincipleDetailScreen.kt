@@ -60,7 +60,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -665,15 +664,6 @@ private fun Topbar(
 
     HedgeTopBar(
         modifier = modifier,
-        back = {
-            Image(
-                modifier = Modifier
-                    .padding(start = 4.dp),
-                imageVector = HedgeIcon.ArrowLeftThick,
-                contentDescription = null,
-                colorFilter = ColorFilter.tint(color = HedgeColor.Text.Primary)
-            )
-        },
         action = {
             if (path == Path.PRINCIPLE_MINE) {
                 Box {
@@ -725,8 +715,7 @@ private fun ModifyAndRemoveDropdown(
         shape = RoundedCornerShape(16.dp),
         expanded = expand,
         containerColor = HedgeColor.WHITE,
-        onDismissRequest = onDismissRequest,
-        offset = DpOffset((-20).dp, 0.dp)
+        onDismissRequest = onDismissRequest
     ) {
         DropdownMenuItem(
             text = {

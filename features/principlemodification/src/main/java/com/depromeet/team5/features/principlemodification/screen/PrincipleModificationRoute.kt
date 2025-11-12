@@ -1,17 +1,14 @@
 package com.depromeet.team5.features.principlemodification.screen
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -24,11 +21,9 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -45,7 +40,6 @@ import androidx.lifecycle.lifecycleScope
 import com.depromeet.team5.core.designsystem.component.HedgeButton
 import com.depromeet.team5.core.designsystem.component.HedgeTopBar
 import com.depromeet.team5.core.designsystem.foundation.HedgeColor
-import com.depromeet.team5.core.designsystem.foundation.HedgeIcon
 import com.depromeet.team5.core.designsystem.foundation.HedgeTypography
 import com.depromeet.team5.core.navigation.request.PrincipleGraphViewModel
 import com.depromeet.team5.features.principlemodification.R
@@ -146,15 +140,6 @@ private fun PrincipleModificationScreen(
                     color = HedgeColor.Text.Primary
                 )
             },
-            back = {
-                Image(
-                    modifier = Modifier
-                        .size(24.dp),
-                    imageVector = HedgeIcon.ArrowLeftThick,
-                    contentDescription = null,
-                    colorFilter = ColorFilter.tint(HedgeColor.Text.Primary)
-                )
-            },
             action = {
                 HedgeButton.Text(
                     text = stringResource(R.string.confirm),
@@ -235,36 +220,6 @@ private fun PrincipleModificationScreen(
 }
 
 @Composable
-private fun Topbar(
-    title: String,
-    enabled: Boolean = false,
-    modifier: Modifier = Modifier,
-    onClickedButton: () -> Unit,
-    onBackClicked: (Boolean) -> Unit = {},
-) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .background(HedgeColor.WHITE)
-            .padding(start = 4.dp, top = 2.dp, end = 16.dp, bottom = 2.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-
-
-    Spacer(modifier.weight(1f))
-
-        Text(
-            text = title,
-            style = HedgeTypography.Body3.SemiBold,
-            color = HedgeColor.Text.Primary
-        )
-
-        Spacer(modifier.weight(1f))
-
-    }
-}
-
-@Composable
 fun DisableMarkerBasicTextField(
     value: String,
     onValueChange: (String) -> Unit,
@@ -332,16 +287,5 @@ private fun PrincipleModificationScreenPreview(
         onUpdatedContent = {},
         onBackClicked = {},
         onShowNoIconToast = {}
-    )
-}
-
-@Preview
-@Composable
-private fun TopbarPreview(
-    modifier: Modifier = Modifier
-) {
-    Topbar(
-        title = "이건 좀 지키자 제발 이건 좀 지키자",
-        onClickedButton = {}
     )
 }

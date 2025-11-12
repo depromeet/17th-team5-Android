@@ -76,8 +76,7 @@ class SearchViewModel @Inject constructor(
                         pagingSourceFactory = {
                             StockSlicePagingSource(
                                 getStockSliceUseCase = getStockSliceUseCase,
-                                query = query,
-                                pageSize = 10
+                                query = query
                             )
                         }
                     ).flow

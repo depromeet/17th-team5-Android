@@ -8,17 +8,18 @@ import kotlinx.coroutines.flow.first
 
 class StockSlicePagingSource(
     private val getStockSliceUseCase: GetStockSliceUseCase,
-    private val query: String,
-    private val pageSize: Int = 10
+    private val query: String
 ) : PagingSource<String, StockData>() {
 
     override suspend fun load(params: LoadParams<String>): LoadResult<String, StockData> {
         return try {
             val cursor = params.key
+            val requestedSize = params.loadSize
+
             val slice = getStockSliceUseCase(
                 companyName = query,
                 nextCursor = cursor,
-                size = pageSize
+                size = requestedSize
             ).first()
 
             val items = slice.data.content.map { info ->

@@ -1,6 +1,6 @@
 package com.depromeet.team5.features.principlegroupdetail.navigation
 
-import androidx.compose.foundation.layout.systemBarsPadding
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -53,7 +53,7 @@ fun NavGraphBuilder.principleGroupDetail(
         PrincipleDetailRoute(
             path = args.path,
             navController = navController,
-            modifier = Modifier.systemBarsPadding(),
+            modifier = Modifier.navigationBarsPadding(),
             onBackPressed = onBackPressed,
             onShowErrorToast = onShowErrorToast,
             onShowToast = onShowToast,

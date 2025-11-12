@@ -2,8 +2,11 @@ package com.depromeet.team5.splash
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.systemBars
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.material.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -50,7 +53,8 @@ private fun SplashScreen(
         Icon(
             imageVector = HedgeIcon.Logo,
             contentDescription = null,
-            tint = Color.Unspecified
+            tint = Color.Unspecified,
+            modifier = Modifier.windowInsetsPadding(WindowInsets.systemBars)
         )
     }
 }

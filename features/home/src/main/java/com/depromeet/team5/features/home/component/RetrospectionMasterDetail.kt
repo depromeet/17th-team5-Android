@@ -70,8 +70,7 @@ fun RetrospectionMasterDetail(
                 modifier = Modifier
             ) {
                 items(
-                    items = companyNames,
-                    key = { item -> item.companyName }
+                    items = companyNames
                 ) { item ->
                     SymbolRailItem(
                         symbol = item.companyName,

@@ -15,8 +15,10 @@ import com.depromeet.team5.feature.reasons.retrospectionDetailNavigation
 import com.depromeet.team5.features.feedback.navigation.feedbackScreen
 import com.depromeet.team5.features.feedback.navigation.navigateToFeedback
 import com.depromeet.team5.features.home.homeScreen
+import com.depromeet.team5.features.principlegroupmodification.navigation.principleGroupModification
 import com.depromeet.team5.features.login.LoginGraph
 import com.depromeet.team5.features.login.loginGraph
+import com.depromeet.team5.features.principlegroupmodification.navigation.principleGroupModification
 import com.depromeet.team5.features.retrospect.screen.navigateToRetrospect
 import com.depromeet.team5.features.retrospect.screen.retrospectScreen
 import com.depromeet.team5.features.search.navigateToSearch
@@ -90,6 +92,12 @@ fun HedgeNavHost(
             onShowErrorToast = onShowErrorToast,
             onShowToast = onShowToast,
             onShowNoIconToast = onShowNoIconToast
+        )
+
+        principleGroupModification(
+            onShowToast = onShowToast,
+            onShowErrorToast = onShowErrorToast,
+            onBackPressed = navController::popBackStack
         )
 
         reasonNavigation(

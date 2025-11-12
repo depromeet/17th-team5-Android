@@ -4,6 +4,7 @@ import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavOptions
 import androidx.navigation.compose.navigation
+import com.depromeet.team5.core.domain.model.OrderType
 import com.depromeet.team5.core.navigation.Path
 import com.depromeet.team5.core.navigation.graphkey.PrincipleGraph
 import com.depromeet.team5.features.principlegroupdetail.navigation.PrincipleGroupDetail
@@ -16,10 +17,11 @@ import com.depromeet.team5.features.principlemodification.navigation.principleMo
 fun NavController.navigatePrincipleGraph(
     groupId: Int,
     path: Path,
+    orderType: OrderType,
     navOptions: NavOptions? = null
 ) {
     navigate(
-        route = PrincipleGraph(groupId, path),
+        route = PrincipleGraph(groupId, path, orderType),
         navOptions = navOptions
     )
 }
@@ -43,10 +45,8 @@ fun NavGraphBuilder.principleGraph(
             onNavigatedPrincipleModification = {
                 navController.navigateToPrincipleModification()
             },
-            onNavigatedPrincipleGroupModification = { groupId ->
-                navController.navigateToPrincipleGroupModification(
-                    groupId
-                )
+            onNavigatedPrincipleGroupModification = { groupId, orderType ->
+                navController.navigateToPrincipleGroupModification(groupId, orderType)
             }
         )
 

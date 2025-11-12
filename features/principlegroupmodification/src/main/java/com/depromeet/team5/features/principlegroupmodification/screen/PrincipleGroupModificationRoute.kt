@@ -58,6 +58,7 @@ import com.depromeet.team5.core.designsystem.component.HedgeTopBar
 import com.depromeet.team5.core.designsystem.foundation.HedgeColor
 import com.depromeet.team5.core.designsystem.foundation.HedgeIcon
 import com.depromeet.team5.core.designsystem.foundation.HedgeTypography
+import com.depromeet.team5.core.domain.monad.BaseEvent
 import com.depromeet.team5.features.principlegroupmodification.R
 import kotlinx.coroutines.launch
 import com.depromeet.team5.core.ui.R as UiR
@@ -67,11 +68,13 @@ import com.depromeet.team5.core.ui.R as UiR
 fun PrincipleGroupModificationRoute(
     modifier: Modifier = Modifier,
     viewModel: PrincipleGroupModificationViewModel = hiltViewModel(),
+    onShowToast: (String) -> Unit,
     onShowNoIconToast: (String) -> Unit,
     onShowErrorToast: (Throwable) -> Unit,
     onBackPressed: (Boolean) -> Unit
 ) {
     val lifecycleOwner = LocalLifecycleOwner.current
+    val context = LocalContext.current
     val groupName by viewModel.groupNameState.stateFlow.collectAsStateWithLifecycle()
     val thumbnail by viewModel.thumbnailState.stateFlow.collectAsStateWithLifecycle()
 
@@ -89,9 +92,26 @@ fun PrincipleGroupModificationRoute(
         lifecycleOwner.lifecycleScope.launch {
             viewModel.eventFlow
                 .flowWithLifecycle(lifecycleOwner.lifecycle)
-                .collect { throwable ->
-                    onShowErrorToast(throwable)
-                    onBackPressed(true)
+                .collect { event ->
+                    when (event) {
+                        is BaseEvent.Error -> {
+                            event.throwable?.let {
+                                onShowErrorToast(it)
+                            }
+                            onBackPressed(false)
+                        }
+
+                        BaseEvent.Finish -> {
+                            onShowToast(
+                                context.getString(
+                                    UiR.string.principle_group_modification_completion
+                                )
+                            )
+                            onBackPressed(true)
+                        }
+
+                        else -> {}
+                    }
                 }
         }
     }
@@ -104,7 +124,9 @@ fun PrincipleGroupModificationRoute(
         onClickedEmoji = { selectedEmoji ->
             viewModel.updateThumbnail(selectedEmoji)
         },
-        onClickedConfirmButton = {},
+        onClickedConfirmButton = {
+            viewModel.upsertPrincipleGroup()
+        },
         onUpdateGroupName = { newGroupName ->
             viewModel.updateGroupName(newGroupName)
         },
@@ -137,7 +159,7 @@ fun PrincipleGroupModificationScreen(
         HedgeTopBar(
             title = {
                 Text(
-                    text = stringResource(R.string.principle_group_modification_title),
+                    text = stringResource(UiR.string.principle_group_modification_title),
                     style = HedgeTypography.Body3.SemiBold,
                     color = HedgeColor.Text.Primary
                 )
@@ -177,7 +199,7 @@ fun PrincipleGroupModificationScreen(
                 if (new.length > 20) {
                     onShowToast(
                         context.getString(
-                            R.string.principle_group_modification_limit_group_name_count
+                            UiR.string.principle_group_modification_limit_group_name_count
                         )
                     )
                 } else {
@@ -201,7 +223,7 @@ fun PrincipleGroupModificationScreen(
                     ) {
                         if (groupName.isEmpty()) {
                             Text(
-                                text = stringResource(R.string.principle_group_modification_placeholder),
+                                text = stringResource(UiR.string.principle_group_modification_placeholder),
                                 style = HedgeTypography.Body2.SemiBold,
                                 color = HedgeColor.Text.Assistive
                             )
@@ -240,7 +262,7 @@ fun PrincipleGroupModificationScreen(
         Text(
             modifier = Modifier
                 .padding(start = 20.dp, top = 30.dp, bottom = 10.dp),
-            text = stringResource(R.string.principle_group_modification_icon_title),
+            text = stringResource(UiR.string.principle_group_modification_icon_title),
             style = HedgeTypography.Body2.Medium,
             color = HedgeColor.Text.Title
         )

@@ -68,11 +68,11 @@ fun HedgeNavHost(
             onBuyClick = { navController.navigateToSearch() },
             onSellClick = { navController.navigateToSearch() },
             onClickRetrospectionDetail = navController::navigateToRetrospectionDetail,
-            onClickPrincipleDetail = { groupId, path ->
-                navController.navigatePrincipleGraph(groupId, path)
+            onClickPrincipleDetail = { groupId, path, orderType ->
+                navController.navigatePrincipleGraph(groupId, path, orderType)
             },
-            onClickCreatePrinciple = {
-                navController.navigateToPrincipleGroupModification(null)
+            onClickCreatePrinciple = { orderType ->
+                navController.navigateToPrincipleGroupModification(null, orderType)
             },
             onShowErrorToast = onShowErrorToast
         )
@@ -100,6 +100,7 @@ fun HedgeNavHost(
         principleGroupModification(
             navController = navController,
             onShowNoIconToast = onShowNoIconToast,
+            onShowToast = onShowToast,
             onShowErrorToast = onShowErrorToast
         )
 

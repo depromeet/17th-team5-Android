@@ -96,7 +96,7 @@ fun PrincipleDetailRoute(
     onShowToast: (String) -> Unit,
     onShowNoIconToast: (String) -> Unit,
     onNavigatedPrincipleModification: () -> Unit,
-    onNavigatedPrincipleGroupModification: (Int) -> Unit,
+    onNavigatedPrincipleGroupModification: (Int, OrderType) -> Unit,
     graphViewModel: PrincipleGraphViewModel,
     viewModel: PrincipleDetailViewModel = hiltViewModel()
 ) {
@@ -159,7 +159,9 @@ fun PrincipleDetailRoute(
             onNavigatedPrincipleModification()
         },
         onClickedModifyButton = { groupId ->
-            onNavigatedPrincipleGroupModification(groupId)
+            graphViewModel.orderType?.let {
+                onNavigatedPrincipleGroupModification(groupId, it)
+            }
         },
         onClickedRemoveButton = { groupId ->
             viewModel.deletePrincipleGroup(groupId)

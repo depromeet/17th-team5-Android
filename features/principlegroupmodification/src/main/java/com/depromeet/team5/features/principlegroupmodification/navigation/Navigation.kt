@@ -6,6 +6,7 @@ import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavOptions
 import androidx.navigation.compose.composable
+import com.depromeet.team5.core.domain.model.OrderType
 import com.depromeet.team5.core.navigation.IS_UPDATED
 import com.depromeet.team5.features.principlegroupmodification.screen.PrincipleGroupModificationRoute
 import kotlinx.serialization.Serializable
@@ -13,27 +14,31 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class PrincipleGroupModification(
-    val groupId: Int?
+    val groupId: Int?,
+    val orderType: OrderType
 )
 
 fun NavController.navigateToPrincipleGroupModification(
     groupId: Int?,
+    orderType: OrderType,
     navOptions: NavOptions? = null
 ) {
     navigate(
-        route = PrincipleGroupModification(groupId),
+        route = PrincipleGroupModification(groupId, orderType),
         navOptions = navOptions
     )
 }
 
 fun NavGraphBuilder.principleGroupModification(
     navController: NavController,
+    onShowToast: (String) -> Unit,
     onShowNoIconToast: (String) -> Unit,
     onShowErrorToast: (Throwable) -> Unit,
 ) {
     composable<PrincipleGroupModification> {
         PrincipleGroupModificationRoute(
             modifier = Modifier.systemBarsPadding(),
+            onShowToast = onShowToast,
             onShowNoIconToast = onShowNoIconToast,
             onShowErrorToast = onShowErrorToast,
             onBackPressed = { isUpdated ->

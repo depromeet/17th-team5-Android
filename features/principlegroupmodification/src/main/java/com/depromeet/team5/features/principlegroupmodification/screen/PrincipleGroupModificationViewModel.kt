@@ -5,7 +5,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.toRoute
 import com.depromeet.team5.core.domain.model.MyPrincipleGroup
+import com.depromeet.team5.core.domain.monad.BaseEvent
+import com.depromeet.team5.core.domain.usecase.CreatePrincipleGroupUseCase
 import com.depromeet.team5.core.domain.usecase.GetPrincipleGroupUseCase
+import com.depromeet.team5.core.domain.usecase.ModifyPrincipleGroupUseCase
 import com.depromeet.team5.core.ui.extensions.baseCollect
 import com.depromeet.team5.core.ui.lazy.hedgeState
 import com.depromeet.team5.features.principlegroupmodification.navigation.PrincipleGroupModification
@@ -22,10 +25,12 @@ import javax.inject.Inject
 @HiltViewModel
 class PrincipleGroupModificationViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle,
-    private val getPrincipleGroupUseCase: GetPrincipleGroupUseCase
+    private val getPrincipleGroupUseCase: GetPrincipleGroupUseCase,
+    private val modifyPrincipleGroupUseCase: ModifyPrincipleGroupUseCase,
+    private val createPrincipleGroupUseCase: CreatePrincipleGroupUseCase
 ) : ViewModel() {
 
-    private val groupId = savedStateHandle.toRoute<PrincipleGroupModification>().groupId
+    private val model = savedStateHandle.toRoute<PrincipleGroupModification>()
 
     var originalGroupName = MyPrincipleGroup.EMPTY
         private set
@@ -33,14 +38,14 @@ class PrincipleGroupModificationViewModel @Inject constructor(
     val groupNameState by hedgeState("")
     val thumbnailState by hedgeState("")
 
-    private val _errorFlow = MutableSharedFlow<Throwable>()
-    val eventFlow = _errorFlow.asSharedFlow()
+    private val _eventFlow = MutableSharedFlow<BaseEvent>()
+    val eventFlow = _eventFlow.asSharedFlow()
 
 
     init {
         viewModelScope.launch {
             flow {
-                emit(groupId)
+                emit(model.groupId)
             }
                 .filterNotNull()
                 .flatMapLatest {
@@ -53,9 +58,45 @@ class PrincipleGroupModificationViewModel @Inject constructor(
                         thumbnailState.update { myPrincipleGroup.thumbnail }
                     },
                     onError = {
-                        _errorFlow.emit(it)
+                        _eventFlow.emit(BaseEvent.Error(it))
                     }
                 )
+        }
+    }
+
+    fun upsertPrincipleGroup() {
+        viewModelScope.launch {
+            if (model.groupId == null) {
+                createPrincipleGroupUseCase(
+                    MyPrincipleGroup.EMPTY.copy(
+                        groupName = groupNameState.value,
+                        thumbnail = thumbnailState.value,
+                        orderType = model.orderType
+                    )
+                )
+                    .baseCollect(
+                        onSuccess = {
+                            _eventFlow.emit(BaseEvent.Finish)
+                        },
+                        onError = {
+                            _eventFlow.emit(BaseEvent.ShowToast(it.message))
+                        }
+                    )
+            } else {
+                modifyPrincipleGroupUseCase(
+                    groupId = model.groupId,
+                    groupName = groupNameState.value,
+                    thumbnail = thumbnailState.value
+                )
+                    .baseCollect(
+                        onSuccess = {
+                            _eventFlow.emit(BaseEvent.Finish)
+                        },
+                        onError = {
+                            _eventFlow.emit(BaseEvent.ShowToast(it.message))
+                        }
+                    )
+            }
         }
     }
 
@@ -67,7 +108,7 @@ class PrincipleGroupModificationViewModel @Inject constructor(
         thumbnailState.update { thumbnail }
     }
 
-    fun isNewPrincipleGroup() = groupId == null
+    fun isNewPrincipleGroup() = model.groupId == null
 
     fun distinct(groupName: String, thumbnail: String) =
         originalGroupName.groupName != groupName || originalGroupName.thumbnail != thumbnail

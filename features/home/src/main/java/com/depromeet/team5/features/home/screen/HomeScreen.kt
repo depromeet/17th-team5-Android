@@ -50,8 +50,8 @@ fun HomeRoute(
     onBuyClick: () -> Unit,
     onSellClick: () -> Unit,
     onClickRetrospectionDetail: (Int) -> Unit,
-    onClickPrincipleDetail: (Int, Path) -> Unit,
-    onClickCreatePrinciple: () -> Unit,
+    onClickPrincipleDetail: (Int, Path, OrderType) -> Unit,
+    onClickCreatePrinciple: (OrderType) -> Unit,
     onShowErrorToast: (Throwable) -> Unit,
     incomingHighlightId: Int?,
     modifier: Modifier = Modifier,
@@ -83,8 +83,12 @@ fun HomeRoute(
         principleGroupsUiState = principleGroupsUiState,
         onChangePrincipleOrderType = { homeViewModel.setPrincipleOrderType(it) },
         onClickRetrospectionDetail = onClickRetrospectionDetail,
-        onClickPrincipleDetail = onClickPrincipleDetail,
-        onClickCreatePrinciple = onClickCreatePrinciple,
+        onClickPrincipleDetail = { groupId, path ->
+            onClickPrincipleDetail(groupId, path, selectedOrderType)
+        },
+        onClickCreatePrinciple = {
+            onClickCreatePrinciple(selectedOrderType)
+        },
         onBuyClick = {
             requestViewModel.request =
                 requestViewModel.request.copy(orderType = OrderType.BUY)

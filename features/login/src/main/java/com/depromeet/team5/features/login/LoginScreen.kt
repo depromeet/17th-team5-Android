@@ -17,6 +17,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
@@ -112,7 +113,8 @@ private fun LoginScreen(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(20.dp)
-                .background(color = Color(0xFFFEE500), shape = RoundedCornerShape(18.dp))
+                .clip(RoundedCornerShape(18.dp))
+                .background(color = Color(0xFFFEE500))
                 .clickable { onClickKakao() }
                 .align(Alignment.BottomCenter)
                 .padding(vertical = 16.dp),

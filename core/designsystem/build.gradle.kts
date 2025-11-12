@@ -6,6 +6,9 @@ plugins {
 android {
     namespace = "com.depromeet.team5.core.designsystem"
 
+    //for lint
+    resourcePrefix ="ds_"
+
     defaultConfig {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }

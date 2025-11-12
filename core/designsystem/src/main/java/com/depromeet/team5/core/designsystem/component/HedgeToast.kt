@@ -174,7 +174,7 @@ fun HedgeToastPreview() {
     ) {
         HedgeToast(
             hedgeToastState = hedgeToastState,
-            icon = ImageVector.vectorResource(R.drawable.ic_toast_error)
+            icon = ImageVector.vectorResource(R.drawable.ds_ic_toast_error)
         )
     }
 }

@@ -34,14 +34,15 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import com.depromeet.team5.core.designsystem.foundation.HedgeColor
-import com.depromeet.team5.core.designsystem.foundation.HedgeIcon
 import com.depromeet.team5.core.designsystem.foundation.HedgeTypography
 import com.depromeet.team5.core.domain.model.SocialLogin
 import com.depromeet.team5.core.domain.monad.HedgeUiState
+import com.depromeet.team5.core.ui.R.drawable
 import com.depromeet.team5.core.ui.extensions.baseCollect
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
+import com.depromeet.team5.features.login.R
 
 
 @Composable
@@ -98,7 +99,7 @@ private fun LoginScreen(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Icon(
-                imageVector = HedgeIcon.Logo,
+                imageVector = ImageVector.vectorResource(drawable.ic_hedge_logo),
                 contentDescription = null,
                 tint = Color.Unspecified,
             )

@@ -14,9 +14,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.depromeet.team5.core.designsystem.foundation.HedgeIcon
+import com.depromeet.team5.core.ui.R
 import kotlinx.coroutines.delay
 
 @Composable
@@ -51,7 +53,7 @@ private fun SplashScreen(
         contentAlignment = Alignment.TopCenter
     ) {
         Icon(
-            imageVector = HedgeIcon.Logo,
+            imageVector = ImageVector.vectorResource(R.drawable.ic_hedge_logo),
             contentDescription = null,
             tint = Color.Unspecified,
             modifier = Modifier.windowInsetsPadding(WindowInsets.systemBars)

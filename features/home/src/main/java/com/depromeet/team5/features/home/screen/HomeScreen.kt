@@ -37,6 +37,7 @@ import com.depromeet.team5.core.domain.model.OrderType
 import com.depromeet.team5.core.domain.model.RecommendedPrinciple
 import com.depromeet.team5.core.domain.model.UserStatsInfo
 import com.depromeet.team5.core.domain.monad.HedgeUiState
+import com.depromeet.team5.core.navigation.Path
 import com.depromeet.team5.core.navigation.request.RequestViewModel
 import com.depromeet.team5.features.home.component.DashBoardDialog
 import com.depromeet.team5.features.home.component.HomeFloatingActionButton
@@ -48,7 +49,7 @@ fun HomeRoute(
     onBuyClick: () -> Unit,
     onSellClick: () -> Unit,
     onClickRetrospectionDetail: (Int) -> Unit,
-    onClickPrincipleDetail: (Int) -> Unit,
+    onClickPrincipleDetail: (Int, Path) -> Unit,
     onClickCreatePrinciple: () -> Unit,
     onShowErrorToast: (Throwable) -> Unit,
     modifier: Modifier = Modifier,
@@ -102,7 +103,7 @@ private fun HomeScreen(
     principleGroupsUiState: HedgeUiState<List<MyPrincipleGroup>>,
     onChangePrincipleOrderType: (OrderType) -> Unit,
     onClickRetrospectionDetail: (Int) -> Unit,
-    onClickPrincipleDetail: (Int) -> Unit,
+    onClickPrincipleDetail: (Int, Path) -> Unit,
     onClickCreatePrinciple: () -> Unit,
     onBuyClick: () -> Unit,
     onSellClick: () -> Unit,
@@ -200,7 +201,7 @@ private fun HomePreview() {
         principleGroupsUiState = HedgeUiState.Loading(emptyList()),
         onChangePrincipleOrderType = {},
         onClickRetrospectionDetail = {},
-        onClickPrincipleDetail = {},
+        onClickPrincipleDetail = { _, _ -> },
         onClickCreatePrinciple = {},
         onBuyClick = {},
         onSellClick = {},

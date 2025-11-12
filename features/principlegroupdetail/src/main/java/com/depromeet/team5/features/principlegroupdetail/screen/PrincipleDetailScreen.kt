@@ -15,6 +15,7 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
@@ -24,7 +25,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -53,16 +53,20 @@ import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.vectorResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation.NavController
 import coil3.compose.AsyncImage
 import com.depromeet.team5.core.designsystem.component.HedgeButton
+import com.depromeet.team5.core.designsystem.component.HedgeTopBar
 import com.depromeet.team5.core.designsystem.foundation.HedgeColor
 import com.depromeet.team5.core.designsystem.foundation.HedgeIcon
 import com.depromeet.team5.core.designsystem.foundation.HedgeTypography
@@ -70,26 +74,58 @@ import com.depromeet.team5.core.domain.model.MyPrinciple
 import com.depromeet.team5.core.domain.model.MyPrincipleGroup
 import com.depromeet.team5.core.domain.model.OrderType
 import com.depromeet.team5.core.domain.monad.HedgeUiState
-import com.depromeet.team5.core.navigation.PrincipleType
+import com.depromeet.team5.core.navigation.IS_UPDATED
+import com.depromeet.team5.core.navigation.Path
+import com.depromeet.team5.core.navigation.PrincipleModificationType
+import com.depromeet.team5.core.navigation.request.PrincipleGraphViewModel
 import com.depromeet.team5.core.ui.HedgeModal
+import com.depromeet.team5.core.ui.extensions.baseCollect
 import com.depromeet.team5.features.principlegroupdetail.R
 import com.depromeet.team5.features.principlegroupdetail.event.PrincipleDetailEvent
+import com.depromeet.team5.features.principlegroupdetail.state.ModalUiState
 import kotlin.math.abs
 
 
 @Composable
 fun PrincipleDetailRoute(
-    principleType: PrincipleType,
+    path: Path,
+    navController: NavController,
     modifier: Modifier = Modifier,
-    viewModel: PrincipleDetailViewModel = hiltViewModel(),
     onBackPressed: () -> Unit,
     onShowErrorToast: (Throwable) -> Unit,
-    onShowToast: (String) -> Unit
+    onShowToast: (String) -> Unit,
+    onShowNoIconToast: (String) -> Unit,
+    onNavigatedPrincipleModification: () -> Unit,
+    graphViewModel: PrincipleGraphViewModel,
+    viewModel: PrincipleDetailViewModel = hiltViewModel()
 ) {
     val context = LocalContext.current
     val uiState by viewModel.uiState.stateFlow.collectAsStateWithLifecycle()
 
     var isShowModalBottomSheet by remember { mutableStateOf(false) }
+
+    LaunchedEffect(uiState) {
+        if (uiState is HedgeUiState.Success<MyPrincipleGroup>) {
+            graphViewModel.myPrincipleGroup =
+                (uiState as HedgeUiState.Success<MyPrincipleGroup>).data
+        }
+    }
+
+    LaunchedEffect(Unit) {
+        navController.currentBackStackEntry
+            ?.savedStateHandle
+            ?.getStateFlow<Boolean?>(IS_UPDATED, null)
+            ?.baseCollect(
+                onSuccess = {
+                    viewModel.getPrinciple()
+
+                    navController.currentBackStackEntry
+                        ?.savedStateHandle
+                        ?.remove<Boolean>(IS_UPDATED)
+                },
+                onError = {}
+            )
+    }
 
     LaunchedEffect(Unit) {
         viewModel.eventFlow.collect { event ->
@@ -116,7 +152,11 @@ fun PrincipleDetailRoute(
     PrincipleDetailScreen(
         modifier = modifier,
         uiState = uiState,
-        principleType = principleType,
+        path = path,
+        onClickedFloatingButton = {
+            graphViewModel.modificationType = PrincipleModificationType.ADD
+            onNavigatedPrincipleModification()
+        },
         onClickedModifyButton = { groupId ->
             //todo 추후에 수정 기능 연결하기
         },
@@ -124,7 +164,9 @@ fun PrincipleDetailRoute(
             viewModel.deletePrincipleGroup(groupId)
         },
         onClickedItemModifyButton = { principleId ->
-
+            graphViewModel.principleId = principleId
+            graphViewModel.modificationType = PrincipleModificationType.MODIFY
+            onNavigatedPrincipleModification()
         },
         onClickedItemRemoveButton = { principleId ->
             viewModel.deletePrinciple(principleId)
@@ -133,6 +175,9 @@ fun PrincipleDetailRoute(
             isShowModalBottomSheet = true
         },
         onBackPressed = onBackPressed,
+        onShowNoIconToast = {
+            onShowNoIconToast(it)
+        },
         onShowErrorToast = {
             onBackPressed()
             onShowErrorToast(it)
@@ -155,17 +200,19 @@ fun PrincipleDetailRoute(
 @Composable
 private fun PrincipleDetailScreen(
     uiState: HedgeUiState<MyPrincipleGroup>,
-    principleType: PrincipleType,
+    path: Path,
     modifier: Modifier = Modifier,
+    onClickedFloatingButton: () -> Unit,
     onClickedModifyButton: (Int) -> Unit,
     onClickedRemoveButton: (Int) -> Unit,
     onClickedItemModifyButton: (Int) -> Unit,
     onClickedItemRemoveButton: (Int) -> Unit,
     onClickedConfirmButton: () -> Unit,
     onBackPressed: () -> Unit,
+    onShowNoIconToast: (String) -> Unit,
     onShowErrorToast: (Throwable) -> Unit
 ) {
-    var isShowDeleteModal by remember { mutableStateOf(false) }
+    var modalUiState: ModalUiState by remember { mutableStateOf(ModalUiState.NotShown) }
 
     if (uiState is HedgeUiState.Loading) {
         LoadingProgressbar()
@@ -176,36 +223,58 @@ private fun PrincipleDetailScreen(
             PrincipleDetailContent(
                 modifier = modifier,
                 myPrincipleGroup = uiState.data,
-                principleType = principleType,
+                path = path,
+                onClickedFloatingButton = onClickedFloatingButton,
                 onClickedModifyButton = onClickedModifyButton,
                 onClickedItemModifyButton = onClickedItemModifyButton,
-                onClickedItemRemoveButton = onClickedItemRemoveButton,
+                onClickedItemRemoveButton = { principleId ->
+                    modalUiState = ModalUiState.ForPrinciple(principleId)
+                },
                 onBackPressed = onBackPressed,
                 onClickedConfirmButton = onClickedConfirmButton,
-                onShowDeleteModal = {
-                    isShowDeleteModal = true
-                }
+                onShowDeleteModal = { state ->
+                    modalUiState = state
+                },
+                onShowNoIconToast = onShowNoIconToast
             )
 
-            if (isShowDeleteModal) {
-                HedgeModal(
-                    showModal = isShowDeleteModal,
-                    title = stringResource(
-                        R.string.principle_detail_modal_delete_title,
-                        uiState.data.groupName
-                    ),
-                    description = stringResource(R.string.principle_detail_modal_delete_content),
-                    submitButton = stringResource(R.string.delete) to {
-                        onClickedRemoveButton(uiState.data.id)
-                    },
-                    cancelButton = stringResource(R.string.cancel) to {
-                        isShowDeleteModal = false
-                    },
-                    onDismissRequest = {
-                        isShowDeleteModal = false
-                    },
-                    icon = null
-                )
+            when (modalUiState) {
+                is ModalUiState.ForPrinciple,
+                is ModalUiState.ForPrincipleGroup -> {
+                    HedgeModal(
+                        showModal = true,
+                        title = if (modalUiState is ModalUiState.ForPrinciple) {
+                            stringResource(
+                                R.string.principle_detail_modal_delete_title,
+                                uiState.data.groupName
+                            )
+                        } else {
+                            stringResource(
+                                R.string.principle_detail_group_modal_delete_title,
+                                uiState.data.groupName
+                            )
+                        },
+                        description = stringResource(R.string.principle_detail_modal_delete_content),
+                        submitButton = stringResource(R.string.delete) to {
+                            if (modalUiState is ModalUiState.ForPrinciple) {
+                                onClickedItemRemoveButton((modalUiState as ModalUiState.ForPrinciple).id)
+                            } else if (modalUiState is ModalUiState.ForPrincipleGroup) {
+                                onClickedRemoveButton((modalUiState as ModalUiState.ForPrincipleGroup).id)
+                            }
+
+                            modalUiState = ModalUiState.NotShown
+                        },
+                        cancelButton = stringResource(R.string.cancel) to {
+                            modalUiState = ModalUiState.NotShown
+                        },
+                        onDismissRequest = {
+                            modalUiState = ModalUiState.NotShown
+                        },
+                        icon = null
+                    )
+                }
+
+                else -> {}
             }
         }
 
@@ -223,14 +292,18 @@ private fun PrincipleDetailScreen(
 private fun PrincipleDetailContent(
     modifier: Modifier = Modifier,
     myPrincipleGroup: MyPrincipleGroup,
-    principleType: PrincipleType,
+    path: Path,
+    onClickedFloatingButton: () -> Unit,
     onClickedModifyButton: (Int) -> Unit,
     onClickedItemModifyButton: (Int) -> Unit,
     onClickedItemRemoveButton: (Int) -> Unit,
     onBackPressed: () -> Unit,
     onClickedConfirmButton: () -> Unit,
-    onShowDeleteModal: () -> Unit
+    onShowDeleteModal: (ModalUiState) -> Unit,
+    onShowNoIconToast: (String) -> Unit
 ) {
+    val context = LocalContext.current
+
     Box(
         modifier = modifier
             .fillMaxSize()
@@ -241,12 +314,15 @@ private fun PrincipleDetailContent(
                 .background(HedgeColor.WHITE)
         ) {
             Topbar(
+                path = path,
                 modifier = Modifier.background(HedgeColor.Brand.Secondary),
                 onBackPressed = onBackPressed,
                 onClickedModifyButton = {
                     onClickedModifyButton(myPrincipleGroup.id)
                 },
-                onShowDeleteModal = onShowDeleteModal
+                onShowDeleteModal = {
+                    onShowDeleteModal(ModalUiState.ForPrincipleGroup(myPrincipleGroup.id))
+                }
             )
 
             Column(
@@ -283,64 +359,102 @@ private fun PrincipleDetailContent(
                 )
             }
 
-            LazyColumn(
-                modifier = Modifier
-                    .fillMaxWidth(),
-                flingBehavior = rememberSlowFlingBehavior(0.5f)
-            ) {
-                item {
-                    Spacer(modifier.size(10.dp))
-                }
-
-                itemsIndexed(
-                    items = myPrincipleGroup.principles,
-                    key = { index, principle -> principle.id }
-                ) { index, principle ->
-                    Column(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .animateItem(
-                                fadeInSpec = TweenSpec(
-                                    durationMillis = 500
-                                ),
-                                fadeOutSpec = TweenSpec(
-                                    durationMillis = 500
-                                ),
-                                placementSpec = tween(
-                                    durationMillis = 500
-                                )
-                            )
-                    ) {
-                        PrincipleItem(
-                            index = index + 1,
-                            principle = principle,
-                            onClickedItemModifyButton = onClickedItemModifyButton,
-                            onClickedItemRemoveButton = onClickedItemRemoveButton
-                        )
-                        HorizontalDivider(
-                            thickness = 1.dp,
-                            color = HedgeColor.Neutral.BackgroundSecondary
-                        )
-                    }
-                }
+            if (myPrincipleGroup.principles.isNotEmpty()) {
+                PrincipleList(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .weight(1f),
+                    myPrincipleGroup = myPrincipleGroup,
+                    path = path,
+                    onClickedItemModifyButton = onClickedItemModifyButton,
+                    onClickedItemRemoveButton = onClickedItemRemoveButton
+                )
+            } else {
+                PrincipleListEmpty()
             }
         }
 
-        when (principleType) {
-            PrincipleType.MINE -> {
+        when (path) {
+            Path.PRINCIPLE_MINE -> {
                 PrincipleDetailFloatingButton(
                     modifier = Modifier
                         .padding(end = 20.dp, bottom = 45.dp)
                         .align(alignment = Alignment.BottomEnd)
                 ) {
-                    //todo 버튼 클릭 시 원칙 추가 기능 넣기
+                    if (myPrincipleGroup.principles.size >= 5) {
+                        onShowNoIconToast(context.getString(R.string.principle_detail_limit_count))
+                    } else {
+                        onClickedFloatingButton()
+                    }
                 }
             }
 
-            PrincipleType.RECOMMENDED -> {
+            Path.PRINCIPLE_RECOMMENDED -> {
                 PrincipleDetailConfirmButton(
                     modifier = Modifier.align(Alignment.BottomCenter),
                     onClickedConfirmButton = onClickedConfirmButton
+                )
+            }
+
+            else -> {}
+        }
+    }
+}
+
+@Composable
+fun PrincipleList(
+    myPrincipleGroup: MyPrincipleGroup,
+    path: Path,
+    modifier: Modifier = Modifier,
+    onClickedItemModifyButton: (Int) -> Unit,
+    onClickedItemRemoveButton: (Int) -> Unit,
+) {
+    LazyColumn(
+        modifier = modifier,
+        contentPadding = when (path) {
+            Path.PRINCIPLE_RECOMMENDED -> PaddingValues(
+                bottom = HedgeButton.Action.Size.Large.minHeight * 2
+            )
+
+            else -> PaddingValues(bottom = 0.dp)
+        },
+        flingBehavior = rememberSlowFlingBehavior(0.5f)
+    ) {
+        item {
+            Spacer(modifier.size(10.dp))
+        }
+
+        itemsIndexed(
+            items = myPrincipleGroup.principles,
+            key = { index, principle -> principle.id }
+        ) { index, principle ->
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .animateItem(
+                        fadeInSpec = TweenSpec(
+                            durationMillis = 500
+                        ),
+                        fadeOutSpec = TweenSpec(
+                            durationMillis = 500
+                        ),
+                        placementSpec = tween(
+                            durationMillis = 500
+                        )
+                    )
+            ) {
+                PrincipleItem(
+                    index = index + 1,
+                    principle = principle,
+                    path = path,
+                    onClickedItemModifyButton = { principleId ->
+                        onClickedItemModifyButton(principleId)
+                    },
+                    onClickedItemRemoveButton = onClickedItemRemoveButton
+                )
+                HorizontalDivider(
+                    thickness = 1.dp,
+                    color = HedgeColor.Neutral.BackgroundSecondary
                 )
             }
         }
@@ -348,9 +462,38 @@ private fun PrincipleDetailContent(
 }
 
 @Composable
+private fun PrincipleListEmpty(
+    modifier: Modifier = Modifier
+) {
+    Column(
+        modifier = modifier
+            .padding(top = 130.dp)
+            .fillMaxWidth()
+            .background(HedgeColor.WHITE),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+        Image(
+            modifier = Modifier.size(60.dp),
+            imageVector = ImageVector.vectorResource(id = R.drawable.img_check_list),
+            contentDescription = null,
+            colorFilter = ColorFilter.tint(HedgeColor.Text.Disabled)
+        )
+        Text(
+            modifier = Modifier.padding(top = 6.dp),
+            text = stringResource(R.string.principle_detail_principles_empty),
+            style = HedgeTypography.Body2.Medium,
+            color = HedgeColor.Text.Assistive,
+            textAlign = TextAlign.Center
+        )
+    }
+}
+
+@Composable
 fun PrincipleItem(
     index: Int,
     principle: MyPrinciple,
+    path: Path,
     modifier: Modifier = Modifier,
     onClickedItemModifyButton: (Int) -> Unit,
     onClickedItemRemoveButton: (Int) -> Unit,
@@ -361,7 +504,12 @@ fun PrincipleItem(
         modifier = modifier
             .fillMaxWidth()
             .background(HedgeColor.WHITE)
-            .padding(start = 20.dp, top = 20.dp, end = 10.dp, bottom = 20.dp),
+            .padding(
+                start = 20.dp,
+                top = 20.dp,
+                end = if (path == Path.PRINCIPLE_MINE) 10.dp else 44.dp,
+                bottom = 20.dp
+            ),
     ) {
         Text(
             text = index.toString(),
@@ -388,35 +536,38 @@ fun PrincipleItem(
             )
         }
 
-        Box {
-            Image(
-                modifier = Modifier
-                    .padding(start = 10.dp)
-                    .clickable(
-                        enabled = true,
-                        indication = null,
-                        interactionSource = remember { MutableInteractionSource() }
-                    ) {
-                        isExpanded = !isExpanded
-                    },
-                imageVector = HedgeIcon.Menu,
-                contentDescription = null,
-                colorFilter = ColorFilter.tint(color = HedgeColor.Text.Disabled)
-            )
+        if (path == Path.PRINCIPLE_MINE) {
+            Box {
+                Image(
+                    modifier = Modifier
+                        .padding(start = 10.dp)
+                        .clickable(
+                            enabled = true,
+                            indication = null,
+                            interactionSource = remember { MutableInteractionSource() }
+                        ) {
+                            isExpanded = !isExpanded
+                        },
+                    imageVector = HedgeIcon.Menu,
+                    contentDescription = null,
+                    colorFilter = ColorFilter.tint(color = HedgeColor.Text.Disabled)
+                )
 
-            ModifyAndRemoveDropdown(
-                expand = isExpanded,
-                onClickedModifyButton = {
-                    onClickedItemModifyButton(principle.id)
-                    isExpanded = false
-                },
-                onClickedRemoveButton = {
-                    onClickedItemRemoveButton(principle.id)
-                    isExpanded = false
-                },
-                onDismissRequest = { isExpanded = false }
-            )
+                ModifyAndRemoveDropdown(
+                    expand = isExpanded,
+                    onClickedModifyButton = {
+                        onClickedItemModifyButton(principle.id)
+                        isExpanded = false
+                    },
+                    onClickedRemoveButton = {
+                        onClickedItemRemoveButton(principle.id)
+                        isExpanded = false
+                    },
+                    onDismissRequest = { isExpanded = false }
+                )
+            }
         }
+
     }
 }
 
@@ -503,6 +654,7 @@ fun PrincipleDetailFloatingButton(
 
 @Composable
 private fun Topbar(
+    path: Path,
     modifier: Modifier = Modifier,
     onBackPressed: () -> Unit,
     onClickedModifyButton: () -> Unit,
@@ -510,61 +662,43 @@ private fun Topbar(
 ) {
     var isExpanded by remember { mutableStateOf(false) }
 
-    Column(
-        modifier = modifier
-            .fillMaxWidth()
-            .statusBarsPadding()
-    ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Image(
-                modifier = Modifier
-                    .padding(start = 4.dp)
-                    .clickable(enabled = true) { onBackPressed() },
-                imageVector = HedgeIcon.ArrowLeftThick,
-                contentDescription = null,
-                colorFilter = ColorFilter.tint(color = HedgeColor.Text.Primary)
-            )
-
-            Spacer(
-                modifier = Modifier.weight(1f)
-            )
-
-            Box {
-                Image(
-                    modifier = Modifier
-                        .padding(end = 16.dp)
-                        .clickable(
-                            enabled = true,
-                            indication = null,
-                            interactionSource = remember { MutableInteractionSource() }
-                        ) {
-                            isExpanded = !isExpanded
-                        },
-                    imageVector = HedgeIcon.Menu,
-                    contentDescription = null,
-                    colorFilter = ColorFilter.tint(color = HedgeColor.Text.Primary)
-                )
-                if (isExpanded) {
-                    ModifyAndRemoveDropdown(
-                        expand = isExpanded,
-                        onClickedModifyButton = {
-                            onClickedModifyButton()
-                            isExpanded = false
-                        },
-                        onClickedRemoveButton = {
-                            onShowDeleteModal()
-                            isExpanded = false
-                        },
-                        onDismissRequest = { isExpanded = false }
+    HedgeTopBar(
+        modifier = modifier,
+        action = {
+            if (path == Path.PRINCIPLE_MINE) {
+                Box {
+                    Image(
+                        modifier = Modifier
+                            .clickable(
+                                enabled = true,
+                                indication = null,
+                                interactionSource = remember { MutableInteractionSource() }
+                            ) {
+                                isExpanded = !isExpanded
+                            },
+                        imageVector = HedgeIcon.Menu,
+                        contentDescription = null,
+                        colorFilter = ColorFilter.tint(color = HedgeColor.Text.Primary)
                     )
+                    if (isExpanded) {
+                        ModifyAndRemoveDropdown(
+                            expand = isExpanded,
+                            onClickedModifyButton = {
+                                onClickedModifyButton()
+                                isExpanded = false
+                            },
+                            onClickedRemoveButton = {
+                                onShowDeleteModal()
+                                isExpanded = false
+                            },
+                            onDismissRequest = { isExpanded = false }
+                        )
+                    }
                 }
             }
-        }
-    }
+        },
+        onClickBack = onBackPressed
+    )
 }
 
 @Composable
@@ -581,8 +715,7 @@ private fun ModifyAndRemoveDropdown(
         shape = RoundedCornerShape(16.dp),
         expanded = expand,
         containerColor = HedgeColor.WHITE,
-        onDismissRequest = onDismissRequest,
-        offset = DpOffset((-20).dp, 0.dp)
+        onDismissRequest = onDismissRequest
     ) {
         DropdownMenuItem(
             text = {
@@ -861,22 +994,24 @@ fun PrincipleDetailScreenPreview() {
                 principles = list
             )
         ),
-        principleType = PrincipleType.RECOMMENDED,
+        path = Path.PRINCIPLE_RECOMMENDED,
+        onClickedFloatingButton = {},
         onClickedModifyButton = {},
         onClickedRemoveButton = {},
         onClickedItemModifyButton = {},
         onClickedItemRemoveButton = {},
         onClickedConfirmButton = {},
         onBackPressed = {},
+        onShowNoIconToast = {},
         onShowErrorToast = {}
     )
 }
-
 
 @Preview(showBackground = true)
 @Composable
 fun TopbarPreview() {
     Topbar(
+        path = Path.PRINCIPLE_MINE,
         modifier = Modifier
             .background(HedgeColor.Brand.Secondary),
         onBackPressed = {},
@@ -896,9 +1031,20 @@ fun PrincipleItemPreview() {
     PrincipleItem(
         index = 1,
         principle = principle,
+        path = Path.PRINCIPLE_MINE,
         onClickedItemModifyButton = {},
         onClickedItemRemoveButton = {}
     )
+}
+
+@Preview
+@Composable
+fun PrincipleListEmptyPreview() {
+    Box(
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        PrincipleListEmpty()
+    }
 }
 
 

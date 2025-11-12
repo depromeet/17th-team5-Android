@@ -37,6 +37,7 @@ private fun HedgeTopBarBackDefault() {
     Icon(
         imageVector = HedgeIcon.ArrowLeftThick,
         contentDescription = "back",
+        tint = HedgeColor.Text.Primary
     )
 }
 

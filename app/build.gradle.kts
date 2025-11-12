@@ -6,6 +6,7 @@ plugins {
     alias(libs.plugins.depromeet.team5.hilt)
     alias(libs.plugins.google.services)
     alias(libs.plugins.firebase.crashlytics)
+    alias(libs.plugins.kotlinx.serialization)
 }
 
 android {
@@ -75,8 +76,11 @@ dependencies {
     implementation(projects.features.feedback)
     implementation(projects.features.reasons)
     implementation(projects.features.principlegroupdetail)
+    implementation(projects.features.principlemodification)
 
     implementation(libs.androidx.core.ktx)
+    implementation(libs.org.jetbrains.kotlinx.kotlinx.serialization.json)
+
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

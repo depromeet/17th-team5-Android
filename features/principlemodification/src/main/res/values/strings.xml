@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="confirm">완료</string>
+    <string name="principle_modification_toast_message">원칙이 수정되었습니다</string>
+    <string name="principle_modification_limit_group_name">제목은 최대 40자까지 작성할 수 있어요</string>
+    <string name="principle_modification_principle_hint">원칙의 제목을 적어주세요</string>
+    <string name="principle_modification_content_hint">원칙에 대한 설명을 적어보세요</string>
+</resources>

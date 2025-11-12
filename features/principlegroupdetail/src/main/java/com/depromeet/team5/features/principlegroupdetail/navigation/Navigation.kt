@@ -1,11 +1,17 @@
 package com.depromeet.team5.features.principlegroupdetail.navigation
 
+import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.runtime.remember
+import androidx.compose.ui.Modifier
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavOptions
 import androidx.navigation.compose.composable
 import androidx.navigation.toRoute
-import com.depromeet.team5.core.navigation.PrincipleType
+import com.depromeet.team5.core.navigation.Path
+import com.depromeet.team5.core.navigation.graphkey.PrincipleGraph
+import com.depromeet.team5.core.navigation.request.PrincipleGraphViewModel
 import com.depromeet.team5.features.principlegroupdetail.screen.PrincipleDetailRoute
 import kotlinx.serialization.Serializable
 
@@ -13,33 +19,49 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class PrincipleGroupDetail(
     val groupId: Int,
-    val principleType: PrincipleType
+    val path: Path
 )
 
 fun NavController.navigateToPrincipleGroupDetail(
     groupId: Int,
-    principleType: PrincipleType,
+    path: Path,
     options: NavOptions? = null
 ) {
     navigate(
-        route = PrincipleGroupDetail(groupId, principleType),
+        route = PrincipleGroupDetail(groupId, path),
         navOptions = options
     )
 }
 
 fun NavGraphBuilder.principleGroupDetail(
+    navController: NavController,
     onBackPressed: () -> Unit,
     onShowErrorToast: (Throwable) -> Unit,
-    onShowToast: (String) -> Unit
+    onShowToast: (String) -> Unit,
+    onShowNoIconToast: (String) -> Unit,
+    onNavigatedPrincipleModification: () -> Unit
 ) {
     composable<PrincipleGroupDetail> { backstackEntry ->
         val args = backstackEntry.toRoute<PrincipleGroupDetail>()
 
+        val subgraphBackstackEntry = remember(backstackEntry) {
+            navController.getBackStackEntry(route = PrincipleGraph::class)
+        }
+
+        val principleGraphViewModel = hiltViewModel<PrincipleGraphViewModel>(subgraphBackstackEntry)
+
         PrincipleDetailRoute(
-            principleType = args.principleType,
+            path = args.path,
+            navController = navController,
+            modifier = Modifier.navigationBarsPadding(),
             onBackPressed = onBackPressed,
             onShowErrorToast = onShowErrorToast,
-            onShowToast = onShowToast
+            onShowToast = onShowToast,
+            onShowNoIconToast = onShowNoIconToast,
+            graphViewModel = principleGraphViewModel,
+            onNavigatedPrincipleModification = {
+                onNavigatedPrincipleModification()
+            }
         )
     }
 }

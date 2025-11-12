@@ -4,25 +4,25 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.rememberNavController
-import com.depromeet.team5.core.navigation.PrincipleType
 import com.depromeet.team5.feature.reasons.navigateToReasonGraph
 import com.depromeet.team5.feature.reasons.reasonGraph
 import com.depromeet.team5.features.feedback.navigation.feedbackScreen
 import com.depromeet.team5.features.feedback.navigation.navigateToFeedback
 import com.depromeet.team5.features.home.Home
 import com.depromeet.team5.features.home.homeScreen
-import com.depromeet.team5.features.principlegroupdetail.navigation.navigateToPrincipleGroupDetail
-import com.depromeet.team5.features.principlegroupdetail.navigation.principleGroupDetail
 import com.depromeet.team5.features.retrospect.screen.navigateToRetrospect
 import com.depromeet.team5.features.retrospect.screen.retrospectScreen
 import com.depromeet.team5.features.search.navigateToSearch
 import com.depromeet.team5.features.search.searchScreen
+import com.depromeet.team5.graph.navigatePrincipleGraph
+import com.depromeet.team5.graph.principleGraph
 
 @Composable
 fun HedgeNavHost(
     modifier: Modifier = Modifier,
     onShowErrorToast: (Throwable) -> Unit,
-    onShowToast: (String) -> Unit
+    onShowToast: (String) -> Unit,
+    onShowNoIconToast: (String) -> Unit
 ) {
     val navController = rememberNavController()
 
@@ -36,7 +36,9 @@ fun HedgeNavHost(
             onBuyClick = { navController.navigateToSearch() },
             onSellClick = { navController.navigateToSearch() },
             onClickRetrospectionDetail = { },
-            onClickPrincipleDetail = { },
+            onClickPrincipleDetail = { groupId, path ->
+                navController.navigatePrincipleGraph(groupId, path)
+            },
             onClickCreatePrinciple = { },
             onShowErrorToast = onShowErrorToast
         )
@@ -54,10 +56,11 @@ fun HedgeNavHost(
             onShowErrorToast = onShowErrorToast
         )
 
-        principleGroupDetail(
-            onBackPressed = navController::popBackStack,
+        principleGraph(
+            navController = navController,
             onShowErrorToast = onShowErrorToast,
-            onShowToast = onShowToast
+            onShowToast = onShowToast,
+            onShowNoIconToast = onShowNoIconToast
         )
 
         reasonGraph(

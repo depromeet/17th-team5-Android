@@ -10,9 +10,19 @@ class CreatePrincipleGroupUseCase @Inject constructor(
 ) {
 
     operator fun invoke(myPrincipleGroup: MyPrincipleGroup) = run {
+        //url 업로드는 imageId로 업로드 해야함.
+        val targetThumbnail = if (
+            myPrincipleGroup.thumbnail.startsWith("http") ||
+            myPrincipleGroup.thumbnail.startsWith("https")
+        ) {
+            myPrincipleGroup.imageId
+        } else {
+            myPrincipleGroup.thumbnail
+        }
+
         val map = mapOf(
             "groupName" to myPrincipleGroup.groupName,
-            "thumbnail" to myPrincipleGroup.thumbnail,
+            "thumbnail" to targetThumbnail,
             "principleType" to myPrincipleGroup.orderType.name,
             "principles" to myPrincipleGroup.principles.map {
                 mapOf(

@@ -3,6 +3,7 @@ package com.depromeet.team5.core.retrofit.api
 import com.depromeet.team5.core.retrofit.model.FeedbackResponse
 import com.depromeet.team5.core.retrofit.model.MyPrincipleGroupInfoResponse
 import com.depromeet.team5.core.retrofit.model.MyPrincipleGroupsInfoResponse
+import com.depromeet.team5.core.retrofit.model.MyPrincipleInfoResponse
 import com.depromeet.team5.core.retrofit.model.RetrospectionListResponse
 import com.depromeet.team5.core.retrofit.model.SearchResponse
 import com.depromeet.team5.core.retrofit.model.SystemPrincipleResponse
@@ -11,6 +12,7 @@ import okhttp3.RequestBody
 import retrofit2.http.Body
 import retrofit2.http.DELETE
 import retrofit2.http.GET
+import retrofit2.http.PATCH
 import retrofit2.http.POST
 import retrofit2.http.Path
 import retrofit2.http.Query
@@ -43,16 +45,27 @@ interface HedgeApi {
         groupId: Int
     )
 
+    @POST("api/v1/principle-groups")
+    suspend fun createPrincipleGroup(
+        @Body body: RequestBody
+    ): MyPrincipleGroupInfoResponse
+
     @DELETE("api/v1/investment-principles/{principleId}")
     suspend fun deletePrinciple(
         @Path("principleId")
         principleId: Int
     )
 
-    @POST("api/v1/principle-groups")
-    suspend fun createPrincipleGroup(
+    @PATCH("api/v1/investment-principles/{principleId}")
+    suspend fun modifyPrinciple(
+        @Path("principleId") principleId: Int,
         @Body body: RequestBody
-    ): MyPrincipleGroupInfoResponse
+    ): MyPrincipleInfoResponse
+
+    @POST("api/v1/investment-principles")
+    suspend fun addPrinciple(
+        @Body body: RequestBody
+    ): MyPrincipleInfoResponse
 
     @GET("api/v1/reports")
     suspend fun userStats(): UserStatsResponse

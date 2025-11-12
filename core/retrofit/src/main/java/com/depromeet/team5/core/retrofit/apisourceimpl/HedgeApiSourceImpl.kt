@@ -4,10 +4,13 @@ import com.depromeet.team5.core.remotedatasource.apisource.HedgeApiSource
 import com.depromeet.team5.core.remotedatasource.model.FeedbackRemoteData
 import com.depromeet.team5.core.remotedatasource.model.MyPrincipleGroupRemoteData
 import com.depromeet.team5.core.remotedatasource.model.MyPrincipleGroupsInfoRemoteData
+import com.depromeet.team5.core.remotedatasource.model.MyPrincipleRemoteData
 import com.depromeet.team5.core.remotedatasource.model.RetrospectionListRemoteData
+import com.depromeet.team5.core.remotedatasource.model.RetrospectionRemoteData
 import com.depromeet.team5.core.remotedatasource.model.SearchRemoteData
 import com.depromeet.team5.core.remotedatasource.model.SystemPrincipleRemoteData
 import com.depromeet.team5.core.remotedatasource.model.UserStatsRemoteData
+import com.depromeet.team5.core.remotedatasource.request.CreateRetrospectionRequestRemoteData
 import com.depromeet.team5.core.retrofit.api.HedgeApi
 import com.depromeet.team5.core.retrofit.toRequestBody
 import javax.inject.Inject
@@ -16,7 +19,7 @@ import javax.inject.Singleton
 
 @Singleton
 internal class HedgeApiSourceImpl @Inject constructor(
-    private val hedgeApi: HedgeApi,
+    private val hedgeApi: HedgeApi
 ) : HedgeApiSource {
 
     override suspend fun search(query: String): SearchRemoteData =
@@ -37,6 +40,33 @@ internal class HedgeApiSourceImpl @Inject constructor(
 
     override suspend fun deletePrinciple(principleId: Int) =
         hedgeApi.deletePrinciple(principleId)
+
+    override suspend fun addPrinciple(
+        groupId: Int,
+        principle: String,
+        description: String
+    ) {
+        hedgeApi.addPrinciple(
+            mapOf(
+                "groupId" to groupId,
+                "principle" to principle,
+                "description" to description
+            ).toRequestBody()
+        )
+    }
+
+    override suspend fun modifyPrinciple(
+        principleId: Int,
+        principle: String,
+        description: String
+    ): MyPrincipleRemoteData =
+        hedgeApi.modifyPrinciple(
+            principleId = principleId,
+            body = mapOf(
+                "principle" to principle,
+                "description" to description
+            ).toRequestBody()
+        ).toRemoteData()
 
     override suspend fun createPrincipleGroup(body: Map<String, Any?>): MyPrincipleGroupRemoteData =
         hedgeApi.createPrincipleGroup(body.toRequestBody()).toRemoteData()

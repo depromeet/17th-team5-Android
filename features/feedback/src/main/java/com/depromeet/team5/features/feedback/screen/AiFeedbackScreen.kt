@@ -393,15 +393,15 @@ private fun AiFeedbackScreen(
                         )
                     }
 
-                    HedgeButton.Action.Filled(
-                        text = stringResource(R.string.feedback_add_principle_button),
-                        buttonColors = HedgeButton.Action.Color.Filled.Primary,
-                        size = HedgeButton.Action.Size.Small,
-                        modifier = Modifier
-                            .padding(top = 20.dp)
-                            .fillMaxWidth(),
-                        onClick = {}
-                    )
+//                    HedgeButton.Action.Filled(
+//                        text = stringResource(R.string.feedback_add_principle_button),
+//                        buttonColors = HedgeButton.Action.Color.Filled.Primary,
+//                        size = HedgeButton.Action.Size.Small,
+//                        modifier = Modifier
+//                            .padding(top = 20.dp)
+//                            .fillMaxWidth(),
+//                        onClick = {}
+//                    )
                 }
             }
 

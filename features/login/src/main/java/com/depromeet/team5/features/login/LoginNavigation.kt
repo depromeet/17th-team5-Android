@@ -22,6 +22,7 @@ fun NavGraphBuilder.loginGraph(
     navController: NavController,
     onClickBack: () -> Unit,
     onClickNext: () -> Unit,
+    onLoginKakao: suspend () -> Result<Pair<String, String>>,
 ) {
     navigation<LoginGraph>(
         startDestination = Splash
@@ -38,7 +39,8 @@ fun NavGraphBuilder.loginGraph(
 
         composable<Login> {
             LoginRoute(
-                navigateToAgreements = { navController.navigate(Agreements) }
+                navigateToAgreements = { navController.navigate(Agreements) },
+                onLoginKakao = onLoginKakao
             )
         }
 

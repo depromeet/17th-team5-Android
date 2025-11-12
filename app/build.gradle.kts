@@ -16,10 +16,6 @@ val properties = Properties().apply {
 android {
     namespace = "com.depromeet.team5"
 
-    buildFeatures{
-        buildConfig = true
-    }
-
     defaultConfig {
         applicationId = "com.depromeet.team5"
         versionCode = 2
@@ -70,6 +66,10 @@ android {
     }
     hilt {
         enableAggregatingTask = true
+    }
+
+    buildFeatures{
+        buildConfig = true
     }
 }
 

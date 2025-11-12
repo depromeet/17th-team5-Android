@@ -68,7 +68,7 @@ fun PrincipleGroupModificationRoute(
     viewModel: PrincipleGroupModificationViewModel = hiltViewModel(),
     onShowToast: (String) -> Unit,
     onShowErrorToast: (Throwable) -> Unit,
-    onBackPressed: () -> Unit
+    onBackPressed: (Boolean) -> Unit
 ) {
     val lifecycleOwner = LocalLifecycleOwner.current
     val groupName by viewModel.groupNameState.stateFlow.collectAsStateWithLifecycle()
@@ -86,7 +86,7 @@ fun PrincipleGroupModificationRoute(
                 .flowWithLifecycle(lifecycleOwner.lifecycle)
                 .collect { throwable ->
                     onShowErrorToast(throwable)
-                    onBackPressed()
+                    onBackPressed(true)
                 }
         }
     }
@@ -118,7 +118,7 @@ fun PrincipleGroupModificationScreen(
     onClickedConfirmButton: () -> Unit,
     onUpdateGroupName: (String) -> Unit,
     onShowToast: (String) -> Unit,
-    onBackPressed: () -> Unit
+    onBackPressed: (Boolean) -> Unit
 ) {
     val context = LocalContext.current
     val emojiList = stringArrayResource(R.array.emoji_array)
@@ -152,7 +152,9 @@ fun PrincipleGroupModificationScreen(
                     onClick = onClickedConfirmButton
                 )
             },
-            onClickBack = onBackPressed
+            onClickBack = {
+                onBackPressed(false)
+            }
         )
 
         Spacer(

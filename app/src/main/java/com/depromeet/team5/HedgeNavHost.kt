@@ -95,9 +95,9 @@ fun HedgeNavHost(
         )
 
         principleGroupModification(
+            navController = navController,
             onShowToast = onShowToast,
-            onShowErrorToast = onShowErrorToast,
-            onBackPressed = navController::popBackStack
+            onShowErrorToast = onShowErrorToast
         )
 
         reasonNavigation(

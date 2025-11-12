@@ -8,9 +8,9 @@ import com.depromeet.team5.core.navigation.Path
 import com.depromeet.team5.core.navigation.graphkey.PrincipleGraph
 import com.depromeet.team5.features.principlegroupdetail.navigation.PrincipleGroupDetail
 import com.depromeet.team5.features.principlegroupdetail.navigation.principleGroupDetail
+import com.depromeet.team5.features.principlegroupmodification.navigation.navigateToPrincipleGroupModification
 import com.depromeet.team5.features.principlemodification.navigation.navigateToPrincipleModification
 import com.depromeet.team5.features.principlemodification.navigation.principleModification
-
 
 
 fun NavController.navigatePrincipleGraph(
@@ -42,6 +42,9 @@ fun NavGraphBuilder.principleGraph(
             onShowNoIconToast = onShowNoIconToast,
             onNavigatedPrincipleModification = {
                 navController.navigateToPrincipleModification()
+            },
+            onNavigatedPrincipleGroupModification = { groupId, type ->
+                navController.navigateToPrincipleGroupModification(groupId, type)
             }
         )
 

@@ -96,6 +96,7 @@ fun PrincipleDetailRoute(
     onShowToast: (String) -> Unit,
     onShowNoIconToast: (String) -> Unit,
     onNavigatedPrincipleModification: () -> Unit,
+    onNavigatedPrincipleGroupModification: (Int, PrincipleModificationType) -> Unit,
     graphViewModel: PrincipleGraphViewModel,
     viewModel: PrincipleDetailViewModel = hiltViewModel()
 ) {
@@ -158,7 +159,7 @@ fun PrincipleDetailRoute(
             onNavigatedPrincipleModification()
         },
         onClickedModifyButton = { groupId ->
-            //todo 추후에 수정 기능 연결하기
+            onNavigatedPrincipleGroupModification(groupId, PrincipleModificationType.MODIFY)
         },
         onClickedRemoveButton = { groupId ->
             viewModel.deletePrincipleGroup(groupId)

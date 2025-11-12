@@ -9,13 +9,18 @@
     <string name="badge_description_gold">근거 있는 판단으로 흔들림 없이 결정했어요</string>
     <string name="badge_description_platinum">시장의 흐름을 넓고 깊게 이해하며, 스스로의 기준으로 움직였어요</string>
 
-
     <string name="principle_bottom_sheet_dialog_beginner_buy_type">초보자를 위한 매수 원칙</string>
     <string name="principle_bottom_sheet_dialog_beginner_sell_type">초보자를 위한 매도 원칙</string>
     <string name="principle_bottom_sheet_dialog_button_text">이 원칙으로 회고하기</string>
     <string name="principle_bottom_sheet_dialog_add_button_text">새로운 원칙 그룹 추가</string>
     <string name="principle_myself">내가 만든</string>
     <string name="principle_limit_size">한 템플릿 당 최대 5개를 추가할 수 있어요</string>
+
+    <string name="principle_group_modification_icon_title">아이콘 선택</string>
+    <string name="principle_group_modification_title">원칙 그룹 추가</string>
+    <string name="principle_group_modification_placeholder">원칙 그룹 이름</string>
+    <string name="principle_group_modification_limit_group_name_count">최대 20자까지 작성할 수 있어요</string>
+    <string name="principle_group_modification_completion">회고 템플릿이 수정되었습니다</string>
 
     <string name="standard">기본</string>
     <string name="select">선택</string>

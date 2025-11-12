@@ -8,6 +8,9 @@ data class RetrospectionList(
 
 data class RetrospectionListSymbol(
     val companyName: String,
+    val image: String?,
+    val symbol: String,
+    val market: String,
     val retrospections: List<RetrospectionListItem>
 )
 

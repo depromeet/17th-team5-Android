@@ -157,7 +157,7 @@ private fun RecentsContent(
                     .fillMaxWidth()
             )
         }
-        items(items, key = { it.stockName }) { item ->
+        items(items, key = { it.symbol }) { item ->
             SearchListItem(stockData = item, onClick = { onItemClick(item) })
         }
     }

@@ -664,6 +664,7 @@ private fun DateTextField(
 
     val currentYear = Calendar.getInstance().get(Calendar.YEAR)
     val datePickerState = rememberDatePickerState(
+        initialSelectedDateMillis = System.currentTimeMillis(),
         yearRange = currentYear - 100..currentYear
     )
 

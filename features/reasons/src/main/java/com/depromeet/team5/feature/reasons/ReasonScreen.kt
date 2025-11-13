@@ -482,16 +482,29 @@ private fun ReasonsPage(
                     .padding(horizontal = 24.dp)
                     .padding(bottom = 8.dp)
             )
+            val imageUrls = principle.principleChecks.imageUrls
             ImageThumbnailContainer(
-                images = principle.principleChecks.imageUrls.map { it.toUri() },
+                images = imageUrls.map { it.toUri() },
                 onClickDeleteImage = onClickDeleteImage,
                 onClickImage = onClickImage,
+                modifier = Modifier
+                    .padding(top = if (imageUrls.isNotEmpty()) 16.dp else 0.dp),
             )
+            val articles = principle.principleChecks.articles
             LinkThumbnailContainer(
-                articles = principle.principleChecks.articles,
+                articles = articles,
                 onClickDeleteLink = onClickDeleteLink,
+                modifier = Modifier
+                    .padding(
+                        start = 20.dp,
+                        end = 20.dp,
+                        top = if (articles.isNotEmpty()) 16.dp else 0.dp,
+                    ),
             )
             if (isImeVisible.not()) {
+                if (imageUrls.isNotEmpty() || principle.principleChecks.articles.isNotEmpty()) {
+                    Spacer(Modifier.size(16.dp))
+                }
                 InputToolBar(
                     hasImages = principle.principleChecks.imageUrls.isNotEmpty(),
                     hasLinks = principle.principleChecks.articles.isNotEmpty(),

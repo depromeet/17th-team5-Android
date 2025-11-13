@@ -110,7 +110,7 @@ private fun RestrictionProgress(
         )
         Text(
             text = "\uD83D\uDD25",
-            style = HedgeTypography.Body3.SemiBold
+            style = HedgeTypography.Caption2.Regular,
         )
     }
 }

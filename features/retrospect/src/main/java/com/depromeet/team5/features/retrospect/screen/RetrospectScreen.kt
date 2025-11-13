@@ -128,15 +128,16 @@ fun RetrospectRoute(
                 retrospectionState.dateTextFieldState.value
             )
                 .all { it.text.isNotEmpty() && !it.isError }
-                .takeIf { it }
-                ?.let {
-                    when (retrospectionState.returnToggleState.value) {
-                        true -> retrospectionState.returnTextFieldState.value.text.isNotEmpty() &&
+                .let { isActive ->
+                    val returnIsActive = if (retrospectionState.returnToggleState.value) {
+                        retrospectionState.returnTextFieldState.value.text.isNotEmpty() &&
                             !retrospectionState.returnTextFieldState.value.isError
-
-                        false -> true
+                    } else {
+                        true
                     }
-                } ?: false
+
+                    isActive && returnIsActive
+                }
         }
     }
 
@@ -476,6 +477,7 @@ private fun RetrospectScreen(
                     .fillMaxWidth()
                     .padding(top = 24.dp, bottom = 31.dp),
                 enabled = buttonEnabled,
+                forceClickable = buttonEnabled,
                 text = stringResource(id = R.string.retrospect_confirm),
                 onClick = onClickedConfirmButton
             )

@@ -49,6 +49,9 @@ enum class HomeTab(
 
 data class RetrospectionSymbolState(
     val companyName: String,
+    val image: String?,
+    val symbol: String,
+    val market: String,
     val sections: List<RetrospectionSectionState>,
 )
 
@@ -124,6 +127,9 @@ class HomeViewModel @Inject constructor(
                             }
                         RetrospectionSymbolState(
                             companyName = companyName.companyName,
+                            image = companyName.image,
+                            symbol = companyName.symbol,
+                            market = companyName.market,
                             sections = sections
                         )
                     }

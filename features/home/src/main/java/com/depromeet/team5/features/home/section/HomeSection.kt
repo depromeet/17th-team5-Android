@@ -358,8 +358,20 @@ private fun HomeSectionPreview() {
 
     val successList = HedgeUiState.Success(
         listOf(
-            RetrospectionSymbolState(companyName = "삼성전자", sections = sampleSections),
-            RetrospectionSymbolState(companyName = "애플", sections = sampleSections)
+            RetrospectionSymbolState(
+                companyName = "삼성전자",
+                sections = sampleSections,
+                image = null,
+                symbol = "",
+                market = ""
+            ),
+            RetrospectionSymbolState(
+                companyName = "애플",
+                sections = sampleSections,
+                image = null,
+                symbol = "",
+                market = ""
+            )
         )
     )
 

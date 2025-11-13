@@ -1,5 +1,6 @@
 package com.depromeet.team5.feature.reasons.ui
 
+import android.content.Intent
 import android.net.Uri
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -36,6 +37,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.core.net.toUri
 import coil.compose.AsyncImage
 import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
@@ -143,11 +145,18 @@ private fun LinkThumbnail(
     onClickDeleteLink: (() -> Unit)?,
     modifier: Modifier = Modifier
 ) {
+    val context = LocalContext.current
     Row(
         modifier = modifier
             .height(100.dp)
             .fillMaxWidth()
             .clip(RoundedCornerShape(16.dp))
+            .clickable {
+                runCatching {
+                    val intent = Intent(Intent.ACTION_VIEW, article.originUrl.toUri())
+                    context.startActivity(intent)
+                }
+            }
             .border(width = (1.2).dp, color = HedgeColor.Neutral.BackgroundSecondary, shape = RoundedCornerShape(16.dp)),
     ) {
         article.thumbnail?.let {

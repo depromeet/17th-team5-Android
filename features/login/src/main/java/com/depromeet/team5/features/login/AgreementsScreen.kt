@@ -112,7 +112,7 @@ private fun AgreementsScreen(
             text = stringResource(R.string.agreements_start_button),
             onClick = navigateToHome,
             modifier = Modifier
-                .padding(horizontal = 20.dp)
+                .padding(horizontal = 20.dp, vertical = 20.dp)
                 .fillMaxWidth()
                 .align(Alignment.BottomCenter),
             enabled = state.canProceed,

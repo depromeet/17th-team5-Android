@@ -116,6 +116,7 @@ private fun LoginScreen(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
+                .padding(bottom = 20.dp)
                 .padding(20.dp)
                 .clip(RoundedCornerShape(18.dp))
                 .background(color = Color(0xFFFEE500))

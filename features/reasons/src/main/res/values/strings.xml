@@ -42,4 +42,17 @@
     <string name="link_input">링크 입력</string>
     <string name="add">추가하기</string>
     <string name="selecte_before">선택 전</string>
+    <string name="delete">삭제</string>
+    <string name="go_ai_feedback">AI 피드백 보기</string>
+    <string name="memo_add">추가</string>
+    <string name="delete_retrospection_title">해당 회고를 삭제할까요?</string>
+    <string name="delete_retrospection_description">한 번 삭제하면 되돌릴 수 없어요</string>
+    <string name="delete_memo_title">메모를 삭제할까요?</string>
+    <string name="delete_memo_description">한 번 삭제하면 되돌릴 수 없어요</string>
+    <string name="memo">메모</string>
+    <string name="add_memo">메모 남기기</string>
+    <string name="edit">수정</string>
+    <string name="edit_complete">수정 완료</string>
+    <string name="delete_retrospection_toast">회고가 삭제되었습니다.</string>
+    <string name="empty_retrospection">작성한 회고가 없어요</string>
 </resources>

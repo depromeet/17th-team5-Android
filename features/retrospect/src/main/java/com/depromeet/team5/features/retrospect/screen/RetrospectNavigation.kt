@@ -9,6 +9,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
+import com.depromeet.team5.core.navigation.graphkey.Home
 import com.depromeet.team5.core.navigation.request.RequestViewModel
 import kotlinx.serialization.Serializable
 
@@ -27,7 +28,7 @@ fun NavGraphBuilder.retrospectScreen(
 ) {
     composable<Retrospect> { backStackEntry ->
         val parentEntry = remember(backStackEntry) {
-            navController.getBackStackEntry(navController.graph.startDestinationRoute!!)
+            navController.getBackStackEntry(Home)
         }
 
         val sharedViewModel: RequestViewModel = viewModel(viewModelStoreOwner = parentEntry)

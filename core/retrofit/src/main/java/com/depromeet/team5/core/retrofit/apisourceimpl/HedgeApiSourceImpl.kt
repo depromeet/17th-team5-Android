@@ -6,18 +6,25 @@ import com.depromeet.team5.core.remotedatasource.model.MyPrincipleGroupRemoteDat
 import com.depromeet.team5.core.remotedatasource.model.MyPrincipleGroupsInfoRemoteData
 import com.depromeet.team5.core.remotedatasource.model.MyPrincipleRemoteData
 import com.depromeet.team5.core.remotedatasource.model.RetrospectionListRemoteData
+import com.depromeet.team5.core.remotedatasource.model.SocialLoginRemoteData
 import com.depromeet.team5.core.remotedatasource.model.StockSliceRemoteData
 import com.depromeet.team5.core.remotedatasource.model.SystemPrincipleRemoteData
 import com.depromeet.team5.core.remotedatasource.model.UserStatsRemoteData
+import com.depromeet.team5.core.remotedatasource.request.SocialLoginRequestRemoteData
 import com.depromeet.team5.core.retrofit.api.HedgeApi
+import com.depromeet.team5.core.retrofit.model.SocialLoginFailureResponse
+import com.depromeet.team5.core.retrofit.model.SocialLoginSuccessResponse
 import com.depromeet.team5.core.retrofit.toRequestBody
+import kotlinx.serialization.json.Json
+import retrofit2.Response
 import javax.inject.Inject
 import javax.inject.Singleton
 
 
 @Singleton
 internal class HedgeApiSourceImpl @Inject constructor(
-    private val hedgeApi: HedgeApi
+    private val hedgeApi: HedgeApi,
+    private val json: Json,
 ) : HedgeApiSource {
 
     override suspend fun getStockSlice(
@@ -92,4 +99,28 @@ internal class HedgeApiSourceImpl @Inject constructor(
             .systemPrincipleList()
             .toRemoteData()
 
+    override suspend fun socialLogin(body: SocialLoginRequestRemoteData): SocialLoginRemoteData {
+        val resp: Response<SocialLoginSuccessResponse> = hedgeApi.socialLogin(body)
+        return if (resp.isSuccessful) {
+            val success = resp.body()
+                ?: return SocialLoginRemoteData.Failure(
+                    code = "EMPTY_BODY",
+                    message = "Empty response body",
+                    data = null
+                )
+            success.toRemoteData()
+        } else {
+            val errorText = resp.errorBody()?.string().orEmpty()
+            val failure = runCatching {
+                json.decodeFromString(SocialLoginFailureResponse.serializer(), errorText)
+            }.getOrElse {
+                SocialLoginFailureResponse(
+                    code = resp.code().toString(),
+                    message = "HTTP ${resp.code()} ${resp.message()}",
+                    data = null
+                )
+            }
+            failure.toRemoteData()
+        }
+    }
 }

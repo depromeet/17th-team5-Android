@@ -5,6 +5,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
+import com.depromeet.team5.core.navigation.graphkey.Home
 import com.depromeet.team5.core.navigation.request.RequestViewModel
 import com.depromeet.team5.features.feedback.screen.AiFeedbackRoute
 import kotlinx.serialization.Serializable
@@ -19,7 +20,7 @@ fun NavGraphBuilder.feedbackScreen(
     composable<Feedback> { entry ->
 
         val parentEntry = remember(entry) {
-            navController.getBackStackEntry(navController.graph.startDestinationRoute!!)
+            navController.getBackStackEntry(Home)
         }
 
         val sharedViewModel: RequestViewModel = viewModel(viewModelStoreOwner = parentEntry)

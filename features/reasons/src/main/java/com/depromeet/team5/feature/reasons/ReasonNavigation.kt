@@ -9,6 +9,7 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
 import androidx.navigation.toRoute
+import com.depromeet.team5.core.navigation.graphkey.Home
 import com.depromeet.team5.core.navigation.request.RequestViewModel
 import kotlinx.serialization.Serializable
 
@@ -52,7 +53,7 @@ fun NavGraphBuilder.reasonGraph(
 @Composable
 private fun NavBackStackEntry.getRequestViewModel(navController: NavController): RequestViewModel {
     val parentEntry = remember(this) {
-        navController.getBackStackEntry(navController.graph.startDestinationRoute!!)
+        navController.getBackStackEntry(Home)
     }
     return hiltViewModel(parentEntry)
 }

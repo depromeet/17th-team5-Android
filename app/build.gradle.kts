@@ -9,6 +9,10 @@ plugins {
     alias(libs.plugins.kotlinx.serialization)
 }
 
+val properties = Properties().apply {
+    load(project.rootProject.file("local.properties").inputStream())
+}
+
 android {
     namespace = "com.depromeet.team5"
 
@@ -18,6 +22,10 @@ android {
         versionName = "0.0.2"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        val kakaoNativeAppKey = properties["kakao_native_app_key"].toString()
+        buildConfigField("String", "KAKAO_NATIVE_APP_KEY", "\"$kakaoNativeAppKey\"")
+        manifestPlaceholders["KAKAO_NATIVE_APP_KEY"] = kakaoNativeAppKey
     }
 
     signingConfigs {
@@ -59,6 +67,10 @@ android {
     hilt {
         enableAggregatingTask = true
     }
+
+    buildFeatures{
+        buildConfig = true
+    }
 }
 
 dependencies {
@@ -77,6 +89,7 @@ dependencies {
     implementation(projects.features.reasons)
     implementation(projects.features.principlegroupdetail)
     implementation(projects.features.principlemodification)
+    implementation(projects.features.login)
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.org.jetbrains.kotlinx.kotlinx.serialization.json)
@@ -85,4 +98,6 @@ dependencies {
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
+
+    implementation(libs.kakao.user)
 }

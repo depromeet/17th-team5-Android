@@ -5,9 +5,11 @@ import com.depromeet.team5.core.remotedatasource.model.MyPrincipleGroupRemoteDat
 import com.depromeet.team5.core.remotedatasource.model.MyPrincipleGroupsInfoRemoteData
 import com.depromeet.team5.core.remotedatasource.model.MyPrincipleRemoteData
 import com.depromeet.team5.core.remotedatasource.model.RetrospectionListRemoteData
+import com.depromeet.team5.core.remotedatasource.model.SocialLoginRemoteData
 import com.depromeet.team5.core.remotedatasource.model.StockSliceRemoteData
 import com.depromeet.team5.core.remotedatasource.model.SystemPrincipleRemoteData
 import com.depromeet.team5.core.remotedatasource.model.UserStatsRemoteData
+import com.depromeet.team5.core.remotedatasource.request.SocialLoginRequestRemoteData
 
 
 interface HedgeApiSource {
@@ -47,4 +49,6 @@ interface HedgeApiSource {
     suspend fun retrospectionList(): RetrospectionListRemoteData
 
     suspend fun systemPrincipleList(): SystemPrincipleRemoteData
+
+    suspend fun socialLogin(body: SocialLoginRequestRemoteData): SocialLoginRemoteData
 }

@@ -5,10 +5,11 @@ import com.depromeet.team5.core.data.model.MyPrincipleData
 import com.depromeet.team5.core.data.model.MyPrincipleGroupData
 import com.depromeet.team5.core.data.model.MyPrincipleGroupsInfoData
 import com.depromeet.team5.core.data.model.RetrospectionListData
+import com.depromeet.team5.core.data.model.SocialLoginData
 import com.depromeet.team5.core.data.model.StockSliceData
 import com.depromeet.team5.core.data.model.SystemPrincipleData
 import com.depromeet.team5.core.data.model.UserStatsData
-import com.depromeet.team5.core.data.request.CreateRetrospectionRequestData
+import com.depromeet.team5.core.data.request.SocialLoginRequestData
 
 
 interface RemoteDataSource {
@@ -48,4 +49,6 @@ interface RemoteDataSource {
     suspend fun retrospectionList(): RetrospectionListData
 
     suspend fun systemPrincipleList(): SystemPrincipleData
+
+    suspend fun socialLogin(body: SocialLoginRequestData): SocialLoginData
 }

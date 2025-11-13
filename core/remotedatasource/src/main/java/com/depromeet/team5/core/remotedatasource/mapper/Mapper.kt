@@ -2,8 +2,10 @@ package com.depromeet.team5.core.remotedatasource.mapper
 
 import com.depromeet.team5.core.data.request.CreateRetrospectionRequestData
 import com.depromeet.team5.core.data.request.PrincipleCheckRequestData
+import com.depromeet.team5.core.data.request.SocialLoginRequestData
 import com.depromeet.team5.core.remotedatasource.request.CreateRetrospectionRequestRemoteData
 import com.depromeet.team5.core.remotedatasource.request.PrincipleCheckRequestRemoteData
+import com.depromeet.team5.core.remotedatasource.request.SocialLoginRequestRemoteData
 
 fun CreateRetrospectionRequestData.toRemoteData() = CreateRetrospectionRequestRemoteData(
     symbol = symbol,
@@ -23,4 +25,12 @@ fun PrincipleCheckRequestData.toRemoteData() = PrincipleCheckRequestRemoteData(
     reason = reason,
     imageIds = imageIds,
     links = links,
+)
+
+fun SocialLoginRequestData.toRemoteData() = SocialLoginRequestRemoteData(
+    provider = provider,
+    authCode = authCode,
+    redirectUri = redirectUri,
+    email = email,
+    nickname = nickname
 )

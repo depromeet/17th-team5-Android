@@ -12,3 +12,5 @@ enum class PrincipleModificationType {
 }
 
 const val IS_UPDATED = "isUpdated"
+
+const val HIGHLIGHT_RETROSPECTION_ID = "highlightRetrospectionId"

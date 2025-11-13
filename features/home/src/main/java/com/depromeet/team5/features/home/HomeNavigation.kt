@@ -7,6 +7,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
+import com.depromeet.team5.core.navigation.HIGHLIGHT_RETROSPECTION_ID
 import com.depromeet.team5.core.navigation.Path
 import com.depromeet.team5.core.navigation.graphkey.Home
 import com.depromeet.team5.core.navigation.request.RequestViewModel
@@ -30,7 +31,7 @@ fun NavGraphBuilder.homeScreen(
 
         val stateFlow = navController.currentBackStackEntry
             ?.savedStateHandle
-            ?.getStateFlow<Int?>("HIGHLIGHT_RETROSPECTION_ID", null)
+            ?.getStateFlow<Int?>(HIGHLIGHT_RETROSPECTION_ID, null)
 
         val incomingState = stateFlow?.collectAsStateWithLifecycle(null)
         val incomingId = incomingState?.value
@@ -39,7 +40,7 @@ fun NavGraphBuilder.homeScreen(
             if (incomingId != null) {
                 navController.currentBackStackEntry
                     ?.savedStateHandle
-                    ?.remove<Int>("HIGHLIGHT_RETROSPECTION_ID")
+                    ?.remove<Int>(HIGHLIGHT_RETROSPECTION_ID)
             }
         }
 

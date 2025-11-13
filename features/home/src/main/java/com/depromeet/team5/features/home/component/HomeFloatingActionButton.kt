@@ -6,13 +6,16 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Icon
+import androidx.compose.material3.Divider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -22,14 +25,13 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.depromeet.team5.core.designsystem.foundation.HedgeColor
 import com.depromeet.team5.core.designsystem.foundation.HedgeTypography
+import com.depromeet.team5.core.domain.model.OrderType
 import com.depromeet.team5.features.home.R
 
 @Composable
@@ -54,7 +56,8 @@ fun HomeFloatingActionButton(
             .fillMaxSize()
     ) {
         Column(
-            modifier = Modifier.align(Alignment.BottomEnd),
+            modifier = Modifier
+                .align(Alignment.BottomEnd),
             horizontalAlignment = Alignment.End
         ) {
             if (fabChecked)
@@ -65,32 +68,36 @@ fun HomeFloatingActionButton(
                             color = HedgeColor.Neutral.BackgroundDefault,
                             shape = RoundedCornerShape(18.dp)
                         )
+                        .width(IntrinsicSize.Max)
                 ) {
                     FABItem(
                         interaction = interaction,
                         onClick = onBuyClick,
-                        itemTitle = stringResource(R.string.home_buy_button),
-                        itemIconColor = HedgeColor.Trade.Buy,
-                        itemIconBackgroundColor = Color(0xFFFFEBED),
+                        itemTitle = OrderType.BUY.toKorean(),
+                        itemColor = HedgeColor.Trade.Buy,
                         modifier = Modifier.padding(
-                            start = 14.dp,
-                            end = 14.dp,
-                            top = 14.dp,
-                            bottom = 8.dp
+                            start = 24.dp,
+                            end = 24.dp,
+                            top = 16.dp,
+                            bottom = 12.dp
                         )
+                    )
+
+                    Divider(
+                        thickness = 1.dp,
+                        color = HedgeColor.Neutral.BackgroundSecondary
                     )
 
                     FABItem(
                         interaction = interaction,
                         onClick = onSellClick,
-                        itemTitle = stringResource(R.string.home_sell_button),
-                        itemIconColor = HedgeColor.Trade.Sell,
-                        itemIconBackgroundColor = Color(0xFFEAF4FF),
+                        itemTitle = OrderType.SELL.toKorean(),
+                        itemColor = HedgeColor.Trade.Sell,
                         modifier = Modifier.padding(
-                            start = 14.dp,
-                            end = 14.dp,
-                            top = 8.dp,
-                            bottom = 14.dp
+                            start = 24.dp,
+                            end = 24.dp,
+                            top = 12.dp,
+                            bottom = 16.dp
                         )
                     )
                 }
@@ -128,8 +135,7 @@ private fun FABItem(
     interaction: MutableInteractionSource,
     onClick: () -> Unit,
     itemTitle: String,
-    itemIconColor: Color,
-    itemIconBackgroundColor: Color,
+    itemColor: Color,
     modifier: Modifier = Modifier
 ) {
     Row(
@@ -142,19 +148,15 @@ private fun FABItem(
             },
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Icon(
-            imageVector = ImageVector.vectorResource(R.drawable.ic_pencil),
-            contentDescription = null,
-            tint = itemIconColor,
-            modifier = Modifier
-                .padding(end = 8.dp)
-                .background(color = itemIconBackgroundColor, shape = RoundedCornerShape(10.dp))
-                .padding(7.dp)
-                .size(14.dp)
+        Text(
+            text = itemTitle,
+            style = HedgeTypography.Body2.SemiBold,
+            color = itemColor,
+            modifier = Modifier.padding(end = 4.dp)
         )
 
         Text(
-            text = itemTitle,
+            text = stringResource(R.string.home_buy_sell_button),
             style = HedgeTypography.Body2.SemiBold,
             color = HedgeColor.Text.Primary,
         )

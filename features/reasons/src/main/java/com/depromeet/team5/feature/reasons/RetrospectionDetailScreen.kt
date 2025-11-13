@@ -65,6 +65,7 @@ import com.depromeet.team5.core.domain.monad.HedgeUiState
 import com.depromeet.team5.core.ui.HedgeModal
 import com.depromeet.team5.core.ui.component.HedgeLoadingScreen
 import com.depromeet.team5.core.ui.model.HedgeBadge
+import com.depromeet.team5.core.ui.util.CurrencyUtil
 import com.depromeet.team5.core.ui.util.toKoreanYMDOrRaw
 import com.depromeet.team5.feature.reasons.model.PrincipleAdherence
 import com.depromeet.team5.feature.reasons.model.UiPrinciple
@@ -337,7 +338,7 @@ private fun TradeInfo(
             text = stringResource(
                 R.string.trade_info,
                 price,
-                currency,
+                CurrencyUtil.getSymbol(currency),
                 volume,
                 stringResource(if (orderType == OrderType.BUY) R.string.buy else R.string.sell)
             ),

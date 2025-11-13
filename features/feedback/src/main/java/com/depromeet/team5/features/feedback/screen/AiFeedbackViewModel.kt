@@ -18,13 +18,15 @@ import kotlinx.coroutines.flow.flatMapConcat
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
+import com.depromeet.team5.core.logger.Logger
 import javax.inject.Inject
 
 @HiltViewModel
 class AiFeedbackViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val createRetrospectionUseCase: CreateRetrospectionUseCase,
-    private val createFeedbackUseCase: CreateFeedbackUseCase
+    private val createFeedbackUseCase: CreateFeedbackUseCase,
+    private val logger: Logger
 ) : ViewModel() {
 
     private val _feedbackStateFlow: MutableStateFlow<AiFeedbackUiState> =
@@ -66,7 +68,7 @@ class AiFeedbackViewModel @Inject constructor(
                     }
                 }
                 .catch {
-                    it.printStackTrace()
+                    logger.e(it)
                     emit(AiFeedbackUiState.Failure(it))
                 }
                 .onEach { _feedbackStateFlow.value = it }

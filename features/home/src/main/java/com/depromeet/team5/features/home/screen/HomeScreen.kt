@@ -61,7 +61,7 @@ fun HomeRoute(
     val userStatsUiState by homeViewModel.userStatsUiState.collectAsStateWithLifecycle()
     val retrospectionListUiState by homeViewModel.retrospectionListUiState.collectAsStateWithLifecycle()
 
-    val selectedOrderType by homeViewModel.principleOrderType.collectAsStateWithLifecycle()
+    val selectedOrderType by homeViewModel.principleOrderType.stateFlow.collectAsStateWithLifecycle()
     val principleGroupsUiState by homeViewModel.principleGroupsUiState.collectAsStateWithLifecycle()
 
     val recommendedUiState by homeViewModel.recommendedPrinciplesUiState.collectAsStateWithLifecycle()
@@ -72,7 +72,7 @@ fun HomeRoute(
             homeViewModel.prepareHighlight(incomingHighlightId)
         }
     }
-    val highlightIdOnce by homeViewModel.highlightIdOnce.collectAsStateWithLifecycle()
+    val highlightIdOnce by homeViewModel.highlightIdOnce.stateFlow.collectAsStateWithLifecycle()
 
     HomeScreen(
         userStatsUiState = userStatsUiState,

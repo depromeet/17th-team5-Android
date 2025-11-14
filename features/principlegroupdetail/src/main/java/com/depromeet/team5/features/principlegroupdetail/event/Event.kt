@@ -1,6 +1,5 @@
 package com.depromeet.team5.features.principlegroupdetail.event
 
-
 sealed class PrincipleDetailEvent {
 
     object Finish : PrincipleDetailEvent()

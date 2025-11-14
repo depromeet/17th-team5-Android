@@ -1,12 +1,12 @@
 package com.depromeet.team5.core.domain.monad
 
 
-sealed interface BaseEvent {
+sealed interface BaseEvent<out T> {
 
-    object Finish : BaseEvent
+    data class Finish<T>(val result: T) : BaseEvent<T>
 
-    data class Error(val throwable: Throwable?) : BaseEvent
+    data class Error(val throwable: Throwable?) : BaseEvent<Nothing>
 
-    data class ShowToast(val message: String?) : BaseEvent
+    data class ShowToast(val message: String?) : BaseEvent<Nothing>
 
 }

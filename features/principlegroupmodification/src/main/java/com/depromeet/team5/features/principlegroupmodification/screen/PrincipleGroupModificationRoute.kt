@@ -58,6 +58,7 @@ import com.depromeet.team5.core.designsystem.component.HedgeTopBar
 import com.depromeet.team5.core.designsystem.foundation.HedgeColor
 import com.depromeet.team5.core.designsystem.foundation.HedgeIcon
 import com.depromeet.team5.core.designsystem.foundation.HedgeTypography
+import com.depromeet.team5.core.domain.model.FinishType
 import com.depromeet.team5.core.domain.monad.BaseEvent
 import com.depromeet.team5.features.principlegroupmodification.R
 import kotlinx.coroutines.launch
@@ -100,16 +101,24 @@ fun PrincipleGroupModificationRoute(
                             }
                             onBackPressed(false)
                         }
+                        is BaseEvent.Finish<FinishType> -> {
+                            val message = when (event.result) {
+                                FinishType.CREATION -> {
+                                    context.getString(
+                                        UiR.string.principle_group_modification_creation
+                                    )
+                                }
+                                FinishType.MODIFICATION -> {
+                                    context.getString(
+                                        UiR.string.principle_group_modification_modification
+                                    )
+                                }
+                                else -> ""
+                            }
 
-                        BaseEvent.Finish -> {
-                            onShowToast(
-                                context.getString(
-                                    UiR.string.principle_group_modification_completion
-                                )
-                            )
+                            onShowToast(message)
                             onBackPressed(true)
                         }
-
                         else -> {}
                     }
                 }
@@ -392,4 +401,13 @@ fun PrincipleGroupModificationScreenPreview() {
         onShowToast = {},
         onBackPressed = {}
     )
+}
+
+@Preview(showBackground = true)
+@Composable
+fun GridItemPreView() {
+    GridItem(
+        emoji = "\uD83D\uDE24",
+        isSelected = true
+    ) { }
 }

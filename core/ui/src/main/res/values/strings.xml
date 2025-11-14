@@ -20,7 +20,8 @@
     <string name="principle_group_modification_title">원칙 그룹 추가</string>
     <string name="principle_group_modification_placeholder">원칙 그룹 이름</string>
     <string name="principle_group_modification_limit_group_name_count">최대 20자까지 작성할 수 있어요</string>
-    <string name="principle_group_modification_completion">회고 템플릿이 수정되었습니다</string>
+    <string name="principle_group_modification_creation">새로운 회고 템플릿이 추가되었습니다</string>
+    <string name="principle_group_modification_modification">회고 템플릿이 수정되었습니다</string>
 
     <string name="standard">기본</string>
     <string name="select">선택</string>

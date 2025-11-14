@@ -4,6 +4,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.toRoute
+import com.depromeet.team5.core.domain.model.FinishType
 import com.depromeet.team5.core.domain.model.MyPrincipleGroup
 import com.depromeet.team5.core.domain.monad.BaseEvent
 import com.depromeet.team5.core.domain.usecase.CreatePrincipleGroupUseCase
@@ -38,7 +39,7 @@ class PrincipleGroupModificationViewModel @Inject constructor(
     val groupNameState by hedgeState("")
     val thumbnailState by hedgeState("")
 
-    private val _eventFlow = MutableSharedFlow<BaseEvent>()
+    private val _eventFlow = MutableSharedFlow<BaseEvent<FinishType>>()
     val eventFlow = _eventFlow.asSharedFlow()
 
 
@@ -76,7 +77,7 @@ class PrincipleGroupModificationViewModel @Inject constructor(
                 )
                     .baseCollect(
                         onSuccess = {
-                            _eventFlow.emit(BaseEvent.Finish)
+                            _eventFlow.emit(BaseEvent.Finish(FinishType.MODIFICATION))
                         },
                         onError = {
                             _eventFlow.emit(BaseEvent.ShowToast(it.message))
@@ -90,7 +91,7 @@ class PrincipleGroupModificationViewModel @Inject constructor(
                 )
                     .baseCollect(
                         onSuccess = {
-                            _eventFlow.emit(BaseEvent.Finish)
+                            _eventFlow.emit(BaseEvent.Finish(FinishType.CREATION))
                         },
                         onError = {
                             _eventFlow.emit(BaseEvent.ShowToast(it.message))

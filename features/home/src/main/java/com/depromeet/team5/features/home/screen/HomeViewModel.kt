@@ -14,23 +14,24 @@ import com.depromeet.team5.core.domain.model.RecommendedPrinciple
 import com.depromeet.team5.core.domain.model.UserStatsInfo
 import com.depromeet.team5.core.domain.monad.HedgeUiState
 import com.depromeet.team5.core.domain.monad.asUiState
+import com.depromeet.team5.core.domain.usecase.CheckAndConsumeBadgeDotUseCase
 import com.depromeet.team5.core.domain.usecase.GetPrincipleGroupsUseCase
 import com.depromeet.team5.core.domain.usecase.RetrospectionListUseCase
 import com.depromeet.team5.core.domain.usecase.SystemPrincipleUseCase
 import com.depromeet.team5.core.domain.usecase.UserStatsUseCase
+import com.depromeet.team5.core.ui.lazy.hedgeState
 import com.depromeet.team5.core.ui.util.flexLocalDateOrNull
 import com.depromeet.team5.core.ui.util.toMonthDayOrRaw
 import com.depromeet.team5.core.ui.util.toSectionLabel
 import com.depromeet.team5.core.ui.util.toYMDOrRaw
 import com.depromeet.team5.features.home.R
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
 import java.time.LocalDate
 import javax.inject.Inject
 
@@ -76,9 +77,23 @@ class HomeViewModel @Inject constructor(
     retrospectionListUseCase: RetrospectionListUseCase,
     getPrincipleGroupsUseCase: GetPrincipleGroupsUseCase,
     systemPrincipleUseCase: SystemPrincipleUseCase,
+    private val checkAndConsumeBadgeDotUseCase: CheckAndConsumeBadgeDotUseCase
 ) : ViewModel() {
-    private val _principleOrderType = MutableStateFlow<OrderType>(OrderType.BUY)
-    val principleOrderType: StateFlow<OrderType> = _principleOrderType.asStateFlow()
+
+    val principleOrderType by hedgeState(OrderType.BUY)
+    val highlightIdOnce by hedgeState<Int?>(null)
+
+    fun prepareHighlight(incomingId: Int?) {
+        viewModelScope.launch {
+            if (incomingId != null) {
+                highlightIdOnce.emit(checkAndConsumeBadgeDotUseCase(incomingId))
+            }
+        }
+    }
+
+    fun clearHighlight() {
+        highlightIdOnce.tryEmit(null)
+    }
 
     val userStatsUiState: StateFlow<HedgeUiState<UserStatsInfo>> =
         userStatsUseCase()
@@ -163,7 +178,7 @@ class HomeViewModel @Inject constructor(
             )
 
     val principleGroupsUiState: StateFlow<HedgeUiState<List<MyPrincipleGroup>>> =
-        _principleOrderType
+        principleOrderType.stateFlow
             .flatMapLatest { order -> getPrincipleGroupsUseCase(order.name) }
             .asUiState()
             .stateIn(
@@ -173,6 +188,6 @@ class HomeViewModel @Inject constructor(
             )
 
     fun setPrincipleOrderType(type: OrderType) {
-        if (_principleOrderType.value != type) _principleOrderType.value = type
+        if (principleOrderType.value != type) principleOrderType.tryEmit(type)
     }
 }

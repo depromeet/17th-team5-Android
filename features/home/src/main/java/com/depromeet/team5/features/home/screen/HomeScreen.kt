@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.material.Icon
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -52,6 +53,7 @@ fun HomeRoute(
     onClickPrincipleDetail: (Int, Path) -> Unit,
     onClickCreatePrinciple: () -> Unit,
     onShowErrorToast: (Throwable) -> Unit,
+    incomingHighlightId: Int?,
     modifier: Modifier = Modifier,
     requestViewModel: RequestViewModel = hiltViewModel(),
     homeViewModel: HomeViewModel = hiltViewModel(),
@@ -59,11 +61,18 @@ fun HomeRoute(
     val userStatsUiState by homeViewModel.userStatsUiState.collectAsStateWithLifecycle()
     val retrospectionListUiState by homeViewModel.retrospectionListUiState.collectAsStateWithLifecycle()
 
-    val selectedOrderType by homeViewModel.principleOrderType.collectAsStateWithLifecycle()
+    val selectedOrderType by homeViewModel.principleOrderType.stateFlow.collectAsStateWithLifecycle()
     val principleGroupsUiState by homeViewModel.principleGroupsUiState.collectAsStateWithLifecycle()
 
     val recommendedUiState by homeViewModel.recommendedPrinciplesUiState.collectAsStateWithLifecycle()
     val defaultsUiState by homeViewModel.defaultPrinciplesUiState.collectAsStateWithLifecycle()
+
+    LaunchedEffect(incomingHighlightId) {
+        if (incomingHighlightId != null) {
+            homeViewModel.prepareHighlight(incomingHighlightId)
+        }
+    }
+    val highlightIdOnce by homeViewModel.highlightIdOnce.stateFlow.collectAsStateWithLifecycle()
 
     HomeScreen(
         userStatsUiState = userStatsUiState,
@@ -87,9 +96,11 @@ fun HomeRoute(
             onSellClick()
         },
         onShowErrorToast = { onShowErrorToast(it) },
+        highlightRetrospectionId = highlightIdOnce,
         modifier = modifier
             .background(HedgeColor.Neutral.BackgroundDefault)
-            .windowInsetsPadding(WindowInsets.systemBars)
+            .windowInsetsPadding(WindowInsets.systemBars),
+        onClearHighlight = { homeViewModel.clearHighlight() }
     )
 }
 
@@ -108,12 +119,26 @@ private fun HomeScreen(
     onBuyClick: () -> Unit,
     onSellClick: () -> Unit,
     onShowErrorToast: (Throwable) -> Unit,
+    highlightRetrospectionId: Int?,
+    onClearHighlight: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val interaction = remember { MutableInteractionSource() }
     var fabChecked by rememberSaveable { mutableStateOf(false) }
     var selectedTab by rememberSaveable { mutableStateOf(HomeTab.HOME) }
     var isDashBoardVisible by rememberSaveable { mutableStateOf(false) }
+
+    LaunchedEffect(highlightRetrospectionId) {
+        if (highlightRetrospectionId != null) {
+            fabChecked = false
+        }
+    }
+
+    LaunchedEffect(selectedTab) {
+        if (selectedTab != HomeTab.HOME) {
+            onClearHighlight()
+        }
+    }
 
     if (isDashBoardVisible) {
         DashBoardDialog(
@@ -160,7 +185,9 @@ private fun HomeScreen(
                     retrospectionListUiState = retrospectionListUiState,
                     onDashBoardClick = { isDashBoardVisible = it },
                     onClickRetrospectionDetail = onClickRetrospectionDetail,
-                    onShowErrorToast = { onShowErrorToast(it) }
+                    onShowErrorToast = { onShowErrorToast(it) },
+                    highlightRetrospectionId = highlightRetrospectionId,
+                    onClearHighlight = onClearHighlight
                 )
 
                 HomeTab.PRINCIPLE -> PrincipleSection(
@@ -205,6 +232,8 @@ private fun HomePreview() {
         onClickCreatePrinciple = {},
         onBuyClick = {},
         onSellClick = {},
-        onShowErrorToast = {}
+        onShowErrorToast = {},
+        highlightRetrospectionId = null,
+        onClearHighlight = {}
     )
 }

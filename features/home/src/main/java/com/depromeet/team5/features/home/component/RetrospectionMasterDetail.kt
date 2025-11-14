@@ -44,6 +44,8 @@ import com.depromeet.team5.features.home.screen.RetrospectionSymbolState
 fun RetrospectionMasterDetail(
     companyNames: List<RetrospectionSymbolState>,
     onClickRetrospectionDetail: (Int) -> Unit,
+    highlightRetrospectionId: Int?,
+    onClearHighlight: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val listState = rememberLazyListState()
@@ -78,7 +80,12 @@ fun RetrospectionMasterDetail(
                         symbol = item.companyName,
                         logoUrl = item.image,
                         selected = item.companyName == selectedCompanyName,
-                        onClick = { selectedCompanyName = item.companyName }
+                        onClick = {
+                            selectedCompanyName = item.companyName
+                            if (highlightRetrospectionId != null) {
+                                onClearHighlight.invoke()
+                            }
+                        }
                     )
                 }
             }
@@ -106,6 +113,7 @@ fun RetrospectionMasterDetail(
                 RetrospectionDetailList(
                     sections = it.sections,
                     onClickRetrospectionDetail = onClickRetrospectionDetail,
+                    highlightRetrospectionId = highlightRetrospectionId,
                     modifier = Modifier.fillMaxWidth()
                 )
             }
@@ -153,6 +161,7 @@ private fun SymbolRailItem(
 private fun RetrospectionDetailList(
     sections: List<RetrospectionSectionState>,
     onClickRetrospectionDetail: (Int) -> Unit,
+    highlightRetrospectionId: Int?,
     modifier: Modifier = Modifier,
 ) {
     LazyColumn(
@@ -192,7 +201,8 @@ private fun RetrospectionDetailList(
                 ) { item ->
                     RetrospectionRow(
                         item = item,
-                        onClickRetrospectionDetail = onClickRetrospectionDetail
+                        onClickRetrospectionDetail = onClickRetrospectionDetail,
+                        showBadgeDot = (item.id == highlightRetrospectionId)
                     )
                 }
 
@@ -212,6 +222,7 @@ private fun RetrospectionDetailList(
 private fun RetrospectionRow(
     item: RetrospectionState,
     onClickRetrospectionDetail: (Int) -> Unit,
+    showBadgeDot: Boolean,
     modifier: Modifier = Modifier,
 ) {
     Column(
@@ -220,11 +231,24 @@ private fun RetrospectionRow(
             .padding(bottom = 20.dp)
             .clickable { onClickRetrospectionDetail(item.id) }
     ) {
-        Text(
-            text = stringResource(R.string.home_tab_retrospection_price_volume, item.price, item.volume),
-            style = HedgeTypography.Headline2.SemiBold,
-            color = HedgeColor.Text.Primary
-        )
+        Row(
+            verticalAlignment = Alignment.Top
+        ){
+            Text(
+                text = stringResource(R.string.home_tab_retrospection_price_volume, item.price, item.volume),
+                style = HedgeTypography.Headline2.SemiBold,
+                color = HedgeColor.Text.Primary
+            )
+
+            if (showBadgeDot) {
+                Box(
+                    modifier = Modifier
+                        .padding(start = 2.dp)
+                        .background(color = HedgeColor.Brand.Primary, shape = RoundedCornerShape(10.dp))
+                        .size(6.dp)
+                )
+            }
+        }
 
         Row(
             modifier = Modifier.padding(top = 2.dp),

@@ -5,6 +5,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
+import com.depromeet.team5.core.navigation.HIGHLIGHT_RETROSPECTION_ID
 import com.depromeet.team5.core.navigation.graphkey.Home
 import com.depromeet.team5.core.navigation.request.RequestViewModel
 import com.depromeet.team5.features.feedback.screen.AiFeedbackRoute
@@ -14,8 +15,7 @@ import kotlinx.serialization.Serializable
 object Feedback
 
 fun NavGraphBuilder.feedbackScreen(
-    navController: NavController,
-    onRemoveClick: () -> Unit
+    navController: NavController
 ) {
     composable<Feedback> { entry ->
 
@@ -27,7 +27,11 @@ fun NavGraphBuilder.feedbackScreen(
 
         AiFeedbackRoute(
             requestViewModel = sharedViewModel,
-//            onRemoveClick = onRemoveClick
+            onCompleteClick = { id ->
+                navController.getBackStackEntry(Home)
+                    .savedStateHandle[HIGHLIGHT_RETROSPECTION_ID] = id
+                navController.popBackStack(Home, inclusive = false)
+            }
         )
     }
 }

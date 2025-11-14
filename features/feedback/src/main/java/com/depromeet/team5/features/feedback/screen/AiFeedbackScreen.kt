@@ -1,5 +1,6 @@
 package com.depromeet.team5.features.feedback.screen
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -8,13 +9,16 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Icon
@@ -52,6 +56,7 @@ import com.depromeet.team5.features.feedback.component.PrincipleCounter
 @Composable
 fun AiFeedbackRoute(
     requestViewModel: RequestViewModel,
+    onCompleteClick: (Int) -> Unit,
     modifier: Modifier = Modifier,
     viewModel: AiFeedbackViewModel = hiltViewModel()
 ) {
@@ -63,6 +68,11 @@ fun AiFeedbackRoute(
         }
     }
 
+    val successId = (uiState as? AiFeedbackUiState.Success)?.retrospectionId
+    BackHandler(enabled = successId != null) {
+        onCompleteClick(successId!!)
+    }
+
     when (val state = uiState) {
         is AiFeedbackUiState.Success -> {
             AiFeedbackScreen(
@@ -71,7 +81,8 @@ fun AiFeedbackRoute(
                 companyName = requestViewModel.request.companyName,
                 price = requestViewModel.request.price.toLong(),
                 stock = requestViewModel.request.volume,
-                modifier = modifier
+                onCompleteClick = { onCompleteClick(state.retrospectionId) },
+                modifier = modifier.windowInsetsPadding(WindowInsets.systemBars)
             )
         }
 
@@ -91,6 +102,7 @@ private fun AiFeedbackScreen(
     companyName: String,
     price: Long,
     stock: Int,
+    onCompleteClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val gradientGreenBlue = Brush.linearGradient(
@@ -170,8 +182,7 @@ private fun AiFeedbackScreen(
             item {
                 Row(
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = 4.dp),
+                        .fillMaxWidth(),
                     horizontalArrangement = Arrangement.End,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
@@ -179,7 +190,10 @@ private fun AiFeedbackScreen(
                         text = stringResource(R.string.feedback_complete),
                         style = HedgeTypography.Body1.SemiBold,
                         color = HedgeColor.Brand.Darken,
-                        modifier = Modifier.clickable {}
+                        modifier = Modifier
+                            .clip(RoundedCornerShape(8.dp))
+                            .clickable { onCompleteClick() }
+                            .padding(vertical = 4.dp)
                     )
                 }
             }
@@ -387,15 +401,15 @@ private fun AiFeedbackScreen(
                         )
                     }
 
-                    HedgeButton.Action.Filled(
-                        text = stringResource(R.string.feedback_add_principle_button),
-                        buttonColors = HedgeButton.Action.Color.Filled.Primary,
-                        size = HedgeButton.Action.Size.Small,
-                        modifier = Modifier
-                            .padding(top = 20.dp)
-                            .fillMaxWidth(),
-                        onClick = {}
-                    )
+//                    HedgeButton.Action.Filled(
+//                        text = stringResource(R.string.feedback_add_principle_button),
+//                        buttonColors = HedgeButton.Action.Color.Filled.Primary,
+//                        size = HedgeButton.Action.Size.Small,
+//                        modifier = Modifier
+//                            .padding(top = 20.dp)
+//                            .fillMaxWidth(),
+//                        onClick = {}
+//                    )
                 }
             }
 
@@ -426,6 +440,7 @@ private fun AiFeedbackScreen(
 private fun AiFeedbackScreenPreview() {
     AiFeedbackScreen(
         state = AiFeedbackUiState.Success(
+            retrospectionId = 1,
             badge = "platinum",
             principleCheckSummary = PrincipleState(
                 keptCount = 1,
@@ -446,6 +461,7 @@ private fun AiFeedbackScreenPreview() {
         grade = HedgeBadge.fromBadge(badge = "platinum"),
         companyName = "삼성전자",
         price = 65000,
-        stock = 3
+        stock = 3,
+        onCompleteClick = {}
     )
 }

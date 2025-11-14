@@ -100,4 +100,5 @@ dependencies {
     androidTestImplementation(libs.androidx.espresso.core)
 
     implementation(libs.kakao.user)
+    implementation(libs.androidx.datastore.preferences)
 }

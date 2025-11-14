@@ -53,6 +53,8 @@ fun HomeSection(
     onDashBoardClick: (Boolean) -> Unit,
     onClickRetrospectionDetail: (Int) -> Unit,
     onShowErrorToast: (Throwable) -> Unit,
+    highlightRetrospectionId: Int?,
+    onClearHighlight: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Column(
@@ -70,7 +72,9 @@ fun HomeSection(
         RetrospectionHistorySection(
             retrospectionListUiState = retrospectionListUiState,
             onClickRetrospectionDetail = onClickRetrospectionDetail,
-            onShowErrorToast = onShowErrorToast
+            onShowErrorToast = onShowErrorToast,
+            highlightRetrospectionId = highlightRetrospectionId,
+            onClearHighlight = onClearHighlight
         )
     }
 }
@@ -254,6 +258,8 @@ private fun RetrospectionHistorySection(
     retrospectionListUiState: HedgeUiState<List<RetrospectionSymbolState>>,
     onClickRetrospectionDetail: (Int) -> Unit,
     onShowErrorToast: (Throwable) -> Unit,
+    highlightRetrospectionId: Int?,
+    onClearHighlight: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Column(
@@ -286,6 +292,8 @@ private fun RetrospectionHistorySection(
                     RetrospectionMasterDetail(
                         companyNames = retrospectionList,
                         onClickRetrospectionDetail = onClickRetrospectionDetail,
+                        highlightRetrospectionId = highlightRetrospectionId,
+                        onClearHighlight = onClearHighlight,
                         modifier = Modifier.fillMaxWidth()
                     )
                 }
@@ -385,5 +393,7 @@ private fun HomeSectionPreview() {
         onDashBoardClick = {},
         onClickRetrospectionDetail = {},
         onShowErrorToast = {},
+        highlightRetrospectionId = null,
+        onClearHighlight = {}
     )
 }

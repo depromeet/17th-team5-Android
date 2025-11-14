@@ -28,7 +28,16 @@ dependencies {
     implementation(projects.depromeet.core.data)
     implementation(libs.androidx.datastore.preferences)
 
-    testImplementation(libs.junit)
+    testImplementation(libs.androidx.junit)
+    testImplementation(libs.androidx.test.runner)
+    testImplementation(libs.kotlinx.coroutine.test)
+
+    testImplementation("org.robolectric:robolectric:4.13") // 최신 안정 버전 확인
+
+    // AndroidX Test Core (ApplicationProvider 등을 JVM에서 사용하기 위해 필요)
+    testImplementation("androidx.test:core-ktx:1.6.1")
+    testImplementation("androidx.test.ext:junit-ktx:1.2.1")
+
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
 }

@@ -182,8 +182,7 @@ private fun AiFeedbackScreen(
             item {
                 Row(
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = 4.dp),
+                        .fillMaxWidth(),
                     horizontalArrangement = Arrangement.End,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
@@ -191,7 +190,10 @@ private fun AiFeedbackScreen(
                         text = stringResource(R.string.feedback_complete),
                         style = HedgeTypography.Body1.SemiBold,
                         color = HedgeColor.Brand.Darken,
-                        modifier = Modifier.clickable { onCompleteClick() }
+                        modifier = Modifier
+                            .clip(RoundedCornerShape(8.dp))
+                            .clickable { onCompleteClick() }
+                            .padding(vertical = 4.dp)
                     )
                 }
             }

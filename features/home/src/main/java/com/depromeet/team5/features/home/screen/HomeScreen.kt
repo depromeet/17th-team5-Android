@@ -51,6 +51,7 @@ import com.depromeet.team5.features.home.section.PrincipleSection
 @Composable
 fun HomeRoute(
     navController: NavController,
+    onSettingClick: () -> Unit,
     onBuyClick: () -> Unit,
     onSellClick: () -> Unit,
     onClickRetrospectionDetail: (Int) -> Unit,
@@ -97,6 +98,7 @@ fun HomeRoute(
     val highlightIdOnce by homeViewModel.highlightIdOnce.stateFlow.collectAsStateWithLifecycle()
 
     HomeScreen(
+        onSettingClick = onSettingClick,
         userStatsUiState = userStatsUiState,
         retrospectionListUiState = retrospectionListUiState,
         recommendedUiState = recommendedUiState,
@@ -132,6 +134,7 @@ fun HomeRoute(
 
 @Composable
 private fun HomeScreen(
+    onSettingClick: () -> Unit,
     userStatsUiState: HedgeUiState<UserStatsInfo>,
     retrospectionListUiState: HedgeUiState<List<RetrospectionSymbolState>>,
     recommendedUiState: HedgeUiState<List<RecommendedPrinciple>>,
@@ -178,6 +181,10 @@ private fun HomeScreen(
                 imageVector = HedgeIcon.Setting,
                 contentDescription = null,
                 modifier = Modifier
+                    .clickable(
+                        interactionSource = interaction,
+                        indication = null
+                    ){ onSettingClick() }
                     .padding(vertical = 11.dp, horizontal = 16.dp)
                     .size(24.dp)
                     .align(Alignment.End),
@@ -246,6 +253,7 @@ private fun HomeScreen(
 @Composable
 private fun HomePreview() {
     HomeScreen(
+        onSettingClick = {},
         userStatsUiState = HedgeUiState.Loading(UserStatsInfo(0, 0, 0, 0, 0)),
         retrospectionListUiState = HedgeUiState.Loading(emptyList()),
         recommendedUiState = HedgeUiState.Loading(emptyList()),

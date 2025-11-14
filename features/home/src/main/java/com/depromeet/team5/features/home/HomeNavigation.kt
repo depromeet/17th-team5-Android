@@ -16,6 +16,7 @@ import com.depromeet.team5.features.home.screen.HomeRoute
 
 fun NavGraphBuilder.homeScreen(
     navController: NavController,
+    onSettingClick: () -> Unit,
     onBuyClick: () -> Unit,
     onSellClick: () -> Unit,
     onClickRetrospectionDetail: (Int) -> Unit,
@@ -47,6 +48,7 @@ fun NavGraphBuilder.homeScreen(
 
         HomeRoute(
             navController = navController,
+            onSettingClick = onSettingClick,
             onBuyClick = onBuyClick,
             onSellClick = onSellClick,
             requestViewModel = sharedViewModel,

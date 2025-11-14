@@ -27,6 +27,7 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
@@ -332,6 +333,8 @@ private fun RetrospectScreen(
 ) {
     val focusManager = LocalFocusManager.current
     val keyboardController = LocalSoftwareKeyboardController.current
+    var isShowFirstDivider by remember { mutableStateOf(false) }
+    var isShowSecondDivider by remember { mutableStateOf(false) }
 
     Column(
         modifier = modifier
@@ -399,12 +402,37 @@ private fun RetrospectScreen(
                 requestParams = requestParams,
                 currencyTypeState = retrospectionState.currencyType,
                 onUpdateSellingText = onUpdateSellingText,
-                onUpdateCurrency = onUpdateCurrency
+                onUpdateCurrency = onUpdateCurrency,
+                onFocusChanged = { isFocused ->
+                    isShowFirstDivider = !isFocused
+                }
             )
+
+            if (isShowFirstDivider) {
+                HorizontalDivider(
+                    modifier = Modifier.fillMaxWidth(),
+                    thickness = 1.dp,
+                    color = HedgeColor.GREY_200
+                )
+            }
+
             StockTextField(
                 state = retrospectionState.stockTextFieldState,
-                onUpdateStockText = onUpdateStockText
+                onUpdateStockText = onUpdateStockText,
+                onFocusChanged = { isFocused ->
+                    isShowFirstDivider = !isFocused
+                    isShowSecondDivider = !isFocused
+                }
             )
+
+            if (isShowSecondDivider) {
+                HorizontalDivider(
+                    modifier = Modifier.fillMaxWidth(),
+                    thickness = 1.dp,
+                    color = HedgeColor.GREY_200
+                )
+            }
+
             DateTextField(
                 state = retrospectionState.dateTextFieldState,
                 onUpdateDateText = onUpdateDateText,
@@ -541,7 +569,8 @@ private fun SellingTextField(
     requestParams: CreateRetrospectionRequest,
     modifier: Modifier = Modifier,
     onUpdateSellingText: (String, Int) -> Unit,
-    onUpdateCurrency: (CurrencyType) -> Unit
+    onUpdateCurrency: (CurrencyType) -> Unit,
+    onFocusChanged: (Boolean) -> Unit
 ) {
     val focusManager = LocalFocusManager.current
     val focusRequester = remember { FocusRequester() }
@@ -563,7 +592,11 @@ private fun SellingTextField(
     }
 
     HedgeUnitTextField(
-        modifier = modifier.focusRequester(focusRequester),
+        modifier = modifier
+            .focusRequester(focusRequester)
+            .onFocusChanged { focusState ->
+                onFocusChanged(focusState.isFocused)
+            },
         label = state.value.label,
         placeholder = if (requestParams.orderType == OrderType.SELL) {
             stringResource(R.string.retrospect_selling_price_placeholder)
@@ -612,13 +645,18 @@ private fun SellingTextField(
 private fun StockTextField(
     state: State<TextFieldState>,
     modifier: Modifier = Modifier,
-    onUpdateStockText: (String, Int) -> Unit
+    onUpdateStockText: (String, Int) -> Unit,
+    onFocusChanged: (Boolean) -> Unit
 ) {
     val focusManager = LocalFocusManager.current
     val focusRequester = remember { FocusRequester() }
 
     SimpleNumberTextField(
-        modifier = modifier.focusRequester(focusRequester),
+        modifier = modifier
+            .focusRequester(focusRequester)
+            .onFocusChanged { focusState ->
+                onFocusChanged(focusState.isFocused)
+            },
         value = TextFieldValue(
             text = state.value.text,
             selection = TextRange(state.value.selection)

@@ -25,6 +25,8 @@ import com.depromeet.team5.features.retrospect.screen.navigateToRetrospect
 import com.depromeet.team5.features.retrospect.screen.retrospectScreen
 import com.depromeet.team5.features.search.navigateToSearch
 import com.depromeet.team5.features.search.searchScreen
+import com.depromeet.team5.features.setting.navigateToSetting
+import com.depromeet.team5.features.setting.settingScreen
 import com.depromeet.team5.graph.navigatePrincipleGraph
 import com.depromeet.team5.graph.principleGraph
 import com.depromeet.team5.splash.splashScreen
@@ -90,6 +92,7 @@ fun HedgeNavHost(
 
         homeScreen(
             navController = navController,
+            onSettingClick = { navController.navigateToSetting() },
             onBuyClick = { navController.navigateToSearch() },
             onSellClick = { navController.navigateToSearch() },
             onClickRetrospectionDetail = navController::navigateToRetrospectionDetail,
@@ -100,6 +103,11 @@ fun HedgeNavHost(
                 navController.navigateToPrincipleGroupModification(null, orderType)
             },
             onShowErrorToast = onShowErrorToast
+        )
+
+        settingScreen(
+            navController = navController,
+            onBackClick = { navController.popBackStack() },
         )
 
         searchScreen(

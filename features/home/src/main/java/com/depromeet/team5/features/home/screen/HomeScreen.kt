@@ -181,7 +181,10 @@ private fun HomeScreen(
                 imageVector = HedgeIcon.Setting,
                 contentDescription = null,
                 modifier = Modifier
-                    .clickable{ onSettingClick() }
+                    .clickable(
+                        interactionSource = interaction,
+                        indication = null
+                    ){ onSettingClick() }
                     .padding(vertical = 11.dp, horizontal = 16.dp)
                     .size(24.dp)
                     .align(Alignment.End),

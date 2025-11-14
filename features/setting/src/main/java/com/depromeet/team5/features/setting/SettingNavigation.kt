@@ -9,7 +9,6 @@ import kotlinx.serialization.Serializable
 object Setting
 
 fun NavGraphBuilder.settingScreen(
-    navController: NavController,
     onBackClick: () -> Unit
 ){
     composable<Setting>{

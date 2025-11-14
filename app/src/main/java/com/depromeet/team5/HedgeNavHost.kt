@@ -106,8 +106,7 @@ fun HedgeNavHost(
         )
 
         settingScreen(
-            navController = navController,
-            onBackClick = { navController.popBackStack() },
+            onBackClick = navController::popBackStack
         )
 
         searchScreen(

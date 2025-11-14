@@ -33,7 +33,10 @@ import com.depromeet.team5.core.designsystem.component.HedgeTopBar
 import com.depromeet.team5.core.designsystem.foundation.HedgeColor
 import com.depromeet.team5.core.designsystem.foundation.HedgeIcon
 import com.depromeet.team5.core.designsystem.foundation.HedgeTypography
+import com.depromeet.team5.core.ui.model.AgreementsType
+import com.depromeet.team5.core.ui.model.ConsentType
 import com.depromeet.team5.core.ui.util.openWebView
+import com.depromeet.team5.core.ui.R as UiR
 
 @Composable
 fun AgreementsRoute(
@@ -60,7 +63,7 @@ private fun AgreementsScreen(
     onClickBack: () -> Unit,
     navigateToHome: () -> Unit,
     onCheckAll: (Boolean) -> Unit,
-    onCheckItem: (ConsentId, Boolean) -> Unit,
+    onCheckItem: (AgreementsType, Boolean) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val context = LocalContext.current
@@ -86,6 +89,7 @@ private fun AgreementsScreen(
                 title = stringResource(R.string.agreements_agree_all),
                 checked = state.allChecked,
                 onCheckedChange = { onCheckAll(it) },
+                type = ConsentType.OPTIONAL,
                 variant = AgreementRowVariant.All
             )
             Divider(
@@ -98,6 +102,7 @@ private fun AgreementsScreen(
                     title = stringResource(it.id.titleRes),
                     checked = it.checked,
                     onCheckedChange = { checked -> onCheckItem(it.id, checked) },
+                    type = it.id.type,
                     link = it.id.link,
                     onClickDetail = {
                         it.id.link?.let { url ->
@@ -127,6 +132,7 @@ private fun AgreementRow(
     checked: Boolean,
     onCheckedChange: (Boolean) -> Unit,
     modifier: Modifier = Modifier,
+    type: ConsentType = ConsentType.REQUIRED,
     variant: AgreementRowVariant = AgreementRowVariant.Item,
     link: String? = null,
     onClickDetail: () -> Unit = {},
@@ -158,6 +164,15 @@ private fun AgreementRow(
                 modifier = Modifier.padding(end = 14.dp),
                 tint = Color.Unspecified
             )
+
+            if (variant == AgreementRowVariant.Item){
+                Text(
+                    text =  if (type == ConsentType.REQUIRED) stringResource(UiR.string.agreements_required) else stringResource(UiR.string.agreements_optional),
+                    style = HedgeTypography.Body3.Medium,
+                    color = HedgeColor.Text.Secondary,
+                    modifier = Modifier.padding(end = 4.dp)
+                )
+            }
 
             Text(
                 text = title,

@@ -15,8 +15,11 @@ import com.depromeet.team5.feature.reasons.retrospectionDetailNavigation
 import com.depromeet.team5.features.feedback.navigation.feedbackScreen
 import com.depromeet.team5.features.feedback.navigation.navigateToFeedback
 import com.depromeet.team5.features.home.homeScreen
+import com.depromeet.team5.features.principlegroupmodification.navigation.navigateToPrincipleGroupModification
+import com.depromeet.team5.features.principlegroupmodification.navigation.principleGroupModification
 import com.depromeet.team5.features.login.LoginGraph
 import com.depromeet.team5.features.login.loginGraph
+import com.depromeet.team5.features.principlegroupmodification.navigation.principleGroupModification
 import com.depromeet.team5.features.retrospect.screen.navigateToRetrospect
 import com.depromeet.team5.features.retrospect.screen.retrospectScreen
 import com.depromeet.team5.features.search.navigateToSearch
@@ -65,10 +68,12 @@ fun HedgeNavHost(
             onBuyClick = { navController.navigateToSearch() },
             onSellClick = { navController.navigateToSearch() },
             onClickRetrospectionDetail = navController::navigateToRetrospectionDetail,
-            onClickPrincipleDetail = { groupId, path ->
-                navController.navigatePrincipleGraph(groupId, path)
+            onClickPrincipleDetail = { groupId, path, orderType ->
+                navController.navigatePrincipleGraph(groupId, path, orderType)
             },
-            onClickCreatePrinciple = { },
+            onClickCreatePrinciple = { orderType ->
+                navController.navigateToPrincipleGroupModification(null, orderType)
+            },
             onShowErrorToast = onShowErrorToast
         )
 
@@ -90,6 +95,13 @@ fun HedgeNavHost(
             onShowErrorToast = onShowErrorToast,
             onShowToast = onShowToast,
             onShowNoIconToast = onShowNoIconToast
+        )
+
+        principleGroupModification(
+            navController = navController,
+            onShowNoIconToast = onShowNoIconToast,
+            onShowToast = onShowToast,
+            onShowErrorToast = onShowErrorToast
         )
 
         reasonNavigation(

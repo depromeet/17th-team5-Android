@@ -29,6 +29,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation.NavController
 import com.depromeet.team5.core.designsystem.foundation.HedgeColor
 import com.depromeet.team5.core.designsystem.foundation.HedgeIcon
 import com.depromeet.team5.core.designsystem.foundation.HedgeTypography
@@ -38,8 +39,10 @@ import com.depromeet.team5.core.domain.model.OrderType
 import com.depromeet.team5.core.domain.model.RecommendedPrinciple
 import com.depromeet.team5.core.domain.model.UserStatsInfo
 import com.depromeet.team5.core.domain.monad.HedgeUiState
+import com.depromeet.team5.core.navigation.IS_UPDATED
 import com.depromeet.team5.core.navigation.Path
 import com.depromeet.team5.core.navigation.request.RequestViewModel
+import com.depromeet.team5.core.ui.extensions.baseCollect
 import com.depromeet.team5.features.home.component.DashBoardDialog
 import com.depromeet.team5.features.home.component.HomeFloatingActionButton
 import com.depromeet.team5.features.home.section.HomeSection
@@ -47,11 +50,12 @@ import com.depromeet.team5.features.home.section.PrincipleSection
 
 @Composable
 fun HomeRoute(
+    navController: NavController,
     onBuyClick: () -> Unit,
     onSellClick: () -> Unit,
     onClickRetrospectionDetail: (Int) -> Unit,
-    onClickPrincipleDetail: (Int, Path) -> Unit,
-    onClickCreatePrinciple: () -> Unit,
+    onClickPrincipleDetail: (Int, Path, OrderType) -> Unit,
+    onClickCreatePrinciple: (OrderType) -> Unit,
     onShowErrorToast: (Throwable) -> Unit,
     incomingHighlightId: Int?,
     modifier: Modifier = Modifier,
@@ -66,6 +70,24 @@ fun HomeRoute(
 
     val recommendedUiState by homeViewModel.recommendedPrinciplesUiState.collectAsStateWithLifecycle()
     val defaultsUiState by homeViewModel.defaultPrinciplesUiState.collectAsStateWithLifecycle()
+
+    LaunchedEffect(Unit) {
+        navController.currentBackStackEntry
+            ?.savedStateHandle
+            ?.getStateFlow<Boolean?>(IS_UPDATED, null)
+            ?.baseCollect(
+                onSuccess = { isUpdated ->
+                    if (isUpdated != null && isUpdated) {
+                        homeViewModel.restartPrincipleGroups()
+                    }
+
+                    navController.currentBackStackEntry
+                        ?.savedStateHandle
+                        ?.remove<Boolean>(IS_UPDATED)
+                },
+                onError = {}
+            )
+    }
 
     LaunchedEffect(incomingHighlightId) {
         if (incomingHighlightId != null) {
@@ -83,8 +105,12 @@ fun HomeRoute(
         principleGroupsUiState = principleGroupsUiState,
         onChangePrincipleOrderType = { homeViewModel.setPrincipleOrderType(it) },
         onClickRetrospectionDetail = onClickRetrospectionDetail,
-        onClickPrincipleDetail = onClickPrincipleDetail,
-        onClickCreatePrinciple = onClickCreatePrinciple,
+        onClickPrincipleDetail = { groupId, path ->
+            onClickPrincipleDetail(groupId, path, selectedOrderType)
+        },
+        onClickCreatePrinciple = {
+            onClickCreatePrinciple(selectedOrderType)
+        },
         onBuyClick = {
             requestViewModel.request =
                 requestViewModel.request.copy(orderType = OrderType.BUY)

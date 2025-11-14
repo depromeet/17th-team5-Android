@@ -9,6 +9,8 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavOptions
 import androidx.navigation.compose.composable
 import androidx.navigation.toRoute
+import com.depromeet.team5.core.domain.model.OrderType
+import com.depromeet.team5.core.navigation.IS_UPDATED
 import com.depromeet.team5.core.navigation.Path
 import com.depromeet.team5.core.navigation.graphkey.PrincipleGraph
 import com.depromeet.team5.core.navigation.request.PrincipleGraphViewModel
@@ -19,27 +21,29 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class PrincipleGroupDetail(
     val groupId: Int,
-    val path: Path
+    val path: Path,
+    val orderType: OrderType
 )
 
 fun NavController.navigateToPrincipleGroupDetail(
     groupId: Int,
     path: Path,
+    orderType: OrderType,
     options: NavOptions? = null
 ) {
     navigate(
-        route = PrincipleGroupDetail(groupId, path),
+        route = PrincipleGroupDetail(groupId, path, orderType),
         navOptions = options
     )
 }
 
 fun NavGraphBuilder.principleGroupDetail(
     navController: NavController,
-    onBackPressed: () -> Unit,
     onShowErrorToast: (Throwable) -> Unit,
     onShowToast: (String) -> Unit,
     onShowNoIconToast: (String) -> Unit,
-    onNavigatedPrincipleModification: () -> Unit
+    onNavigatedPrincipleModification: () -> Unit,
+    onNavigatedPrincipleGroupModification: (Int, OrderType) -> Unit
 ) {
     composable<PrincipleGroupDetail> { backstackEntry ->
         val args = backstackEntry.toRoute<PrincipleGroupDetail>()
@@ -50,18 +54,25 @@ fun NavGraphBuilder.principleGroupDetail(
 
         val principleGraphViewModel = hiltViewModel<PrincipleGraphViewModel>(subgraphBackstackEntry)
 
+        principleGraphViewModel.orderType = args.orderType
+
         PrincipleDetailRoute(
             path = args.path,
             navController = navController,
             modifier = Modifier.navigationBarsPadding(),
-            onBackPressed = onBackPressed,
+            onBackPressed = { isUpdated ->
+                navController.previousBackStackEntry
+                    ?.savedStateHandle
+                    ?.set(IS_UPDATED, isUpdated)
+
+                navController.popBackStack()
+            },
             onShowErrorToast = onShowErrorToast,
             onShowToast = onShowToast,
             onShowNoIconToast = onShowNoIconToast,
             graphViewModel = principleGraphViewModel,
-            onNavigatedPrincipleModification = {
-                onNavigatedPrincipleModification()
-            }
+            onNavigatedPrincipleModification = onNavigatedPrincipleModification,
+            onNavigatedPrincipleGroupModification = onNavigatedPrincipleGroupModification
         )
     }
 }

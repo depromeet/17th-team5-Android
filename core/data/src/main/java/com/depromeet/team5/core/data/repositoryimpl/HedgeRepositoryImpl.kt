@@ -85,6 +85,16 @@ internal class HedgeRepositoryImpl @Inject constructor(
     }
         .map { it.toDomain() }
 
+    override fun modifyPrincipleGroup(
+        groupId: Int,
+        body: Map<String, Any?>
+    ): Flow<MyPrincipleGroup> = flow {
+        emit(
+            remoteDataSource.modifyPrincipleGroup(groupId, body)
+        )
+    }
+        .map { it.toDomain() }
+
     override fun createPrincipleGroup(body: Map<String, Any?>): Flow<MyPrincipleGroup> = flow {
         emit(remoteDataSource.createPrincipleGroup(body))
     }

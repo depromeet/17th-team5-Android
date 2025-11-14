@@ -70,6 +70,14 @@ internal class RemoteDataSourceImpl @Inject constructor(
         description = description
     ).toData()
 
+    override suspend fun modifyPrincipleGroup(
+        groupId: Int,
+        body: Map<String, Any?>
+    ): MyPrincipleGroupData = hedgeApiSource.modifyPrincipleGroup(
+        groupId = groupId,
+        body = body
+    ).toData()
+
     override suspend fun createPrincipleGroup(body: Map<String, Any?>): MyPrincipleGroupData =
         hedgeApiSource.createPrincipleGroup(body).toData()
 

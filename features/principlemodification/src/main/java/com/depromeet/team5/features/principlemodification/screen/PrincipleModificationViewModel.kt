@@ -2,13 +2,14 @@ package com.depromeet.team5.features.principlemodification.screen
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.depromeet.team5.core.domain.model.FinishType
 import com.depromeet.team5.core.domain.model.MyPrincipleGroup
+import com.depromeet.team5.core.domain.monad.BaseEvent
 import com.depromeet.team5.core.domain.usecase.AddPrincipleUseCase
 import com.depromeet.team5.core.domain.usecase.ModifyPrincipleUseCase
 import com.depromeet.team5.core.navigation.PrincipleModificationType
 import com.depromeet.team5.core.ui.extensions.baseCollect
 import com.depromeet.team5.core.ui.lazy.hedgeState
-import com.depromeet.team5.features.principlemodification.event.Event
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
@@ -36,8 +37,8 @@ class PrincipleModificationViewModel @AssistedInject constructor(
     val principleStateFlow by hedgeState<String?>(null)
     val contentStateFlow by hedgeState<String?>(null)
 
-    private val _eventFlow = MutableSharedFlow<Event>(extraBufferCapacity = 1)
-    val eventFlow: SharedFlow<Event> = _eventFlow.asSharedFlow()
+    private val _eventFlow = MutableSharedFlow<BaseEvent<FinishType>>(extraBufferCapacity = 1)
+    val eventFlow: SharedFlow<BaseEvent<FinishType>> = _eventFlow.asSharedFlow()
 
     private lateinit var myPrincipleGroup: MyPrincipleGroup
     private lateinit var modificationType: PrincipleModificationType
@@ -49,7 +50,7 @@ class PrincipleModificationViewModel @AssistedInject constructor(
             this.modificationType = modificationType
         } else {
             _eventFlow.tryEmit(
-                Event.ShowErrorToast(NullPointerException(ERROR_MESSAGE))
+                BaseEvent.Error(NullPointerException(ERROR_MESSAGE))
             )
         }
 
@@ -57,6 +58,7 @@ class PrincipleModificationViewModel @AssistedInject constructor(
             PrincipleModificationType.ADD -> {
                 groupNameStateFlow.update { myPrincipleGroup?.groupName }
             }
+
             PrincipleModificationType.MODIFY -> {
                 groupNameStateFlow.update { myPrincipleGroup?.groupName }
 
@@ -64,10 +66,10 @@ class PrincipleModificationViewModel @AssistedInject constructor(
                     principleStateFlow.update { myPrincipleGroup?.principles?.find { it.id == id }?.principle }
                     contentStateFlow.update { myPrincipleGroup?.principles?.find { it.id == id }?.description }
                 }
-
             }
+
             null -> {
-                _eventFlow.tryEmit(Event.ShowErrorToast(Throwable(ERROR_TOAST_MESSAGE)))
+                _eventFlow.tryEmit(BaseEvent.Error(Throwable(ERROR_TOAST_MESSAGE)))
             }
         }
     }
@@ -93,6 +95,7 @@ class PrincipleModificationViewModel @AssistedInject constructor(
                                 description = description
                             )
                         }
+
                         PrincipleModificationType.MODIFY -> {
                             principleId?.let { id ->
                                 modifyPrincipleUseCase(
@@ -106,10 +109,18 @@ class PrincipleModificationViewModel @AssistedInject constructor(
                 }
                 .baseCollect(
                     onSuccess = {
-                        _eventFlow.emit(Event.Complete)
+                        when (modificationType) {
+                            PrincipleModificationType.ADD -> {
+                                _eventFlow.emit(BaseEvent.Finish(FinishType.CREATION))
+                            }
+
+                            PrincipleModificationType.MODIFY -> {
+                                _eventFlow.emit(BaseEvent.Finish(FinishType.MODIFICATION))
+                            }
+                        }
                     },
                     onError = {
-                        _eventFlow.emit(Event.ShowErrorToast(it))
+                        _eventFlow.emit(BaseEvent.Error(it))
                     }
                 )
         }

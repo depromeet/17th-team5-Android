@@ -263,10 +263,10 @@ private fun rememberRetrospectionState(
 ): RetrospectionState {
     val sellingTextFieldState = rememberSaveable {
         getTextFieldState(
-            label = if (requestParams.orderDate == "SELL") {
+            label = if (requestParams.orderType == OrderType.SELL) {
                 context.getString(R.string.retrospect_selling_price)
             } else {
-                context.getString(R.string.retrospect_selling_price)
+                context.getString(R.string.retrospect_buy_price)
             }
         )
     }

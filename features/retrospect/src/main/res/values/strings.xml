@@ -1,7 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="retrospect_selling_price_title">얼마에 매도하셨나요?</string>
+    <string name="retrospect_selling_volume_title">몆 주 매도하셨나요?</string>
+    <string name="retrospect_selling_date_title">언제 매도하셨나요?</string>
     <string name="retrospect_buy_price_title">얼마에 매수하셨나요?</string>
+    <string name="retrospect_buy_volume_title">몆 주 매수하셨나요?</string>
+    <string name="retrospect_buy_date_title">언제 매수하셨나요?</string>
+    <string name="retrospect_return_title">수익률은 얼마인가요?</string>
+
+    <string name="retrospect_sell_korean_result_title">총 %s원 매도</string>
+    <string name="retrospect_buy_korean_result_title">총 %s원 매수</string>
+    <string name="retrospect_sell_national_result_title">총 %s 매도</string>
+    <string name="retrospect_buy_national_result_title">총 %s 매수</string>
+
     <string name="retrospect_volume">거래량</string>
     <string name="retrospect_unit_stock">주</string>
     <string name="retrospect_rate_of_return">수익률</string>

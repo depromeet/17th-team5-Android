@@ -72,7 +72,7 @@ class RetrospectionDetailViewModel @Inject constructor(
             .onEach {
                 if (it is HedgeUiState.Success) {
                     onDeleteRetrospection(null)
-                } else {
+                } else if (it is HedgeUiState.Error){
                     onDeleteRetrospection(Throwable(it.toString()))
                 }
             }

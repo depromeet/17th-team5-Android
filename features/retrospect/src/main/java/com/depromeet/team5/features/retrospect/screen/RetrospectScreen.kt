@@ -670,7 +670,7 @@ private fun StockTextField(
             onUpdateStockText(digitsOnlyText, newCursorPosition)
         },
         label = state.value.label,
-        placeholder = stringResource(id = R.string.retrospect_volume),
+        placeholder = stringResource(id = R.string.retrospect_unit_stock),
         visualTransformation = UnitVisualTransformation(unit = stringResource(id = R.string.retrospect_unit_stock)),
         onDone = {
             focusManager.moveFocus(FocusDirection.Down)

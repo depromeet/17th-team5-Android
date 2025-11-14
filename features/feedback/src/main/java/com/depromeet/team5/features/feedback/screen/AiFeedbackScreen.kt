@@ -20,6 +20,7 @@ import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Icon
 import androidx.compose.material.Text
@@ -46,6 +47,7 @@ import com.depromeet.team5.core.designsystem.component.HedgeButton
 import com.depromeet.team5.core.designsystem.foundation.HedgeColor
 import com.depromeet.team5.core.designsystem.foundation.HedgeTypography
 import com.depromeet.team5.core.navigation.request.RequestViewModel
+import com.depromeet.team5.core.ui.component.HedgeCompanyLogo
 import com.depromeet.team5.core.ui.component.HedgeLoadingScreen
 import com.depromeet.team5.core.ui.model.HedgeBadge
 import com.depromeet.team5.features.feedback.AiFeedbackUiState
@@ -78,6 +80,7 @@ fun AiFeedbackRoute(
             AiFeedbackScreen(
                 state = state,
                 grade = HedgeBadge.fromBadge(state.badge),
+                companyLogo = requestViewModel.companyLogoUrl,
                 companyName = requestViewModel.request.companyName,
                 price = requestViewModel.request.price.toLong(),
                 stock = requestViewModel.request.volume,
@@ -99,6 +102,7 @@ fun AiFeedbackRoute(
 private fun AiFeedbackScreen(
     state: AiFeedbackUiState.Success,
     grade: HedgeBadge,
+    companyLogo: String?,
     companyName: String,
     price: Long,
     stock: Int,
@@ -246,10 +250,11 @@ private fun AiFeedbackScreen(
                             .padding(bottom = 22.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Box(
+                        HedgeCompanyLogo(
+                            logoUrl = companyLogo,
                             modifier = Modifier
+                                .clip(shape = CircleShape)
                                 .size(28.dp)
-                                .background(Color.Gray, shape = RoundedCornerShape(20.dp))
                         )
 
                         Column(
@@ -459,6 +464,7 @@ private fun AiFeedbackScreenPreview() {
             )
         ),
         grade = HedgeBadge.fromBadge(badge = "platinum"),
+        companyLogo = null,
         companyName = "삼성전자",
         price = 65000,
         stock = 3,

@@ -354,7 +354,7 @@ private fun RetrospectScreen(
     }
 
     LaunchedEffect(buttonEnabled, currencyType, isShowKeyboard) {
-        if (!buttonEnabled || isShowKeyboard) return@LaunchedEffect
+        if (!buttonEnabled) return@LaunchedEffect
 
         val price = retrospectionState.priceTextFieldState.value.text
         val stock = retrospectionState.stockTextFieldState.value.text
@@ -366,7 +366,7 @@ private fun RetrospectScreen(
         listOf(price, stock, date)
             .all { it.isNotEmpty() }
             .let { isResult ->
-                if (!isResult) return@let
+                if (!isResult || isShowKeyboard) return@let
 
                 val res = when (requestParams.orderType) {
                     OrderType.BUY -> {

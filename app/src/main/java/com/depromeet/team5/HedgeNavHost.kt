@@ -1,5 +1,7 @@
 package com.depromeet.team5
 
+import androidx.compose.animation.AnimatedContentTransitionScope
+import androidx.compose.animation.core.tween
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
@@ -15,10 +17,9 @@ import com.depromeet.team5.feature.reasons.retrospectionDetailNavigation
 import com.depromeet.team5.features.feedback.navigation.feedbackScreen
 import com.depromeet.team5.features.feedback.navigation.navigateToFeedback
 import com.depromeet.team5.features.home.homeScreen
-import com.depromeet.team5.features.principlegroupmodification.navigation.navigateToPrincipleGroupModification
-import com.depromeet.team5.features.principlegroupmodification.navigation.principleGroupModification
 import com.depromeet.team5.features.login.LoginGraph
 import com.depromeet.team5.features.login.loginGraph
+import com.depromeet.team5.features.principlegroupmodification.navigation.navigateToPrincipleGroupModification
 import com.depromeet.team5.features.principlegroupmodification.navigation.principleGroupModification
 import com.depromeet.team5.features.retrospect.screen.navigateToRetrospect
 import com.depromeet.team5.features.retrospect.screen.retrospectScreen
@@ -37,11 +38,35 @@ fun HedgeNavHost(
     onShowNoIconToast: (String) -> Unit
 ) {
     val navController = rememberNavController()
-
+    val screenAnimationTimeMillis = 400
     NavHost(
         navController = navController,
         startDestination = Splash,
-        modifier = modifier
+        modifier = modifier,
+        enterTransition = {
+            slideIntoContainer(
+                towards = AnimatedContentTransitionScope.SlideDirection.Left,
+                animationSpec = tween(screenAnimationTimeMillis)
+            )
+        },
+        exitTransition = {
+            slideOutOfContainer(
+                towards = AnimatedContentTransitionScope.SlideDirection.Left,
+                animationSpec = tween(screenAnimationTimeMillis)
+            )
+        },
+        popEnterTransition = {
+            slideIntoContainer(
+                towards = AnimatedContentTransitionScope.SlideDirection.Right,
+                animationSpec = tween(screenAnimationTimeMillis)
+            )
+        },
+        popExitTransition = {
+            slideOutOfContainer(
+                towards = AnimatedContentTransitionScope.SlideDirection.Right,
+                animationSpec = tween(screenAnimationTimeMillis)
+            )
+        }
     ) {
         splashScreen(
             navigateToLogin = {

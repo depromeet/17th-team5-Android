@@ -39,7 +39,7 @@ import com.depromeet.team5.core.domain.model.OrderType
 import com.depromeet.team5.core.domain.model.RecommendedPrinciple
 import com.depromeet.team5.core.domain.model.UserStatsInfo
 import com.depromeet.team5.core.domain.monad.HedgeUiState
-import com.depromeet.team5.core.navigation.IS_UPDATED
+import com.depromeet.team5.core.navigation.IS_PRINCIPLE_UPDATED
 import com.depromeet.team5.core.navigation.Path
 import com.depromeet.team5.core.navigation.request.RequestViewModel
 import com.depromeet.team5.core.ui.extensions.baseCollect
@@ -75,7 +75,7 @@ fun HomeRoute(
     LaunchedEffect(Unit) {
         navController.currentBackStackEntry
             ?.savedStateHandle
-            ?.getStateFlow<Boolean?>(IS_UPDATED, null)
+            ?.getStateFlow<Boolean?>(IS_PRINCIPLE_UPDATED, null)
             ?.baseCollect(
                 onSuccess = { isUpdated ->
                     if (isUpdated != null && isUpdated) {
@@ -84,7 +84,7 @@ fun HomeRoute(
 
                     navController.currentBackStackEntry
                         ?.savedStateHandle
-                        ?.remove<Boolean>(IS_UPDATED)
+                        ?.remove<Boolean>(IS_PRINCIPLE_UPDATED)
                 },
                 onError = {}
             )

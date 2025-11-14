@@ -128,4 +128,8 @@ internal class HedgeRepositoryImpl @Inject constructor(
         )
         emit(remoteDataSource.socialLogin(req).toDomain())
     }
+
+    override fun getFeedback(retrospectionId: Int): Flow<Feedback> = flow {
+        emit(remoteDataSource.getFeedback(retrospectionId).toDomain())
+    }
 }

@@ -92,4 +92,7 @@ internal class RemoteDataSourceImpl @Inject constructor(
 
     override suspend fun socialLogin(body: SocialLoginRequestData): SocialLoginData =
         hedgeApiSource.socialLogin(body.toRemoteData()).toData()
+
+    override suspend fun getFeedback(retrospectionId: Int): FeedbackData =
+        hedgeApiSource.getFeedback(retrospectionId).toData()
 }

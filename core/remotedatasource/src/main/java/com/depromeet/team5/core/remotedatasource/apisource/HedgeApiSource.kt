@@ -56,4 +56,6 @@ interface HedgeApiSource {
     suspend fun systemPrincipleList(): SystemPrincipleRemoteData
 
     suspend fun socialLogin(body: SocialLoginRequestRemoteData): SocialLoginRemoteData
+
+    suspend fun getFeedback(retrospectionId: Int): FeedbackRemoteData
 }

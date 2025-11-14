@@ -52,7 +52,8 @@ class AiFeedbackViewModel @Inject constructor(
                     if (it.data != null) {
                         AiFeedbackUiState.Success(
                             retrospectionId = createdId,
-                            symbol = it.data!!.symbol,
+                            companyName = it.data!!.companyName,
+                            companyLogo = it.data!!.companyLogo,
                             price = it.data!!.price,
                             volume = it.data!!.volume,
                             orderType = it.data!!.orderType,
@@ -89,7 +90,8 @@ class AiFeedbackViewModel @Inject constructor(
                     if (it.data != null) {
                         AiFeedbackUiState.Success(
                             retrospectionId = retrospectionId,
-                            symbol = it.data!!.symbol,
+                            companyName = it.data!!.companyName,
+                            companyLogo = it.data!!.companyLogo,
                             price = it.data!!.price,
                             volume = it.data!!.volume,
                             orderType = it.data!!.orderType,

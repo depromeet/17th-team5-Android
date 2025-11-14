@@ -21,10 +21,11 @@ data class FeedbackResponse(
 
 @Serializable
 data class FeedbackInfoResponse(
-    val symbol: String,
+    val companyName: String,
     val price: Long,
     val volume: Int,
     val orderType: String,
+    val companyLogo: String?,
     val keptCount: Int,
     val neutralCount: Int,
     val notKeptCount: Int,
@@ -36,7 +37,8 @@ data class FeedbackInfoResponse(
     override fun toRemoteData(): FeedbackInfoRemoteData =
         FeedbackInfoRemoteData(
             badge = badge,
-            symbol = symbol,
+            companyName = companyName,
+            companyLogo = companyLogo,
             orderType = orderType,
             volume = volume,
             price = price,

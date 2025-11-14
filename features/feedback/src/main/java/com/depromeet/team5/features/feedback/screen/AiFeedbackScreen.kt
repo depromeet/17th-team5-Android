@@ -45,6 +45,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.depromeet.team5.core.designsystem.foundation.HedgeColor
 import com.depromeet.team5.core.designsystem.foundation.HedgeTypography
+import com.depromeet.team5.core.domain.model.toOrderType
 import com.depromeet.team5.core.navigation.request.RequestViewModel
 import com.depromeet.team5.core.ui.component.HedgeCompanyLogo
 import com.depromeet.team5.core.ui.component.HedgeLoadingScreen
@@ -259,13 +260,13 @@ private fun AiFeedbackScreen(
                             modifier = Modifier.padding(start = 12.dp)
                         ) {
                             Text(
-                                text = state.symbol,
+                                text = state.companyName,
                                 style = HedgeTypography.Label2.Medium,
                                 color = HedgeColor.Text.Alternative
                             )
 
                             Text(
-                                text = stringResource(R.string.price_and_stock, state.price, state.volume, state.orderType),
+                                text = stringResource(R.string.price_and_stock, state.price, state.volume, state.orderType.toOrderType().toKorean()),
                                 style = HedgeTypography.Body2.SemiBold,
                                 color = HedgeColor.Text.Primary
                             )
@@ -444,7 +445,8 @@ private fun AiFeedbackScreenPreview() {
     AiFeedbackScreen(
         state = AiFeedbackUiState.Success(
             retrospectionId = 1,
-            symbol = "테슬라(TSLA)",
+            companyName = "테슬라(TSLA)",
+            companyLogo = "",
             price = 100000,
             volume = 100,
             orderType = "매수",

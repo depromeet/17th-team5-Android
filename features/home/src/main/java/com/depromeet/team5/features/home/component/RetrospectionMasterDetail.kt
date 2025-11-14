@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Divider
 import androidx.compose.material.Text
@@ -33,6 +34,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.depromeet.team5.core.designsystem.foundation.HedgeColor
 import com.depromeet.team5.core.designsystem.foundation.HedgeTypography
+import com.depromeet.team5.core.ui.component.HedgeCompanyLogo
 import com.depromeet.team5.features.home.R
 import com.depromeet.team5.features.home.screen.RetrospectionSectionState
 import com.depromeet.team5.features.home.screen.RetrospectionState
@@ -74,6 +76,7 @@ fun RetrospectionMasterDetail(
                 ) { item ->
                     SymbolRailItem(
                         symbol = item.companyName,
+                        logoUrl = item.image,
                         selected = item.companyName == selectedCompanyName,
                         onClick = { selectedCompanyName = item.companyName }
                     )
@@ -113,6 +116,7 @@ fun RetrospectionMasterDetail(
 @Composable
 private fun SymbolRailItem(
     symbol: String,
+    logoUrl: String?,
     selected: Boolean,
     onClick: () -> Unit,
 ) {
@@ -128,11 +132,11 @@ private fun SymbolRailItem(
             .padding(vertical = 10.dp, horizontal = 10.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Box(
-            Modifier
+        HedgeCompanyLogo(
+            logoUrl = logoUrl,
+            modifier = Modifier
+                .clip(shape = CircleShape)
                 .size(24.dp)
-                .clip(RoundedCornerShape(100.dp))
-                .background(HedgeColor.GREY_600)
         )
         Spacer(Modifier.width(8.dp))
         Text(
@@ -142,6 +146,7 @@ private fun SymbolRailItem(
             maxLines = 2
         )
     }
+
 }
 
 @Composable

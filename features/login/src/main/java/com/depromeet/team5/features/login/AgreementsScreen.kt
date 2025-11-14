@@ -112,7 +112,7 @@ private fun AgreementsScreen(
             text = stringResource(R.string.agreements_start_button),
             onClick = navigateToHome,
             modifier = Modifier
-                .padding(horizontal = 20.dp)
+                .padding(horizontal = 20.dp, vertical = 20.dp)
                 .fillMaxWidth()
                 .align(Alignment.BottomCenter),
             enabled = state.canProceed,
@@ -141,28 +141,32 @@ private fun AgreementRow(
             .padding(vertical = if (variant == AgreementRowVariant.All) 22.dp else 16.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Icon(
-            imageVector = if (checked) HedgeIcon.AgreementChecked else HedgeIcon.AgreementUnchecked,
-            contentDescription = null,
+        Row(
             modifier = Modifier
-                .padding(end = 14.dp)
+                .weight(1f)
                 .clickable(
                     interactionSource = checkInteraction,
                     indication = null
                 ) {
                     onCheckedChange(!checked)
                 },
-            tint = Color.Unspecified
-        )
+            verticalAlignment = Alignment.CenterVertically
+        ){
+            Icon(
+                imageVector = if (checked) HedgeIcon.AgreementChecked else HedgeIcon.AgreementUnchecked,
+                contentDescription = null,
+                modifier = Modifier.padding(end = 14.dp),
+                tint = Color.Unspecified
+            )
 
-        Text(
-            text = title,
-            style = if (variant == AgreementRowVariant.All) HedgeTypography.Body1.SemiBold else HedgeTypography.Body3.Medium,
-            color = HedgeColor.Text.Secondary,
-        )
+            Text(
+                text = title,
+                style = if (variant == AgreementRowVariant.All) HedgeTypography.Body1.SemiBold else HedgeTypography.Body3.Medium,
+                color = HedgeColor.Text.Secondary
+            )
+        }
 
         if (link != null) {
-            Spacer(modifier = Modifier.weight(1f))
             Icon(
                 imageVector = HedgeIcon.ArrowRightThin,
                 contentDescription = null,

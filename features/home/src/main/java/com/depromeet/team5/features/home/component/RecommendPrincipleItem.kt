@@ -45,13 +45,13 @@ fun RecommendPrincipleItem(
                 spotColor = Color(0x140D0F26),
                 clip = false
             )
-            .clickable { onClick(recommendPrinciple.id) }
             .background(
                 color = HedgeColor.Neutral.BackgroundDefault,
                 shape = RoundedCornerShape(18.dp)
             )
             .border(width = 1.dp, color = Color(0xFFF1F2F4), shape = RoundedCornerShape(18.dp))
             .clip(RoundedCornerShape(18.dp))
+            .clickable { onClick(recommendPrinciple.id) }
             .size(150.dp, 165.dp)
     ) {
         Box(

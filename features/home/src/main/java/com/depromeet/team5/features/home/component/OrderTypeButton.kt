@@ -7,6 +7,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.depromeet.team5.core.designsystem.foundation.HedgeColor
@@ -28,6 +29,7 @@ fun OrderTypeButton(
                 color = if (isSelected) HedgeColor.Text.Title else HedgeColor.Neutral.BackgroundSecondary,
                 shape = RoundedCornerShape(100.dp)
             )
+            .clip(RoundedCornerShape(100.dp))
             .clickable(onClick = onClick)
             .padding(horizontal = 12.dp, vertical = 6.dp)
     )

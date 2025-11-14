@@ -6,6 +6,7 @@ import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -62,10 +63,12 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import coil3.compose.AsyncImage
 import com.depromeet.team5.core.designsystem.component.HedgeButton
 import com.depromeet.team5.core.designsystem.component.HedgeSegment
 import com.depromeet.team5.core.designsystem.component.HedgeTopBar
 import com.depromeet.team5.core.designsystem.foundation.HedgeColor
+import com.depromeet.team5.core.designsystem.foundation.HedgeIcon
 import com.depromeet.team5.core.designsystem.foundation.HedgeTypography
 import com.depromeet.team5.core.domain.model.MyPrincipleGroup
 import com.depromeet.team5.core.domain.model.OrderType
@@ -145,6 +148,7 @@ fun RetrospectRoute(
         modifier = modifier,
         retrospectionState = retrospectionState,
         requestParams = requestViewModel.request,
+        companyLogoUrl = requestViewModel.companyLogoUrl,
         buttonEnabled = isButtonEnabled,
         onUpdateSellingText = { text, selection ->
             retrospectionState.sellingTextFieldState.value =
@@ -311,6 +315,7 @@ private fun rememberRetrospectionState(
 @Composable
 private fun RetrospectScreen(
     retrospectionState: RetrospectionState,
+    companyLogoUrl: String?,
     requestParams: CreateRetrospectionRequest,
     modifier: Modifier = Modifier,
     buttonEnabled: Boolean = false,
@@ -346,7 +351,21 @@ private fun RetrospectScreen(
                 modifier = Modifier
                     .size(22.dp)
                     .background(Color.Gray, shape = RoundedCornerShape(20.dp))
-            )
+            ) {
+                if (companyLogoUrl != null) {
+                    AsyncImage(
+                        modifier = modifier.fillMaxSize(),
+                        model = companyLogoUrl,
+                        contentDescription = null
+                    )
+                } else {
+                    Image(
+                        modifier = modifier.fillMaxSize(),
+                        imageVector = HedgeIcon.COMPANY_LOGO,
+                        contentDescription = null
+                    )
+                }
+            }
 
             Text(
                 modifier = Modifier.padding(start = 7.dp),
@@ -886,6 +905,7 @@ private fun RetrospectRoutePreview() {
             modifier = Modifier.padding(paddingValues),
             retrospectionState = retrospectionState,
             buttonEnabled = isButtonEnabled,
+            companyLogoUrl = null,
             requestParams = CreateRetrospectionRequest.EMPTY.copy(orderType = OrderType.SELL),
             onUpdateSellingText = { text, selection ->
                 retrospectionState.sellingTextFieldState.value =

@@ -53,6 +53,8 @@ fun SearchRoute(
         pagingItems = pagingItems,
         onSearchTextChange = viewModel::updateSearchText,
         onItemClick = {
+            requestViewModel.companyLogoUrl = it.stockImageUrl
+
             requestViewModel.request =
                 requestViewModel.request.copy(
                     symbol = it.symbol,

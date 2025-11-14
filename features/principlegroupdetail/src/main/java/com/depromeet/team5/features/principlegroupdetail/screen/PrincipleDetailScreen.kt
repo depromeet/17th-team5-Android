@@ -61,6 +61,7 @@ import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
@@ -349,7 +350,8 @@ private fun PrincipleDetailContent(
                         )
                     } else {
                         Text(
-                            text = myPrincipleGroup.thumbnail
+                            text = myPrincipleGroup.thumbnail,
+                            fontSize = 26.sp
                         )
                     }
                 }
@@ -993,6 +995,7 @@ fun PrincipleDetailScreenPreview() {
         uiState = HedgeUiState.Success(
             data = MyPrincipleGroup.EMPTY.copy(
                 groupName = "이건 좀 지키자 제발",
+                thumbnail = "\uD83D\uDE24",
                 orderType = OrderType.BUY,
                 principles = list
             )

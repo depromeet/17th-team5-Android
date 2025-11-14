@@ -18,6 +18,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
@@ -50,7 +51,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.platform.LocalConfiguration
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
@@ -73,8 +73,8 @@ import kotlinx.coroutines.launch
 @Composable
 fun PrincipleBottomSheetDialog(
     title: String,
-    groups: List<MyPrincipleGroup>,
-    orderType: OrderType,
+    defaultPrincipleGroup: MyPrincipleGroup,
+    myPrincipleGroups: List<MyPrincipleGroup>,
     modifier: Modifier = Modifier,
     isShowAddButton: Boolean = false,
     onClickedClose: () -> Unit,
@@ -108,8 +108,8 @@ fun PrincipleBottomSheetDialog(
         ) {
             HedgeModalBottomSheetScreen(
                 title = title,
-                groups = groups,
-                orderType = orderType,
+                defaultPrincipleGroup = defaultPrincipleGroup,
+                myPrincipleGroups = myPrincipleGroups,
                 isShowAddButton = isShowAddButton,
                 onClickedClose = onClickedClose,
                 onClickedConfirmButton = { myPrincipleGroup ->
@@ -128,17 +128,15 @@ fun PrincipleBottomSheetDialog(
 @Composable
 private fun HedgeModalBottomSheetScreen(
     title: String,
-    groups: List<MyPrincipleGroup>,
-    orderType: OrderType,
+    defaultPrincipleGroup: MyPrincipleGroup,
+    myPrincipleGroups: List<MyPrincipleGroup>,
     modifier: Modifier = Modifier,
     isShowAddButton: Boolean = false,
     onClickedClose: () -> Unit,
     onClickedConfirmButton: (MyPrincipleGroup) -> Unit,
     onClickedAddButton: () -> Unit
 ) {
-    var selectedMyPrincipleItem by remember { mutableIntStateOf(-2) }
-
-    val beginnerPrinciple = rememberBeginnerPrinciple(orderType)
+    var selectedMyPrincipleItem by remember { mutableIntStateOf(-1) }
 
     Box(
         modifier = modifier
@@ -154,7 +152,8 @@ private fun HedgeModalBottomSheetScreen(
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(top = 70.dp)
+                .padding(top = 70.dp),
+            contentPadding = PaddingValues(bottom = HedgeButton.Action.Size.Large.minHeight * 2)
         ) {
             item {
                 Text(
@@ -175,28 +174,28 @@ private fun HedgeModalBottomSheetScreen(
                             indication = null,
                             interactionSource = remember { MutableInteractionSource() }
                         ) {
-                            selectedMyPrincipleItem = beginnerPrinciple.id
+                            selectedMyPrincipleItem = defaultPrincipleGroup.id
                         },
-                    title = beginnerPrinciple.groupName,
+                    title = defaultPrincipleGroup.groupName,
                     icon = {
-                        if (beginnerPrinciple.thumbnail.startsWith("http")) {
+                        if (defaultPrincipleGroup.thumbnail.startsWith("http")) {
                             AsyncImage(
-                                model = beginnerPrinciple.thumbnail,
+                                model = defaultPrincipleGroup.thumbnail,
                                 contentDescription = null
                             )
                         } else {
                             Text(
-                                text = beginnerPrinciple.thumbnail,
+                                text = defaultPrincipleGroup.thumbnail,
                                 style = HedgeTypography.Body3.SemiBold
                             )
                         }
                     },
-                    selected = selectedMyPrincipleItem == beginnerPrinciple.id
+                    selected = selectedMyPrincipleItem == defaultPrincipleGroup.id
                 )
 
                 MyPrincipleItems(
-                    visible = beginnerPrinciple.id == selectedMyPrincipleItem,
-                    principles = beginnerPrinciple.principles
+                    visible = defaultPrincipleGroup.id == selectedMyPrincipleItem,
+                    principles = defaultPrincipleGroup.principles
                 )
             }
 
@@ -255,7 +254,7 @@ private fun HedgeModalBottomSheetScreen(
             }
 
             items(
-                items = groups.filter { it.principles.isNotEmpty() },
+                items = myPrincipleGroups.filter { it.principles.isNotEmpty() },
                 key = { it.id }
             ) { group ->
 
@@ -328,17 +327,17 @@ private fun HedgeModalBottomSheetScreen(
             }
         }
 
-        val target = if (selectedMyPrincipleItem == -1) {
-            beginnerPrinciple
-        } else if (selectedMyPrincipleItem != -2) {
-            groups.find { it.id == selectedMyPrincipleItem } ?: return
+        val target = if (selectedMyPrincipleItem == defaultPrincipleGroup.id) {
+            defaultPrincipleGroup
+        } else if (selectedMyPrincipleItem != -1) {
+            myPrincipleGroups.find { it.id == selectedMyPrincipleItem } ?: return
         } else {
             return
         }
 
         ConfirmButton(
             modifier = Modifier.align(Alignment.BottomCenter),
-            enabled = selectedMyPrincipleItem != -2,
+            enabled = selectedMyPrincipleItem != -1,
             onClickedConfirmButton = {
                 onClickedConfirmButton(target)
             }
@@ -471,7 +470,6 @@ private fun MyPrincipleItems(
             animationSpec = springSpec,
             expandFrom = Alignment.Top
         ) + fadeIn(animationSpec = tween(durationMillis = 300)),
-        // 사라질 때: 아래에서 위로 줄어들며 서서히 사라짐
         exit = shrinkVertically(
             animationSpec = springSpec,
             shrinkTowards = Alignment.Top
@@ -546,8 +544,8 @@ fun HedgeModalBottomSheetPreview() {
 
     HedgeModalBottomSheetScreen(
         title = stringResource(R.string.principle_bottom_sheet_dialog_button_text),
-        groups = groups,
-        orderType = OrderType.BUY,
+        defaultPrincipleGroup = MyPrincipleGroup.EMPTY,
+        myPrincipleGroups = groups,
         isShowAddButton = true,
         onClickedClose = {},
         onClickedConfirmButton = {},
@@ -578,42 +576,6 @@ fun MyPrincipleItem(
         )
     }
 }
-
-@Composable
-private fun rememberBeginnerPrinciple(orderType: OrderType) = run {
-    val context = LocalContext.current
-
-    remember(orderType) {
-        val principles = when (orderType) {
-            OrderType.BUY -> context.resources.getStringArray(R.array.principle_bottom_sheet_dialog_beginner_buy_type_array)
-            OrderType.SELL -> context.resources.getStringArray(R.array.principle_bottom_sheet_dialog_beginner_sell_type_array)
-            OrderType.NONE -> emptyArray()
-        }
-            .mapIndexed { index, principle ->
-                MyPrinciple(
-                    id = index,
-                    groupId = -1,
-                    principle = principle,
-                    description = "",
-                )
-            }
-
-        MyPrincipleGroup(
-            id = -1,
-            groupName = if (orderType == OrderType.BUY) {
-                context.getString(R.string.principle_bottom_sheet_dialog_beginner_buy_type)
-            } else {
-                context.getString(R.string.principle_bottom_sheet_dialog_beginner_sell_type)
-            },
-            thumbnail = "",
-            imageId = null,
-            orderType = orderType,
-            displayOrder = 0,
-            principles = principles
-        )
-    }
-}
-
 
 @Preview
 @Composable

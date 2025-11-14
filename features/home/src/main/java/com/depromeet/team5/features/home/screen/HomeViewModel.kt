@@ -16,8 +16,8 @@ import com.depromeet.team5.core.domain.monad.HedgeUiState
 import com.depromeet.team5.core.domain.monad.asUiState
 import com.depromeet.team5.core.domain.usecase.CheckAndConsumeBadgeDotUseCase
 import com.depromeet.team5.core.domain.usecase.GetPrincipleGroupsUseCase
+import com.depromeet.team5.core.domain.usecase.GetSystemPrincipleUseCase
 import com.depromeet.team5.core.domain.usecase.RetrospectionListUseCase
-import com.depromeet.team5.core.domain.usecase.SystemPrincipleUseCase
 import com.depromeet.team5.core.domain.usecase.UserStatsUseCase
 import com.depromeet.team5.core.ui.lazy.hedgeState
 import com.depromeet.team5.core.ui.restartflow.RestartableStateFlow
@@ -79,7 +79,7 @@ class HomeViewModel @Inject constructor(
     userStatsUseCase: UserStatsUseCase,
     retrospectionListUseCase: RetrospectionListUseCase,
     getPrincipleGroupsUseCase: GetPrincipleGroupsUseCase,
-    systemPrincipleUseCase: SystemPrincipleUseCase,
+    systemPrincipleUseCase: GetSystemPrincipleUseCase,
     private val checkAndConsumeBadgeDotUseCase: CheckAndConsumeBadgeDotUseCase
 ) : ViewModel() {
 
@@ -182,7 +182,7 @@ class HomeViewModel @Inject constructor(
 
     val principleGroupsUiState: RestartableStateFlow<HedgeUiState<List<MyPrincipleGroup>>> =
         principleOrderType.stateFlow
-            .flatMapLatest { order -> getPrincipleGroupsUseCase(order.name) }
+            .flatMapLatest { order -> getPrincipleGroupsUseCase(order) }
             .asUiState()
             .restartStateIn(
                 scope = viewModelScope,

@@ -36,6 +36,7 @@ import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.State
 import androidx.compose.runtime.derivedStateOf
@@ -78,7 +79,6 @@ import com.depromeet.team5.core.domain.model.OrderType
 import com.depromeet.team5.core.domain.model.PrincipleChecks
 import com.depromeet.team5.core.domain.model.PrincipleGroupState
 import com.depromeet.team5.core.domain.model.PrincipleState
-import com.depromeet.team5.core.domain.monad.HedgeUiState
 import com.depromeet.team5.core.domain.request.CreateRetrospectionRequest
 import com.depromeet.team5.core.navigation.request.RequestViewModel
 import com.depromeet.team5.core.ui.component.PrincipleBottomSheetDialog
@@ -93,6 +93,7 @@ import com.depromeet.team5.features.retrospect.screen.visualtransmation.Currency
 import com.depromeet.team5.features.retrospect.screen.visualtransmation.UnitVisualTransformation
 import com.depromeet.team5.features.retrospect.state.RetrospectionState
 import com.depromeet.team5.features.retrospect.state.TextFieldState
+import com.depromeet.team5.features.retrospect.state.UiState
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.time.LocalDate
@@ -112,17 +113,9 @@ fun RetrospectRoute(
 ) {
     val context = LocalContext.current
 
-    val viewModel: RetrospectionViewModel = hiltViewModel(
-        creationCallback = { factory: RetrospectionViewModel.Factory ->
-            factory.create(requestViewModel.request.orderType.name)
-        }
-    )
-
     val retrospectionState = rememberRetrospectionState(
         requestParams = requestViewModel.request
     )
-
-    val myPrincipleState by viewModel.principleGroupsUiState.collectAsStateWithLifecycle()
 
     var isOpenBottomSheetDialog by remember { mutableStateOf(false) }
 
@@ -210,7 +203,6 @@ fun RetrospectRoute(
 
     if (isOpenBottomSheetDialog) {
         PrincipleDialog(
-            uiState = myPrincipleState,
             orderType = requestViewModel.request.orderType,
             onClickedClose = { isOpenBottomSheetDialog = false },
             onClickedConfirmButton = { myPrincipleGroup ->
@@ -540,27 +532,34 @@ private fun RetrospectScreen(
 
 @Composable
 private fun PrincipleDialog(
-    uiState: HedgeUiState<List<MyPrincipleGroup>>,
     orderType: OrderType,
     onClickedClose: () -> Unit,
     onClickedConfirmButton: (MyPrincipleGroup) -> Unit,
-    onShowErrorToast: (Throwable) -> Unit
+    onShowErrorToast: (Throwable) -> Unit,
+    viewModel: PrincipleGroupViewModel = hiltViewModel()
 ) {
+    val uiState by viewModel.uiState.stateFlow.collectAsStateWithLifecycle()
+
+    LaunchedEffect(Unit) {
+        viewModel.getPrincipleGroups(orderType)
+    }
+
     when (val state = uiState) {
-        is HedgeUiState.Success<List<MyPrincipleGroup>> -> {
+        is UiState.Success<MyPrincipleGroup> -> {
             PrincipleBottomSheetDialog(
                 title = stringResource(R.string.principle_bottom_sheet_dialog_title),
-                groups = state.data,
-                orderType = orderType,
+                defaultPrincipleGroup = state.defaultPrincipleGroup,
+                myPrincipleGroups = state.myPrincipleGroups,
                 isShowAddButton = false,
                 onClickedClose = onClickedClose,
                 onClickedConfirmButton = onClickedConfirmButton
             )
         }
 
-        is HedgeUiState.Error -> {
+        is UiState.Error -> {
             state.throwable?.let {
                 onShowErrorToast(it)
+                onClickedClose()
             }
         }
 

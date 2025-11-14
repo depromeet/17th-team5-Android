@@ -32,6 +32,13 @@
     <string name="principle_detail_modal_delete_content">한 번 삭제하면 되돌릴 수 없어요</string>
     <string name="principle_detail_principles_empty">아직 원칙이 없어요\n나만의 원칙을 추가해보세요</string>
 
+    <string name="modify_principle">원칙 수정이 완료되었습니다</string>
+    <string name="create_principle">원칙 추가가 완료되었습니다</string>
+
+    <string name="principle_modification_limit_group_name">제목은 최대 40자까지 작성할 수 있어요</string>
+    <string name="principle_modification_principle_hint">원칙의 제목을 적어주세요</string>
+    <string name="principle_modification_content_hint">원칙에 대한 설명을 적어보세요</string>
+
     <string name="standard">기본</string>
     <string name="select">선택</string>
     <string name="completion">완료</string>

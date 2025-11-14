@@ -77,7 +77,7 @@ class PrincipleGroupModificationViewModel @Inject constructor(
                 )
                     .baseCollect(
                         onSuccess = {
-                            _eventFlow.emit(BaseEvent.Finish(FinishType.MODIFICATION))
+                            _eventFlow.emit(BaseEvent.Finish(FinishType.CREATION))
                         },
                         onError = {
                             _eventFlow.emit(BaseEvent.ShowToast(it.message))
@@ -91,7 +91,7 @@ class PrincipleGroupModificationViewModel @Inject constructor(
                 )
                     .baseCollect(
                         onSuccess = {
-                            _eventFlow.emit(BaseEvent.Finish(FinishType.CREATION))
+                            _eventFlow.emit(BaseEvent.Finish(FinishType.MODIFICATION))
                         },
                         onError = {
                             _eventFlow.emit(BaseEvent.ShowToast(it.message))

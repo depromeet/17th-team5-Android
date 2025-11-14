@@ -41,10 +41,11 @@ import com.depromeet.team5.core.designsystem.component.HedgeButton
 import com.depromeet.team5.core.designsystem.component.HedgeTopBar
 import com.depromeet.team5.core.designsystem.foundation.HedgeColor
 import com.depromeet.team5.core.designsystem.foundation.HedgeTypography
+import com.depromeet.team5.core.domain.model.FinishType
+import com.depromeet.team5.core.domain.monad.BaseEvent
 import com.depromeet.team5.core.navigation.request.PrincipleGraphViewModel
-import com.depromeet.team5.features.principlemodification.R
-import com.depromeet.team5.features.principlemodification.event.Event
 import kotlinx.coroutines.launch
+import com.depromeet.team5.core.ui.R as UiR
 
 
 @Composable
@@ -78,14 +79,28 @@ fun PrincipleModificationRoute(
                 .flowWithLifecycle(lifecycleOwner.lifecycle)
                 .collect { event ->
                     when (event) {
-                        Event.Complete -> {
-                            onShowToast(context.getString(R.string.principle_modification_toast_message))
+                        is BaseEvent.Finish<FinishType> -> {
+                            when (event.result) {
+                                FinishType.CREATION -> {
+                                    onShowToast(context.getString(UiR.string.create_principle))
+                                }
+
+                                FinishType.MODIFICATION -> {
+                                    onShowToast(context.getString(UiR.string.modify_principle))
+                                }
+
+                                else -> {}
+                            }
                             onBackClicked(true)
                         }
 
-                        is Event.ShowErrorToast -> {
-                            onShowErrorToast(event.throwable)
+                        is BaseEvent.Error -> {
+                            event.throwable?.let {
+                                onShowErrorToast(it)
+                            }
                         }
+
+                        else -> {}
                     }
                 }
         }
@@ -142,7 +157,7 @@ private fun PrincipleModificationScreen(
             },
             action = {
                 HedgeButton.Text(
-                    text = stringResource(R.string.confirm),
+                    text = stringResource(UiR.string.completion),
                     enabled = principle.isNotEmpty() && content.isNotEmpty(),
                     forceClickable = false,
                     imageVector = null,
@@ -168,7 +183,7 @@ private fun PrincipleModificationScreen(
             value = principle,
             onValueChange = { newPrinciple ->
                 if (newPrinciple.length > 40) {
-                    onShowNoIconToast(context.getString(R.string.principle_modification_limit_group_name))
+                    onShowNoIconToast(context.getString(UiR.string.principle_modification_limit_group_name))
                 } else {
                     onUpdatedPrinciple(newPrinciple)
                 }
@@ -179,7 +194,7 @@ private fun PrincipleModificationScreen(
             decorationBox = { innerTextField ->
                 if (principle.isEmpty()) {
                     Text(
-                        text = stringResource(R.string.principle_modification_principle_hint),
+                        text = stringResource(UiR.string.principle_modification_principle_hint),
                         style = HedgeTypography.Headline1.SemiBold,
                         color = HedgeColor.Text.Assistive
                     )
@@ -207,7 +222,7 @@ private fun PrincipleModificationScreen(
             decorationBox = { innerTextField ->
                 if (content.isEmpty()) {
                     Text(
-                        text = stringResource(R.string.principle_modification_content_hint),
+                        text = stringResource(UiR.string.principle_modification_content_hint),
                         style = HedgeTypography.Body3.Regular,
                         color = HedgeColor.Text.Assistive
                     )

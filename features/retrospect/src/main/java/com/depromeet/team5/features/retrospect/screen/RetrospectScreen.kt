@@ -87,7 +87,6 @@ import com.depromeet.team5.features.retrospect.annotation.CurrencyType
 import com.depromeet.team5.features.retrospect.annotation.ReturnSignType
 import com.depromeet.team5.features.retrospect.screen.component.HedgeDatePickerDialog
 import com.depromeet.team5.features.retrospect.screen.component.HedgeSimpleTextField
-import com.depromeet.team5.features.retrospect.screen.component.HedgeTopbar
 import com.depromeet.team5.features.retrospect.screen.component.HedgeUnitTextField
 import com.depromeet.team5.features.retrospect.screen.visualtransmation.CurrencyVisualTransformation
 import com.depromeet.team5.features.retrospect.screen.visualtransmation.UnitVisualTransformation
@@ -908,14 +907,6 @@ private fun getTextFieldState(
         isError = isError
     )
 )
-
-@Preview
-@Composable
-private fun RetrospectScreenPreview() {
-    HedgeTopbar(
-        onBackPressed = {}
-    )
-}
 
 @Preview
 @Composable

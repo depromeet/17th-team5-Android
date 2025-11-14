@@ -1,4 +1,4 @@
-package com.depromeet.team5.feature.reasons.model
+package com.depromeet.team5.core.domain.model
 
 import androidx.compose.runtime.Immutable
 

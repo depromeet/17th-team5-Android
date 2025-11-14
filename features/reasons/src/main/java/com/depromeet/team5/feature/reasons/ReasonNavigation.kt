@@ -7,46 +7,26 @@ import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
-import androidx.navigation.compose.navigation
-import androidx.navigation.toRoute
 import com.depromeet.team5.core.navigation.graphkey.Home
 import com.depromeet.team5.core.navigation.request.RequestViewModel
 import kotlinx.serialization.Serializable
 
 @Serializable
-object ReasonGraph
-
-@Serializable
 object Reason
 
-@Serializable
-data class ImageDetail(val images: List<String>, val imageIndex: Int)
-
-fun NavGraphBuilder.reasonGraph(
+fun NavGraphBuilder.reasonNavigation(
     navController: NavController,
     onClickBack: () -> Unit,
     onClickDone: () -> Unit,
+    onClickImage: (ImageDetail) -> Unit,
 ) {
-    navigation<ReasonGraph>(
-        startDestination = Reason,
-    ) {
-        composable<Reason> { backStackEntry ->
-            ReasonRoute(
-                onClickBack = onClickBack,
-                onClickDone = onClickDone,
-                onClickImage = { navController.navigateToImageDetail(it) },
-                requestViewModel = backStackEntry.getRequestViewModel(navController)
-            )
-        }
-
-        composable<ImageDetail> { backStackEntry ->
-            val imageDetail = backStackEntry.toRoute<ImageDetail>()
-            ImageDetailRoute(
-                images = imageDetail.images,
-                initialIndex = imageDetail.imageIndex,
-                onClickBack = onClickBack,
-            )
-        }
+    composable<Reason> { backStackEntry ->
+        ReasonRoute(
+            onClickBack = onClickBack,
+            onClickDone = onClickDone,
+            onClickImage = onClickImage,
+            requestViewModel = backStackEntry.getRequestViewModel(navController)
+        )
     }
 }
 
@@ -58,10 +38,6 @@ private fun NavBackStackEntry.getRequestViewModel(navController: NavController):
     return hiltViewModel(parentEntry)
 }
 
-fun NavController.navigateToReasonGraph() {
-    navigate(ReasonGraph)
-}
-
-private fun NavController.navigateToImageDetail(imageDetail: ImageDetail) {
-    navigate(imageDetail)
+fun NavController.navigateToReason() {
+    navigate(Reason)
 }

@@ -6,8 +6,12 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.rememberNavController
 import com.depromeet.team5.core.navigation.Splash
 import com.depromeet.team5.core.navigation.graphkey.Home
-import com.depromeet.team5.feature.reasons.navigateToReasonGraph
-import com.depromeet.team5.feature.reasons.reasonGraph
+import com.depromeet.team5.feature.reasons.imageDetailNavigation
+import com.depromeet.team5.feature.reasons.navigateToImageDetail
+import com.depromeet.team5.feature.reasons.navigateToReason
+import com.depromeet.team5.feature.reasons.navigateToRetrospectionDetail
+import com.depromeet.team5.feature.reasons.reasonNavigation
+import com.depromeet.team5.feature.reasons.retrospectionDetailNavigation
 import com.depromeet.team5.features.feedback.navigation.feedbackScreen
 import com.depromeet.team5.features.feedback.navigation.navigateToFeedback
 import com.depromeet.team5.features.home.homeScreen
@@ -60,7 +64,7 @@ fun HedgeNavHost(
             navController = navController,
             onBuyClick = { navController.navigateToSearch() },
             onSellClick = { navController.navigateToSearch() },
-            onClickRetrospectionDetail = { },
+            onClickRetrospectionDetail = navController::navigateToRetrospectionDetail,
             onClickPrincipleDetail = { groupId, path ->
                 navController.navigatePrincipleGraph(groupId, path)
             },
@@ -77,7 +81,7 @@ fun HedgeNavHost(
         retrospectScreen(
             navController = navController,
             onBackPressed = { navController.popBackStack() },
-            onClickedConfirmButton = { navController.navigateToReasonGraph() },
+            onClickedConfirmButton = { navController.navigateToReason() },
             onShowErrorToast = onShowErrorToast
         )
 
@@ -88,10 +92,26 @@ fun HedgeNavHost(
             onShowNoIconToast = onShowNoIconToast
         )
 
-        reasonGraph(
+        reasonNavigation(
             navController = navController,
             onClickBack = navController::popBackStack,
             onClickDone = navController::navigateToFeedback,
+            onClickImage = navController::navigateToImageDetail
+        )
+
+        retrospectionDetailNavigation(
+            onClickBack = navController::popBackStack,
+            onClickFeedback = { retrospectionId ->
+                //todo navigateToFeedback
+            },
+            onClickImage = navController::navigateToImageDetail,
+            onShowToast = onShowToast,
+            onShowErrorToast = onShowErrorToast,
+        )
+
+        imageDetailNavigation(
+            navController = navController,
+            onClickBack = navController::popBackStack,
         )
 
         feedbackScreen(

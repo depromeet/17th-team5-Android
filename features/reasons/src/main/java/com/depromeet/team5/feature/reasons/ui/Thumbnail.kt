@@ -1,5 +1,6 @@
 package com.depromeet.team5.feature.reasons.ui
 
+import android.content.Intent
 import android.net.Uri
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -34,38 +35,35 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.core.net.toUri
 import coil.compose.AsyncImage
 import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
 import com.depromeet.team5.core.designsystem.foundation.HedgeColor
 import com.depromeet.team5.core.designsystem.foundation.HedgeIcon
 import com.depromeet.team5.core.designsystem.foundation.HedgeTypography
+import com.depromeet.team5.core.domain.model.Article
 import com.depromeet.team5.feature.reasons.R
-import com.depromeet.team5.feature.reasons.model.Article
 
 @Composable
 fun ImageThumbnailContainer(
     images: List<Uri>,
-    modifier: Modifier = Modifier,
-    onClickDeleteImage: (Int) -> Unit,
     onClickImage: (Int) -> Unit,
+    onClickDeleteImage: ((Int) -> Unit)? = null,
+    modifier: Modifier = Modifier,
 ) {
     Row(
         modifier = modifier
             .horizontalScroll(rememberScrollState())
-            .padding(
-                start = 20.dp,
-                end = 20.dp,
-                top = if (images.isNotEmpty()) 16.dp else 0.dp,
-                bottom = if (images.isNotEmpty()) 24.dp else 0.dp
-            ),
+            .padding(horizontal = 20.dp),
         horizontalArrangement = Arrangement.spacedBy(12.dp),
     ) {
         images.forEachIndexed { idx, uri ->
             ImageThumbnail(
                 uri = uri,
-                onClickDeleteImage = { onClickDeleteImage(idx) },
+                onClickDeleteImage = onClickDeleteImage?.let { { it(idx) } },
                 onClickImage = { onClickImage(idx) },
             )
         }
@@ -75,24 +73,19 @@ fun ImageThumbnailContainer(
 @Composable
 fun LinkThumbnailContainer(
     articles: List<Article>,
-    onClickDeleteLink: (Int) -> Unit,
+    spacedBy: Dp = 24.dp,
+    onClickDeleteLink: ((Int) -> Unit)? = null,
     modifier: Modifier = Modifier,
 ) {
     Column(
-        modifier = modifier
-            .padding(
-                start = 20.dp,
-                end = 20.dp,
-                top = if (articles.isNotEmpty()) 16.dp else 0.dp,
-                bottom = if (articles.isNotEmpty()) 24.dp else 0.dp
-            ),
-        verticalArrangement = Arrangement.spacedBy(24.dp)
+        modifier = modifier,
+        verticalArrangement = Arrangement.spacedBy(spacedBy)
     ) {
         articles.forEachIndexed { idx, article ->
             LinkThumbnail(
                 modifier = Modifier,
                 article = article,
-                onClickDeleteLink = { onClickDeleteLink(idx) }
+                onClickDeleteLink = onClickDeleteLink?.let { { it(idx) } }
             )
         }
     }
@@ -102,7 +95,7 @@ fun LinkThumbnailContainer(
 private fun ImageThumbnail(
     uri: Uri,
     modifier: Modifier = Modifier,
-    onClickDeleteImage: () -> Unit,
+    onClickDeleteImage: (() -> Unit)?,
     onClickImage: () -> Unit,
 ) {
     val context = LocalContext.current
@@ -128,33 +121,42 @@ private fun ImageThumbnail(
             modifier = modifier
                 .aspectRatio(1f),
         )
-        Icon(
-            modifier = Modifier
-                .padding(4.dp)
-                .align(Alignment.TopEnd)
-                .clip(CircleShape)
-                .clickable(
-                    onClick = onClickDeleteImage,
-                    interactionSource = remember { MutableInteractionSource() },
-                ),
-            painter = painterResource(R.drawable.ic_close_fill),
-            contentDescription = "close",
-            tint = Color.Unspecified,
-        )
+        onClickDeleteImage?.let {
+            Icon(
+                modifier = Modifier
+                    .padding(4.dp)
+                    .align(Alignment.TopEnd)
+                    .clip(CircleShape)
+                    .clickable(
+                        onClick = it,
+                        interactionSource = remember { MutableInteractionSource() },
+                    ),
+                painter = painterResource(R.drawable.ic_close_fill),
+                contentDescription = "close",
+                tint = Color.Unspecified,
+            )
+        }
     }
 }
 
 @Composable
 private fun LinkThumbnail(
     article: Article,
-    onClickDeleteLink: () -> Unit,
+    onClickDeleteLink: (() -> Unit)?,
     modifier: Modifier = Modifier
 ) {
+    val context = LocalContext.current
     Row(
         modifier = modifier
             .height(100.dp)
             .fillMaxWidth()
             .clip(RoundedCornerShape(16.dp))
+            .clickable {
+                runCatching {
+                    val intent = Intent(Intent.ACTION_VIEW, article.originUrl.toUri())
+                    context.startActivity(intent)
+                }
+            }
             .border(width = (1.2).dp, color = HedgeColor.Neutral.BackgroundSecondary, shape = RoundedCornerShape(16.dp)),
     ) {
         article.thumbnail?.let {
@@ -200,18 +202,20 @@ private fun LinkThumbnail(
                 color = HedgeColor.Text.Alternative,
             )
         }
-        Icon(
-            modifier = Modifier
-                .padding(top = 5.dp, end = 4.dp)
-                .clip(CircleShape)
-                .clickable(
-                    onClick = onClickDeleteLink,
-                    interactionSource = remember { MutableInteractionSource() },
-                ),
-            imageVector = HedgeIcon.CloseFill,
-            contentDescription = "close",
-            tint = HedgeColor.Text.Assistive,
-        )
+        onClickDeleteLink?.let {
+            Icon(
+                modifier = Modifier
+                    .padding(top = 5.dp, end = 4.dp)
+                    .clip(CircleShape)
+                    .clickable(
+                        onClick = it,
+                        interactionSource = remember { MutableInteractionSource() },
+                    ),
+                imageVector = HedgeIcon.CloseFill,
+                contentDescription = "close",
+                tint = HedgeColor.Text.Assistive,
+            )
+        }
     }
 }
 

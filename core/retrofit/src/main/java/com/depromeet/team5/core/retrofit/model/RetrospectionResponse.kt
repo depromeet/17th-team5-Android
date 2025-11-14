@@ -1,10 +1,11 @@
 package com.depromeet.team5.core.retrofit.model
 
 import com.depromeet.team5.core.remotedatasource.model.MemoRemoteData
-import com.depromeet.team5.core.remotedatasource.model.PrincipleCheckGroupsRemoteData
+import com.depromeet.team5.core.remotedatasource.model.PrincipleCheckGroupRemoteData
 import com.depromeet.team5.core.remotedatasource.model.PrincipleCheckRemoteData
 import com.depromeet.team5.core.remotedatasource.model.RetrospectionRemoteData
 import com.depromeet.team5.core.retrofit.mapper.RetrofitMapper
+import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -12,16 +13,19 @@ data class RetrospectionResponse(
     val id: Int,
     val userId: Int,
     val market: String,
+    val companyName: String = "",
+    val companyLogo: String? = null,
     val price: Double,
     val createdAt: String,
     val currency: String,
     val orderDate: String,
     val orderType: String,
     val returnRate: Double? = null,
+    val badge: String = "",
     val symbol: String,
     val updatedAt: String,
     val volume: Int,
-    val principleCheckGroup: PrincipleCheckGroupsResponse? = null,
+    val principleCheckGroup: PrincipleCheckGroupResponse? = null,
     val memos: List<MemoResponse> = emptyList(),
 ) : RetrofitMapper<RetrospectionRemoteData> {
 
@@ -30,28 +34,31 @@ data class RetrospectionResponse(
         currency = currency,
         id = id,
         market = market,
+        companyName = companyName,
+        companyLogo = companyLogo,
         orderDate = orderDate,
         orderType = orderType,
         price = price.toInt(),
-        returnRate = returnRate ?: 0.0,
+        returnRate = returnRate,
+        badge = badge,
         symbol = symbol,
         updatedAt = updatedAt,
         userId = userId,
         volume = volume,
-        principleCheckGroupsRemoteData = principleCheckGroup?.toRemoteData(),
+        principleCheckGroupRemoteData = principleCheckGroup?.toRemoteData(),
         memos = memos.map { it.toRemoteData() },
     )
 }
 
 @Serializable
-data class PrincipleCheckGroupsResponse(
+data class PrincipleCheckGroupResponse(
     val groupId: Int,
     val groupName: String,
     val thumbnail: String,
     val principleType: String,
-    val principleCheckResponses: List<PrincipleCheckResponse>
-) : RetrofitMapper<PrincipleCheckGroupsRemoteData> {
-    override fun toRemoteData() = PrincipleCheckGroupsRemoteData(
+    @SerialName(value = "principleChecks") val principleCheckResponses: List<PrincipleCheckResponse>,
+) : RetrofitMapper<PrincipleCheckGroupRemoteData> {
+    override fun toRemoteData() = PrincipleCheckGroupRemoteData(
         groupId = groupId,
         groupName = groupName,
         thumbnail = thumbnail,
@@ -88,5 +95,6 @@ data class MemoResponse(
     override fun toRemoteData() = MemoRemoteData(
         memoId = memoId,
         content = content,
+        createdAt = createdAt,
     )
 }

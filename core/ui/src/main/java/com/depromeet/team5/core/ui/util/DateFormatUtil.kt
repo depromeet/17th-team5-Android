@@ -16,6 +16,7 @@ object HedgeDateFormatters {
     val ymd: DateTimeFormatter = DateTimeFormatter.ofPattern("yyyy.MM.dd", Locale.KOREA)
     val md: DateTimeFormatter = DateTimeFormatter.ofPattern("M월 d일", Locale.KOREA)
     val yyM: DateTimeFormatter = DateTimeFormatter.ofPattern("yy년 M월", Locale.KOREA)
+    val ymdKorean: DateTimeFormatter = DateTimeFormatter.ofPattern("yyyy년 M월 d일", Locale.KOREA)
 }
 
 fun String.flexLocalDateOrNull(
@@ -42,6 +43,12 @@ fun String.toMonthDayOrRaw(
 
 fun String.toYMDOrRaw(
     outputFormatter: DateTimeFormatter = HedgeDateFormatters.ymd,
+    inputFormatters: List<DateTimeFormatter> = HedgeDateFormatters.input
+): String =
+    this.flexLocalDateOrNull(inputFormatters)?.format(outputFormatter) ?: this
+
+fun String.toKoreanYMDOrRaw(
+    outputFormatter: DateTimeFormatter = HedgeDateFormatters.ymdKorean,
     inputFormatters: List<DateTimeFormatter> = HedgeDateFormatters.input
 ): String =
     this.flexLocalDateOrNull(inputFormatters)?.format(outputFormatter) ?: this

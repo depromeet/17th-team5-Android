@@ -1,6 +1,7 @@
 package com.depromeet.team5.core.data.repositoryimpl
 
 import com.depromeet.team5.core.data.datasource.RetrospectionRemoteDataSource
+import com.depromeet.team5.core.domain.model.Article
 import com.depromeet.team5.core.data.mapper.toData
 import com.depromeet.team5.core.domain.model.BaseDomain
 import com.depromeet.team5.core.domain.model.Memo
@@ -46,4 +47,7 @@ internal class RetrospectionRepositoryImpl @Inject constructor(
     override fun deleteMemo(retrospectionId: Int, memoId: Int): Flow<BaseDomain<String>> = flow {
         emit(retrospectionRemoteDataSource.deleteMemo(retrospectionId, memoId).toBaseDomain())
     }
+
+    override suspend fun parseArticle(url: String): Article = retrospectionRemoteDataSource.parseArticle(url).toDomain()
+
 }

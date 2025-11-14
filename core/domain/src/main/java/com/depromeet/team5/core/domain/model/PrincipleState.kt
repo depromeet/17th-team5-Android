@@ -43,6 +43,7 @@ data class PrincipleChecks(
 data class Memo(
     val memoId: Int,
     val content: String,
+    val createdAt: String,
 )
 
 @Immutable

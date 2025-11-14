@@ -5,27 +5,24 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.depromeet.team5.core.domain.monad.HedgeUiState
+import com.depromeet.team5.core.domain.usecase.ParseArticleUseCase
 import com.depromeet.team5.core.ui.lazy.HedgeState
 import com.depromeet.team5.core.ui.lazy.hedgeState
-import com.depromeet.team5.feature.reasons.model.Article
 import com.depromeet.team5.feature.reasons.model.PrincipleAdherence
 import com.depromeet.team5.feature.reasons.model.TradeInfo
 import com.depromeet.team5.feature.reasons.model.UiPrincipleChecks
 import com.depromeet.team5.feature.reasons.model.UiPrincipleGroup
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import org.jsoup.Jsoup
-import java.net.URI
 import javax.inject.Inject
 
 @HiltViewModel
 class ReasonViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
+    private val parseArticleUseCase: ParseArticleUseCase,
 ) : ViewModel() {
 
     var initialPrincipleGroup: UiPrincipleGroup? = null
@@ -60,7 +57,7 @@ class ReasonViewModel @Inject constructor(
 
     fun onAddArticle(id: Int, link: String) {
         viewModelScope.launch {
-            val article = parseArticle(link)
+            val article = parseArticleUseCase(link)
             updatePrincipleGroup(id) {
                 it.copy(
                     articles = it.articles + article
@@ -71,28 +68,6 @@ class ReasonViewModel @Inject constructor(
 
     fun onRemoveArticle(id: Int, index: Int) = updatePrincipleGroup(id) {
         it.copy(articles = it.articles.toMutableList().apply { if (index in indices) removeAt(index) })
-    }
-
-    private suspend fun parseArticle(url: String): Article = withContext(Dispatchers.IO) {
-        val doc = kotlin.runCatching { Jsoup.connect(url).get() }.getOrNull() ?: return@withContext Article(url, null, null, null)
-
-        val title = doc.selectFirst("meta[property=og:title]")?.attr("content")
-            ?: doc.title()
-
-        val ogImage = doc.selectFirst("meta[property=og:image]")?.attr("content")
-        val twitterImage = doc.selectFirst("meta[name=twitter:image]")?.attr("content")
-        val thumbnail = ogImage ?: twitterImage
-
-        val source = doc.selectFirst("meta[property=og:site_name]")?.attr("content")
-            ?: doc.selectFirst("meta[name=author]")?.attr("content")
-            ?: URI(url).host
-
-        Article(
-            originUrl = url,
-            title = title,
-            thumbnail = thumbnail,
-            source = source
-        )
     }
 
     private inline fun updatePrincipleGroup(

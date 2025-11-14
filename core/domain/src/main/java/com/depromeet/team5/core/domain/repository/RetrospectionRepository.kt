@@ -1,5 +1,6 @@
 package com.depromeet.team5.core.domain.repository
 
+import com.depromeet.team5.core.domain.model.Article
 import com.depromeet.team5.core.domain.model.BaseDomain
 import com.depromeet.team5.core.domain.model.Memo
 import com.depromeet.team5.core.domain.model.Retrospection
@@ -36,4 +37,8 @@ interface RetrospectionRepository {
         retrospectionId: Int,
         memoId: Int,
     ): Flow<BaseDomain<String>>
+
+    suspend fun parseArticle(
+        url: String,
+    ): Article
 }

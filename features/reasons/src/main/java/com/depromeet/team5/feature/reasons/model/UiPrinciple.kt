@@ -2,36 +2,50 @@ package com.depromeet.team5.feature.reasons.model
 
 import androidx.compose.runtime.Immutable
 import androidx.compose.ui.text.input.TextFieldValue
+import com.depromeet.team5.core.domain.model.Article
 import com.depromeet.team5.core.domain.model.PrincipleChecks
 import com.depromeet.team5.core.domain.model.PrincipleGroupState
 import com.depromeet.team5.core.domain.model.PrincipleState
 import com.depromeet.team5.core.domain.model.PrincipleType
 
-fun PrincipleGroupState.toUi() = UiPrincipleGroup(
+suspend fun PrincipleGroupState.toUi(
+    parseArticle: (suspend (String) -> Article)? = null
+) = UiPrincipleGroup(
     id = id,
     groupName = groupName,
     thumbnail = thumbnail,
     principleType = principleType,
-    principles = principles.mapIndexed { idx, item -> item.toUi(idx) },
+    principles = principles.mapIndexed { idx, item ->
+        item.toUi(
+            isFirstIdx = idx == 0,
+            parseArticle = parseArticle
+        )
+    },
 )
 
-fun PrincipleState.toUi(idx: Int) = UiPrinciple(
+suspend fun PrincipleState.toUi(
+    isFirstIdx: Boolean,
+    parseArticle: (suspend (String) -> Article)? = null
+) = UiPrinciple(
     id = id,
     groupId = groupId,
     principle = principle,
     description = description,
-    principleChecks = principleChecks.toUi(idx),
+    principleChecks = principleChecks.toUi(isFirstIdx, parseArticle),
 )
 
-fun PrincipleChecks.toUi(idx: Int) = UiPrincipleChecks(
+suspend fun PrincipleChecks.toUi(
+    isFirstIdx: Boolean,
+    parseArticle: (suspend (String) -> Article)? = null
+) = UiPrincipleChecks(
     principleId = principleId,
     adherence = PrincipleAdherence.fromStatus(status).run {
-        if (idx == 0 && this == PrincipleAdherence.UNSELECTED) PrincipleAdherence.KEPT else this
+        if (isFirstIdx && this == PrincipleAdherence.UNSELECTED) PrincipleAdherence.KEPT else this
     },
     note = TextFieldValue(reason),
     imageUrls = imageUrls,
     articles = links.map {
-        Article(
+        parseArticle?.run { invoke(it) } ?: Article(
             originUrl = it,
             title = null,
             thumbnail = null,

@@ -10,6 +10,7 @@ import androidx.navigation.NavOptions
 import androidx.navigation.compose.composable
 import androidx.navigation.toRoute
 import com.depromeet.team5.core.domain.model.OrderType
+import com.depromeet.team5.core.navigation.IS_UPDATED
 import com.depromeet.team5.core.navigation.Path
 import com.depromeet.team5.core.navigation.graphkey.PrincipleGraph
 import com.depromeet.team5.core.navigation.request.PrincipleGraphViewModel
@@ -38,7 +39,6 @@ fun NavController.navigateToPrincipleGroupDetail(
 
 fun NavGraphBuilder.principleGroupDetail(
     navController: NavController,
-    onBackPressed: () -> Unit,
     onShowErrorToast: (Throwable) -> Unit,
     onShowToast: (String) -> Unit,
     onShowNoIconToast: (String) -> Unit,
@@ -60,7 +60,13 @@ fun NavGraphBuilder.principleGroupDetail(
             path = args.path,
             navController = navController,
             modifier = Modifier.navigationBarsPadding(),
-            onBackPressed = onBackPressed,
+            onBackPressed = { isUpdated ->
+                navController.previousBackStackEntry
+                    ?.savedStateHandle
+                    ?.set(IS_UPDATED, isUpdated)
+
+                navController.popBackStack()
+            },
             onShowErrorToast = onShowErrorToast,
             onShowToast = onShowToast,
             onShowNoIconToast = onShowNoIconToast,

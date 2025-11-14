@@ -71,9 +71,11 @@ import com.depromeet.team5.core.designsystem.component.HedgeTopBar
 import com.depromeet.team5.core.designsystem.foundation.HedgeColor
 import com.depromeet.team5.core.designsystem.foundation.HedgeIcon
 import com.depromeet.team5.core.designsystem.foundation.HedgeTypography
+import com.depromeet.team5.core.domain.model.FinishType
 import com.depromeet.team5.core.domain.model.MyPrinciple
 import com.depromeet.team5.core.domain.model.MyPrincipleGroup
 import com.depromeet.team5.core.domain.model.OrderType
+import com.depromeet.team5.core.domain.monad.BaseEvent
 import com.depromeet.team5.core.domain.monad.HedgeUiState
 import com.depromeet.team5.core.navigation.IS_UPDATED
 import com.depromeet.team5.core.navigation.Path
@@ -82,9 +84,9 @@ import com.depromeet.team5.core.navigation.request.PrincipleGraphViewModel
 import com.depromeet.team5.core.ui.HedgeModal
 import com.depromeet.team5.core.ui.extensions.baseCollect
 import com.depromeet.team5.features.principlegroupdetail.R
-import com.depromeet.team5.features.principlegroupdetail.event.PrincipleDetailEvent
 import com.depromeet.team5.features.principlegroupdetail.state.ModalUiState
 import kotlin.math.abs
+import com.depromeet.team5.core.ui.R as UiR
 
 
 @Composable
@@ -92,7 +94,7 @@ fun PrincipleDetailRoute(
     path: Path,
     navController: NavController,
     modifier: Modifier = Modifier,
-    onBackPressed: () -> Unit,
+    onBackPressed: (Boolean) -> Unit,
     onShowErrorToast: (Throwable) -> Unit,
     onShowToast: (String) -> Unit,
     onShowNoIconToast: (String) -> Unit,
@@ -132,19 +134,19 @@ fun PrincipleDetailRoute(
     LaunchedEffect(Unit) {
         viewModel.eventFlow.collect { event ->
             when (event) {
-                PrincipleDetailEvent.Finish -> {
-                    onBackPressed()
+                is BaseEvent.Finish<FinishType> -> {
+                    when (event.result) {
+                        FinishType.REMOVE -> {
+                            onShowToast(context.getString(UiR.string.remove_new_principle_group))
+                            onBackPressed(true)
+                        }
+                        FinishType.CREATION -> {
+                            onShowToast(context.getString(UiR.string.create_new_principle_group))
+                            onBackPressed(true)
+                        }
+                        else -> {}
+                    }
                 }
-
-                is PrincipleDetailEvent.ShowErrorToast -> {
-                    onShowErrorToast(event.throwable)
-                }
-
-                is PrincipleDetailEvent.FinishAndShowToast -> {
-                    onShowToast(context.getString(R.string.principle_detail_create_principle_group_toast_message))
-                    onBackPressed()
-                }
-
                 else -> {}
             }
 
@@ -178,12 +180,14 @@ fun PrincipleDetailRoute(
         onClickedConfirmButton = {
             isShowModalBottomSheet = true
         },
-        onBackPressed = onBackPressed,
+        onBackPressed = {
+            onBackPressed(false)
+        },
         onShowNoIconToast = {
             onShowNoIconToast(it)
         },
         onShowErrorToast = {
-            onBackPressed()
+            onBackPressed(false)
             onShowErrorToast(it)
         }
     )
@@ -249,16 +253,16 @@ private fun PrincipleDetailScreen(
                         showModal = true,
                         title = if (modalUiState is ModalUiState.ForPrinciple) {
                             stringResource(
-                                R.string.principle_detail_modal_delete_title,
+                                UiR.string.question_principle_delete,
                                 uiState.data.groupName
                             )
                         } else {
                             stringResource(
-                                R.string.principle_detail_group_modal_delete_title,
+                                UiR.string.principle_detail_group_modal_delete_title,
                                 uiState.data.groupName
                             )
                         },
-                        description = stringResource(R.string.principle_detail_modal_delete_content),
+                        description = stringResource(UiR.string.principle_detail_modal_delete_content),
                         submitButton = stringResource(R.string.delete) to {
                             if (modalUiState is ModalUiState.ForPrinciple) {
                                 onClickedItemRemoveButton((modalUiState as ModalUiState.ForPrinciple).id)
@@ -387,7 +391,7 @@ private fun PrincipleDetailContent(
                         .align(alignment = Alignment.BottomEnd)
                 ) {
                     if (myPrincipleGroup.principles.size >= 5) {
-                        onShowNoIconToast(context.getString(R.string.principle_detail_limit_count))
+                        onShowNoIconToast(context.getString(UiR.string.principle_limit_count))
                     } else {
                         onClickedFloatingButton()
                     }
@@ -486,7 +490,7 @@ private fun PrincipleListEmpty(
         )
         Text(
             modifier = Modifier.padding(top = 6.dp),
-            text = stringResource(R.string.principle_detail_principles_empty),
+            text = stringResource(UiR.string.principle_detail_principles_empty),
             style = HedgeTypography.Body2.Medium,
             color = HedgeColor.Text.Assistive,
             textAlign = TextAlign.Center
@@ -816,7 +820,7 @@ private fun RecommendedModalBottomSheetScreen(
             ) {
                 Text(
                     modifier = Modifier,
-                    text = stringResource(R.string.principle_detail_modal_bottom_sheet_title),
+                    text = stringResource(UiR.string.principle_detail_modal_bottom_sheet_title),
                     style = HedgeTypography.Body1.SemiBold,
                     color = HedgeColor.Text.Title
                 )

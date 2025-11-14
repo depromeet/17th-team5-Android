@@ -4,8 +4,10 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.toRoute
+import com.depromeet.team5.core.domain.model.FinishType
 import com.depromeet.team5.core.domain.model.MyPrincipleGroup
 import com.depromeet.team5.core.domain.model.OrderType
+import com.depromeet.team5.core.domain.monad.BaseEvent
 import com.depromeet.team5.core.domain.monad.HedgeUiState
 import com.depromeet.team5.core.domain.monad.asUiState
 import com.depromeet.team5.core.domain.usecase.CreatePrincipleGroupUseCase
@@ -14,7 +16,6 @@ import com.depromeet.team5.core.domain.usecase.DeletePrincipleUseCase
 import com.depromeet.team5.core.domain.usecase.GetPrincipleGroupUseCase
 import com.depromeet.team5.core.ui.extensions.baseCollect
 import com.depromeet.team5.core.ui.lazy.hedgeState
-import com.depromeet.team5.features.principlegroupdetail.event.PrincipleDetailEvent
 import com.depromeet.team5.features.principlegroupdetail.navigation.PrincipleGroupDetail
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -36,7 +37,7 @@ class PrincipleDetailViewModel @Inject constructor(
 
     val uiState by hedgeState<HedgeUiState<MyPrincipleGroup>>(HedgeUiState.Loading())
 
-    private val _eventFlow = MutableSharedFlow<PrincipleDetailEvent>()
+    private val _eventFlow = MutableSharedFlow<BaseEvent<FinishType>>()
     val eventFlow = _eventFlow.asSharedFlow()
 
 
@@ -58,10 +59,10 @@ class PrincipleDetailViewModel @Inject constructor(
             deletePrincipleGroupUseCase(groupId)
                 .baseCollect(
                     onSuccess = {
-                        _eventFlow.emit(PrincipleDetailEvent.Finish)
+                        _eventFlow.emit(BaseEvent.Finish(FinishType.REMOVE))
                     },
                     onError = {
-                        _eventFlow.emit(PrincipleDetailEvent.ShowErrorToast(it))
+                        _eventFlow.emit(BaseEvent.Error(it))
                     }
                 )
         }
@@ -88,7 +89,7 @@ class PrincipleDetailViewModel @Inject constructor(
                         }
                     },
                     onError = {
-                        _eventFlow.emit(PrincipleDetailEvent.ShowErrorToast(it))
+                        _eventFlow.emit(BaseEvent.Error(it))
                     }
                 )
         }
@@ -100,10 +101,10 @@ class PrincipleDetailViewModel @Inject constructor(
                 createPrincipleGroupUseCase(data.copy(orderType = orderType))
                     .baseCollect(
                         onSuccess = {
-                            _eventFlow.emit(PrincipleDetailEvent.FinishAndShowToast)
+                            _eventFlow.emit(BaseEvent.Finish(FinishType.CREATION))
                         },
                         onError = {
-                            _eventFlow.emit(PrincipleDetailEvent.ShowErrorToast(it))
+                            _eventFlow.emit(BaseEvent.Error(it))
                         }
                     )
             }

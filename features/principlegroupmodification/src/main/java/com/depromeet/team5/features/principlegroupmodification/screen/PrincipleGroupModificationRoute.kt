@@ -105,7 +105,7 @@ fun PrincipleGroupModificationRoute(
                             val message = when (event.result) {
                                 FinishType.CREATION -> {
                                     context.getString(
-                                        UiR.string.principle_group_modification_creation
+                                        UiR.string.create_new_principle_group
                                     )
                                 }
                                 FinishType.MODIFICATION -> {

@@ -46,6 +46,7 @@ fun NavGraphBuilder.homeScreen(
         }
 
         HomeRoute(
+            navController = navController,
             onBuyClick = onBuyClick,
             onSellClick = onSellClick,
             requestViewModel = sharedViewModel,

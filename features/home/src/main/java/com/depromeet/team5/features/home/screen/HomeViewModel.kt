@@ -20,6 +20,8 @@ import com.depromeet.team5.core.domain.usecase.RetrospectionListUseCase
 import com.depromeet.team5.core.domain.usecase.SystemPrincipleUseCase
 import com.depromeet.team5.core.domain.usecase.UserStatsUseCase
 import com.depromeet.team5.core.ui.lazy.hedgeState
+import com.depromeet.team5.core.ui.restartflow.RestartableStateFlow
+import com.depromeet.team5.core.ui.restartflow.restartStateIn
 import com.depromeet.team5.core.ui.util.flexLocalDateOrNull
 import com.depromeet.team5.core.ui.util.toMonthDayOrRaw
 import com.depromeet.team5.core.ui.util.toSectionLabel
@@ -40,6 +42,7 @@ enum class HomeTab(
     val selectedColor: Color = Color.Black,
     val unselectedColor: Color = GREY_400,
 ) {
+
     HOME(
         title = R.string.home_tab_title_home
     ),
@@ -177,11 +180,11 @@ class HomeViewModel @Inject constructor(
                 initialValue = HedgeUiState.Loading(emptyList())
             )
 
-    val principleGroupsUiState: StateFlow<HedgeUiState<List<MyPrincipleGroup>>> =
+    val principleGroupsUiState: RestartableStateFlow<HedgeUiState<List<MyPrincipleGroup>>> =
         principleOrderType.stateFlow
             .flatMapLatest { order -> getPrincipleGroupsUseCase(order.name) }
             .asUiState()
-            .stateIn(
+            .restartStateIn(
                 scope = viewModelScope,
                 started = SharingStarted.WhileSubscribed(5_000),
                 initialValue = HedgeUiState.Loading(emptyList())
@@ -189,5 +192,9 @@ class HomeViewModel @Inject constructor(
 
     fun setPrincipleOrderType(type: OrderType) {
         if (principleOrderType.value != type) principleOrderType.tryEmit(type)
+    }
+
+    fun restartPrincipleGroups() {
+        principleGroupsUiState.restart()
     }
 }

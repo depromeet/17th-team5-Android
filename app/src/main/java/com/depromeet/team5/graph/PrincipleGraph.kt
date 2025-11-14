@@ -38,7 +38,6 @@ fun NavGraphBuilder.principleGraph(
 
         principleGroupDetail(
             navController = navController,
-            onBackPressed = navController::popBackStack,
             onShowErrorToast = onShowErrorToast,
             onShowToast = onShowToast,
             onShowNoIconToast = onShowNoIconToast,

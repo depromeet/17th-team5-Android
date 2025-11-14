@@ -8,6 +8,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -15,6 +16,7 @@ import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBars
@@ -45,6 +47,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.boundsInRoot
 import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
@@ -162,7 +165,6 @@ private fun BoxScope.RetrospectionDetailScreenContents(
     modifier: Modifier = Modifier,
 ) {
 
-    val scrollState = rememberScrollState()
     val pagerState = rememberPagerState(initialPage = 0) { retrospection.principleGroupState.principles.size }
     var showDeleteRetrospectionModal by remember { mutableStateOf(false) }
     var showMemoBottomSheet by remember { mutableStateOf(false) }
@@ -214,52 +216,65 @@ private fun BoxScope.RetrospectionDetailScreenContents(
             },
             modifier = Modifier.onGloballyPositioned { topBarBottom = it.boundsInRoot().bottom }
         )
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .verticalScroll(scrollState)
+        BoxWithConstraints(
+            modifier = Modifier.weight(1f)
         ) {
-            TradeInfo(
-                thumbnail = retrospection.companyLogo,
-                companyName = retrospection.companyName,
-                price = retrospection.price,
-                currency = retrospection.currency,
-                volume = retrospection.volume,
-                orderDate = retrospection.orderDate,
-                orderType = retrospection.orderType,
-                returnRate = retrospection.returnRate,
-                modifier = Modifier
-                    .padding(horizontal = 20.dp, vertical = 10.dp)
-            )
-            Spacer(Modifier.size(4.dp))
-            AiFeedback(
-                badge = retrospection.badge,
-                onClickFeedback = { onClickFeedback(retrospection.id) },
-                modifier = Modifier.padding(horizontal = 16.dp)
-            )
-            Spacer(Modifier.size(28.dp))
-            PrincipleGroupTitle(
-                currentPage = pagerState.currentPage + 1,
-                pageCount = pagerState.pageCount,
-                groupName = retrospection.principleGroupState.groupName,
-                memosSize = retrospection.memos.size,
-                onClickMemo = { showMemoBottomSheet = true },
-                modifier = Modifier.padding(start = 20.dp, end = 16.dp),
-            )
-            //todo paging scroll 영역 화면 하단까지 늘리기..
-            HorizontalPager(
-                state = pagerState,
-                verticalAlignment = Alignment.Top,
+            val viewportHeight = maxHeight
+            val density = LocalDensity.current
+            val scrollState = rememberScrollState()
+            var headerHeight by remember { mutableStateOf(0.dp) }
+            Column(
                 modifier = Modifier
                     .fillMaxSize()
-            ) { page ->
-                val principle = retrospection.principleGroupState.principles[page]
-                RetrospectionPage(
-                    principleState = principle,
-                    onClickImage = { onClickImage(ImageDetail(principle.principleChecks.imageUrls, it)) },
-                    onTitlePositioned = { principleTitleOffsetY = it },
+                    .verticalScroll(scrollState)
+            ) {
+                Column(
+                    modifier = Modifier.onGloballyPositioned { coords ->
+                        headerHeight = with(density) { coords.size.height.toDp() }
+                    }
+                ) {
+                    TradeInfo(
+                        thumbnail = retrospection.companyLogo,
+                        companyName = retrospection.companyName,
+                        price = retrospection.price,
+                        currency = retrospection.currency,
+                        volume = retrospection.volume,
+                        orderDate = retrospection.orderDate,
+                        orderType = retrospection.orderType,
+                        returnRate = retrospection.returnRate,
+                        modifier = Modifier
+                            .padding(horizontal = 20.dp, vertical = 10.dp)
+                    )
+                    Spacer(Modifier.size(4.dp))
+                    AiFeedback(
+                        badge = retrospection.badge,
+                        onClickFeedback = { onClickFeedback(retrospection.id) },
+                        modifier = Modifier.padding(horizontal = 16.dp)
+                    )
+                    Spacer(Modifier.size(28.dp))
+                    PrincipleGroupTitle(
+                        currentPage = pagerState.currentPage + 1,
+                        pageCount = pagerState.pageCount,
+                        groupName = retrospection.principleGroupState.groupName,
+                        memosSize = retrospection.memos.size,
+                        onClickMemo = { showMemoBottomSheet = true },
+                        modifier = Modifier.padding(start = 20.dp, end = 16.dp),
+                    )
+                }
+                val minPagerHeight = (viewportHeight - headerHeight).coerceAtLeast(0.dp)
+                HorizontalPager(
+                    state = pagerState,
+                    verticalAlignment = Alignment.Top,
                     modifier = Modifier
-                )
+                        .heightIn(min = minPagerHeight)
+                ) { page ->
+                    val principle = retrospection.principleGroupState.principles[page]
+                    RetrospectionPage(
+                        principleState = principle,
+                        onClickImage = { onClickImage(ImageDetail(principle.principleChecks.imageUrls, it)) },
+                        onTitlePositioned = { principleTitleOffsetY = it },
+                    )
+                }
             }
         }
     }

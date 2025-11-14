@@ -16,8 +16,10 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.imePadding
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.relocation.BringIntoViewRequester
 import androidx.compose.foundation.relocation.bringIntoViewRequester
 import androidx.compose.foundation.rememberScrollState
@@ -343,7 +345,10 @@ private fun RetrospectScreen(
             .background(color = HedgeColor.Neutral.BackgroundSecondary)
             .verticalScroll(rememberScrollState())
     ) {
-        HedgeTopBar(onClickBack = onBackPressed)
+        HedgeTopBar(
+            modifier = Modifier.statusBarsPadding(),
+            onClickBack = onBackPressed
+        )
 
         Row(
             modifier = Modifier.padding(start = 20.dp, top = 10.dp),
@@ -521,6 +526,7 @@ private fun RetrospectScreen(
 
             HedgeButton.Action.Filled(
                 modifier = Modifier
+                    .navigationBarsPadding()
                     .fillMaxWidth()
                     .padding(top = 24.dp, bottom = 31.dp),
                 enabled = buttonEnabled,

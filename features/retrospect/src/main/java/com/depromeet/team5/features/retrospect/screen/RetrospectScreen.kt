@@ -6,17 +6,23 @@ import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.imePadding
+import androidx.compose.foundation.layout.isImeVisible
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.relocation.BringIntoViewRequester
 import androidx.compose.foundation.relocation.bringIntoViewRequester
 import androidx.compose.foundation.rememberScrollState
@@ -26,12 +32,14 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.State
 import androidx.compose.runtime.derivedStateOf
@@ -42,6 +50,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusDirection
@@ -62,32 +71,37 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import coil3.compose.AsyncImage
 import com.depromeet.team5.core.designsystem.component.HedgeButton
 import com.depromeet.team5.core.designsystem.component.HedgeSegment
 import com.depromeet.team5.core.designsystem.component.HedgeTopBar
 import com.depromeet.team5.core.designsystem.foundation.HedgeColor
+import com.depromeet.team5.core.designsystem.foundation.HedgeIcon
 import com.depromeet.team5.core.designsystem.foundation.HedgeTypography
 import com.depromeet.team5.core.domain.model.MyPrincipleGroup
 import com.depromeet.team5.core.domain.model.OrderType
 import com.depromeet.team5.core.domain.model.PrincipleChecks
 import com.depromeet.team5.core.domain.model.PrincipleGroupState
 import com.depromeet.team5.core.domain.model.PrincipleState
-import com.depromeet.team5.core.domain.monad.HedgeUiState
 import com.depromeet.team5.core.domain.request.CreateRetrospectionRequest
 import com.depromeet.team5.core.navigation.request.RequestViewModel
 import com.depromeet.team5.core.ui.component.PrincipleBottomSheetDialog
+import com.depromeet.team5.core.ui.util.CurrencyUtil
 import com.depromeet.team5.features.retrospect.R
 import com.depromeet.team5.features.retrospect.annotation.CurrencyType
 import com.depromeet.team5.features.retrospect.annotation.ReturnSignType
 import com.depromeet.team5.features.retrospect.screen.component.HedgeDatePickerDialog
 import com.depromeet.team5.features.retrospect.screen.component.HedgeSimpleTextField
-import com.depromeet.team5.features.retrospect.screen.component.HedgeTopbar
 import com.depromeet.team5.features.retrospect.screen.component.HedgeUnitTextField
+import com.depromeet.team5.features.retrospect.screen.model.TextFieldType
 import com.depromeet.team5.features.retrospect.screen.visualtransmation.CurrencyVisualTransformation
 import com.depromeet.team5.features.retrospect.screen.visualtransmation.UnitVisualTransformation
 import com.depromeet.team5.features.retrospect.state.RetrospectionState
 import com.depromeet.team5.features.retrospect.state.TextFieldState
+import com.depromeet.team5.features.retrospect.state.UiState
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
+import java.text.DecimalFormat
 import java.text.SimpleDateFormat
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
@@ -106,37 +120,30 @@ fun RetrospectRoute(
 ) {
     val context = LocalContext.current
 
-    val viewModel: RetrospectionViewModel = hiltViewModel(
-        creationCallback = { factory: RetrospectionViewModel.Factory ->
-            factory.create(requestViewModel.request.orderType.name)
-        }
-    )
-
     val retrospectionState = rememberRetrospectionState(
         requestParams = requestViewModel.request
     )
-
-    val myPrincipleState by viewModel.principleGroupsUiState.collectAsStateWithLifecycle()
 
     var isOpenBottomSheetDialog by remember { mutableStateOf(false) }
 
     val isButtonEnabled by remember {
         derivedStateOf {
             arrayOf(
-                retrospectionState.sellingTextFieldState.value,
+                retrospectionState.priceTextFieldState.value,
                 retrospectionState.stockTextFieldState.value,
                 retrospectionState.dateTextFieldState.value
             )
                 .all { it.text.isNotEmpty() && !it.isError }
-                .takeIf { it }
-                ?.let {
-                    when (retrospectionState.returnToggleState.value) {
-                        true -> retrospectionState.returnTextFieldState.value.text.isNotEmpty() &&
-                            !retrospectionState.returnTextFieldState.value.isError
-
-                        false -> true
+                .let { isActive ->
+                    val returnIsActive = if (retrospectionState.returnToggleState.value) {
+                        retrospectionState.returnTextFieldState.value.text.isNotEmpty() &&
+                                !retrospectionState.returnTextFieldState.value.isError
+                    } else {
+                        true
                     }
-                } ?: false
+
+                    isActive && returnIsActive
+                }
         }
     }
 
@@ -144,10 +151,11 @@ fun RetrospectRoute(
         modifier = modifier,
         retrospectionState = retrospectionState,
         requestParams = requestViewModel.request,
+        companyLogoUrl = requestViewModel.companyLogoUrl,
         buttonEnabled = isButtonEnabled,
         onUpdateSellingText = { text, selection ->
-            retrospectionState.sellingTextFieldState.value =
-                retrospectionState.sellingTextFieldState.value.copy(
+            retrospectionState.priceTextFieldState.value =
+                retrospectionState.priceTextFieldState.value.copy(
                     text = text,
                     selection = selection
                 )
@@ -202,13 +210,12 @@ fun RetrospectRoute(
 
     if (isOpenBottomSheetDialog) {
         PrincipleDialog(
-            uiState = myPrincipleState,
             orderType = requestViewModel.request.orderType,
             onClickedClose = { isOpenBottomSheetDialog = false },
             onClickedConfirmButton = { myPrincipleGroup ->
                 with(retrospectionState) {
                     requestViewModel.request = requestViewModel.request.copy(
-                        price = sellingTextFieldState.value.text.toInt(),
+                        price = priceTextFieldState.value.text.toInt(),
                         volume = stockTextFieldState.value.text.toInt(),
                         orderDate = dateTextFieldState.value.text,
                         currency = CurrencyType.from(currencyType.value),
@@ -262,10 +269,10 @@ private fun rememberRetrospectionState(
 ): RetrospectionState {
     val sellingTextFieldState = rememberSaveable {
         getTextFieldState(
-            label = if (requestParams.orderDate == "SELL") {
+            label = if (requestParams.orderType == OrderType.SELL) {
                 context.getString(R.string.retrospect_selling_price)
             } else {
-                context.getString(R.string.retrospect_selling_price)
+                context.getString(R.string.retrospect_buy_price)
             }
         )
     }
@@ -296,7 +303,7 @@ private fun rememberRetrospectionState(
         returnSignState
     ) {
         RetrospectionState(
-            sellingTextFieldState = sellingTextFieldState,
+            priceTextFieldState = sellingTextFieldState,
             stockTextFieldState = stockTextFieldState,
             dateTextFieldState = dateTextFieldState,
             returnTextFieldState = returnTextFieldState,
@@ -307,9 +314,11 @@ private fun rememberRetrospectionState(
     }
 }
 
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 private fun RetrospectScreen(
     retrospectionState: RetrospectionState,
+    companyLogoUrl: String?,
     requestParams: CreateRetrospectionRequest,
     modifier: Modifier = Modifier,
     buttonEnabled: Boolean = false,
@@ -324,8 +333,107 @@ private fun RetrospectScreen(
     onUpdateReturnSign: (ReturnSignType) -> Unit,
     onBackPressed: () -> Unit
 ) {
+    val context = LocalContext.current
     val focusManager = LocalFocusManager.current
     val keyboardController = LocalSoftwareKeyboardController.current
+    val decimalFormat = remember { DecimalFormat("#,###") }
+    val currencyType by remember { retrospectionState.currencyType }
+    val isShowKeyboard = WindowInsets.isImeVisible
+    var isShowFirstDivider by remember { mutableStateOf(false) }
+    var isShowSecondDivider by remember { mutableStateOf(false) }
+    var textFieldType by remember { mutableStateOf(TextFieldType.NONE) }
+    var isShowDatePicker by remember { mutableStateOf(false) }
+    var title by remember {
+        mutableStateOf(
+            when (requestParams.orderType) {
+                OrderType.BUY -> context.getString(R.string.retrospect_buy_price_title)
+                OrderType.SELL -> context.getString(R.string.retrospect_selling_price_title)
+                OrderType.NONE -> ""
+            }
+        )
+    }
+
+    LaunchedEffect(buttonEnabled, currencyType, isShowKeyboard) {
+        if (!buttonEnabled) return@LaunchedEffect
+
+        val price = retrospectionState.priceTextFieldState.value.text
+        val stock = retrospectionState.stockTextFieldState.value.text
+        val date = retrospectionState.dateTextFieldState.value.text
+        val currencyType = retrospectionState.currencyType.value
+        val unit = CurrencyType.from(currencyType)
+        val isKorean = currencyType == CurrencyType.KRW
+
+        listOf(price, stock, date)
+            .all { it.isNotEmpty() }
+            .let { isResult ->
+                if (!isResult || isShowKeyboard) return@let
+
+                val res = when (requestParams.orderType) {
+                    OrderType.BUY -> {
+                        if (isKorean) {
+                            R.string.retrospect_buy_korean_result_title
+                        } else {
+                            R.string.retrospect_buy_national_result_title
+                        }
+                    }
+
+                    OrderType.SELL -> {
+                        if (isKorean) {
+                            R.string.retrospect_sell_korean_result_title
+                        } else {
+                            R.string.retrospect_sell_national_result_title
+                        }
+                    }
+
+                    else -> return@let
+                }
+
+                val value = when (currencyType) {
+                    CurrencyType.KRW -> decimalFormat.format(price.toFloat() * stock.toFloat())
+                    else -> "${CurrencyUtil.getSymbol(unit)}${(decimalFormat.format(price.toFloat() * stock.toFloat()))}"
+                }
+
+                title = context.getString(res, value)
+            }
+    }
+
+    LaunchedEffect(Unit) {
+        snapshotFlow { textFieldType }
+            .distinctUntilChanged()
+            .collect { type ->
+                title = when (type) {
+                    TextFieldType.PRICE -> {
+                        when (requestParams.orderType) {
+                            OrderType.BUY -> context.getString(R.string.retrospect_buy_price_title)
+                            OrderType.SELL -> context.getString(R.string.retrospect_selling_price_title)
+                            else -> ""
+                        }
+                    }
+
+                    TextFieldType.STOCK -> {
+                        when (requestParams.orderType) {
+                            OrderType.BUY -> context.getString(R.string.retrospect_buy_volume_title)
+                            OrderType.SELL -> context.getString(R.string.retrospect_selling_volume_title)
+                            else -> ""
+                        }
+                    }
+
+                    TextFieldType.DATE -> {
+                        when (requestParams.orderType) {
+                            OrderType.BUY -> context.getString(R.string.retrospect_buy_date_title)
+                            OrderType.SELL -> context.getString(R.string.retrospect_selling_date_title)
+                            else -> ""
+                        }
+                    }
+
+                    TextFieldType.RETURN -> {
+                        context.getString(R.string.retrospect_return_title)
+                    }
+
+                    else -> title
+                }
+            }
+    }
 
     Column(
         modifier = modifier
@@ -334,7 +442,10 @@ private fun RetrospectScreen(
             .background(color = HedgeColor.Neutral.BackgroundSecondary)
             .verticalScroll(rememberScrollState())
     ) {
-        HedgeTopBar(onClickBack = onBackPressed)
+        HedgeTopBar(
+            modifier = Modifier.statusBarsPadding(),
+            onClickBack = onBackPressed
+        )
 
         Row(
             modifier = Modifier.padding(start = 20.dp, top = 10.dp),
@@ -345,7 +456,21 @@ private fun RetrospectScreen(
                 modifier = Modifier
                     .size(22.dp)
                     .background(Color.Gray, shape = RoundedCornerShape(20.dp))
-            )
+            ) {
+                if (companyLogoUrl != null) {
+                    AsyncImage(
+                        modifier = modifier.fillMaxSize(),
+                        model = companyLogoUrl,
+                        contentDescription = null
+                    )
+                } else {
+                    Image(
+                        modifier = modifier.fillMaxSize(),
+                        imageVector = HedgeIcon.COMPANY_LOGO,
+                        contentDescription = null
+                    )
+                }
+            }
 
             Text(
                 modifier = Modifier.padding(start = 7.dp),
@@ -357,11 +482,7 @@ private fun RetrospectScreen(
 
         Text(
             modifier = Modifier.padding(start = 20.dp, top = 8.dp),
-            text = if (requestParams.orderType == OrderType.SELL) {
-                stringResource(id = R.string.retrospect_selling_price_title)
-            } else {
-                stringResource(id = R.string.retrospect_buy_price_title)
-            },
+            text = title,
             style = HedgeTypography.Headline1.SemiBold,
             color = HedgeColor.GREY_900
         )
@@ -374,27 +495,64 @@ private fun RetrospectScreen(
                     shape = RoundedCornerShape(16.dp)
                 )
         ) {
-            SellingTextField(
-                state = retrospectionState.sellingTextFieldState,
+            PriceTextField(
+                state = retrospectionState.priceTextFieldState,
                 requestParams = requestParams,
                 currencyTypeState = retrospectionState.currencyType,
                 onUpdateSellingText = onUpdateSellingText,
-                onUpdateCurrency = onUpdateCurrency
+                onUpdateCurrency = onUpdateCurrency,
+                onFocusChanged = { isFocused ->
+                    isShowFirstDivider = !isFocused
+                    textFieldType = TextFieldType.PRICE
+                }
             )
+
+            if (isShowFirstDivider) {
+                HorizontalDivider(
+                    modifier = Modifier.fillMaxWidth(),
+                    thickness = 1.dp,
+                    color = HedgeColor.GREY_200
+                )
+            }
+
             StockTextField(
                 state = retrospectionState.stockTextFieldState,
-                onUpdateStockText = onUpdateStockText
+                onUpdateStockText = onUpdateStockText,
+                onFocusChanged = { isFocused ->
+                    isShowFirstDivider = !isFocused
+                    isShowSecondDivider = !isFocused
+                    textFieldType = TextFieldType.STOCK
+                }
             )
+
+            if (isShowSecondDivider) {
+                HorizontalDivider(
+                    modifier = Modifier.fillMaxWidth(),
+                    thickness = 1.dp,
+                    color = HedgeColor.GREY_200
+                )
+            }
+
             DateTextField(
+                isShowDatePicker = isShowDatePicker,
                 state = retrospectionState.dateTextFieldState,
                 onUpdateDateText = onUpdateDateText,
                 onErrorDateText = onErrorDateText,
-                onFocusChanged = {
+                onFocusChanged = { isFocused ->
+                    if (isFocused) {
+                        isShowDatePicker = true
+                    }
+
                     if (retrospectionState.returnToggleState.value) {
                         focusManager.moveFocus(FocusDirection.Down)
                     } else {
                         focusManager.clearFocus()
                     }
+
+                    textFieldType = TextFieldType.DATE
+                },
+                onDismissDatePicker = {
+                    isShowDatePicker = false
                 }
             )
         }
@@ -427,6 +585,9 @@ private fun RetrospectScreen(
                     } else {
                         keyboardController?.hide()
                     }
+                },
+                onFocusChanged = {
+                    textFieldType = TextFieldType.RETURN
                 }
             )
         }
@@ -473,9 +634,11 @@ private fun RetrospectScreen(
 
             HedgeButton.Action.Filled(
                 modifier = Modifier
+                    .navigationBarsPadding()
                     .fillMaxWidth()
                     .padding(top = 24.dp, bottom = 31.dp),
                 enabled = buttonEnabled,
+                forceClickable = buttonEnabled,
                 text = stringResource(id = R.string.retrospect_confirm),
                 onClick = onClickedConfirmButton
             )
@@ -485,27 +648,34 @@ private fun RetrospectScreen(
 
 @Composable
 private fun PrincipleDialog(
-    uiState: HedgeUiState<List<MyPrincipleGroup>>,
     orderType: OrderType,
     onClickedClose: () -> Unit,
     onClickedConfirmButton: (MyPrincipleGroup) -> Unit,
-    onShowErrorToast: (Throwable) -> Unit
+    onShowErrorToast: (Throwable) -> Unit,
+    viewModel: PrincipleGroupViewModel = hiltViewModel()
 ) {
+    val uiState by viewModel.uiState.stateFlow.collectAsStateWithLifecycle()
+
+    LaunchedEffect(Unit) {
+        viewModel.getPrincipleGroups(orderType)
+    }
+
     when (val state = uiState) {
-        is HedgeUiState.Success<List<MyPrincipleGroup>> -> {
+        is UiState.Success<MyPrincipleGroup> -> {
             PrincipleBottomSheetDialog(
                 title = stringResource(R.string.principle_bottom_sheet_dialog_title),
-                groups = state.data,
-                orderType = orderType,
+                defaultPrincipleGroup = state.defaultPrincipleGroup,
+                myPrincipleGroups = state.myPrincipleGroups,
                 isShowAddButton = false,
                 onClickedClose = onClickedClose,
                 onClickedConfirmButton = onClickedConfirmButton
             )
         }
 
-        is HedgeUiState.Error -> {
+        is UiState.Error -> {
             state.throwable?.let {
                 onShowErrorToast(it)
+                onClickedClose()
             }
         }
 
@@ -514,13 +684,14 @@ private fun PrincipleDialog(
 }
 
 @Composable
-private fun SellingTextField(
+private fun PriceTextField(
     state: State<TextFieldState>,
     currencyTypeState: State<CurrencyType>,
     requestParams: CreateRetrospectionRequest,
     modifier: Modifier = Modifier,
     onUpdateSellingText: (String, Int) -> Unit,
-    onUpdateCurrency: (CurrencyType) -> Unit
+    onUpdateCurrency: (CurrencyType) -> Unit,
+    onFocusChanged: (Boolean) -> Unit
 ) {
     val focusManager = LocalFocusManager.current
     val focusRequester = remember { FocusRequester() }
@@ -542,7 +713,11 @@ private fun SellingTextField(
     }
 
     HedgeUnitTextField(
-        modifier = modifier.focusRequester(focusRequester),
+        modifier = modifier
+            .focusRequester(focusRequester)
+            .onFocusChanged { focusState ->
+                onFocusChanged(focusState.isFocused)
+            },
         label = state.value.label,
         placeholder = if (requestParams.orderType == OrderType.SELL) {
             stringResource(R.string.retrospect_selling_price_placeholder)
@@ -591,13 +766,18 @@ private fun SellingTextField(
 private fun StockTextField(
     state: State<TextFieldState>,
     modifier: Modifier = Modifier,
-    onUpdateStockText: (String, Int) -> Unit
+    onUpdateStockText: (String, Int) -> Unit,
+    onFocusChanged: (Boolean) -> Unit
 ) {
     val focusManager = LocalFocusManager.current
     val focusRequester = remember { FocusRequester() }
 
     SimpleNumberTextField(
-        modifier = modifier.focusRequester(focusRequester),
+        modifier = modifier
+            .focusRequester(focusRequester)
+            .onFocusChanged { focusState ->
+                onFocusChanged(focusState.isFocused)
+            },
         value = TextFieldValue(
             text = state.value.text,
             selection = TextRange(state.value.selection)
@@ -611,7 +791,7 @@ private fun StockTextField(
             onUpdateStockText(digitsOnlyText, newCursorPosition)
         },
         label = state.value.label,
-        placeholder = stringResource(id = R.string.retrospect_volume),
+        placeholder = stringResource(id = R.string.retrospect_unit_stock),
         visualTransformation = UnitVisualTransformation(unit = stringResource(id = R.string.retrospect_unit_stock)),
         onDone = {
             focusManager.moveFocus(FocusDirection.Down)
@@ -649,19 +829,20 @@ private fun SimpleNumberTextField(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun DateTextField(
+    isShowDatePicker: Boolean,
     state: State<TextFieldState>,
     modifier: Modifier = Modifier,
     onUpdateDateText: (String, Int) -> Unit,
     onErrorDateText: (String, Int) -> Unit,
-    onFocusChanged: () -> Unit
+    onFocusChanged: (Boolean) -> Unit,
+    onDismissDatePicker: () -> Unit
 ) {
     val focusManager = LocalFocusManager.current
     val focusRequester = remember { FocusRequester() }
 
-    var isShowDatePicker by remember { mutableStateOf(false) }
-
     val currentYear = Calendar.getInstance().get(Calendar.YEAR)
     val datePickerState = rememberDatePickerState(
+        initialSelectedDateMillis = System.currentTimeMillis(),
         yearRange = currentYear - 100..currentYear
     )
 
@@ -669,8 +850,6 @@ private fun DateTextField(
         HedgeDatePickerDialog(
             datePickerState = datePickerState,
             onClickConfirm = {
-                isShowDatePicker = false
-
                 val date = datePickerState.selectedDateMillis?.let {
                     formatDate("YYYY년 MM월 dd일", it)
                 } ?: run {
@@ -690,16 +869,15 @@ private fun DateTextField(
                 } else {
                     onUpdateDateText(date, digitsOnlyText.length)
                 }
-
-                onFocusChanged()
+                onDismissDatePicker()
             },
             onClickDismiss = {
-                isShowDatePicker = false
                 focusManager.clearFocus()
+                onDismissDatePicker()
             },
             onDismissRequest = {
-                isShowDatePicker = false
                 focusManager.clearFocus()
+                onDismissDatePicker()
             }
         )
     }
@@ -707,7 +885,9 @@ private fun DateTextField(
     HedgeSimpleTextField(
         modifier = modifier
             .focusRequester(focusRequester)
-            .onFocusChanged { isShowDatePicker = it.isFocused },
+            .onFocusChanged {
+                onFocusChanged(it.isFocused)
+            },
         value = TextFieldValue(
             text = state.value.text,
             selection = TextRange(state.value.selection)
@@ -727,7 +907,8 @@ fun ReturnTextField(
     modifier: Modifier = Modifier,
     onUpdateReturnText: (String, Int) -> Unit,
     onUpdateReturnSign: (ReturnSignType) -> Unit,
-    onChangedKeyboardVisibility: (Boolean) -> Unit
+    onChangedKeyboardVisibility: (Boolean) -> Unit,
+    onFocusChanged: (Boolean) -> Unit
 ) {
     val context = LocalContext.current
     val focusManager = LocalFocusManager.current
@@ -751,7 +932,7 @@ fun ReturnTextField(
     }
 
     HedgeUnitTextField(
-        modifier = Modifier
+        modifier = modifier
             .bringIntoViewRequester(bringIntoViewRequester)
             .onFocusChanged { state ->
                 if (state.isFocused) {
@@ -759,6 +940,7 @@ fun ReturnTextField(
                         bringIntoViewRequester.bringIntoView()
                     }
                 }
+                onFocusChanged(state.isFocused)
             }
             .focusRequester(focusRequester)
             .padding(start = 20.dp, end = 20.dp, top = 12.dp),
@@ -846,14 +1028,6 @@ private fun getTextFieldState(
 
 @Preview
 @Composable
-private fun RetrospectScreenPreview() {
-    HedgeTopbar(
-        onBackPressed = {}
-    )
-}
-
-@Preview
-@Composable
 private fun RetrospectRoutePreview() {
     val retrospectionState = rememberRetrospectionState(
         requestParams = CreateRetrospectionRequest.EMPTY
@@ -861,7 +1035,7 @@ private fun RetrospectRoutePreview() {
     val isButtonEnabled by remember {
         derivedStateOf {
             arrayOf(
-                retrospectionState.sellingTextFieldState.value,
+                retrospectionState.priceTextFieldState.value,
                 retrospectionState.stockTextFieldState.value,
                 retrospectionState.dateTextFieldState.value
             )
@@ -870,7 +1044,7 @@ private fun RetrospectRoutePreview() {
                 ?.let {
                     when (retrospectionState.returnToggleState.value) {
                         true -> retrospectionState.returnTextFieldState.value.text.isNotEmpty() &&
-                            !retrospectionState.returnTextFieldState.value.isError
+                                !retrospectionState.returnTextFieldState.value.isError
 
                         false -> true
                     }
@@ -883,10 +1057,11 @@ private fun RetrospectRoutePreview() {
             modifier = Modifier.padding(paddingValues),
             retrospectionState = retrospectionState,
             buttonEnabled = isButtonEnabled,
+            companyLogoUrl = null,
             requestParams = CreateRetrospectionRequest.EMPTY.copy(orderType = OrderType.SELL),
             onUpdateSellingText = { text, selection ->
-                retrospectionState.sellingTextFieldState.value =
-                    retrospectionState.sellingTextFieldState.value.copy(
+                retrospectionState.priceTextFieldState.value =
+                    retrospectionState.priceTextFieldState.value.copy(
                         text = text,
                         selection = selection
                     )

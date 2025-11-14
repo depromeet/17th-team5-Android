@@ -31,4 +31,6 @@ dependencies {
     implementation(projects.core.navigation)
     implementation(projects.core.domain)
 
+    implementation(libs.coil.compose)
+
 }

@@ -8,7 +8,7 @@ import com.depromeet.team5.features.retrospect.annotation.ReturnSignType
 
 @Stable
 data class RetrospectionState(
-    val sellingTextFieldState: MutableState<TextFieldState>,
+    val priceTextFieldState: MutableState<TextFieldState>,
     val stockTextFieldState: MutableState<TextFieldState>,
     val dateTextFieldState: MutableState<TextFieldState>,
     val returnTextFieldState: MutableState<TextFieldState>,

@@ -1,5 +1,6 @@
 package com.depromeet.team5.features.login
 
+import androidx.compose.animation.EnterTransition
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
@@ -24,7 +25,9 @@ fun NavGraphBuilder.loginGraph(
     navigation<LoginGraph>(
         startDestination = Login
     ) {
-        composable<Login> {
+        composable<Login>(
+            enterTransition = { EnterTransition.None },
+        ) {
             LoginRoute(
                 navigateToAgreements = { navController.navigate(Agreements) },
                 onLoginKakao = onLoginKakao

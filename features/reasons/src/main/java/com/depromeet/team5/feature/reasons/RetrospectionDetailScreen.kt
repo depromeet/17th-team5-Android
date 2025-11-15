@@ -149,6 +149,7 @@ private fun RetrospectionDetailScreen(
             }
             is HedgeUiState.Error -> {
                 onShowErrorToast(uiState.throwable ?: Throwable())
+                onClickBack()
             }
         }
     }

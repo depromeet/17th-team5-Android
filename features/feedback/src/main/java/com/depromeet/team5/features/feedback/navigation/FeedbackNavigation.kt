@@ -32,6 +32,7 @@ fun NavGraphBuilder.feedbackScreen(
         AiFeedbackRoute(
             requestViewModel = sharedViewModel,
             retrospectionId = entry.toRoute<Feedback>().retrospectionId,
+            onBack = navController::popBackStack,
             onCompleteClick = { id ->
                 navController.getBackStackEntry(Home)
                     .savedStateHandle[HIGHLIGHT_RETROSPECTION_ID] = id

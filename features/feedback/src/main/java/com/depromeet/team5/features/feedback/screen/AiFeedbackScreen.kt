@@ -58,6 +58,7 @@ import com.depromeet.team5.features.feedback.component.PrincipleCounter
 @Composable
 fun AiFeedbackRoute(
     requestViewModel: RequestViewModel,
+    onBack: () -> Unit,
     onCompleteClick: (Int) -> Unit,
     retrospectionId: Int? = null,
     onShowErrorToast: (Throwable) -> Unit,
@@ -67,9 +68,9 @@ fun AiFeedbackRoute(
     val uiState by viewModel.feedbackStateFlow.collectAsStateWithLifecycle()
 
     LaunchedEffect(retrospectionId) {
-        if (retrospectionId!=null){
+        if (retrospectionId != null) {
             viewModel.loadFeedback(retrospectionId)
-        }else{
+        } else {
             requestViewModel.selectedMyPrincipleGroupState?.let {
                 viewModel.createRetrospection(requestViewModel.request, it)
             }
@@ -98,9 +99,11 @@ fun AiFeedbackRoute(
 
         is AiFeedbackUiState.Error -> {
             onShowErrorToast(Throwable("${state.code}, ${state.message}"))
+            onBack()
         }
         is AiFeedbackUiState.Failure -> {
             onShowErrorToast(state.throwable)
+            onBack()
         }
     }
 }
@@ -271,7 +274,12 @@ private fun AiFeedbackScreen(
                             )
 
                             Text(
-                                text = stringResource(R.string.price_and_stock, state.price, state.volume, state.orderType.toOrderType().toKorean()),
+                                text = stringResource(
+                                    R.string.price_and_stock,
+                                    state.price,
+                                    state.volume,
+                                    state.orderType.toOrderType().toKorean()
+                                ),
                                 style = HedgeTypography.Body2.SemiBold,
                                 color = HedgeColor.Text.Primary
                             )

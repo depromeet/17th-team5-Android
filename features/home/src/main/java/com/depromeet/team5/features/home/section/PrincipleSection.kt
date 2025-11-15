@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -113,119 +112,118 @@ fun PrincipleSection(
         }
         Spacer(Modifier.height(10.dp))
 
-        Text(
-            text = stringResource(R.string.principle_tab_default_title),
-            style = HedgeTypography.Headline2.SemiBold,
-            color = HedgeColor.Text.Title,
-            modifier = Modifier.padding(horizontal = 20.dp, vertical = 10.dp)
-        )
+        LazyColumn {
+            item {
+                Text(
+                    text = stringResource(R.string.principle_tab_default_title),
+                    style = HedgeTypography.Headline2.SemiBold,
+                    color = HedgeColor.Text.Title,
+                    modifier = Modifier.padding(horizontal = 20.dp, vertical = 10.dp)
+                )
 
-        when (val defaultPrinciple = defaultsUiState) {
-            is HedgeUiState.Success -> {
-                val filtered = defaultPrinciple.data.filter { it.orderType == selected }
-                filtered.forEach { group ->
-                    PrincipleItem(
-                        id = group.id,
-                        icon = group.thumbnail,
-                        title = group.groupName,
-                        onClick = {
-                            onClickPrincipleDetail(
-                                group.id,
-                                Path.PRINCIPLE_SYSTEM
+                when (val defaultPrinciple = defaultsUiState) {
+                    is HedgeUiState.Success -> {
+                        val filtered = defaultPrinciple.data.filter { it.orderType == selected }
+                        filtered.forEach { group ->
+                            PrincipleItem(
+                                id = group.id,
+                                icon = group.thumbnail,
+                                title = group.groupName,
+                                onClick = {
+                                    onClickPrincipleDetail(
+                                        group.id,
+                                        Path.PRINCIPLE_SYSTEM
+                                    )
+                                }
                             )
                         }
-                    )
-                }
 
-            }
-
-            is HedgeUiState.Loading -> {
-                HedgeLoadingScreen()
-            }
-
-            is HedgeUiState.Error -> {
-                defaultPrinciple.throwable?.let {
-                    onShowErrorToast(it)
-                }
-            }
-        }
-
-        Divider(
-            modifier = Modifier
-                .padding(vertical = 16.dp)
-                .fillMaxWidth(),
-            thickness = 1.dp,
-            color = HedgeColor.Neutral.BackgroundSecondary
-        )
-
-        Row(
-            modifier = Modifier
-                .padding(horizontal = 20.dp, vertical = 10.dp)
-                .fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text(
-                text = stringResource(R.string.principle_tab_my_title),
-                style = HedgeTypography.Headline2.SemiBold,
-                color = HedgeColor.Text.Title,
-            )
-
-            Image(
-                painter = painterResource(R.drawable.ic_plus),
-                contentDescription = null,
-                modifier = Modifier
-                    .clickable(
-                        interactionSource = interaction,
-                        indication = null
-                    ) {
-                        onClickCreatePrinciple()
                     }
-                    .background(
-                        color = HedgeColor.Brand.Primary,
-                        shape = CircleShape
-                    )
-                    .padding(9.dp)
-                    .size(10.dp)
-            )
-        }
 
-        when (val ui = principleGroupsUiState) {
-            is HedgeUiState.Success -> {
-                LazyColumn(
-                    modifier = Modifier.fillMaxSize()
-                ){
-                    items(
-                        items = ui.data,
-                        key = { it.id }
-                    ){ group ->
-                        PrincipleItem(
-                            id = group.id,
-                            icon = group.thumbnail,
-                            title = group.groupName,
-                            onClick = {
-                                onClickPrincipleDetail(
-                                    group.id,
-                                    Path.PRINCIPLE_MINE
-                                )
+                    is HedgeUiState.Loading -> {
+                        HedgeLoadingScreen()
+                    }
+
+                    is HedgeUiState.Error -> {
+                        defaultPrinciple.throwable?.let {
+                            onShowErrorToast(it)
+                        }
+                    }
+                }
+            }
+
+            item {
+                Divider(
+                    modifier = Modifier
+                        .padding(vertical = 16.dp)
+                        .fillMaxWidth(),
+                    thickness = 1.dp,
+                    color = HedgeColor.Neutral.BackgroundSecondary
+                )
+            }
+
+            item {
+                Row(
+                    modifier = Modifier
+                        .padding(horizontal = 20.dp, vertical = 10.dp)
+                        .fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = stringResource(R.string.principle_tab_my_title),
+                        style = HedgeTypography.Headline2.SemiBold,
+                        color = HedgeColor.Text.Title,
+                    )
+
+                    Image(
+                        painter = painterResource(R.drawable.ic_plus),
+                        contentDescription = null,
+                        modifier = Modifier
+                            .clickable(
+                                interactionSource = interaction,
+                                indication = null
+                            ) {
+                                onClickCreatePrinciple()
                             }
-                        )
+                            .background(
+                                color = HedgeColor.Brand.Primary,
+                                shape = CircleShape
+                            )
+                            .padding(9.dp)
+                            .size(10.dp)
+                    )
+                }
 
+                when (val ui = principleGroupsUiState) {
+                    is HedgeUiState.Success -> {
+                        ui.data.forEach { group ->
+                            PrincipleItem(
+                                id = group.id,
+                                icon = group.thumbnail,
+                                title = group.groupName,
+                                onClick = {
+                                    onClickPrincipleDetail(
+                                        group.id,
+                                        Path.PRINCIPLE_MINE
+                                    )
+                                }
+                            )
+                        }
+                    }
+
+                    is HedgeUiState.Loading -> {
+                        HedgeLoadingScreen()
+                    }
+
+                    is HedgeUiState.Error -> {
+                        ui.throwable?.let {
+                            onShowErrorToast(it)
+                        }
                     }
                 }
             }
-
-            is HedgeUiState.Loading -> {
-                HedgeLoadingScreen()
-            }
-
-            is HedgeUiState.Error -> {
-                ui.throwable?.let {
-                    onShowErrorToast(it)
-                }
-            }
         }
-
     }
 }
 

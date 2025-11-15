@@ -107,6 +107,7 @@ fun RetrospectionDetailRoute(
         onCreateMemo = viewModel::onCreateMemo,
         onUpdateMemo = viewModel::onUpdateMemo,
         onDeleteMemo = viewModel::onRemoveMemo,
+        onShowErrorToast = onShowErrorToast,
         modifier = modifier
     )
 }
@@ -121,6 +122,7 @@ private fun RetrospectionDetailScreen(
     onUpdateMemo: (Int, String) -> Unit,
     onDeleteMemo: (Int) -> Unit,
     deleteRetrospection: () -> Unit,
+    onShowErrorToast: (Throwable) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Box(
@@ -146,7 +148,8 @@ private fun RetrospectionDetailScreen(
                 HedgeLoadingScreen()
             }
             is HedgeUiState.Error -> {
-                //todo error
+                onShowErrorToast(uiState.throwable ?: Throwable())
+                onClickBack()
             }
         }
     }
@@ -688,5 +691,6 @@ private fun RetrospectionDetailScreenPreview() {
         onCreateMemo = {},
         onUpdateMemo = { _, _ -> },
         onDeleteMemo = { },
+        onShowErrorToast = {},
     )
 }

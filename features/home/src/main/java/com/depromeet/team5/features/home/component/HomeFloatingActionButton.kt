@@ -44,16 +44,23 @@ fun HomeFloatingActionButton(
 ) {
     val interaction = remember { MutableInteractionSource() }
 
+    val overlayModifier =
+        if (fabChecked) {
+            modifier
+                .fillMaxSize()
+                .background(Color.Black.copy(alpha = 0.5f))
+                .clickable(
+                    interactionSource = interaction,
+                    indication = null
+                ) {
+                    onCheckedChange()
+                }
+        } else {
+            modifier.fillMaxSize()
+        }
+
     Box(
-        modifier = modifier
-            .background(
-                color = if (fabChecked)
-                    Color.Black.copy(alpha = 0.5f)
-                else
-                    HedgeColor.Transparent
-            )
-            .padding(end = 20.dp, bottom = 24.dp)
-            .fillMaxSize()
+        modifier = overlayModifier.padding(end = 20.dp, bottom = 24.dp)
     ) {
         Column(
             modifier = Modifier
@@ -72,7 +79,10 @@ fun HomeFloatingActionButton(
                 ) {
                     FABItem(
                         interaction = interaction,
-                        onClick = onBuyClick,
+                        onClick = {
+                            onCheckedChange()
+                            onBuyClick()
+                        },
                         itemTitle = OrderType.BUY.toKorean(),
                         itemColor = HedgeColor.Trade.Buy,
                         modifier = Modifier.padding(
@@ -90,7 +100,10 @@ fun HomeFloatingActionButton(
 
                     FABItem(
                         interaction = interaction,
-                        onClick = onSellClick,
+                        onClick = {
+                            onCheckedChange()
+                            onSellClick()
+                        },
                         itemTitle = OrderType.SELL.toKorean(),
                         itemColor = HedgeColor.Trade.Sell,
                         modifier = Modifier.padding(

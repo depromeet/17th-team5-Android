@@ -24,7 +24,6 @@ retrofitKotlinxSerializationConverter = "1.0.0"
 kotlinxSerialization = "2.1.0"
 kotlinxSerializationJson = "1.8.0"
 okhttp = "4.12.0"
-coil = "2.7.0"
 androidxComposeNavigation = "2.9.2"
 hiltNavigationCompose = "1.2.0"
 runtimeAnnotation = "1.9.0"
@@ -33,7 +32,7 @@ firebaseCrashlytics = "20.0.2"
 firebaseCrashlyticsPlugins = "3.0.6"
 googleService = "4.4.1"
 coroutineTest = "1.10.2"
-coilCompose = "3.3.0"
+coil = "3.3.0"
 jsoup = "1.21.2"
 kakao = "2.21.0"
 
@@ -62,7 +61,8 @@ androidx-compose-runtime = { group = "androidx.compose.runtime", name = "runtime
 org-jsoup-jsoup = { module = "org.jsoup:jsoup", version.ref = "jsoup" }
 
 #coil
-coil-compose = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coilCompose" }
+coil-compose = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coil" }
+coil-okhttp = { module = "io.coil-kt.coil3:coil-network-okhttp", version.ref = "coil" }
 
 #kotlin
 kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinxCoroutinesCore" }
@@ -108,9 +108,6 @@ androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version
 material = { group = "com.google.android.material", name = "material", version.ref = "material" }
 #room-gradlePlugin = { group = "androidx.room", name = "room-gradle-plugin", version.ref = "room" }
 kotlin-serialization-gradlePlugin = { group = "org.jetbrains.kotlin", name = "kotlin-serialization", version.ref = "kotlin" }
-
-#coil
-coil = { module = "io.coil-kt:coil-compose", version.ref = "coil" }
 
 #kakao
 kakao-user = { group = "com.kakao.sdk", name = "v2-user", version.ref = "kakao" }

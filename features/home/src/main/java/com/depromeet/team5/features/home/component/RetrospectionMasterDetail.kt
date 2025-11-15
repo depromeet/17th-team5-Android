@@ -67,7 +67,7 @@ fun RetrospectionMasterDetail(
         Box(
             modifier = Modifier
                 .padding(end = 16.dp)
-                .width(118.dp)
+                .width(120.dp)
         ){
             LazyColumn(
                 state = listState,

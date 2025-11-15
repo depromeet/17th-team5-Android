@@ -60,6 +60,7 @@ fun AiFeedbackRoute(
     requestViewModel: RequestViewModel,
     onCompleteClick: (Int) -> Unit,
     retrospectionId: Int? = null,
+    onShowErrorToast: (Throwable) -> Unit,
     modifier: Modifier = Modifier,
     viewModel: AiFeedbackViewModel = hiltViewModel()
 ) {
@@ -95,8 +96,12 @@ fun AiFeedbackRoute(
             HedgeLoadingScreen()
         }
 
-        is AiFeedbackUiState.Error -> {}
-        is AiFeedbackUiState.Failure -> {}
+        is AiFeedbackUiState.Error -> {
+            onShowErrorToast(Throwable("${state.code}, ${state.message}"))
+        }
+        is AiFeedbackUiState.Failure -> {
+            onShowErrorToast(state.throwable)
+        }
     }
 }
 

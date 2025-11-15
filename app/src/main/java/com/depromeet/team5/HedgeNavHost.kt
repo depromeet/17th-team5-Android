@@ -159,7 +159,8 @@ fun HedgeNavHost(
         )
 
         feedbackScreen(
-            navController = navController
+            navController = navController,
+            onShowErrorToast = onShowErrorToast
         )
     }
 }

@@ -18,7 +18,8 @@ data class Feedback(
 )
 
 fun NavGraphBuilder.feedbackScreen(
-    navController: NavController
+    navController: NavController,
+    onShowErrorToast: (Throwable) -> Unit,
 ) {
     composable<Feedback> { entry ->
 
@@ -35,7 +36,8 @@ fun NavGraphBuilder.feedbackScreen(
                 navController.getBackStackEntry(Home)
                     .savedStateHandle[HIGHLIGHT_RETROSPECTION_ID] = id
                 navController.popBackStack(Home, inclusive = false)
-            }
+            },
+            onShowErrorToast = onShowErrorToast
         )
     }
 }

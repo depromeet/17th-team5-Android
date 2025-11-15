@@ -32,6 +32,7 @@ dependencies {
     implementation(projects.core.ui)
 
     implementation(libs.coil.compose)
+    implementation(libs.coil.okhttp)
 
     implementation(libs.org.jetbrains.kotlinx.kotlinx.serialization.json)
 }

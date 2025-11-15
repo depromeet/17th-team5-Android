@@ -40,7 +40,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
@@ -52,7 +51,6 @@ import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import coil.compose.AsyncImage
 import com.depromeet.team5.core.designsystem.component.HedgeButton
 import com.depromeet.team5.core.designsystem.component.HedgeToast
 import com.depromeet.team5.core.designsystem.component.HedgeToastState
@@ -64,6 +62,7 @@ import com.depromeet.team5.core.domain.model.OrderType
 import com.depromeet.team5.core.domain.monad.HedgeUiState
 import com.depromeet.team5.core.navigation.request.RequestViewModel
 import com.depromeet.team5.core.ui.HedgeModal
+import com.depromeet.team5.core.ui.component.HedgeCompanyLogo
 import com.depromeet.team5.core.ui.util.CurrencyUtil
 import com.depromeet.team5.feature.reasons.model.PrincipleAdherence
 import com.depromeet.team5.feature.reasons.model.RestrictionAttachment
@@ -101,6 +100,7 @@ fun ReasonRoute(
         }
         viewModel.initTradeInfo(
             TradeInfo(
+                logoUri = requestViewModel.companyLogoUrl,
                 stockName = requestViewModel.request.companyName,
                 orderType = requestViewModel.request.orderType,
                 price = requestViewModel.request.price.toLong(),
@@ -399,20 +399,11 @@ private fun TradeInfo(
             .padding(vertical = 16.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        tradeInfo.logoUri?.let {
-            AsyncImage(
-                model = it,
-                contentDescription = null,
-                modifier = Modifier
-                    .size(22.dp)
-                    .clip(CircleShape)
-            )
-        } ?: Icon(
-            imageVector = HedgeIcon.COMPANY_LOGO,
-            contentDescription = null,
-            tint = Color.Unspecified,
+        HedgeCompanyLogo(
+            logoUrl = tradeInfo.logoUri,
             modifier = Modifier
-                .size(22.dp),
+                .size(22.dp)
+                .clip(CircleShape)
         )
         Spacer(Modifier.size(12.dp))
         Text(

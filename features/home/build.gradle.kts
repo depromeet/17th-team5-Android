@@ -28,6 +28,7 @@ dependencies {
     implementation(projects.core.navigation)
     implementation(projects.core.ui)
     implementation(projects.core.domain)
-
     implementation(libs.coil.compose)
+    implementation(libs.coil.okhttp)
+
 }

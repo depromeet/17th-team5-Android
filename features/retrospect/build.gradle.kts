@@ -32,5 +32,6 @@ dependencies {
     implementation(projects.core.domain)
 
     implementation(libs.coil.compose)
+    implementation(libs.coil.okhttp)
 
 }

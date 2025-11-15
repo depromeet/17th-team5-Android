@@ -43,6 +43,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.depromeet.team5.core.designsystem.component.HedgeTopBar
 import com.depromeet.team5.core.designsystem.foundation.HedgeColor
 import com.depromeet.team5.core.designsystem.foundation.HedgeTypography
 import com.depromeet.team5.core.domain.model.toOrderType
@@ -66,6 +67,7 @@ fun AiFeedbackRoute(
     viewModel: AiFeedbackViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.feedbackStateFlow.collectAsStateWithLifecycle()
+    val isCreateMode = retrospectionId == null
 
     LaunchedEffect(retrospectionId) {
         if (retrospectionId != null) {
@@ -78,7 +80,7 @@ fun AiFeedbackRoute(
     }
 
     val successId = (uiState as? AiFeedbackUiState.Success)?.retrospectionId
-    BackHandler(enabled = successId != null) {
+    BackHandler(enabled = isCreateMode && successId != null) {
         onCompleteClick(successId!!)
     }
 
@@ -88,7 +90,9 @@ fun AiFeedbackRoute(
                 state = state,
                 grade = HedgeBadge.fromBadge(state.badge),
                 companyLogo = requestViewModel.companyLogoUrl,
+                isCreateMode = isCreateMode,
                 onCompleteClick = { onCompleteClick(state.retrospectionId) },
+                onBack = onBack,
                 modifier = modifier.windowInsetsPadding(WindowInsets.systemBars)
             )
         }
@@ -101,6 +105,7 @@ fun AiFeedbackRoute(
             onShowErrorToast(Throwable("${state.code}, ${state.message}"))
             onBack()
         }
+
         is AiFeedbackUiState.Failure -> {
             onShowErrorToast(state.throwable)
             onBack()
@@ -113,8 +118,10 @@ private fun AiFeedbackScreen(
     state: AiFeedbackUiState.Success,
     grade: HedgeBadge,
     companyLogo: String?,
+    isCreateMode: Boolean,
     onCompleteClick: () -> Unit,
-    modifier: Modifier = Modifier
+    onBack: () -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     val gradientGreenBlue = Brush.linearGradient(
         colors = listOf(Color(0xFF07BC70), Color(0xFF0696BE))
@@ -186,32 +193,35 @@ private fun AiFeedbackScreen(
         )
 
         LazyColumn(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(horizontal = 20.dp)
+            modifier = Modifier.fillMaxSize()
         ) {
             item {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth(),
-                    horizontalArrangement = Arrangement.End,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(
-                        text = stringResource(R.string.feedback_complete),
-                        style = HedgeTypography.Body1.SemiBold,
-                        color = HedgeColor.Brand.Darken,
+                if (isCreateMode){
+                    Row(
                         modifier = Modifier
-                            .clip(RoundedCornerShape(8.dp))
-                            .clickable { onCompleteClick() }
-                            .padding(vertical = 4.dp)
-                    )
+                            .padding(horizontal = 20.dp, vertical = 4.dp)
+                            .fillMaxWidth(),
+                        horizontalArrangement = Arrangement.End,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = stringResource(R.string.feedback_complete),
+                            style = HedgeTypography.Body1.SemiBold,
+                            color = HedgeColor.Brand.Darken,
+                            modifier = Modifier
+                                .clip(RoundedCornerShape(8.dp))
+                                .clickable { onCompleteClick() }
+                        )
+                    }
+                }else{
+                    HedgeTopBar(onClickBack = onBack)
                 }
             }
 
             item {
                 Column(
                     modifier = Modifier
+                        .padding(horizontal = 20.dp)
                         .fillMaxWidth()
                         .padding(bottom = 24.dp),
                     horizontalAlignment = Alignment.CenterHorizontally
@@ -243,6 +253,7 @@ private fun AiFeedbackScreen(
             item {
                 Column(
                     modifier = Modifier
+                        .padding(horizontal = 20.dp)
                         .padding(bottom = 16.dp)
                         .fillMaxWidth()
                         .background(
@@ -335,6 +346,7 @@ private fun AiFeedbackScreen(
             item {
                 Column(
                     modifier = Modifier
+                        .padding(horizontal = 20.dp)
                         .fillMaxWidth()
                         .background(
                             color = HedgeColor.WHITE,
@@ -364,6 +376,7 @@ private fun AiFeedbackScreen(
             item {
                 Column(
                     modifier = Modifier
+                        .padding(horizontal = 20.dp)
                         .padding(vertical = 16.dp)
                         .fillMaxWidth()
                         .background(
@@ -394,6 +407,7 @@ private fun AiFeedbackScreen(
             item {
                 Column(
                     modifier = Modifier
+                        .padding(horizontal = 20.dp)
                         .fillMaxWidth()
                         .background(
                             color = HedgeColor.WHITE,
@@ -432,7 +446,9 @@ private fun AiFeedbackScreen(
 
             item {
                 Row(
-                    modifier = Modifier.padding(top = 20.dp, bottom = 121.dp)
+                    modifier = Modifier
+                        .padding(horizontal = 20.dp)
+                        .padding(top = 20.dp, bottom = 121.dp)
                 ) {
                     Icon(
                         imageVector = ImageVector.vectorResource(R.drawable.ic_notice),
@@ -482,6 +498,8 @@ private fun AiFeedbackScreenPreview() {
         ),
         grade = HedgeBadge.fromBadge(badge = "platinum"),
         companyLogo = null,
-        onCompleteClick = {}
+        isCreateMode = true,
+        onCompleteClick = {},
+        onBack = {}
     )
 }

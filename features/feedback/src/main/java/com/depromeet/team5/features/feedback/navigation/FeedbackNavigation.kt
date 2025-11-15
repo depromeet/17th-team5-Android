@@ -14,7 +14,7 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class Feedback(
-    val retrospectionId: Int? = null,
+    val retrospectionId: Int? = null
 )
 
 fun NavGraphBuilder.feedbackScreen(
@@ -29,23 +29,14 @@ fun NavGraphBuilder.feedbackScreen(
 
         val sharedViewModel: RequestViewModel = viewModel(viewModelStoreOwner = parentEntry)
 
-        val feedbackArgs = entry.toRoute<Feedback>()
-        val retrospectionId = feedbackArgs.retrospectionId
-
         AiFeedbackRoute(
             requestViewModel = sharedViewModel,
             retrospectionId = entry.toRoute<Feedback>().retrospectionId,
             onBack = navController::popBackStack,
-            onCompleteClick = if (retrospectionId == null) {
-                { id ->
-                    navController.getBackStackEntry(Home)
-                        .savedStateHandle[HIGHLIGHT_RETROSPECTION_ID] = id
-                    navController.popBackStack(Home, inclusive = false)
-                }
-            } else {
-                { _ ->
-                    navController.popBackStack()
-                }
+            onCompleteClick = { id ->
+                navController.getBackStackEntry(Home)
+                    .savedStateHandle[HIGHLIGHT_RETROSPECTION_ID] = id
+                navController.popBackStack(Home, inclusive = false)
             },
             onShowErrorToast = onShowErrorToast
         )

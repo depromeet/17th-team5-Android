@@ -125,7 +125,10 @@ fun HomeRoute(
         selectedOrderType = selectedOrderType,
         principleGroupsUiState = principleGroupsUiState,
         onChangePrincipleOrderType = { homeViewModel.setPrincipleOrderType(it) },
-        onClickRetrospectionDetail = onClickRetrospectionDetail,
+        onClickRetrospectionDetail = {
+            onClickRetrospectionDetail(it)
+            homeViewModel.clearHighlight()
+        },
         onClickPrincipleDetail = { groupId, path ->
             onClickPrincipleDetail(groupId, path, selectedOrderType)
         },

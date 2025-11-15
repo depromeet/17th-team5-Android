@@ -39,6 +39,8 @@ kakao = "2.21.0"
 coreKtxVersion = "1.6.1"
 robolectric = "4.13"
 junitKtx = "1.2.1"
+converterGson = "3.0.0"
+gson = "2.13.0"
 
 [libraries]
 #androidx
@@ -61,7 +63,9 @@ androidx-compose-runtime-annotation = { group = "androidx.compose.runtime", name
 androidx-material3 = { group = "androidx.compose.material3", name = "material3" }
 androidx-material = { group = "androidx.compose.material", name = "material" }
 androidx-compose-navigation = { group = "androidx.navigation", name = "navigation-compose", version.ref = "androidxComposeNavigation" }
+converter-gson = { module = "com.squareup.retrofit2:converter-gson", version.ref = "converterGson" }
 core-ktx = { module = "androidx.test:core-ktx", version.ref = "coreKtxVersion" }
+gson = { module = "com.google.code.gson:gson", version.ref = "gson" }
 hilt-navigation-compose = { group = "androidx.hilt", name = "hilt-navigation-compose", version.ref = "hiltNavigationCompose" }
 androidx-compose-runtime = { group = "androidx.compose.runtime", name = "runtime", version.ref = "composeRuntime" }
 org-jsoup-jsoup = { module = "org.jsoup:jsoup", version.ref = "jsoup" }

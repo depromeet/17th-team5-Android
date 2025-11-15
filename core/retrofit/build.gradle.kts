@@ -45,8 +45,10 @@ dependencies {
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
 
-    implementation("com.google.code.gson:gson:2.13.0")
-    implementation("com.squareup.retrofit2:converter-gson:3.0.0")
+    implementation(libs.gson)
+    implementation(libs.converter.gson)
+
+    implementation(libs.androidx.datastore.preferences)
 
     implementation(libs.com.squareup.retrofit2.retrofit)
     implementation(libs.com.jakewharton.retrofit.retrofit2.kotlinx.serialization.converter)

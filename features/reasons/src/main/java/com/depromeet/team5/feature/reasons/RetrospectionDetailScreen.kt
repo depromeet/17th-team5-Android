@@ -56,7 +56,6 @@ import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import coil.compose.AsyncImage
 import com.depromeet.team5.core.designsystem.component.HedgeButton
 import com.depromeet.team5.core.designsystem.component.HedgeTopBar
 import com.depromeet.team5.core.designsystem.foundation.HedgeColor
@@ -66,6 +65,7 @@ import com.depromeet.team5.core.designsystem.foundation.HedgeTypography
 import com.depromeet.team5.core.domain.model.OrderType
 import com.depromeet.team5.core.domain.monad.HedgeUiState
 import com.depromeet.team5.core.ui.HedgeModal
+import com.depromeet.team5.core.ui.component.HedgeCompanyLogo
 import com.depromeet.team5.core.ui.component.HedgeLoadingScreen
 import com.depromeet.team5.core.ui.model.HedgeBadge
 import com.depromeet.team5.core.ui.util.CurrencyUtil
@@ -318,20 +318,11 @@ private fun TradeInfo(
             modifier = Modifier,
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            thumbnail?.let {
-                AsyncImage(
-                    model = it,
-                    contentDescription = null,
-                    modifier = Modifier
-                        .size(22.dp)
-                        .clip(CircleShape)
-                )
-            } ?: Icon(
-                imageVector = HedgeIcon.COMPANY_LOGO,
-                contentDescription = null,
-                tint = Color.Unspecified,
+            HedgeCompanyLogo(
+                logoUrl = thumbnail,
                 modifier = Modifier
-                    .size(22.dp),
+                    .size(22.dp)
+                    .clip(CircleShape)
             )
             Spacer(Modifier.size(8.dp))
             Text(

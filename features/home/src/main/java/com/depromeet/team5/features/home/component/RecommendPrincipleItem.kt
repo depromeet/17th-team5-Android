@@ -52,7 +52,7 @@ fun RecommendPrincipleItem(
             .border(width = 1.dp, color = Color(0xFFF1F2F4), shape = RoundedCornerShape(18.dp))
             .clip(RoundedCornerShape(18.dp))
             .clickable { onClick(recommendPrinciple.id) }
-            .size(150.dp, 166.dp)
+            .size(154.dp, 170.dp)
     ) {
         Box(
             modifier = Modifier

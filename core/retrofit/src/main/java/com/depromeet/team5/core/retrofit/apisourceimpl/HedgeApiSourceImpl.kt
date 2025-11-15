@@ -132,4 +132,7 @@ internal class HedgeApiSourceImpl @Inject constructor(
             failure.toRemoteData()
         }
     }
+
+    override suspend fun getFeedback(retrospectionId: Int): FeedbackRemoteData =
+        hedgeApi.getFeedback(retrospectionId).toRemoteData()
 }

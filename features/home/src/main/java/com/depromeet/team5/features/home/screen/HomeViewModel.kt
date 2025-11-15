@@ -108,7 +108,7 @@ class HomeViewModel @Inject constructor(
                 initialValue = HedgeUiState.Loading(UserStatsInfo.EMPTY)
             )
 
-    val retrospectionListUiState: StateFlow<HedgeUiState<List<RetrospectionSymbolState>>> =
+    val retrospectionListUiState: RestartableStateFlow<HedgeUiState<List<RetrospectionSymbolState>>> =
         retrospectionListUseCase()
             .map { result ->
                 if (result.data.isEmpty()) {
@@ -154,7 +154,7 @@ class HomeViewModel @Inject constructor(
                 }
             }
             .asUiState()
-            .stateIn(
+            .restartStateIn(
                 scope = viewModelScope,
                 started = SharingStarted.WhileSubscribed(5_000),
                 initialValue = HedgeUiState.Loading(emptyList())
@@ -196,5 +196,9 @@ class HomeViewModel @Inject constructor(
 
     fun restartPrincipleGroups() {
         principleGroupsUiState.restart()
+    }
+
+    fun restartRetrospectionList(){
+        retrospectionListUiState.restart()
     }
 }

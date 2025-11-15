@@ -144,9 +144,9 @@ fun HedgeNavHost(
         )
 
         retrospectionDetailNavigation(
-            onClickBack = navController::popBackStack,
+            navController = navController,
             onClickFeedback = { retrospectionId ->
-                //todo navigateToFeedback
+                navController.navigateToFeedback(retrospectionId)
             },
             onClickImage = navController::navigateToImageDetail,
             onShowToast = onShowToast,

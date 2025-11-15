@@ -63,4 +63,6 @@ interface HedgeRepository {
         email: String? = null,
         nickname: String? = null
     ): Flow<SocialLogin>
+
+    fun getFeedback(retrospectionId: Int): Flow<Feedback>
 }

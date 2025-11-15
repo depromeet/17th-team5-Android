@@ -31,6 +31,6 @@ enum class AgreementsType(
     MARKETING(
         R.string.agreements_agree_marketing_information,
         ConsentType.OPTIONAL,
-        "https://www.notion.so/2a0219cc9c3480b591ebee5e6cef6d1e"
+        "https://www.notion.so/2a0219cc9c34800faf14f50bef7e8c1f"
     )
 }

@@ -7,10 +7,11 @@ data class Feedback(
 )
 
 data class FeedbackInfo(
-    val symbol: String,
+    val companyName: String,
     val price: Long,
     val volume: Int,
     val orderType: String,
+    val companyLogo: String?,
     val keptCount: Int,
     val neutralCount: Int,
     val notKeptCount: Int,

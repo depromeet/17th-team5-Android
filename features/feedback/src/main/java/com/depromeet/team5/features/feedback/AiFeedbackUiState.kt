@@ -5,6 +5,11 @@ sealed class AiFeedbackUiState {
 
     data class Success(
         val retrospectionId: Int,
+        val companyName: String,
+        val price: Long,
+        val volume: Int,
+        val orderType: String,
+        val companyLogo: String?,
         val badge: String,
         val principleCheckSummary: PrincipleState,
         val keep: List<String>,

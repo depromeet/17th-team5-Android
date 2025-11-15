@@ -7,7 +7,7 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavOptions
 import androidx.navigation.compose.composable
 import com.depromeet.team5.core.domain.model.OrderType
-import com.depromeet.team5.core.navigation.IS_UPDATED
+import com.depromeet.team5.core.navigation.IS_PRINCIPLE_UPDATED
 import com.depromeet.team5.features.principlegroupmodification.screen.PrincipleGroupModificationRoute
 import kotlinx.serialization.Serializable
 
@@ -44,7 +44,7 @@ fun NavGraphBuilder.principleGroupModification(
             onBackPressed = { isUpdated ->
                 navController.previousBackStackEntry
                     ?.savedStateHandle
-                    ?.set(IS_UPDATED, isUpdated)
+                    ?.set(IS_PRINCIPLE_UPDATED, isUpdated)
 
                 navController.popBackStack()
             }

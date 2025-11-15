@@ -93,4 +93,9 @@ interface HedgeApi {
     suspend fun socialLogin(
         @Body body: SocialLoginRequestRemoteData
     ): Response<SocialLoginSuccessResponse>
+
+    @GET("api/v1/reports/{retrospectionId}/feedback")
+    suspend fun getFeedback(
+        @Path("retrospectionId") retrospectionId: Int
+    ): FeedbackResponse
 }

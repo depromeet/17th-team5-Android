@@ -20,6 +20,7 @@ import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Icon
 import androidx.compose.material.Text
@@ -42,10 +43,11 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.depromeet.team5.core.designsystem.component.HedgeButton
 import com.depromeet.team5.core.designsystem.foundation.HedgeColor
 import com.depromeet.team5.core.designsystem.foundation.HedgeTypography
+import com.depromeet.team5.core.domain.model.toOrderType
 import com.depromeet.team5.core.navigation.request.RequestViewModel
+import com.depromeet.team5.core.ui.component.HedgeCompanyLogo
 import com.depromeet.team5.core.ui.component.HedgeLoadingScreen
 import com.depromeet.team5.core.ui.model.HedgeBadge
 import com.depromeet.team5.features.feedback.AiFeedbackUiState
@@ -57,14 +59,19 @@ import com.depromeet.team5.features.feedback.component.PrincipleCounter
 fun AiFeedbackRoute(
     requestViewModel: RequestViewModel,
     onCompleteClick: (Int) -> Unit,
+    retrospectionId: Int? = null,
     modifier: Modifier = Modifier,
     viewModel: AiFeedbackViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.feedbackStateFlow.collectAsStateWithLifecycle()
 
-    LaunchedEffect(Unit) {
-        requestViewModel.selectedMyPrincipleGroupState?.let {
-            viewModel.createRetrospection(requestViewModel.request, it)
+    LaunchedEffect(retrospectionId) {
+        if (retrospectionId!=null){
+            viewModel.loadFeedback(retrospectionId)
+        }else{
+            requestViewModel.selectedMyPrincipleGroupState?.let {
+                viewModel.createRetrospection(requestViewModel.request, it)
+            }
         }
     }
 
@@ -78,9 +85,7 @@ fun AiFeedbackRoute(
             AiFeedbackScreen(
                 state = state,
                 grade = HedgeBadge.fromBadge(state.badge),
-                companyName = requestViewModel.request.companyName,
-                price = requestViewModel.request.price.toLong(),
-                stock = requestViewModel.request.volume,
+                companyLogo = requestViewModel.companyLogoUrl,
                 onCompleteClick = { onCompleteClick(state.retrospectionId) },
                 modifier = modifier.windowInsetsPadding(WindowInsets.systemBars)
             )
@@ -99,9 +104,7 @@ fun AiFeedbackRoute(
 private fun AiFeedbackScreen(
     state: AiFeedbackUiState.Success,
     grade: HedgeBadge,
-    companyName: String,
-    price: Long,
-    stock: Int,
+    companyLogo: String?,
     onCompleteClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -246,23 +249,24 @@ private fun AiFeedbackScreen(
                             .padding(bottom = 22.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Box(
+                        HedgeCompanyLogo(
+                            logoUrl = companyLogo,
                             modifier = Modifier
+                                .clip(shape = CircleShape)
                                 .size(28.dp)
-                                .background(Color.Gray, shape = RoundedCornerShape(20.dp))
                         )
 
                         Column(
                             modifier = Modifier.padding(start = 12.dp)
                         ) {
                             Text(
-                                text = companyName,
+                                text = state.companyName,
                                 style = HedgeTypography.Label2.Medium,
                                 color = HedgeColor.Text.Alternative
                             )
 
                             Text(
-                                text = stringResource(R.string.price_and_stock, price, stock),
+                                text = stringResource(R.string.price_and_stock, state.price, state.volume, state.orderType.toOrderType().toKorean()),
                                 style = HedgeTypography.Body2.SemiBold,
                                 color = HedgeColor.Text.Primary
                             )
@@ -441,6 +445,11 @@ private fun AiFeedbackScreenPreview() {
     AiFeedbackScreen(
         state = AiFeedbackUiState.Success(
             retrospectionId = 1,
+            companyName = "테슬라(TSLA)",
+            companyLogo = "",
+            price = 100000,
+            volume = 100,
+            orderType = "매수",
             badge = "platinum",
             principleCheckSummary = PrincipleState(
                 keptCount = 1,
@@ -459,9 +468,7 @@ private fun AiFeedbackScreenPreview() {
             )
         ),
         grade = HedgeBadge.fromBadge(badge = "platinum"),
-        companyName = "삼성전자",
-        price = 65000,
-        stock = 3,
+        companyLogo = null,
         onCompleteClick = {}
     )
 }

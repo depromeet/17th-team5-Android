@@ -18,10 +18,11 @@ data class FeedbackRemoteData(
 }
 
 data class FeedbackInfoRemoteData(
-    val symbol: String,
+    val companyName: String,
     val price: Long,
     val volume: Int,
     val orderType: String,
+    val companyLogo: String?,
     val keptCount: Int,
     val neutralCount: Int,
     val notKeptCount: Int,
@@ -33,7 +34,8 @@ data class FeedbackInfoRemoteData(
     override fun toData(): FeedbackInfoData =
         FeedbackInfoData(
             badge = badge,
-            symbol = symbol,
+            companyName = companyName,
+            companyLogo = companyLogo,
             orderType = orderType,
             volume = volume,
             price = price,

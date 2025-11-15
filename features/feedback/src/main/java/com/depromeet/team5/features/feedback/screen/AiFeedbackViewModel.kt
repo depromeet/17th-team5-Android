@@ -7,6 +7,7 @@ import com.depromeet.team5.core.domain.model.PrincipleGroupState
 import com.depromeet.team5.core.domain.request.CreateRetrospectionRequest
 import com.depromeet.team5.core.domain.usecase.CreateFeedbackUseCase
 import com.depromeet.team5.core.domain.usecase.CreateRetrospectionUseCase
+import com.depromeet.team5.core.domain.usecase.GetFeedbackUseCase
 import com.depromeet.team5.features.feedback.AiFeedbackUiState
 import com.depromeet.team5.features.feedback.PrincipleState
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -26,6 +27,7 @@ class AiFeedbackViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val createRetrospectionUseCase: CreateRetrospectionUseCase,
     private val createFeedbackUseCase: CreateFeedbackUseCase,
+    private val getFeedbackUseCase: GetFeedbackUseCase,
     private val logger: Logger
 ) : ViewModel() {
 
@@ -50,6 +52,11 @@ class AiFeedbackViewModel @Inject constructor(
                     if (it.data != null) {
                         AiFeedbackUiState.Success(
                             retrospectionId = createdId,
+                            companyName = it.data!!.companyName,
+                            companyLogo = it.data!!.companyLogo,
+                            price = it.data!!.price,
+                            volume = it.data!!.volume,
+                            orderType = it.data!!.orderType,
                             badge = it.data!!.badge,
                             principleCheckSummary = PrincipleState(
                                 keptCount = it.data!!.keptCount,
@@ -74,6 +81,45 @@ class AiFeedbackViewModel @Inject constructor(
                 .onEach { _feedbackStateFlow.value = it }
                 .collect()
         }
+    }
+
+    fun loadFeedback(retrospectionId: Int) {
+        viewModelScope.launch {
+            getFeedbackUseCase(retrospectionId)
+                .map{
+                    if (it.data != null) {
+                        AiFeedbackUiState.Success(
+                            retrospectionId = retrospectionId,
+                            companyName = it.data!!.companyName,
+                            companyLogo = it.data!!.companyLogo,
+                            price = it.data!!.price,
+                            volume = it.data!!.volume,
+                            orderType = it.data!!.orderType,
+                            badge = it.data!!.badge,
+                            principleCheckSummary = PrincipleState(
+                                keptCount = it.data!!.keptCount,
+                                neutralCount = it.data!!.neutralCount,
+                                notKeptCount = it.data!!.notKeptCount
+                            ),
+                            keep = it.data!!.keep,
+                            fix = it.data!!.fix,
+                            next = it.data!!.next
+                        )
+                    } else {
+                        AiFeedbackUiState.Error(
+                            code = it.code,
+                            message = it.message
+                        )
+                    }
+                }
+                .catch {
+                    logger.e(it)
+                    emit(AiFeedbackUiState.Failure(it))
+                }
+                .onEach { _feedbackStateFlow.value = it }
+                .collect()
+        }
+
     }
 
     private fun formatDate(date: String): String {

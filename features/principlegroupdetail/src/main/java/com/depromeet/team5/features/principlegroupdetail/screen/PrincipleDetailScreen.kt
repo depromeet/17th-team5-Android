@@ -77,7 +77,7 @@ import com.depromeet.team5.core.domain.model.MyPrincipleGroup
 import com.depromeet.team5.core.domain.model.OrderType
 import com.depromeet.team5.core.domain.monad.BaseEvent
 import com.depromeet.team5.core.domain.monad.HedgeUiState
-import com.depromeet.team5.core.navigation.IS_UPDATED
+import com.depromeet.team5.core.navigation.IS_PRINCIPLE_UPDATED
 import com.depromeet.team5.core.navigation.Path
 import com.depromeet.team5.core.navigation.PrincipleModificationType
 import com.depromeet.team5.core.navigation.request.PrincipleGraphViewModel
@@ -118,14 +118,14 @@ fun PrincipleDetailRoute(
     LaunchedEffect(Unit) {
         navController.currentBackStackEntry
             ?.savedStateHandle
-            ?.getStateFlow<Boolean?>(IS_UPDATED, null)
+            ?.getStateFlow<Boolean?>(IS_PRINCIPLE_UPDATED, null)
             ?.baseCollect(
                 onSuccess = {
                     viewModel.getPrinciple()
 
                     navController.currentBackStackEntry
                         ?.savedStateHandle
-                        ?.remove<Boolean>(IS_UPDATED)
+                        ?.remove<Boolean>(IS_PRINCIPLE_UPDATED)
                 },
                 onError = {}
             )

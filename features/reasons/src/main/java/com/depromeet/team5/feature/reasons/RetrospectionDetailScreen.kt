@@ -79,7 +79,7 @@ import com.depromeet.team5.feature.reasons.ui.MemoBottomSheet
 
 @Composable
 fun RetrospectionDetailRoute(
-    onClickBack: () -> Unit,
+    onClickBack: (Boolean) -> Unit,
     onClickFeedback: (Int) -> Unit,
     onClickImage: (ImageDetail) -> Unit,
     onShowToast: (String) -> Unit,
@@ -91,14 +91,14 @@ fun RetrospectionDetailRoute(
     val deleteRetrospectionToastText = stringResource(R.string.delete_retrospection_toast)
     RetrospectionDetailScreen(
         uiState = uiState,
-        onClickBack = onClickBack,
+        onClickBack = { onClickBack(false) },
         onClickFeedback = onClickFeedback,
         deleteRetrospection = {
             viewModel.deleteRetrospection { throwable ->
                 if (throwable != null) {
                     onShowErrorToast(throwable)
                 } else {
-                    onClickBack()
+                    onClickBack(true)
                     onShowToast(deleteRetrospectionToastText)
                 }
             }

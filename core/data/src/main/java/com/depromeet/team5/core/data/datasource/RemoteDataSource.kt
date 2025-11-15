@@ -56,4 +56,6 @@ interface RemoteDataSource {
     suspend fun systemPrincipleList(): SystemPrincipleData
 
     suspend fun socialLogin(body: SocialLoginRequestData): SocialLoginData
+
+    suspend fun getFeedback(retrospectionId: Int): FeedbackData
 }

@@ -50,8 +50,6 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.flowWithLifecycle
-import androidx.lifecycle.lifecycleScope
 import com.depromeet.team5.core.designsystem.component.HedgeButton
 import com.depromeet.team5.core.designsystem.component.HedgeTopBar
 import com.depromeet.team5.core.designsystem.foundation.HedgeColor
@@ -59,6 +57,7 @@ import com.depromeet.team5.core.designsystem.foundation.HedgeTypography
 import com.depromeet.team5.core.domain.model.MyPrincipleGroup
 import com.depromeet.team5.core.domain.model.OrderType
 import com.depromeet.team5.core.domain.model.toOrderType
+import com.depromeet.team5.core.domain.monad.HedgeUiState
 import com.depromeet.team5.core.navigation.request.RequestViewModel
 import com.depromeet.team5.core.ui.component.HedgeCompanyLogo
 import com.depromeet.team5.core.ui.component.HedgeLoadingScreen
@@ -68,8 +67,6 @@ import com.depromeet.team5.features.feedback.AiFeedbackUiState
 import com.depromeet.team5.features.feedback.PrincipleState
 import com.depromeet.team5.features.feedback.R
 import com.depromeet.team5.features.feedback.component.PrincipleCounter
-import com.depromeet.team5.features.feedback.event.Event
-import kotlinx.coroutines.launch
 import com.depromeet.team5.core.ui.R as UiR
 
 
@@ -242,7 +239,7 @@ private fun AiFeedbackScreen(
             modifier = Modifier.fillMaxSize()
         ) {
             item {
-                if (isCreateMode){
+                if (isCreateMode) {
                     Row(
                         modifier = Modifier
                             .padding(horizontal = 20.dp, vertical = 4.dp)
@@ -259,7 +256,7 @@ private fun AiFeedbackScreen(
                                 .clickable { onCompleteClick() }
                         )
                     }
-                }else{
+                } else {
                     HedgeTopBar(onClickBack = onBack)
                 }
             }
@@ -525,12 +522,7 @@ private fun PrincipleDialog(
     modalViewModel: PrincipleModalViewModel = hiltViewModel()
 ) {
     val lifecycleOwner = LocalLifecycleOwner.current
-    val myPrincipleGroups by modalViewModel.principleGroupsState.stateFlow.collectAsStateWithLifecycle()
-    val defaultPrincipleGroup by modalViewModel.defaultPrincipleGroupState.stateFlow.collectAsStateWithLifecycle()
-
-    LaunchedEffect(Unit) {
-        modalViewModel.getDefaultPrincipleGroup(orderType)
-    }
+    val uiState by modalViewModel.uiState.stateFlow.collectAsStateWithLifecycle()
 
     DisposableEffect(lifecycleOwner) {
         val observer = LifecycleEventObserver { _, event ->
@@ -547,30 +539,29 @@ private fun PrincipleDialog(
         }
     }
 
-    LaunchedEffect(Unit) {
-        lifecycleOwner.lifecycleScope.launch {
-            modalViewModel.eventFlow
-                .flowWithLifecycle(lifecycleOwner.lifecycle)
-                .collect { event ->
-                    when (event) {
-                        is Event.ShowErrorToast -> {
-                            onShowErrorToast(event.throwable)
-                        }
-                    }
-                }
+    when (val state = uiState) {
+        is HedgeUiState.Success<Pair<MyPrincipleGroup, List<MyPrincipleGroup>>> -> {
+            PrincipleBottomSheetDialog(
+                modifier = modifier,
+                title = stringResource(UiR.string.principle_bottom_sheet_dialog_title),
+                defaultPrincipleGroup = state.data.first,
+                myPrincipleGroups = state.data.second,
+                isShowAddButton = true,
+                onClickedClose = onClickedClose,
+                onClickedConfirmButton = onClickedConfirmButton,
+                onClickedAddButton = onClickedAddButton
+            )
+        }
+
+        is HedgeUiState.Error -> {
+            state.throwable?.let {
+                onShowErrorToast(it)
+            }
+        }
+        is HedgeUiState.Loading<*> -> {
+            HedgeLoadingScreen()
         }
     }
-
-    PrincipleBottomSheetDialog(
-        modifier = modifier,
-        title = stringResource(UiR.string.principle_bottom_sheet_dialog_title),
-        defaultPrincipleGroup = defaultPrincipleGroup,
-        myPrincipleGroups = myPrincipleGroups,
-        isShowAddButton = true,
-        onClickedClose = onClickedClose,
-        onClickedConfirmButton = onClickedConfirmButton,
-        onClickedAddButton = onClickedAddButton
-    )
 }
 
 @Preview(showBackground = true)

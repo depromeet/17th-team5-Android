@@ -667,9 +667,10 @@ private fun PrincipleDialog(
                 title = stringResource(UiR.string.principle_bottom_sheet_dialog_title),
                 defaultPrincipleGroup = state.defaultPrincipleGroup,
                 myPrincipleGroups = state.myPrincipleGroups,
-                isShowAddButton = false,
+                isShowAddButton = true,
                 onClickedClose = onClickedClose,
-                onClickedConfirmButton = onClickedConfirmButton
+                onClickedConfirmButton = onClickedConfirmButton,
+                onClickedAddButton = {}
             )
         }
 

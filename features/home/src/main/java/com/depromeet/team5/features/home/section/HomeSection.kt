@@ -35,6 +35,7 @@ import com.depromeet.team5.core.designsystem.foundation.HedgeColor
 import com.depromeet.team5.core.designsystem.foundation.HedgeColor.BLUE_500
 import com.depromeet.team5.core.designsystem.foundation.HedgeColor.RED_500
 import com.depromeet.team5.core.designsystem.foundation.HedgeTypography
+import com.depromeet.team5.core.domain.model.OrderType
 import com.depromeet.team5.core.domain.model.UserStatsInfo
 import com.depromeet.team5.core.domain.monad.HedgeUiState
 import com.depromeet.team5.core.ui.component.HedgeLoadingScreen
@@ -51,7 +52,7 @@ fun HomeSection(
     userStatsUiState: HedgeUiState<UserStatsInfo>,
     retrospectionListUiState: HedgeUiState<List<RetrospectionSymbolState>>,
     onDashBoardClick: (Boolean) -> Unit,
-    onClickRetrospectionDetail: (Int) -> Unit,
+    onClickRetrospectionDetail: (OrderType, Int) -> Unit,
     onShowErrorToast: (Throwable) -> Unit,
     highlightRetrospectionId: Int?,
     onClearHighlight: () -> Unit,
@@ -256,7 +257,7 @@ private fun UserStatsSection(
 @Composable
 private fun RetrospectionHistorySection(
     retrospectionListUiState: HedgeUiState<List<RetrospectionSymbolState>>,
-    onClickRetrospectionDetail: (Int) -> Unit,
+    onClickRetrospectionDetail: (OrderType, Int) -> Unit,
     onShowErrorToast: (Throwable) -> Unit,
     highlightRetrospectionId: Int?,
     onClearHighlight: () -> Unit,
@@ -391,7 +392,7 @@ private fun HomeSectionPreview() {
         userStatsUiState = successStats,
         retrospectionListUiState = successList,
         onDashBoardClick = {},
-        onClickRetrospectionDetail = {},
+        onClickRetrospectionDetail = { _, _ -> },
         onShowErrorToast = {},
         highlightRetrospectionId = null,
         onClearHighlight = {}

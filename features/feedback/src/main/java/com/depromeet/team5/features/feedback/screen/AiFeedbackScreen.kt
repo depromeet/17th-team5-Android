@@ -79,6 +79,7 @@ fun AiFeedbackRoute(
     modifier: Modifier = Modifier,
     onShowToast: (String) -> Unit,
     onShowErrorToast: (Throwable) -> Unit,
+    onClickedAddPrinciples: (Int, List<String>) -> Unit,
     viewModel: AiFeedbackViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.feedbackStateFlow.collectAsStateWithLifecycle()
@@ -137,9 +138,19 @@ fun AiFeedbackRoute(
 
     if (isShowPrincipleModal) {
         PrincipleDialog(
+            newPrinciples = if (uiState is AiFeedbackUiState.Success) {
+                (uiState as AiFeedbackUiState.Success).next
+            } else {
+                emptyList()
+            },
             orderType = requestViewModel.request.orderType,
-            onClickedConfirmButton = {
+            onClickedConfirmButton = { myPrincipleGroup ->
                 isShowPrincipleModal = false
+
+                if (uiState is AiFeedbackUiState.Success) {
+                    val newPrinciples = (uiState as AiFeedbackUiState.Success).next
+                    onClickedAddPrinciples(myPrincipleGroup.id, newPrinciples)
+                }
             },
             onClickedAddButton = {
                 isShowPrincipleModal = false
@@ -513,6 +524,7 @@ private fun AiFeedbackScreen(
 
 @Composable
 private fun PrincipleDialog(
+    newPrinciples: List<String>,
     orderType: OrderType,
     modifier: Modifier = Modifier,
     onClickedConfirmButton: (MyPrincipleGroup) -> Unit,
@@ -523,6 +535,11 @@ private fun PrincipleDialog(
 ) {
     val lifecycleOwner = LocalLifecycleOwner.current
     val uiState by modalViewModel.uiState.stateFlow.collectAsStateWithLifecycle()
+
+    //lifecycleOwner가 초반에 감지하지 못하기에 한번 호출하도록 구현
+    LaunchedEffect(orderType) {
+        modalViewModel.getPrincipleGroups(orderType)
+    }
 
     DisposableEffect(lifecycleOwner) {
         val observer = LifecycleEventObserver { _, event ->
@@ -543,9 +560,10 @@ private fun PrincipleDialog(
         is HedgeUiState.Success<Pair<MyPrincipleGroup, List<MyPrincipleGroup>>> -> {
             PrincipleBottomSheetDialog(
                 modifier = modifier,
-                title = stringResource(UiR.string.principle_bottom_sheet_dialog_title),
+                title = stringResource(UiR.string.principle_bottom_sheet_dialog_title2),
                 defaultPrincipleGroup = state.data.first,
                 myPrincipleGroups = state.data.second,
+                newPrinciples = newPrinciples,
                 isShowAddButton = true,
                 onClickedClose = onClickedClose,
                 onClickedConfirmButton = onClickedConfirmButton,

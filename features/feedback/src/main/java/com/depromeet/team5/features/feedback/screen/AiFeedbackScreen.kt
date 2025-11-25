@@ -114,9 +114,9 @@ fun AiFeedbackRoute(
                 price = requestViewModel.request.price.toLong(),
                 stock = requestViewModel.request.volume,
                 isCreateMode = isCreateMode,
-                onCompleteClick = { onCompleteClick(state.retrospectionId) },
                 onBack = onBack,
                 modifier = modifier.windowInsetsPadding(WindowInsets.systemBars),
+                onCompleteClick = { onCompleteClick(state.retrospectionId) },
                 onClickedPrincipleAddButton = {
                     isShowPrincipleModal = true
                 }
@@ -525,7 +525,12 @@ private fun PrincipleDialog(
     modalViewModel: PrincipleModalViewModel = hiltViewModel()
 ) {
     val lifecycleOwner = LocalLifecycleOwner.current
-    val myPrincipleGroups by modalViewModel.principleGroupsFlow.stateFlow.collectAsStateWithLifecycle()
+    val myPrincipleGroups by modalViewModel.principleGroupsState.stateFlow.collectAsStateWithLifecycle()
+    val defaultPrincipleGroup by modalViewModel.defaultPrincipleGroupState.stateFlow.collectAsStateWithLifecycle()
+
+    LaunchedEffect(Unit) {
+        modalViewModel.getDefaultPrincipleGroup(orderType)
+    }
 
     DisposableEffect(lifecycleOwner) {
         val observer = LifecycleEventObserver { _, event ->
@@ -559,9 +564,9 @@ private fun PrincipleDialog(
     PrincipleBottomSheetDialog(
         modifier = modifier,
         title = stringResource(UiR.string.principle_bottom_sheet_dialog_title),
-        groups = myPrincipleGroups,
+        defaultPrincipleGroup = defaultPrincipleGroup,
+        myPrincipleGroups = myPrincipleGroups,
         isShowAddButton = true,
-        orderType = orderType,
         onClickedClose = onClickedClose,
         onClickedConfirmButton = onClickedConfirmButton,
         onClickedAddButton = onClickedAddButton

@@ -664,12 +664,9 @@ private fun PrincipleDialog(
     when (val state = uiState) {
         is UiState.Success<MyPrincipleGroup> -> {
             PrincipleBottomSheetDialog(
-                title = stringResource(R.string.principle_bottom_sheet_dialog_title),
+                title = stringResource(UiR.string.principle_bottom_sheet_dialog_title),
                 defaultPrincipleGroup = state.defaultPrincipleGroup,
                 myPrincipleGroups = state.myPrincipleGroups,
-                title = stringResource(UiR.string.principle_bottom_sheet_dialog_title),
-                groups = state.data,
-                orderType = orderType,
                 isShowAddButton = false,
                 onClickedClose = onClickedClose,
                 onClickedConfirmButton = onClickedConfirmButton

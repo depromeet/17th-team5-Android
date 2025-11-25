@@ -76,10 +76,11 @@ fun PrincipleBottomSheetDialog(
     defaultPrincipleGroup: MyPrincipleGroup,
     myPrincipleGroups: List<MyPrincipleGroup>,
     modifier: Modifier = Modifier,
+    newPrinciples: List<String> = emptyList(),
     isShowAddButton: Boolean = false,
+    onClickedAddButton: () -> Unit = {},
     onClickedClose: () -> Unit,
-    onClickedConfirmButton: (MyPrincipleGroup) -> Unit,
-    onClickedAddButton: () -> Unit = {}
+    onClickedConfirmButton: (MyPrincipleGroup) -> Unit
 ) {
     val scope = rememberCoroutineScope()
     val sheetState = rememberModalBottomSheetState(
@@ -110,7 +111,9 @@ fun PrincipleBottomSheetDialog(
                 title = title,
                 defaultPrincipleGroup = defaultPrincipleGroup,
                 myPrincipleGroups = myPrincipleGroups,
+                newPrinciples = newPrinciples,
                 isShowAddButton = isShowAddButton,
+                onClickedAddButton = onClickedAddButton,
                 onClickedClose = onClickedClose,
                 onClickedConfirmButton = { myPrincipleGroup ->
                     scope.launch {
@@ -118,8 +121,7 @@ fun PrincipleBottomSheetDialog(
                         delay(100)
                         onClickedConfirmButton(myPrincipleGroup)
                     }
-                },
-                onClickedAddButton = onClickedAddButton
+                }
             )
         }
     }
@@ -131,10 +133,12 @@ private fun HedgeModalBottomSheetScreen(
     defaultPrincipleGroup: MyPrincipleGroup,
     myPrincipleGroups: List<MyPrincipleGroup>,
     modifier: Modifier = Modifier,
+    newPrinciples: List<String>,
     isShowAddButton: Boolean = false,
+    onClickedAddButton: () -> Unit,
     onClickedClose: () -> Unit,
-    onClickedConfirmButton: (MyPrincipleGroup) -> Unit,
-    onClickedAddButton: () -> Unit
+    onClickedConfirmButton: (MyPrincipleGroup) -> Unit
+
 ) {
     var selectedMyPrincipleItem by remember { mutableIntStateOf(-1) }
 
@@ -330,14 +334,25 @@ private fun HedgeModalBottomSheetScreen(
         val target = if (selectedMyPrincipleItem == defaultPrincipleGroup.id) {
             defaultPrincipleGroup
         } else if (selectedMyPrincipleItem != -1) {
-            myPrincipleGroups.find { it.id == selectedMyPrincipleItem } ?: return
+            myPrincipleGroups.find { it.id == selectedMyPrincipleItem } ?: MyPrincipleGroup.EMPTY
         } else {
-            return
+            MyPrincipleGroup.EMPTY
         }
 
+        if (!isShowAddButton && target == MyPrincipleGroup.EMPTY) return
+
         ConfirmButton(
+            isShowAddButton = isShowAddButton,
             modifier = Modifier.align(Alignment.BottomCenter),
-            enabled = selectedMyPrincipleItem != -1,
+            enabled = if (isShowAddButton) {
+                if (target != MyPrincipleGroup.EMPTY && selectedMyPrincipleItem != defaultPrincipleGroup.id) {
+                    target.principles.size + newPrinciples.size <= 5
+                } else {
+                    false
+                }
+            } else {
+                selectedMyPrincipleItem != -1 && target != MyPrincipleGroup.EMPTY
+            },
             onClickedConfirmButton = {
                 onClickedConfirmButton(target)
             }
@@ -348,8 +363,8 @@ private fun HedgeModalBottomSheetScreen(
 @Composable
 private fun ConfirmButton(
     enabled: Boolean,
+    isShowAddButton: Boolean,
     modifier: Modifier = Modifier,
-    isShowAddButton: Boolean = false,
     onClickedConfirmButton: () -> Unit
 ) {
     Box(
@@ -378,6 +393,7 @@ private fun ConfirmButton(
                     .fillMaxWidth()
                     .padding(start = 20.dp, end = 20.dp, bottom = 31.dp),
                 enabled = enabled,
+                forceClickable = false,
                 text = if (isShowAddButton) {
                     stringResource(id = R.string.select)
                 } else {
@@ -545,6 +561,7 @@ fun HedgeModalBottomSheetPreview() {
     HedgeModalBottomSheetScreen(
         title = stringResource(R.string.principle_bottom_sheet_dialog_button_text),
         defaultPrincipleGroup = MyPrincipleGroup.EMPTY,
+        newPrinciples = emptyList(),
         myPrincipleGroups = groups,
         isShowAddButton = true,
         onClickedClose = {},
@@ -623,6 +640,7 @@ private fun ConfirmButtonPreview() {
     ) {
         ConfirmButton(
             enabled = true,
+            isShowAddButton = false,
             onClickedConfirmButton = {}
         )
     }

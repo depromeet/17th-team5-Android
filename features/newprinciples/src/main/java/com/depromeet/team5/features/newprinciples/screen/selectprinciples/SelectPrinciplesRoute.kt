@@ -48,7 +48,7 @@ fun SelectPrinciplesRoute(
     modifier: Modifier = Modifier,
     onBackPressed: () -> Unit,
     onShowErrorToast: (Throwable) -> Unit,
-    onClickedConfirmButton: () -> Unit,
+    onClickedConfirmButton: (List<String>) -> Unit,
     viewModel: SelectPrinciplesViewModel = hiltViewModel()
 ) {
     val myPrincipleGroupUiState by viewModel.myPrincipleGroupUiState.collectAsStateWithLifecycle()
@@ -69,7 +69,7 @@ private fun SelectPrinciplesScreen(
     uiState: HedgeUiState<MyPrincipleGroup>,
     newPrinciples: List<String>,
     modifier: Modifier = Modifier,
-    onClickedConfirmButton: () -> Unit,
+    onClickedConfirmButton: (List<String>) -> Unit,
     onShowErrorToast: (Throwable) -> Unit,
     onBackPressed: () -> Unit
 ) {
@@ -99,7 +99,7 @@ private fun SelectPrinciplesContent(
     myPrincipleGroup: MyPrincipleGroup,
     newPrinciples: List<String>,
     modifier: Modifier = Modifier,
-    onClickedConfirmButton: () -> Unit,
+    onClickedConfirmButton: (List<String>) -> Unit,
     onBackPressed: () -> Unit
 ) {
     var selectedPrincipleSet by remember { mutableStateOf(emptySet<String>()) }
@@ -168,7 +168,9 @@ private fun SelectPrinciplesContent(
                 text = stringResource(R.string.new_principle_button_text),
                 enabled = isButtonEnabled,
                 forceClickable = isButtonEnabled,
-                onClick = onClickedConfirmButton
+                onClick = {
+                    onClickedConfirmButton(selectedPrincipleSet.toList())
+                }
             )
         }
     }

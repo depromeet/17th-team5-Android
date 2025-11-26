@@ -72,10 +72,10 @@ fun NavGraphBuilder.newPrincipleGraph(
             val route = backStackEntry.toRoute<SelectPrinciplesRoute>()
 
             SelectPrinciplesRoute(
-                onClickedConfirmButton = {
+                onClickedConfirmButton = { selectedPrinciples ->
                     navController.navigateToAddPrincipleGraph(
                         groupId = route.groupId,
-                        newPrinciples = route.principles
+                        newPrinciples = selectedPrinciples
                     )
                 },
                 onBackPressed = onBackPressed,

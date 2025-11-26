@@ -52,7 +52,8 @@ class AddPrincipleViewModel @Inject constructor(
                         uiState.update {
                             it.copy(
                                 groupName = groupName,
-                                newPrinciples = newPrinciples
+                                newPrinciples = newPrinciples,
+                                isLastPage = it.page + 1 == newPrinciples.size
                             )
                         }
                     },

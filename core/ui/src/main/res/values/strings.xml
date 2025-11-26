@@ -49,6 +49,7 @@
     <string name="cancel">취소</string>
     <string name="ok">확인</string>
     <string name="completion">완료</string>
+    <string name="limit_group_name">최대 20자까지 작성할 수 있어요</string>
 
     <string-array name="principle_bottom_sheet_dialog_beginner_buy_type_array">
         <item>안전마진을 확보하라</item>

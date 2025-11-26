@@ -62,6 +62,7 @@ fun NavGraphBuilder.newPrincipleGraph(
     navController: NavController,
     onShowToast: (String) -> Unit,
     onShowErrorToast: (Throwable) -> Unit,
+    onShowNoIconToast: (String) -> Unit,
     onBackPressed: () -> Unit
 ) {
     navigation<NewPrinciplesRoute>(
@@ -87,6 +88,7 @@ fun NavGraphBuilder.newPrincipleGraph(
             AddPrinciplesRoute(
                 onShowToast = onShowToast,
                 onShowErrorToast = onShowErrorToast,
+                onShowNoIconToast = onShowNoIconToast,
                 onBackPressed = onBackPressed,
                 onFinished = {
                     navController.popBackStack<SelectPrinciplesRoute>(inclusive = true)

@@ -60,6 +60,7 @@ fun AddPrinciplesRoute(
     modifier: Modifier = Modifier,
     onShowToast: (String) -> Unit,
     onShowErrorToast: (Throwable) -> Unit,
+    onShowNoIconToast: (String) -> Unit,
     onBackPressed: () -> Unit,
     onFinished: () -> Unit,
     viewModel: AddPrincipleViewModel = hiltViewModel()
@@ -93,7 +94,14 @@ fun AddPrinciplesRoute(
         modifier = modifier,
         uiState = uiState,
         enabled = uiState.title.isNotEmpty(),
-        onTextChanged = { page, new -> viewModel.updateTitle(page, new) },
+        onTextChanged = { page, new ->
+            if (new.length > 20) {
+                onShowNoIconToast(context.getString(UiR.string.limit_group_name))
+                return@AddPrinciplesScreen
+            }
+
+            viewModel.updateTitle(page, new)
+        },
         onClickedNext = { viewModel.nextPage() },
         onClickedComplete = { viewModel.complete() },
         onBackPressed = onBackPressed

@@ -166,6 +166,7 @@ fun HedgeNavHost(
             navController = navController,
             onShowToast = onShowToast,
             onShowErrorToast = onShowErrorToast,
+            onShowNoIconToast = onShowNoIconToast,
             onBackPressed = navController::popBackStack
         )
 

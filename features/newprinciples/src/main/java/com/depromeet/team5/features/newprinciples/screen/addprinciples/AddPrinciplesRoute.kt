@@ -19,6 +19,7 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -29,6 +30,7 @@ import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextLayoutResult
@@ -39,11 +41,16 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.flowWithLifecycle
+import androidx.lifecycle.lifecycleScope
 import com.depromeet.team5.core.designsystem.component.HedgeButton
 import com.depromeet.team5.core.designsystem.component.HedgeTopBar
 import com.depromeet.team5.core.designsystem.foundation.HedgeColor
 import com.depromeet.team5.core.designsystem.foundation.HedgeTypography
+import com.depromeet.team5.core.domain.monad.BaseEvent
+import com.depromeet.team5.features.newprinciples.screen.state.UiState
 import kotlinx.coroutines.launch
 import com.depromeet.team5.core.ui.R as UiR
 
@@ -51,35 +58,68 @@ import com.depromeet.team5.core.ui.R as UiR
 @Composable
 fun AddPrinciplesRoute(
     modifier: Modifier = Modifier,
-    onShowErrorToast: (String) -> Unit,
     onShowToast: (String) -> Unit,
-    onBackPressed: () -> Unit
+    onShowErrorToast: (Throwable) -> Unit,
+    onBackPressed: () -> Unit,
+    viewModel: AddPrincipleViewModel = hiltViewModel()
 ) {
+    val context = LocalContext.current
+    val lifecycleOwner = LocalLifecycleOwner.current
+    val uiState by viewModel.uiState.stateFlow.collectAsStateWithLifecycle()
+
+    LaunchedEffect(lifecycleOwner) {
+        lifecycleOwner.lifecycleScope.launch {
+            viewModel.event
+                .flowWithLifecycle(lifecycleOwner.lifecycle)
+                .collect { event ->
+                    when (event) {
+                        is BaseEvent.Finish -> {
+                            onShowToast(context.getString(UiR.string.create_principle))
+                            onBackPressed()
+                        }
+                        is BaseEvent.Error -> {
+                            event.throwable?.let {
+                                onShowErrorToast(it)
+                            }
+                        }
+                        else -> {}
+                    }
+                }
+        }
+    }
 
     AddPrinciplesScreen(
         modifier = modifier,
-        groupName = "",
-        enabled = false,
-        principles = listOf(),
-        onTextChanged = { page, new -> },
+        uiState = uiState,
+        enabled = uiState.title.isNotEmpty(),
+        onTextChanged = { page, new -> viewModel.updateTitle(page, new) },
+        onClickedNext = { viewModel.nextPage() },
+        onClickedComplete = { viewModel.complete() },
         onBackPressed = onBackPressed
     )
 }
 
 @Composable
 fun AddPrinciplesScreen(
-    groupName: String,
+    uiState: UiState,
     enabled: Boolean,
-    principles: List<String>,
     modifier: Modifier = Modifier,
     onBackPressed: () -> Unit,
-    onTextChanged: (Int, String) -> Unit
+    onTextChanged: (Int, String) -> Unit,
+    onClickedNext: () -> Unit,
+    onClickedComplete: () -> Unit
 ) {
     val scope = rememberCoroutineScope()
     val pagerState = rememberPagerState(
         initialPage = 0,
-        pageCount = { principles.size }
+        pageCount = { uiState.newPrinciples.size }
     )
+
+    LaunchedEffect(uiState) {
+        scope.launch {
+            pagerState.animateScrollToPage(uiState.page)
+        }
+    }
 
     Column(
         modifier = modifier
@@ -90,18 +130,24 @@ fun AddPrinciplesScreen(
             modifier = Modifier.fillMaxWidth(),
             title = {
                 Text(
-                    text = groupName,
+                    text = uiState.groupName,
                     style = HedgeTypography.Body3.SemiBold,
                     color = HedgeColor.Text.Primary
                 )
             },
             action = {
                 HedgeButton.Text(
-                    text = stringResource(UiR.string.next),
+                    text = if (uiState.isLastPage) {
+                        stringResource(UiR.string.completion)
+                    } else {
+                        stringResource(UiR.string.next)
+                    },
                     imageVector = null,
                     onClick = {
-                        scope.launch {
-                            pagerState.animateScrollToPage(pagerState.currentPage + 1)
+                        if (uiState.isLastPage) {
+                            onClickedComplete()
+                        } else {
+                            onClickedNext()
                         }
                     },
                     enabled = enabled,
@@ -113,7 +159,8 @@ fun AddPrinciplesScreen(
 
         AddPrincipleContent(
             pagerState = pagerState,
-            principles = principles,
+            title = uiState.title,
+            principles = uiState.newPrinciples,
             onTextChanged = onTextChanged
         )
     }
@@ -122,6 +169,7 @@ fun AddPrinciplesScreen(
 @Composable
 private fun AddPrincipleContent(
     pagerState: PagerState,
+    title: String,
     principles: List<String>,
     modifier: Modifier = Modifier,
     onTextChanged: (Int, String) -> Unit
@@ -160,14 +208,15 @@ private fun AddPrincipleContent(
         HorizontalPager(
             modifier = Modifier.padding(top = 3.dp),
             state = pagerState,
-            beyondViewportPageCount = 1,
             userScrollEnabled = false
         ) { page ->
 
             PrinciplePage(
-                page = page,
+                title = title,
                 content = principles[page],
-                onTextChanged = onTextChanged
+                onTextChanged = { new ->
+                    onTextChanged(page, new)
+                }
             )
         }
     }
@@ -175,13 +224,11 @@ private fun AddPrincipleContent(
 
 @Composable
 private fun PrinciplePage(
-    page: Int,
+    title: String,
     content: String,
     modifier: Modifier = Modifier,
-    onTextChanged: (Int, String) -> Unit,
-    viewModel: AddPrinciplePageViewModel = hiltViewModel()
+    onTextChanged: (String) -> Unit
 ) {
-    val title by viewModel.title.collectAsStateWithLifecycle()
     var isFocused by remember { mutableStateOf(false) }
 
     Column(
@@ -195,13 +242,11 @@ private fun PrinciplePage(
                 isFocused = focusState.isFocused
             },
             value = title,
-            onValueChange = { new ->
-                viewModel.updateTitle(new)
-                onTextChanged(page, new)
-            },
+            onValueChange = onTextChanged,
             decorationBox = { innerTextField ->
-                if (!isFocused) {
+                if (!isFocused && title.isEmpty()) {
                     Text(
+                        modifier = Modifier.fillMaxWidth(),
                         text = stringResource(UiR.string.principle_modification_principle_hint),
                         style = HedgeTypography.Headline1.SemiBold,
                         color = HedgeColor.Text.Assistive
@@ -286,13 +331,17 @@ fun DisableMarkerBasicTextField(
 @Preview(showBackground = true)
 @Composable
 fun AddPrinciplesScreenPreview() {
-
     AddPrinciplesScreen(
-        groupName = "이것 좀 지키자 제발",
+        uiState = UiState.EMPTY.copy(
+            page = 0,
+            groupName = "이것 좀 지키자 제발",
+            title = "",
+            newPrinciples = listOf("test1", "test2")
+        ),
         enabled = false,
-        principles = listOf("test1", "test2"),
-        onTextChanged = { page, new ->
-        },
+        onTextChanged = { page, new -> },
         onBackPressed = {},
+        onClickedNext = {},
+        onClickedComplete = {}
     )
 }

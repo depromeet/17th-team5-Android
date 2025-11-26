@@ -8,7 +8,7 @@ import com.depromeet.team5.core.domain.monad.HedgeUiState
 import com.depromeet.team5.core.domain.monad.asUiState
 import com.depromeet.team5.core.domain.usecase.GetPrincipleGroupUseCase
 import com.depromeet.team5.core.ui.lazy.hedgeState
-import com.depromeet.team5.features.newprinciples.screen.navigation.SelectPrinciple
+import com.depromeet.team5.features.newprinciples.screen.navigation.SelectPrinciplesRoute
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.flatMapLatest
@@ -27,7 +27,7 @@ class SelectPrinciplesViewModel @Inject constructor(
     val newPrinciples by hedgeState<List<String>>(emptyList())
 
     val myPrincipleGroupUiState = flow {
-        emit(savedStateHandle.toRoute<SelectPrinciple>())
+        emit(savedStateHandle.toRoute<SelectPrinciplesRoute>())
     }
         .transform { (id, list) ->
             newPrinciples.update { list }

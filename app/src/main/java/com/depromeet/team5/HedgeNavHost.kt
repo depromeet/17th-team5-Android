@@ -163,6 +163,8 @@ fun HedgeNavHost(
         )
 
         newPrincipleGraph(
+            navController = navController,
+            onShowToast = onShowToast,
             onShowErrorToast = onShowErrorToast,
             onBackPressed = navController::popBackStack
         )

@@ -5,21 +5,30 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavOptions
 import androidx.navigation.compose.composable
 import androidx.navigation.navigation
+import androidx.navigation.toRoute
+import com.depromeet.team5.features.newprinciples.screen.addprinciples.AddPrinciplesRoute
 import com.depromeet.team5.features.newprinciples.screen.selectprinciples.SelectPrinciplesRoute
 import kotlinx.serialization.Serializable
 
 
 @Serializable
-data class NewPrinciple(
+internal data class NewPrinciplesRoute(
     val groupId: Int,
-    val newPrinciples: List<String>
+    val principles: List<String>
 )
 
 @Serializable
-data class SelectPrinciple(
+internal data class SelectPrinciplesRoute(
     val groupId: Int,
-    val newPrinciples: List<String>
+    val principles: List<String>
 )
+
+@Serializable
+internal data class AddPrinciplesRoute(
+    val groupId: Int,
+    val principles: List<String>
+)
+
 
 fun NavController.navigateToNewPrincipleGraph(
     groupId: Int,
@@ -27,25 +36,58 @@ fun NavController.navigateToNewPrincipleGraph(
     navOptions: NavOptions? = null
 ) {
     navigate(
-        route = NewPrinciple(
+        route = NewPrinciplesRoute(
             groupId = groupId,
-            newPrinciples = newPrinciples
+            principles = newPrinciples
+        ),
+        navOptions = navOptions
+    )
+}
+
+fun NavController.navigateToAddPrincipleGraph(
+    groupId: Int,
+    newPrinciples: List<String>,
+    navOptions: NavOptions? = null
+) {
+    navigate(
+        route = AddPrinciplesRoute(
+            groupId = groupId,
+            principles = newPrinciples
         ),
         navOptions = navOptions
     )
 }
 
 fun NavGraphBuilder.newPrincipleGraph(
+    navController: NavController,
+    onShowToast: (String) -> Unit,
     onShowErrorToast: (Throwable) -> Unit,
     onBackPressed: () -> Unit
 ) {
-    navigation<NewPrinciple>(
-        startDestination = SelectPrinciple::class
+    navigation<NewPrinciplesRoute>(
+        startDestination = SelectPrinciplesRoute::class
     ) {
-        composable<SelectPrinciple> { backStackEntry ->
+        composable<SelectPrinciplesRoute> { backStackEntry ->
+
+            val route = backStackEntry.toRoute<SelectPrinciplesRoute>()
+
             SelectPrinciplesRoute(
+                onClickedConfirmButton = {
+                    navController.navigateToAddPrincipleGraph(
+                        groupId = route.groupId,
+                        newPrinciples = route.principles
+                    )
+                },
                 onBackPressed = onBackPressed,
                 onShowErrorToast = onShowErrorToast
+            )
+        }
+
+        composable<AddPrinciplesRoute> { backStackEntry ->
+            AddPrinciplesRoute(
+                onShowToast = onShowToast,
+                onShowErrorToast = onShowErrorToast,
+                onBackPressed = onBackPressed
             )
         }
     }

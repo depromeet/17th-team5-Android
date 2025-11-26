@@ -48,6 +48,7 @@ fun SelectPrinciplesRoute(
     modifier: Modifier = Modifier,
     onBackPressed: () -> Unit,
     onShowErrorToast: (Throwable) -> Unit,
+    onClickedConfirmButton: () -> Unit,
     viewModel: SelectPrinciplesViewModel = hiltViewModel()
 ) {
     val myPrincipleGroupUiState by viewModel.myPrincipleGroupUiState.collectAsStateWithLifecycle()
@@ -57,9 +58,7 @@ fun SelectPrinciplesRoute(
         uiState = myPrincipleGroupUiState,
         newPrinciples = newPrinciples,
         modifier = modifier,
-        onClickedConfirmButton = { selectedPrinciples ->
-            //todo 원칙 추가작성화면으로 이동
-        },
+        onClickedConfirmButton = onClickedConfirmButton,
         onShowErrorToast = onShowErrorToast,
         onBackPressed = onBackPressed
     )
@@ -70,7 +69,7 @@ private fun SelectPrinciplesScreen(
     uiState: HedgeUiState<MyPrincipleGroup>,
     newPrinciples: List<String>,
     modifier: Modifier = Modifier,
-    onClickedConfirmButton: (List<String>) -> Unit,
+    onClickedConfirmButton: () -> Unit,
     onShowErrorToast: (Throwable) -> Unit,
     onBackPressed: () -> Unit
 ) {
@@ -100,7 +99,7 @@ private fun SelectPrinciplesContent(
     myPrincipleGroup: MyPrincipleGroup,
     newPrinciples: List<String>,
     modifier: Modifier = Modifier,
-    onClickedConfirmButton: (List<String>) -> Unit,
+    onClickedConfirmButton: () -> Unit,
     onBackPressed: () -> Unit
 ) {
     var selectedPrincipleSet by remember { mutableStateOf(emptySet<String>()) }
@@ -169,9 +168,7 @@ private fun SelectPrinciplesContent(
                 text = stringResource(R.string.new_principle_button_text),
                 enabled = isButtonEnabled,
                 forceClickable = isButtonEnabled,
-                onClick = {
-                    onClickedConfirmButton(selectedPrincipleSet.toList())
-                }
+                onClick = onClickedConfirmButton
             )
         }
     }

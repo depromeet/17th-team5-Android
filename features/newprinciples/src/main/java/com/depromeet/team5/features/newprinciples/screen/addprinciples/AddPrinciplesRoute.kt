@@ -61,6 +61,7 @@ fun AddPrinciplesRoute(
     onShowToast: (String) -> Unit,
     onShowErrorToast: (Throwable) -> Unit,
     onBackPressed: () -> Unit,
+    onFinished: () -> Unit,
     viewModel: AddPrincipleViewModel = hiltViewModel()
 ) {
     val context = LocalContext.current
@@ -75,7 +76,7 @@ fun AddPrinciplesRoute(
                     when (event) {
                         is BaseEvent.Finish -> {
                             onShowToast(context.getString(UiR.string.create_principle))
-                            onBackPressed()
+                            onFinished()
                         }
                         is BaseEvent.Error -> {
                             event.throwable?.let {

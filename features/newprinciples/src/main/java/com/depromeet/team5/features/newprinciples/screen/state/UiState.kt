@@ -1,6 +1,9 @@
 package com.depromeet.team5.features.newprinciples.screen.state
 
+import androidx.compose.runtime.Stable
 
+
+@Stable
 data class UiState(
     val page: Int,
     val isLastPage: Boolean,

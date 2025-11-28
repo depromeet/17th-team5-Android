@@ -187,8 +187,7 @@ private fun CheckPrincipleList(
             .fillMaxWidth()
     ) {
         items(
-            items = principles,
-            key = { principle -> principle }
+            items = principles
         ) { principle ->
             CheckPrinciple(
                 principle = principle,

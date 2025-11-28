@@ -67,7 +67,7 @@ fun AddPrinciplesRoute(
     val lifecycleOwner = LocalLifecycleOwner.current
     val uiState by viewModel.uiState.stateFlow.collectAsStateWithLifecycle()
 
-    LaunchedEffect(lifecycleOwner) {
+    LaunchedEffect(Unit) {
         viewModel.event
             .flowWithLifecycle(lifecycleOwner.lifecycle)
             .collect { event ->

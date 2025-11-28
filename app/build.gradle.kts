@@ -49,6 +49,13 @@ android {
             isDebuggable = true
             isMinifyEnabled = false
             isShrinkResources = false
+            manifestPlaceholders["KAKAO_NATIVE_APP_KEY"] =
+                properties.getProperty("kakao_native_app_key_dev")
+
+            buildConfigField(
+                "String", "KAKAO_NATIVE_APP_KEY",
+                "\"${properties.getProperty("kakao_native_app_key_dev")}\""
+            )
         }
 
         release {
@@ -57,10 +64,18 @@ android {
             isMinifyEnabled = true
             isShrinkResources = true
             signingConfig = signingConfigs.getByName("release")
+            manifestPlaceholders["KAKAO_NATIVE_APP_KEY"] =
+                properties.getProperty("kakao_native_app_key")
 
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
+            )
+
+            buildConfigField(
+                "String", "KAKAO_NATIVE_APP_KEY",
+                "\"${properties.getProperty("kakao_native_app_key")}\""
+
             )
         }
     }

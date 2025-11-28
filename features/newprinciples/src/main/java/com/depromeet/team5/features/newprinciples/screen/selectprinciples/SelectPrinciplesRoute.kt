@@ -14,7 +14,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
@@ -83,7 +83,7 @@ private fun SelectPrinciplesScreen(
                 onBackPressed = onBackPressed
             )
         }
-        is HedgeUiState.Loading<*> -> {
+        is HedgeUiState.Loading -> {
             HedgeLoadingScreen()
         }
         is HedgeUiState.Error -> {
@@ -186,10 +186,10 @@ private fun CheckPrincipleList(
         modifier = modifier
             .fillMaxWidth()
     ) {
-        itemsIndexed(
+        items(
             items = principles,
-            key = { index, principle -> principle }
-        ) { index, principle ->
+            key = { principle -> principle }
+        ) { principle ->
             CheckPrinciple(
                 principle = principle,
                 onCheckedChange = {

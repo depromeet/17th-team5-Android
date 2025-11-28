@@ -1,5 +1,7 @@
 package com.depromeet.team5.features.newprinciples.screen.navigation
 
+import androidx.compose.foundation.layout.systemBarsPadding
+import androidx.compose.ui.Modifier
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavOptions
@@ -73,6 +75,7 @@ fun NavGraphBuilder.newPrincipleGraph(
             val route = backStackEntry.toRoute<SelectPrinciplesRoute>()
 
             SelectPrinciplesRoute(
+                modifier = Modifier.systemBarsPadding(),
                 onClickedConfirmButton = { selectedPrinciples ->
                     navController.navigateToAddPrincipleGraph(
                         groupId = route.groupId,
@@ -86,6 +89,7 @@ fun NavGraphBuilder.newPrincipleGraph(
 
         composable<AddPrinciplesRoute> { backStackEntry ->
             AddPrinciplesRoute(
+                modifier = Modifier.systemBarsPadding(),
                 onShowToast = onShowToast,
                 onShowErrorToast = onShowErrorToast,
                 onShowNoIconToast = onShowNoIconToast,

@@ -44,14 +44,12 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.flowWithLifecycle
-import androidx.lifecycle.lifecycleScope
 import com.depromeet.team5.core.designsystem.component.HedgeButton
 import com.depromeet.team5.core.designsystem.component.HedgeTopBar
 import com.depromeet.team5.core.designsystem.foundation.HedgeColor
 import com.depromeet.team5.core.designsystem.foundation.HedgeTypography
 import com.depromeet.team5.core.domain.monad.BaseEvent
 import com.depromeet.team5.features.newprinciples.screen.state.UiState
-import kotlinx.coroutines.launch
 import com.depromeet.team5.core.ui.R as UiR
 
 
@@ -70,24 +68,22 @@ fun AddPrinciplesRoute(
     val uiState by viewModel.uiState.stateFlow.collectAsStateWithLifecycle()
 
     LaunchedEffect(lifecycleOwner) {
-        lifecycleOwner.lifecycleScope.launch {
-            viewModel.event
-                .flowWithLifecycle(lifecycleOwner.lifecycle)
-                .collect { event ->
-                    when (event) {
-                        is BaseEvent.Finish -> {
-                            onShowToast(context.getString(UiR.string.create_principle))
-                            onFinished()
-                        }
-                        is BaseEvent.Error -> {
-                            event.throwable?.let {
-                                onShowErrorToast(it)
-                            }
-                        }
-                        else -> {}
+        viewModel.event
+            .flowWithLifecycle(lifecycleOwner.lifecycle)
+            .collect { event ->
+                when (event) {
+                    is BaseEvent.Finish -> {
+                        onShowToast(context.getString(UiR.string.create_principle))
+                        onFinished()
                     }
+                    is BaseEvent.Error -> {
+                        event.throwable?.let {
+                            onShowErrorToast(it)
+                        }
+                    }
+                    else -> {}
                 }
-        }
+            }
     }
 
     AddPrinciplesScreen(
@@ -125,9 +121,7 @@ fun AddPrinciplesScreen(
     )
 
     LaunchedEffect(uiState) {
-        scope.launch {
-            pagerState.animateScrollToPage(uiState.page)
-        }
+        pagerState.animateScrollToPage(uiState.page)
     }
 
     Column(

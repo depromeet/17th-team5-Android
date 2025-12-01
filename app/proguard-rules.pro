@@ -5,14 +5,6 @@
 -dontwarn org.conscrypt.*
 -dontwarn org.openjsse.**
 
-# refrofit2 (with r8 full mode)
--if interface * { @retrofit2.http.* <methods>; }
--keep,allowobfuscation interface <1>
--keep,allowobfuscation,allowshrinking class kotlin.coroutines.Continuation
--if interface * { @retrofit2.http.* public *** *(...); }
--keep,allowoptimization,allowshrinking,allowobfuscation class <3>
--keep,allowobfuscation,allowshrinking class retrofit2.Response
-
 -keep class dagger.hilt.android.internal.** { *; }
 -keep class hilt_aggregated_deps.** { *; }
 -keep class dagger.hilt.internal.aggregatedroot.codegen.** { *; }
@@ -33,8 +25,6 @@
     <init>(...);
     public static final ** Companion;
 }
--keep public class com.depromeet.team5.**.model.** { *; }
--keep public class com.depromeet.team5.core.navigation.request.** { *;}
 
 -keepclasseswithmembernames,includedescriptorclasses class * {
     native <methods>;

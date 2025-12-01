@@ -22,10 +22,6 @@ android {
         versionName = "0.0.2"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-
-        val kakaoNativeAppKey = properties["kakao_native_app_key"].toString()
-        buildConfigField("String", "KAKAO_NATIVE_APP_KEY", "\"$kakaoNativeAppKey\"")
-        manifestPlaceholders["KAKAO_NATIVE_APP_KEY"] = kakaoNativeAppKey
     }
 
     signingConfigs {
@@ -50,11 +46,11 @@ android {
             isMinifyEnabled = false
             isShrinkResources = false
             manifestPlaceholders["KAKAO_NATIVE_APP_KEY"] =
-                properties.getProperty("kakao_native_app_key_dev")
+                properties.getProperty("kakao_native_app_key")
 
             buildConfigField(
                 "String", "KAKAO_NATIVE_APP_KEY",
-                "\"${properties.getProperty("kakao_native_app_key_dev")}\""
+                "\"${properties.getProperty("kakao_native_app_key")}\""
             )
         }
 

@@ -17,6 +17,7 @@ class AndroidLibraryConventionPlugin : Plugin<Project> {
         extensions.configure(LibraryExtension::class.java) {
             configureKotlinAndroid(this)
             defaultConfig.targetSdk = 35
+            defaultConfig.consumerProguardFile("consumer-rules.pro")
         }
 
         dependencies {

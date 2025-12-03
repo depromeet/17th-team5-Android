@@ -1,0 +1,2 @@
+-keep public class com.depromeet.team5.core.data.request.** { *; }
+-keep public class com.depromeet.team5.core.data.model.** { *; }

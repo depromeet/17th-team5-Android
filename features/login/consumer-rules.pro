@@ -1,0 +1,1 @@
+-keep class com.kakao.sdk.**.model.* { <fields>; }

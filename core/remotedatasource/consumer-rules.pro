@@ -1,0 +1,2 @@
+-keep public class com.depromeet.team5.core.remotedatasource.model.** { *; }
+-keep public class com.depromeet.team5.core.remotedatasource.request.** { *; }

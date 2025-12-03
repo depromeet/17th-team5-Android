@@ -55,7 +55,7 @@ fun HomeRoute(
     onSettingClick: () -> Unit,
     onBuyClick: () -> Unit,
     onSellClick: () -> Unit,
-    onClickRetrospectionDetail: (Int) -> Unit,
+    onClickRetrospectionDetail: (OrderType, Int) -> Unit,
     onClickPrincipleDetail: (Int, Path, OrderType) -> Unit,
     onClickCreatePrinciple: (OrderType) -> Unit,
     onShowErrorToast: (Throwable) -> Unit,
@@ -125,8 +125,8 @@ fun HomeRoute(
         selectedOrderType = selectedOrderType,
         principleGroupsUiState = principleGroupsUiState,
         onChangePrincipleOrderType = { homeViewModel.setPrincipleOrderType(it) },
-        onClickRetrospectionDetail = {
-            onClickRetrospectionDetail(it)
+        onClickRetrospectionDetail = { orderType, retrospectionId ->
+            onClickRetrospectionDetail(orderType, retrospectionId)
             homeViewModel.clearHighlight()
         },
         onClickPrincipleDetail = { groupId, path ->
@@ -164,7 +164,7 @@ private fun HomeScreen(
     selectedOrderType: OrderType,
     principleGroupsUiState: HedgeUiState<List<MyPrincipleGroup>>,
     onChangePrincipleOrderType: (OrderType) -> Unit,
-    onClickRetrospectionDetail: (Int) -> Unit,
+    onClickRetrospectionDetail: (OrderType, Int) -> Unit,
     onClickPrincipleDetail: (Int, Path) -> Unit,
     onClickCreatePrinciple: () -> Unit,
     onBuyClick: () -> Unit,
@@ -206,7 +206,7 @@ private fun HomeScreen(
                     .clickable(
                         interactionSource = interaction,
                         indication = null
-                    ){ onSettingClick() }
+                    ) { onSettingClick() }
                     .padding(vertical = 11.dp, horizontal = 16.dp)
                     .size(24.dp)
                     .align(Alignment.End),
@@ -283,7 +283,7 @@ private fun HomePreview() {
         selectedOrderType = OrderType.BUY,
         principleGroupsUiState = HedgeUiState.Loading(emptyList()),
         onChangePrincipleOrderType = {},
-        onClickRetrospectionDetail = {},
+        onClickRetrospectionDetail = { _, _ -> },
         onClickPrincipleDetail = { _, _ -> },
         onClickCreatePrinciple = {},
         onBuyClick = {},

@@ -19,7 +19,7 @@ fun NavGraphBuilder.homeScreen(
     onSettingClick: () -> Unit,
     onBuyClick: () -> Unit,
     onSellClick: () -> Unit,
-    onClickRetrospectionDetail: (Int) -> Unit,
+    onClickRetrospectionDetail: (OrderType, Int) -> Unit,
     onClickPrincipleDetail: (Int, Path, OrderType) -> Unit,
     onClickCreatePrinciple: (OrderType) -> Unit,
     onShowErrorToast: (Throwable) -> Unit

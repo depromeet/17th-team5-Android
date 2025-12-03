@@ -34,6 +34,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.depromeet.team5.core.designsystem.foundation.HedgeColor
 import com.depromeet.team5.core.designsystem.foundation.HedgeTypography
+import com.depromeet.team5.core.domain.model.OrderType
 import com.depromeet.team5.core.ui.component.HedgeCompanyLogo
 import com.depromeet.team5.features.home.R
 import com.depromeet.team5.features.home.screen.RetrospectionSectionState
@@ -43,7 +44,7 @@ import com.depromeet.team5.features.home.screen.RetrospectionSymbolState
 @Composable
 fun RetrospectionMasterDetail(
     companyNames: List<RetrospectionSymbolState>,
-    onClickRetrospectionDetail: (Int) -> Unit,
+    onClickRetrospectionDetail: (OrderType, Int) -> Unit,
     highlightRetrospectionId: Int?,
     onClearHighlight: () -> Unit,
     modifier: Modifier = Modifier,
@@ -68,7 +69,7 @@ fun RetrospectionMasterDetail(
             modifier = Modifier
                 .padding(end = 16.dp)
                 .width(120.dp)
-        ){
+        ) {
             LazyColumn(
                 state = listState,
                 modifier = Modifier
@@ -90,7 +91,7 @@ fun RetrospectionMasterDetail(
                 }
             }
 
-            if (showTopGradient){
+            if (showTopGradient) {
                 Box(
                     modifier = Modifier
                         .height(70.dp)
@@ -99,8 +100,8 @@ fun RetrospectionMasterDetail(
                         .background(
                             brush = Brush.verticalGradient(
                                 colorStops = arrayOf(
-                                    0.0f    to HedgeColor.Neutral.BackgroundDefault,
-                                    1.0f    to HedgeColor.Neutral.BackgroundDefault.copy(alpha = 0f),
+                                    0.0f to HedgeColor.Neutral.BackgroundDefault,
+                                    1.0f to HedgeColor.Neutral.BackgroundDefault.copy(alpha = 0f),
                                 )
                             )
                         )
@@ -160,7 +161,7 @@ private fun SymbolRailItem(
 @Composable
 private fun RetrospectionDetailList(
     sections: List<RetrospectionSectionState>,
-    onClickRetrospectionDetail: (Int) -> Unit,
+    onClickRetrospectionDetail: (OrderType, Int) -> Unit,
     highlightRetrospectionId: Int?,
     modifier: Modifier = Modifier,
 ) {
@@ -221,7 +222,7 @@ private fun RetrospectionDetailList(
 @Composable
 private fun RetrospectionRow(
     item: RetrospectionState,
-    onClickRetrospectionDetail: (Int) -> Unit,
+    onClickRetrospectionDetail: (OrderType, Int) -> Unit,
     showBadgeDot: Boolean,
     modifier: Modifier = Modifier,
 ) {
@@ -229,13 +230,25 @@ private fun RetrospectionRow(
         modifier = modifier
             .fillMaxWidth()
             .padding(bottom = 20.dp)
-            .clickable { onClickRetrospectionDetail(item.id) }
+            .clickable {
+                val order = if (item.tradeLabelRes == R.string.home_tab_retrospection_trade_buy) {
+                    OrderType.BUY
+                } else {
+                    OrderType.SELL
+                }
+
+                onClickRetrospectionDetail(order, item.id)
+            }
     ) {
         Row(
             verticalAlignment = Alignment.Top
-        ){
+        ) {
             Text(
-                text = stringResource(R.string.home_tab_retrospection_price_volume, item.price, item.volume),
+                text = stringResource(
+                    R.string.home_tab_retrospection_price_volume,
+                    item.price,
+                    item.volume
+                ),
                 style = HedgeTypography.Headline2.SemiBold,
                 color = HedgeColor.Text.Primary
             )
@@ -244,7 +257,10 @@ private fun RetrospectionRow(
                 Box(
                     modifier = Modifier
                         .padding(start = 2.dp)
-                        .background(color = HedgeColor.Brand.Primary, shape = RoundedCornerShape(10.dp))
+                        .background(
+                            color = HedgeColor.Brand.Primary,
+                            shape = RoundedCornerShape(10.dp)
+                        )
                         .size(6.dp)
                 )
             }

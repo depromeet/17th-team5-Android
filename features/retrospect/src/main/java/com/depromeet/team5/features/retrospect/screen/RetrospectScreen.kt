@@ -108,6 +108,7 @@ import java.time.format.DateTimeFormatter
 import java.util.Calendar
 import java.util.Date
 import java.util.Locale
+import com.depromeet.team5.core.ui.R as UiR
 
 
 @Composable
@@ -663,12 +664,13 @@ private fun PrincipleDialog(
     when (val state = uiState) {
         is UiState.Success<MyPrincipleGroup> -> {
             PrincipleBottomSheetDialog(
-                title = stringResource(R.string.principle_bottom_sheet_dialog_title),
+                title = stringResource(UiR.string.principle_bottom_sheet_dialog_title),
                 defaultPrincipleGroup = state.defaultPrincipleGroup,
                 myPrincipleGroups = state.myPrincipleGroups,
                 isShowAddButton = false,
                 onClickedClose = onClickedClose,
-                onClickedConfirmButton = onClickedConfirmButton
+                onClickedConfirmButton = onClickedConfirmButton,
+                onClickedAddButton = {}
             )
         }
 

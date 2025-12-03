@@ -22,11 +22,14 @@ import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Icon
-import androidx.compose.material.Text
+import androidx.compose.material3.Icon
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -43,18 +46,25 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.depromeet.team5.core.designsystem.component.HedgeButton
 import com.depromeet.team5.core.designsystem.component.HedgeTopBar
 import com.depromeet.team5.core.designsystem.foundation.HedgeColor
 import com.depromeet.team5.core.designsystem.foundation.HedgeTypography
+import com.depromeet.team5.core.domain.model.MyPrincipleGroup
+import com.depromeet.team5.core.domain.model.OrderType
 import com.depromeet.team5.core.domain.model.toOrderType
+import com.depromeet.team5.core.domain.monad.HedgeUiState
 import com.depromeet.team5.core.navigation.request.RequestViewModel
 import com.depromeet.team5.core.ui.component.HedgeCompanyLogo
 import com.depromeet.team5.core.ui.component.HedgeLoadingScreen
+import com.depromeet.team5.core.ui.component.PrincipleBottomSheetDialog
 import com.depromeet.team5.core.ui.model.HedgeBadge
 import com.depromeet.team5.features.feedback.AiFeedbackUiState
 import com.depromeet.team5.features.feedback.PrincipleState
 import com.depromeet.team5.features.feedback.R
 import com.depromeet.team5.features.feedback.component.PrincipleCounter
+import com.depromeet.team5.core.ui.R as UiR
+
 
 @Composable
 fun AiFeedbackRoute(
@@ -62,12 +72,16 @@ fun AiFeedbackRoute(
     onBack: () -> Unit,
     onCompleteClick: (Int) -> Unit,
     retrospectionId: Int? = null,
-    onShowErrorToast: (Throwable) -> Unit,
     modifier: Modifier = Modifier,
+    onShowToast: (String) -> Unit,
+    onShowErrorToast: (Throwable) -> Unit,
+    onClickedAddPrinciples: (Int, List<String>) -> Unit,
     viewModel: AiFeedbackViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.feedbackStateFlow.collectAsStateWithLifecycle()
     val isCreateMode = retrospectionId == null
+
+    var isShowPrincipleModal by remember { mutableStateOf(false) }
 
     LaunchedEffect(retrospectionId) {
         if (retrospectionId != null) {
@@ -90,10 +104,16 @@ fun AiFeedbackRoute(
                 state = state,
                 grade = HedgeBadge.fromBadge(state.badge),
                 companyLogo = requestViewModel.companyLogoUrl,
+                companyName = requestViewModel.request.companyName,
+                price = requestViewModel.request.price.toLong(),
+                stock = requestViewModel.request.volume,
                 isCreateMode = isCreateMode,
-                onCompleteClick = { onCompleteClick(state.retrospectionId) },
                 onBack = onBack,
-                modifier = modifier.windowInsetsPadding(WindowInsets.systemBars)
+                modifier = modifier.windowInsetsPadding(WindowInsets.systemBars),
+                onCompleteClick = { onCompleteClick(state.retrospectionId) },
+                onClickedPrincipleAddButton = {
+                    isShowPrincipleModal = true
+                }
             )
         }
 
@@ -111,6 +131,32 @@ fun AiFeedbackRoute(
             onBack()
         }
     }
+
+    if (isShowPrincipleModal) {
+        PrincipleDialog(
+            newPrinciples = if (uiState is AiFeedbackUiState.Success) {
+                (uiState as AiFeedbackUiState.Success).next
+            } else {
+                emptyList()
+            },
+            orderType = requestViewModel.request.orderType,
+            onClickedConfirmButton = { myPrincipleGroup ->
+                isShowPrincipleModal = false
+
+                if (uiState is AiFeedbackUiState.Success) {
+                    val newPrinciples = (uiState as AiFeedbackUiState.Success).next
+                    onClickedAddPrinciples(myPrincipleGroup.id, newPrinciples)
+                }
+            },
+            onClickedAddButton = {
+                isShowPrincipleModal = false
+            },
+            onClickedClose = {
+                isShowPrincipleModal = false
+            },
+            onShowErrorToast = onShowErrorToast
+        )
+    }
 }
 
 @Composable
@@ -118,10 +164,14 @@ private fun AiFeedbackScreen(
     state: AiFeedbackUiState.Success,
     grade: HedgeBadge,
     companyLogo: String?,
+    companyName: String,
+    price: Long,
+    stock: Int,
     isCreateMode: Boolean,
+    modifier: Modifier = Modifier,
+    onClickedPrincipleAddButton: () -> Unit,
     onCompleteClick: () -> Unit,
     onBack: () -> Unit,
-    modifier: Modifier = Modifier,
 ) {
     val gradientGreenBlue = Brush.linearGradient(
         colors = listOf(Color(0xFF07BC70), Color(0xFF0696BE))
@@ -196,7 +246,7 @@ private fun AiFeedbackScreen(
             modifier = Modifier.fillMaxSize()
         ) {
             item {
-                if (isCreateMode){
+                if (isCreateMode) {
                     Row(
                         modifier = Modifier
                             .padding(horizontal = 20.dp, vertical = 4.dp)
@@ -213,7 +263,7 @@ private fun AiFeedbackScreen(
                                 .clickable { onCompleteClick() }
                         )
                     }
-                }else{
+                } else {
                     HedgeTopBar(onClickBack = onBack)
                 }
             }
@@ -432,15 +482,15 @@ private fun AiFeedbackScreen(
                         )
                     }
 
-//                    HedgeButton.Action.Filled(
-//                        text = stringResource(R.string.feedback_add_principle_button),
-//                        buttonColors = HedgeButton.Action.Color.Filled.Primary,
-//                        size = HedgeButton.Action.Size.Small,
-//                        modifier = Modifier
-//                            .padding(top = 20.dp)
-//                            .fillMaxWidth(),
-//                        onClick = {}
-//                    )
+                    HedgeButton.Action.Filled(
+                        text = stringResource(R.string.feedback_add_principle_button),
+                        buttonColors = HedgeButton.Action.Color.Filled.Primary,
+                        size = HedgeButton.Action.Size.Small,
+                        modifier = Modifier
+                            .padding(top = 20.dp)
+                            .fillMaxWidth(),
+                        onClick = onClickedPrincipleAddButton
+                    )
                 }
             }
 
@@ -464,6 +514,49 @@ private fun AiFeedbackScreen(
                     )
                 }
             }
+        }
+    }
+}
+
+@Composable
+private fun PrincipleDialog(
+    newPrinciples: List<String>,
+    orderType: OrderType,
+    modifier: Modifier = Modifier,
+    onClickedConfirmButton: (MyPrincipleGroup) -> Unit,
+    onClickedAddButton: () -> Unit,
+    onClickedClose: () -> Unit,
+    onShowErrorToast: (Throwable) -> Unit,
+    modalViewModel: PrincipleModalViewModel = hiltViewModel()
+) {
+    val uiState by modalViewModel.uiState.stateFlow.collectAsStateWithLifecycle()
+
+    LaunchedEffect(orderType) {
+        modalViewModel.getPrincipleGroups(orderType)
+    }
+
+    when (val state = uiState) {
+        is HedgeUiState.Success<Pair<MyPrincipleGroup, List<MyPrincipleGroup>>> -> {
+            PrincipleBottomSheetDialog(
+                modifier = modifier,
+                title = stringResource(UiR.string.principle_bottom_sheet_dialog_title2),
+                defaultPrincipleGroup = state.data.first,
+                myPrincipleGroups = state.data.second,
+                newPrinciples = newPrinciples,
+                isShowAddButton = true,
+                onClickedClose = onClickedClose,
+                onClickedConfirmButton = onClickedConfirmButton,
+                onClickedAddButton = onClickedAddButton
+            )
+        }
+
+        is HedgeUiState.Error -> {
+            state.throwable?.let {
+                onShowErrorToast(it)
+            }
+        }
+        is HedgeUiState.Loading<*> -> {
+            HedgeLoadingScreen()
         }
     }
 }
@@ -500,6 +593,10 @@ private fun AiFeedbackScreenPreview() {
         companyLogo = null,
         isCreateMode = true,
         onCompleteClick = {},
-        onBack = {}
+        onBack = {},
+        companyName = "삼성전자",
+        price = 65000,
+        stock = 3,
+        onClickedPrincipleAddButton = {}
     )
 }

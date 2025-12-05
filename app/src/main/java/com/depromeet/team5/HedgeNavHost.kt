@@ -19,6 +19,8 @@ import com.depromeet.team5.features.feedback.navigation.navigateToFeedback
 import com.depromeet.team5.features.home.homeScreen
 import com.depromeet.team5.features.login.LoginGraph
 import com.depromeet.team5.features.login.loginGraph
+import com.depromeet.team5.features.newprinciples.screen.navigation.navigateToNewPrincipleGraph
+import com.depromeet.team5.features.newprinciples.screen.navigation.newPrincipleGraph
 import com.depromeet.team5.features.principlegroupmodification.navigation.navigateToPrincipleGroupModification
 import com.depromeet.team5.features.principlegroupmodification.navigation.principleGroupModification
 import com.depromeet.team5.features.retrospect.screen.navigateToRetrospect
@@ -95,7 +97,9 @@ fun HedgeNavHost(
             onSettingClick = { navController.navigateToSetting() },
             onBuyClick = { navController.navigateToSearch() },
             onSellClick = { navController.navigateToSearch() },
-            onClickRetrospectionDetail = navController::navigateToRetrospectionDetail,
+            onClickRetrospectionDetail = { orderType, retrospectionId ->
+                navController.navigateToRetrospectionDetail(retrospectionId, orderType)
+            },
             onClickPrincipleDetail = { groupId, path, orderType ->
                 navController.navigatePrincipleGraph(groupId, path, orderType)
             },
@@ -145,8 +149,8 @@ fun HedgeNavHost(
 
         retrospectionDetailNavigation(
             navController = navController,
-            onClickFeedback = { retrospectionId ->
-                navController.navigateToFeedback(retrospectionId)
+            onClickFeedback = { retrospectionId, orderType ->
+                navController.navigateToFeedback(retrospectionId, orderType)
             },
             onClickImage = navController::navigateToImageDetail,
             onShowToast = onShowToast,
@@ -158,8 +162,24 @@ fun HedgeNavHost(
             onClickBack = navController::popBackStack,
         )
 
+        newPrincipleGraph(
+            navController = navController,
+            onShowToast = onShowToast,
+            onShowErrorToast = onShowErrorToast,
+            onShowNoIconToast = onShowNoIconToast,
+            onBackPressed = navController::popBackStack
+        )
+
         feedbackScreen(
             navController = navController,
+            onRemoveClick = { navController.popBackStack(Home, inclusive = false) },
+            onNavigatedToNewPrinciple = { groupId, principles ->
+                navController.navigateToNewPrincipleGraph(
+                    groupId = groupId,
+                    newPrinciples = principles
+                )
+            },
+            onShowToast = onShowToast,
             onShowErrorToast = onShowErrorToast
         )
     }

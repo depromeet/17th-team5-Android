@@ -1,3 +1,9 @@
+-keep class com.kakao.sdk.**.model.* { <fields>; }
+
+# https://github.com/square/okhttp/pull/6792
+-dontwarn org.bouncycastle.jsse.**
+-dontwarn org.conscrypt.*
+-dontwarn org.openjsse.**
 
 -keep class dagger.hilt.android.internal.** { *; }
 -keep class hilt_aggregated_deps.** { *; }
@@ -19,8 +25,6 @@
     <init>(...);
     public static final ** Companion;
 }
--keep public class com.depromeet.team5.**.model.** { *; }
--keep public class com.depromeet.team5.core.navigation.request.** { *;}
 
 -keepclasseswithmembernames,includedescriptorclasses class * {
     native <methods>;

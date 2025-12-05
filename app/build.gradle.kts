@@ -18,14 +18,10 @@ android {
 
     defaultConfig {
         applicationId = "com.depromeet.team5"
-        versionCode = 2
-        versionName = "0.0.2"
+        versionCode = 4
+        versionName = "0.0.4"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-
-        val kakaoNativeAppKey = properties["kakao_native_app_key"].toString()
-        buildConfigField("String", "KAKAO_NATIVE_APP_KEY", "\"$kakaoNativeAppKey\"")
-        manifestPlaceholders["KAKAO_NATIVE_APP_KEY"] = kakaoNativeAppKey
     }
 
     signingConfigs {
@@ -49,6 +45,13 @@ android {
             isDebuggable = true
             isMinifyEnabled = false
             isShrinkResources = false
+            manifestPlaceholders["KAKAO_NATIVE_APP_KEY"] =
+                properties.getProperty("kakao_native_app_key")
+
+            buildConfigField(
+                "String", "KAKAO_NATIVE_APP_KEY",
+                "\"${properties.getProperty("kakao_native_app_key")}\""
+            )
         }
 
         release {
@@ -57,10 +60,18 @@ android {
             isMinifyEnabled = true
             isShrinkResources = true
             signingConfig = signingConfigs.getByName("release")
+            manifestPlaceholders["KAKAO_NATIVE_APP_KEY"] =
+                properties.getProperty("kakao_native_app_key")
 
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
+            )
+
+            buildConfigField(
+                "String", "KAKAO_NATIVE_APP_KEY",
+                "\"${properties.getProperty("kakao_native_app_key")}\""
+
             )
         }
     }
@@ -92,6 +103,7 @@ dependencies {
     implementation(projects.features.principlegroupmodification)
     implementation(projects.features.login)
     implementation(projects.features.setting)
+    implementation(projects.features.newprinciples)
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.org.jetbrains.kotlinx.kotlinx.serialization.json)

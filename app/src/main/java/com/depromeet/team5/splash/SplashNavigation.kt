@@ -8,6 +8,7 @@ import com.depromeet.team5.core.navigation.Splash
 
 
 fun NavGraphBuilder.splashScreen(
+    navigateToHome: () -> Unit,
     navigateToLogin: () -> Unit
 ) {
     composable<Splash>(
@@ -17,6 +18,7 @@ fun NavGraphBuilder.splashScreen(
         popExitTransition = { ExitTransition.None },
     ) {
         SplashRoute(
+            navigateToHome = navigateToHome,
             navigateToLogin = navigateToLogin
         )
     }

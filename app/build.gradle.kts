@@ -108,6 +108,7 @@ dependencies {
     implementation(libs.androidx.core.ktx)
     implementation(libs.org.jetbrains.kotlinx.kotlinx.serialization.json)
 
+    implementation(libs.jwtdecode)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

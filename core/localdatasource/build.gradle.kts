@@ -28,7 +28,14 @@ dependencies {
     implementation(projects.depromeet.core.data)
     implementation(libs.androidx.datastore.preferences)
 
-    testImplementation(libs.junit)
+    testImplementation(libs.androidx.junit)
+    testImplementation(libs.androidx.test.runner)
+    testImplementation(libs.kotlinx.coroutine.test)
+
+    testImplementation(libs.robolectric)
+    testImplementation(libs.core.ktx)
+    testImplementation(libs.androidx.junit.ktx)
+
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
 }

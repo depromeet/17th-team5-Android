@@ -8,6 +8,7 @@ import com.depromeet.team5.core.data.model.RetrospectionListData
 import com.depromeet.team5.core.data.model.SocialLoginData
 import com.depromeet.team5.core.data.model.StockSliceData
 import com.depromeet.team5.core.data.model.SystemPrincipleData
+import com.depromeet.team5.core.data.model.TokenData
 import com.depromeet.team5.core.data.model.UserStatsData
 import com.depromeet.team5.core.data.request.SocialLoginRequestData
 
@@ -58,4 +59,6 @@ interface RemoteDataSource {
     suspend fun socialLogin(body: SocialLoginRequestData): SocialLoginData
 
     suspend fun getFeedback(retrospectionId: Int): FeedbackData
+
+    suspend fun refreshAccessToken(body: Map<String, Any?>): TokenData
 }

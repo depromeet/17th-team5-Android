@@ -2,9 +2,11 @@ package com.depromeet.team5.core.data.di
 
 import com.depromeet.team5.core.data.repositoryimpl.BadgeDotRepositoryImpl
 import com.depromeet.team5.core.data.repositoryimpl.HedgeRepositoryImpl
+import com.depromeet.team5.core.data.repositoryimpl.LoginRepositoryImpl
 import com.depromeet.team5.core.data.repositoryimpl.RetrospectionRepositoryImpl
 import com.depromeet.team5.core.domain.repository.BadgeDotRepository
 import com.depromeet.team5.core.domain.repository.HedgeRepository
+import com.depromeet.team5.core.domain.repository.LoginRepository
 import com.depromeet.team5.core.domain.repository.RetrospectionRepository
 import dagger.Binds
 import dagger.Module
@@ -34,4 +36,10 @@ internal abstract class RepositoryModule {
     abstract fun bindBadgeDotRepository(
         badgeDotRepositoryImpl: BadgeDotRepositoryImpl
     ): BadgeDotRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindLoginRepository(
+        loginRepositoryImpl: LoginRepositoryImpl
+    ): LoginRepository
 }

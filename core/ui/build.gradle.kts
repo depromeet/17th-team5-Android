@@ -1,6 +1,8 @@
 plugins {
     alias(libs.plugins.depromeet.team5.library)
     alias(libs.plugins.depromeet.team5.library.compose)
+    alias(libs.plugins.kotlinx.serialization)
+
 }
 
 android {
@@ -27,6 +29,7 @@ dependencies {
 
     implementation(libs.coil.compose)
     implementation(libs.coil.okhttp)
+    implementation(libs.org.jetbrains.kotlinx.kotlinx.serialization.json)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

@@ -6,17 +6,25 @@ import androidx.activity.ComponentActivity
 import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.platform.LocalContext
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.compose.LocalLifecycleOwner
+import androidx.lifecycle.flowWithLifecycle
+import androidx.navigation.compose.rememberNavController
 import com.depromeet.team5.core.designsystem.component.HedgeToast
 import com.depromeet.team5.core.designsystem.component.HedgeToastState
 import com.depromeet.team5.core.designsystem.foundation.HedgeColor
 import com.depromeet.team5.core.designsystem.foundation.HedgeIcon
 import com.depromeet.team5.core.logger.Logger
-import com.depromeet.team5.features.login.KakaoAuthCodeManager
+import com.depromeet.team5.core.retrofit.SessionManager
+import com.depromeet.team5.features.login.KakaoLoginManager
+import com.depromeet.team5.features.login.navigateToLogin
 import com.depromeet.team5.ui.theme.DepromeetTheme
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -27,7 +35,10 @@ class MainActivity : ComponentActivity() {
     lateinit var logger: Logger
 
     @Inject
-    lateinit var kakaoAuthCodeManager: KakaoAuthCodeManager
+    lateinit var kakaoLoginManager: KakaoLoginManager
+
+    @Inject
+    lateinit var sessionManager: SessionManager
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -35,13 +46,26 @@ class MainActivity : ComponentActivity() {
         setContent {
             DepromeetTheme {
                 val context = LocalContext.current
+                val lifecycleOwner = LocalLifecycleOwner.current
                 val scope = rememberCoroutineScope()
+
+                val navController = rememberNavController()
 
                 val hedgeErrorToastState = remember { HedgeToastState() }
                 val hedgeRegularToastState = remember { HedgeToastState() }
                 val hedgeNoIconToastState = remember { HedgeToastState() }
 
+                LaunchedEffect(Unit) {
+                    sessionManager.loginEvent
+                        .receiveAsFlow()
+                        .flowWithLifecycle(lifecycleOwner.lifecycle, Lifecycle.State.STARTED)
+                        .collect {
+                            navController.navigateToLogin()
+                        }
+                }
+
                 HedgeNavHost(
+                    navController = navController,
                     onShowErrorToast = { throwable ->
                         scope.launch {
                             logger.e(throwable)
@@ -66,7 +90,14 @@ class MainActivity : ComponentActivity() {
                         }
                     },
                     onLoginKakao = {
-                        kakaoAuthCodeManager.authorize()
+                        kakaoLoginManager.authorize()
+                    },
+                    onLogoutKakao = {
+                        scope.launch {
+                            if (kakaoLoginManager.logout()) {
+                                navController.navigateToLogin()
+                            }
+                        }
                     }
                 )
 

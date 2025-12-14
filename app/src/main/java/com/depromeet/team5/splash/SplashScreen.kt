@@ -18,17 +18,35 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.depromeet.team5.core.ui.R
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.coroutines.flow.zip
 
 @Composable
 fun SplashRoute(
+    navigateToHome: () -> Unit,
     navigateToLogin: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    viewModel: SplashViewModel = hiltViewModel()
 ) {
     LaunchedEffect(Unit) {
-        delay(1_500)
-        navigateToLogin()
+        viewModel.eventBus
+            .receiveAsFlow()
+            .zip(flow {
+                delay(1500)
+                emit(Unit)
+            }) { event, _ -> event }
+            .collect { event ->
+                when (event) {
+                    NavigationType.HOME -> navigateToHome()
+                    NavigationType.LOGIN -> navigateToLogin()
+                }
+            }
+
+        navigateToHome()
     }
     SplashScreen(modifier = modifier)
 }

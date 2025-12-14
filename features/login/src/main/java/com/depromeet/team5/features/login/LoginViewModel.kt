@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.depromeet.team5.core.domain.model.SocialLogin
 import com.depromeet.team5.core.domain.monad.HedgeUiState
+import com.depromeet.team5.core.domain.usecase.SetTokensUseCase
 import com.depromeet.team5.core.domain.usecase.SocialLoginUseCase
 import com.depromeet.team5.core.ui.model.AgreementsType
 import com.depromeet.team5.core.ui.model.ConsentType
@@ -37,6 +38,7 @@ data class AgreementsUiState(
 @HiltViewModel
 class LoginViewModel @Inject constructor(
     private val socialLoginUseCase: SocialLoginUseCase,
+    private val setTokensUseCase: SetTokensUseCase
 ) : ViewModel() {
     private val _agreements = MutableStateFlow(AgreementsUiState())
     val agreements: StateFlow<AgreementsUiState> = _agreements.asStateFlow()
@@ -82,12 +84,20 @@ class LoginViewModel @Inject constructor(
                         email = null,
                         nickname = null
                     ).catch { e ->
-                        _socialLoginUiState.value = HedgeUiState.Error(message = e.message, throwable = e)
+                        _socialLoginUiState.value =
+                            HedgeUiState.Error(message = e.message, throwable = e)
                     }
                         .collect { login ->
-                            when(login){
+                            when (login) {
                                 is SocialLogin.Success -> {
                                     _socialLoginUiState.value = HedgeUiState.Success(login)
+
+                                    if (login.refreshToken != null && login.accessToken != null) {
+                                        setTokensUseCase(
+                                            accessToken = login.accessToken!!,
+                                            refreshToken = login.refreshToken!!
+                                        )
+                                    }
                                 }
 
                                 is SocialLogin.Failure -> {
@@ -97,7 +107,8 @@ class LoginViewModel @Inject constructor(
                                             append("(").append(it).append(")")
                                         }
                                     }
-                                    _socialLoginUiState.value = HedgeUiState.Error(code = login.code, message = msg)
+                                    _socialLoginUiState.value =
+                                        HedgeUiState.Error(code = login.code, message = msg)
                                 }
                             }
                         }

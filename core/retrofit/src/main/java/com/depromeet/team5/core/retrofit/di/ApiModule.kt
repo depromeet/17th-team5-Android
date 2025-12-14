@@ -24,5 +24,4 @@ internal object ApiModule {
     fun provideRetrospectionApi(
         @SerializationRetrofit retrofit: Retrofit
     ): RetrospectionApi = retrofit.create(RetrospectionApi::class.java)
-
 }

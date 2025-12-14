@@ -7,7 +7,7 @@ interface LocalDataSource {
 
     suspend fun setAccessToken(token: String): Result<String?>
 
-    suspend fun getAccessToken(): Result<String?>
+    suspend fun getAccessToken(): String?
 
     suspend fun setRefreshToken(token: String): Result<String?>
 

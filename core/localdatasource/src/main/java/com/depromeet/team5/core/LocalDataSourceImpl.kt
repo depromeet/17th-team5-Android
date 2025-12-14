@@ -23,9 +23,7 @@ internal class LocalDataSourceImpl @Inject constructor(
         loginDataStore.setAccessToken(token)
     }
 
-    override suspend fun getAccessToken(): Result<String?> = runCatching {
-        loginDataStore.getAccessToken()
-    }
+    override suspend fun getAccessToken(): String? = loginDataStore.getAccessToken()
 
     override suspend fun setRefreshToken(token: String) = runCatching {
         loginDataStore.setRefreshToken(token)

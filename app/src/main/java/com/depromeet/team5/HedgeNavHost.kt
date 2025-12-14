@@ -4,8 +4,8 @@ import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.core.tween
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.rememberNavController
 import com.depromeet.team5.core.navigation.Splash
 import com.depromeet.team5.core.navigation.graphkey.Home
 import com.depromeet.team5.feature.reasons.imageDetailNavigation
@@ -35,14 +35,15 @@ import com.depromeet.team5.splash.splashScreen
 
 @Composable
 fun HedgeNavHost(
+    navController: NavHostController,
     modifier: Modifier = Modifier,
     onLoginKakao: suspend () -> Result<Pair<String, String>>,
     onShowErrorToast: (Throwable) -> Unit,
     onShowToast: (String) -> Unit,
     onShowNoIconToast: (String) -> Unit
 ) {
-    val navController = rememberNavController()
     val screenAnimationTimeMillis = 400
+
     NavHost(
         navController = navController,
         startDestination = Splash,
@@ -73,6 +74,12 @@ fun HedgeNavHost(
         }
     ) {
         splashScreen(
+            navigateToHome = {
+                navController.navigate(Home) {
+                    popUpTo(LoginGraph) { inclusive = true }
+                    launchSingleTop = true
+                }
+            },
             navigateToLogin = {
                 navController.navigate(LoginGraph) {
                     popUpTo(Splash) { inclusive = true }

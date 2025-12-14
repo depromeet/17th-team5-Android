@@ -14,7 +14,7 @@ class LoginRepositoryImpl @Inject constructor(
     override suspend fun setAccessToken(token: String): Result<String?> =
         localDataSource.setAccessToken(token)
 
-    override suspend fun getAccessToken(): Result<String?> =
+    override suspend fun getAccessToken(): String? =
         localDataSource.getAccessToken()
 
     override suspend fun setRefreshToken(token: String): Result<String?> =

@@ -38,6 +38,7 @@ fun HedgeNavHost(
     navController: NavHostController,
     modifier: Modifier = Modifier,
     onLoginKakao: suspend () -> Result<Pair<String, String>>,
+    onLogoutKakao: () -> Unit,
     onShowErrorToast: (Throwable) -> Unit,
     onShowToast: (String) -> Unit,
     onShowNoIconToast: (String) -> Unit
@@ -117,7 +118,8 @@ fun HedgeNavHost(
         )
 
         settingScreen(
-            onBackClick = navController::popBackStack
+            onBackClick = navController::popBackStack,
+            onLogout = onLogoutKakao
         )
 
         searchScreen(

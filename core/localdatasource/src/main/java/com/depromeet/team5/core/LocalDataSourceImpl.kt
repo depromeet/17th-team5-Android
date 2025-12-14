@@ -19,11 +19,13 @@ internal class LocalDataSourceImpl @Inject constructor(
     override suspend fun consume(id: Int): Boolean =
         badgeDataStore.consume(id)
 
-    override suspend fun setAccessToken(token: String) = loginDataStore.setAccessToken(token)
+    override suspend fun setAccessToken(token: String?): String? =
+        loginDataStore.setAccessToken(token)
 
     override suspend fun getAccessToken(): String? = loginDataStore.getAccessToken()
 
-    override suspend fun setRefreshToken(token: String) = loginDataStore.setRefreshToken(token)
+    override suspend fun setRefreshToken(token: String?): String? =
+        loginDataStore.setRefreshToken(token)
 
     override suspend fun getRefreshToken(): String? = loginDataStore.getRefreshToken()
 }

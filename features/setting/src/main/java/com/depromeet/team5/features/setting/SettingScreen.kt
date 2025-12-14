@@ -34,10 +34,12 @@ import com.depromeet.team5.core.ui.R as UiR
 @Composable
 fun SettingRoute(
     onBackClick: () -> Unit,
+    onLogout: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     SettingScreen(
         onBackClick = onBackClick,
+        onLogout = onLogout,
         modifier = modifier
             .windowInsetsPadding(WindowInsets.systemBars)
             .background(color = HedgeColor.Neutral.BackgroundSecondary)
@@ -47,6 +49,7 @@ fun SettingRoute(
 @Composable
 private fun SettingScreen(
     onBackClick: () -> Unit,
+    onLogout: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val context = LocalContext.current
@@ -72,7 +75,7 @@ private fun SettingScreen(
 
             SettingRow(
                 title = stringResource(AgreementsType.TERMS.titleRes),
-                onDetailClick = {
+                onClicked = {
                     openWebView(context, AgreementsType.TERMS.link.toString())
                 },
                 modifier = Modifier.padding(top = 20.dp)
@@ -80,7 +83,7 @@ private fun SettingScreen(
 
             SettingRow(
                 title = stringResource(AgreementsType.PRIVACY.titleRes),
-                onDetailClick = {
+                onClicked = {
                     openWebView(context, AgreementsType.PRIVACY.link.toString())
                 },
                 modifier = Modifier.padding(top = 16.dp)
@@ -88,7 +91,7 @@ private fun SettingScreen(
 
             SettingRow(
                 title = stringResource(AgreementsType.MARKETING.titleRes),
-                onDetailClick = {
+                onClicked = {
                     openWebView(context, AgreementsType.MARKETING.link.toString())
                 },
                 modifier = Modifier.padding(top = 16.dp)
@@ -111,13 +114,13 @@ private fun SettingScreen(
 
             SettingRow(
                 title = stringResource(UiR.string.setting_account_logout),
-                onDetailClick = {},
+                onClicked = onLogout,
                 modifier = Modifier.padding(top = 20.dp)
             )
 
             SettingRow(
                 title = stringResource(UiR.string.setting_account_withdraw),
-                onDetailClick = {},
+                onClicked = {},
                 modifier = Modifier.padding(top = 16.dp)
             )
         }
@@ -127,7 +130,7 @@ private fun SettingScreen(
 @Composable
 private fun SettingRow(
     title: String,
-    onDetailClick: () -> Unit,
+    onClicked: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val interaction = remember { MutableInteractionSource() }
@@ -137,7 +140,7 @@ private fun SettingRow(
             .clickable(
                 interactionSource = interaction,
                 indication = null
-            ) { onDetailClick() }
+            ) { onClicked() }
             .fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -160,6 +163,7 @@ private fun SettingRow(
 @Composable
 private fun SettingPreview() {
     SettingScreen(
-        onBackClick = {}
+        onBackClick = {},
+        onLogout = {}
     )
 }

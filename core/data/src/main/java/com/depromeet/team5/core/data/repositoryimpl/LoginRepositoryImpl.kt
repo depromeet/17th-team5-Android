@@ -12,13 +12,13 @@ class LoginRepositoryImpl @Inject constructor(
     private val remoteDataSource: RemoteDataSource
 ) : LoginRepository {
 
-    override suspend fun setAccessToken(token: String): String? =
+    override suspend fun setAccessToken(token: String?): String? =
         localDataSource.setAccessToken(token)
 
     override suspend fun getAccessToken(): String? =
         localDataSource.getAccessToken()
 
-    override suspend fun setRefreshToken(token: String): String? =
+    override suspend fun setRefreshToken(token: String?): String? =
         localDataSource.setRefreshToken(token)
 
     override suspend fun getRefreshToken(): String? =

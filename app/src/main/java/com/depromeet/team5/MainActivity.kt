@@ -20,7 +20,7 @@ import com.depromeet.team5.core.designsystem.foundation.HedgeColor
 import com.depromeet.team5.core.designsystem.foundation.HedgeIcon
 import com.depromeet.team5.core.logger.Logger
 import com.depromeet.team5.core.retrofit.SessionManager
-import com.depromeet.team5.features.login.KakaoAuthCodeManager
+import com.depromeet.team5.features.login.KakaoLoginManager
 import com.depromeet.team5.features.login.navigateToLogin
 import com.depromeet.team5.ui.theme.DepromeetTheme
 import dagger.hilt.android.AndroidEntryPoint
@@ -35,7 +35,7 @@ class MainActivity : ComponentActivity() {
     lateinit var logger: Logger
 
     @Inject
-    lateinit var kakaoAuthCodeManager: KakaoAuthCodeManager
+    lateinit var kakaoLoginManager: KakaoLoginManager
 
     @Inject
     lateinit var sessionManager: SessionManager
@@ -90,7 +90,14 @@ class MainActivity : ComponentActivity() {
                         }
                     },
                     onLoginKakao = {
-                        kakaoAuthCodeManager.authorize()
+                        kakaoLoginManager.authorize()
+                    },
+                    onLogoutKakao = {
+                        scope.launch {
+                            if (kakaoLoginManager.logout()) {
+                                navController.navigateToLogin()
+                            }
+                        }
                     }
                 )
 

@@ -20,9 +20,13 @@ class LoginDataStore @Inject constructor(
     private val dataStore: DataStore<Preferences>
 ) {
 
-    suspend fun setAccessToken(token: String) = withContext(Dispatchers.IO) {
+    suspend fun setAccessToken(token: String?) = withContext(Dispatchers.IO) {
         dataStore.edit { preferences ->
-            preferences[PreferenceKey.LOGIN_ACCESS_TOKEN] = token
+            if (token == null) {
+                preferences.remove(PreferenceKey.LOGIN_ACCESS_TOKEN)
+            } else {
+                preferences[PreferenceKey.LOGIN_ACCESS_TOKEN] = token
+            }
         }[PreferenceKey.LOGIN_ACCESS_TOKEN]
     }
 
@@ -30,9 +34,13 @@ class LoginDataStore @Inject constructor(
         .map { preferences -> preferences[PreferenceKey.LOGIN_ACCESS_TOKEN] }
         .first()
 
-    suspend fun setRefreshToken(token: String) = withContext(Dispatchers.IO) {
+    suspend fun setRefreshToken(token: String?) = withContext(Dispatchers.IO) {
         dataStore.edit { preferences ->
-            preferences[PreferenceKey.LOGIN_REFRESH_TOKEN] = token
+            if (token == null) {
+                preferences.remove(PreferenceKey.LOGIN_REFRESH_TOKEN)
+            } else {
+                preferences[PreferenceKey.LOGIN_REFRESH_TOKEN] = token
+            }
         }[PreferenceKey.LOGIN_REFRESH_TOKEN]
     }
 

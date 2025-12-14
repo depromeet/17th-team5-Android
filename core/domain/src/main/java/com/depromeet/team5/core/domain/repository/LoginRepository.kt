@@ -5,11 +5,11 @@ import com.depromeet.team5.core.domain.model.Token
 
 interface LoginRepository {
 
-    suspend fun setAccessToken(token: String): String?
+    suspend fun setAccessToken(token: String?): String?
 
     suspend fun getAccessToken(): String?
 
-    suspend fun setRefreshToken(token: String): String?
+    suspend fun setRefreshToken(token: String?): String?
 
     suspend fun getRefreshToken(): String?
 

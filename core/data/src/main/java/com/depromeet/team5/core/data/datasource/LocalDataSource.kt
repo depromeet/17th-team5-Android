@@ -5,11 +5,11 @@ interface LocalDataSource {
     suspend fun isConsumed(id: Int): Boolean
     suspend fun consume(id: Int): Boolean
 
-    suspend fun setAccessToken(token: String): Result<String?>
+    suspend fun setAccessToken(token: String): String?
 
     suspend fun getAccessToken(): String?
 
-    suspend fun setRefreshToken(token: String): Result<String?>
+    suspend fun setRefreshToken(token: String): String?
 
-    suspend fun getRefreshToken(): Result<String?>
+    suspend fun getRefreshToken(): String?
 }

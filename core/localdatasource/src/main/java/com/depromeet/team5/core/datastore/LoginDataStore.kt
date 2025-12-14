@@ -15,7 +15,7 @@ import javax.inject.Singleton
 
 
 @Singleton
-internal class LoginDataStore @Inject constructor(
+class LoginDataStore @Inject constructor(
     @Named(DataStoreModule.NamedKey.LOGIN_TOKEN)
     private val dataStore: DataStore<Preferences>
 ) {

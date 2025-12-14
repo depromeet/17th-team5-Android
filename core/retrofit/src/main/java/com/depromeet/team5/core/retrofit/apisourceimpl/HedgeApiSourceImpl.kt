@@ -9,6 +9,7 @@ import com.depromeet.team5.core.remotedatasource.model.RetrospectionListRemoteDa
 import com.depromeet.team5.core.remotedatasource.model.SocialLoginRemoteData
 import com.depromeet.team5.core.remotedatasource.model.StockSliceRemoteData
 import com.depromeet.team5.core.remotedatasource.model.SystemPrincipleRemoteData
+import com.depromeet.team5.core.remotedatasource.model.TokenRemoteData
 import com.depromeet.team5.core.remotedatasource.model.UserStatsRemoteData
 import com.depromeet.team5.core.remotedatasource.request.SocialLoginRequestRemoteData
 import com.depromeet.team5.core.retrofit.api.HedgeApi
@@ -135,4 +136,7 @@ internal class HedgeApiSourceImpl @Inject constructor(
 
     override suspend fun getFeedback(retrospectionId: Int): FeedbackRemoteData =
         hedgeApi.getFeedback(retrospectionId).toRemoteData()
+
+    override suspend fun refreshAccessToken(body: Map<String, Any?>): TokenRemoteData =
+        hedgeApi.refreshAccessToken(body).toRemoteData()
 }

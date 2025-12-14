@@ -9,6 +9,7 @@ import com.depromeet.team5.core.retrofit.model.RetrospectionListResponse
 import com.depromeet.team5.core.retrofit.model.SocialLoginSuccessResponse
 import com.depromeet.team5.core.retrofit.model.StockSliceResponse
 import com.depromeet.team5.core.retrofit.model.SystemPrincipleResponse
+import com.depromeet.team5.core.retrofit.model.TokenResponse
 import com.depromeet.team5.core.retrofit.model.UserStatsResponse
 import okhttp3.RequestBody
 import retrofit2.Response
@@ -100,4 +101,9 @@ interface HedgeApi {
     suspend fun getFeedback(
         @Path("retrospectionId") retrospectionId: Int
     ): FeedbackResponse
+
+    @POST("api/v1/auth/refresh")
+    suspend fun refreshAccessToken(
+        @Body body: Map<String, Any?>
+    ): TokenResponse
 }

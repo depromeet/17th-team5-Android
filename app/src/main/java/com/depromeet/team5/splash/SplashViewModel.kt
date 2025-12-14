@@ -2,35 +2,57 @@ package com.depromeet.team5.splash
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.depromeet.team5.core.domain.monad.BaseEvent
-import com.depromeet.team5.core.domain.usecase.GetAccessTokenUseCase
-import com.depromeet.team5.core.ui.extensions.baseCollect
+import com.auth0.android.jwt.JWT
+import com.depromeet.team5.core.domain.repository.LoginRepository
+import com.depromeet.team5.core.domain.usecase.RefreshAccessTokenUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.channels.trySendBlocking
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-
 @HiltViewModel
 class SplashViewModel @Inject constructor(
-    private val getAccessTokenUseCase: GetAccessTokenUseCase
+    private val loginRepository: LoginRepository,
+    private val refreshAccessTokenUseCase: RefreshAccessTokenUseCase
 ) : ViewModel() {
 
-    val eventBus = Channel<BaseEvent<String?>>()
+    val eventBus = Channel<NavigationType>()
 
 
     init {
         viewModelScope.launch {
-            getAccessTokenUseCase()
-                .baseCollect(
-                    onSuccess = {
-                        eventBus.send(BaseEvent.Finish(it))
-                    },
-                    onError = {
-                        eventBus.send(BaseEvent.Error(it))
-                    }
-                )
+            val accessToken = loginRepository.getAccessToken()
+
+            if (accessToken == null) {
+                eventBus.trySendBlocking(NavigationType.LOGIN)
+                return@launch
+            }
+
+            if (isExpired(accessToken)) {
+                val refreshToken = loginRepository.getRefreshToken()
+
+                if (refreshToken == null) {
+                    eventBus.trySendBlocking(NavigationType.LOGIN)
+                    return@launch
+                }
+
+                if (isExpired(refreshToken)) {
+                    eventBus.trySendBlocking(NavigationType.LOGIN)
+                } else {
+                    refreshAccessTokenUseCase(refreshToken)
+                    eventBus.trySendBlocking(NavigationType.HOME)
+                }
+            } else {
+                eventBus.trySendBlocking(NavigationType.HOME)
+            }
         }
     }
-}
 
+    private fun isExpired(token: String): Boolean = run {
+        val jwt = JWT(token)
+        val expiresAt = jwt.expiresAt
+
+        expiresAt == null || expiresAt.time < System.currentTimeMillis()
+    }
+}

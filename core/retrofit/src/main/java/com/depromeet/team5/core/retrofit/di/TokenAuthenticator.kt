@@ -1,15 +1,9 @@
 package com.depromeet.team5.core.retrofit.di
 
-import androidx.datastore.core.DataStore
-import androidx.datastore.preferences.core.Preferences
-import androidx.datastore.preferences.core.edit
 import com.auth0.android.jwt.JWT
-import com.depromeet.team5.core.preferencekey.PreferenceKey
+import com.depromeet.team5.core.datastore.LoginDataStore
 import com.depromeet.team5.core.retrofit.SessionManager
-import com.depromeet.team5.core.retrofit.api.LoginApi
 import kotlinx.coroutines.channels.trySendBlocking
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
@@ -23,8 +17,7 @@ import javax.inject.Singleton
 
 @Singleton
 class TokenAuthenticator @Inject constructor(
-    private val dataStore: DataStore<Preferences>,
-    private val loginApi: LoginApi,
+    private val dataStore: LoginDataStore,
     private val sessionManager: SessionManager
 ) : Authenticator {
 
@@ -33,26 +26,14 @@ class TokenAuthenticator @Inject constructor(
     override fun authenticate(route: Route?, response: Response): Request? = runBlocking {
 
         mutex.withLock {
-            val accessToken = dataStore.data.map { preferences ->
-                preferences[PreferenceKey.LOGIN_ACCESS_TOKEN]
-            }.first() ?: run {
-                logout()
+            val accessToken = dataStore.getAccessToken() ?: run {
+                updateSignal()
                 return@runBlocking null
             }
 
             if (isExpired(accessToken)) {
-                val refreshToken = dataStore.data.map { preferences ->
-                    preferences[PreferenceKey.LOGIN_REFRESH_TOKEN]
-                }.first() ?: run {
-                    logout()
-                    return@runBlocking null
-                }
-
-                val accessToken = updateToken(refreshToken)
-
-                return@runBlocking response.request.newBuilder()
-                    .header("Authorization", "Bearer $accessToken")
-                    .build()
+                updateSignal()
+                return@runBlocking null
 
             } else {
                 return@runBlocking response.request.newBuilder()
@@ -69,18 +50,8 @@ class TokenAuthenticator @Inject constructor(
         expiresAt == null || expiresAt.time < System.currentTimeMillis()
     }
 
-    private suspend fun updateToken(token: String) = run {
-        val response = loginApi.refreshAccessToken(
-            mapOf("refreshToken" to token)
-        )
-
-        dataStore.edit { preferences ->
-            preferences[PreferenceKey.LOGIN_ACCESS_TOKEN] = response.accessToken
-            preferences[PreferenceKey.LOGIN_REFRESH_TOKEN] = response.refreshToken
-        }[PreferenceKey.LOGIN_ACCESS_TOKEN]
-    }
-
-    private fun logout() {
+    private fun updateSignal() {
         sessionManager.loginEvent.trySendBlocking(Unit)
     }
+
 }

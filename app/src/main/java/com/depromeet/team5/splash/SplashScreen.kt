@@ -19,7 +19,6 @@ import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.depromeet.team5.core.domain.monad.BaseEvent
 import com.depromeet.team5.core.ui.R
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.flow
@@ -42,16 +41,8 @@ fun SplashRoute(
             }) { event, _ -> event }
             .collect { event ->
                 when (event) {
-                    is BaseEvent.Finish -> {
-                        if (event.result != null) {
-                            navigateToHome()
-                        } else {
-                            navigateToLogin()
-                        }
-                    }
-
-                    is BaseEvent.Error -> {}
-                    else -> {}
+                    NavigationType.HOME -> navigateToHome()
+                    NavigationType.LOGIN -> navigateToLogin()
                 }
             }
 

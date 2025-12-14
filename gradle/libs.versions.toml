@@ -41,6 +41,7 @@ robolectric = "4.13"
 junitKtx = "1.2.1"
 converterGson = "3.0.0"
 gson = "2.13.0"
+jwtdecode = "2.0.2"
 
 [libraries]
 #androidx
@@ -68,6 +69,7 @@ core-ktx = { module = "androidx.test:core-ktx", version.ref = "coreKtxVersion" }
 gson = { module = "com.google.code.gson:gson", version.ref = "gson" }
 hilt-navigation-compose = { group = "androidx.hilt", name = "hilt-navigation-compose", version.ref = "hiltNavigationCompose" }
 androidx-compose-runtime = { group = "androidx.compose.runtime", name = "runtime", version.ref = "composeRuntime" }
+jwtdecode = { module = "com.auth0.android:jwtdecode", version.ref = "jwtdecode" }
 org-jsoup-jsoup = { module = "org.jsoup:jsoup", version.ref = "jsoup" }
 
 #coil

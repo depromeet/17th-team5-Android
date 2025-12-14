@@ -13,13 +13,10 @@ import dagger.hilt.components.SingletonComponent
 import javax.inject.Named
 import javax.inject.Singleton
 
+
 @Module
 @InstallIn(SingletonComponent::class)
-internal object DataStoreModule {
-
-    private const val BADGE_DOT_FILE = "badge_dot_prefs"
-    private const val LOGIN_TOKEN_FILE = "login_token_file"
-
+class DataStoreModule {
 
     @Provides
     @Singleton
@@ -27,7 +24,7 @@ internal object DataStoreModule {
     fun providePreferencesDataStoreForBadge(
         @ApplicationContext context: Context
     ): DataStore<Preferences> = PreferenceDataStoreFactory.create(
-        produceFile = { context.preferencesDataStoreFile(BADGE_DOT_FILE) }
+        produceFile = { context.preferencesDataStoreFile(PreferencesFileKey.BADGE_DOT_FILE) }
     )
 
     @Provides
@@ -36,6 +33,18 @@ internal object DataStoreModule {
     fun providePreferencesDataStoreForLogin(
         @ApplicationContext context: Context
     ): DataStore<Preferences> = PreferenceDataStoreFactory.create(
-        produceFile = { context.preferencesDataStoreFile(LOGIN_TOKEN_FILE) }
+        produceFile = { context.preferencesDataStoreFile(PreferencesFileKey.LOGIN_TOKEN_FILE) }
     )
+
+
+    object NamedKey {
+        const val BADGE_DOT_FILE = "badge_dot_file"
+        const val LOGIN_TOKEN = "login_token"
+    }
+
+    object PreferencesFileKey {
+
+        const val BADGE_DOT_FILE = "badge_dot_prefs"
+        const val LOGIN_TOKEN_FILE = "login_token_file"
+    }
 }

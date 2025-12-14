@@ -3,7 +3,7 @@ package com.depromeet.team5.core.datastore
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
-import com.depromeet.team5.core.di.NamedKey
+import com.depromeet.team5.core.di.DataStoreModule
 import com.depromeet.team5.core.preferencekey.PreferenceKey
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
@@ -16,7 +16,7 @@ import javax.inject.Singleton
 
 @Singleton
 internal class LoginDataStore @Inject constructor(
-    @Named(NamedKey.LOGIN_TOKEN)
+    @Named(DataStoreModule.NamedKey.LOGIN_TOKEN)
     private val dataStore: DataStore<Preferences>
 ) {
 

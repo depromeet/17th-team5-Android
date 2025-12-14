@@ -40,6 +40,7 @@ android {
 
 dependencies {
     implementation(projects.depromeet.core.remotedatasource)
+    implementation(projects.depromeet.core.localdatasource)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
@@ -49,6 +50,8 @@ dependencies {
     implementation(libs.converter.gson)
 
     implementation(libs.androidx.datastore.preferences)
+
+    implementation(libs.jwtdecode)
 
     implementation(libs.com.squareup.retrofit2.retrofit)
     implementation(libs.com.jakewharton.retrofit.retrofit2.kotlinx.serialization.converter)

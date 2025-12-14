@@ -3,7 +3,7 @@ package com.depromeet.team5.core.datastore
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
-import com.depromeet.team5.core.di.NamedKey
+import com.depromeet.team5.core.di.DataStoreModule
 import com.depromeet.team5.core.preferencekey.PreferenceKey.BADGE_CONSUMED_IDS
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
@@ -14,7 +14,7 @@ import javax.inject.Singleton
 
 @Singleton
 class BadgeDataStore @Inject constructor(
-    @Named(NamedKey.BADGE_DOT_FILE)
+    @Named(DataStoreModule.NamedKey.BADGE_DOT_FILE)
     private val dataStore: DataStore<Preferences>
 ) {
 

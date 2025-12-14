@@ -22,13 +22,15 @@ internal object OkHttpClientModule {
     fun provideOkHttpClient(
         httpLoggingInterceptor: HttpLoggingInterceptor,
         @RegularInterceptorQualifier
-        interceptor: Interceptor
+        interceptor: Interceptor,
+        authenticator: TokenAuthenticator
     ): OkHttpClient {
         return OkHttpClient.Builder()
             .writeTimeout(NETWORK_TIMEOUT, TimeUnit.SECONDS)
             .readTimeout(NETWORK_TIMEOUT, TimeUnit.SECONDS)
             .connectTimeout(NETWORK_TIMEOUT, TimeUnit.SECONDS)
             .addInterceptor(interceptor)
+            .authenticator(authenticator)
             .addInterceptor(httpLoggingInterceptor)
             .build()
     }

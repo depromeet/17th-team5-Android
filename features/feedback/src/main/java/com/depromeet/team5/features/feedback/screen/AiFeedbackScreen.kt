@@ -75,7 +75,7 @@ fun AiFeedbackRoute(
     modifier: Modifier = Modifier,
     onShowToast: (String) -> Unit,
     onShowErrorToast: (Throwable) -> Unit,
-    onClickedAddPrinciples: (Int, List<String>) -> Unit,
+    onClickedAddPrinciples: (Int?, OrderType, List<String>) -> Unit,
     viewModel: AiFeedbackViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.feedbackStateFlow.collectAsStateWithLifecycle()
@@ -142,14 +142,16 @@ fun AiFeedbackRoute(
             orderType = requestViewModel.request.orderType,
             onClickedConfirmButton = { myPrincipleGroup ->
                 isShowPrincipleModal = false
-
-                if (uiState is AiFeedbackUiState.Success) {
-                    val newPrinciples = (uiState as AiFeedbackUiState.Success).next
-                    onClickedAddPrinciples(myPrincipleGroup.id, newPrinciples)
-                }
             },
             onClickedAddButton = {
-                isShowPrincipleModal = false
+                if (uiState is AiFeedbackUiState.Success) {
+                    val newPrinciples = (uiState as AiFeedbackUiState.Success).next
+                    onClickedAddPrinciples(
+                        null,
+                        requestViewModel.request.orderType,
+                        newPrinciples
+                    )
+                }
             },
             onClickedClose = {
                 isShowPrincipleModal = false
@@ -555,6 +557,7 @@ private fun PrincipleDialog(
                 onShowErrorToast(it)
             }
         }
+
         is HedgeUiState.Loading<*> -> {
             HedgeLoadingScreen()
         }

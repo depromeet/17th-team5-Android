@@ -16,6 +16,7 @@ import com.depromeet.team5.features.principlegroupmodification.navigation.Princi
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flow
@@ -49,6 +50,7 @@ class PrincipleGroupModificationViewModel @Inject constructor(
                 emit(model.groupId)
             }
                 .filterNotNull()
+                .filter { model.groupId != -1 }
                 .flatMapLatest {
                     getPrincipleGroupUseCase(it)
                 }
@@ -67,7 +69,7 @@ class PrincipleGroupModificationViewModel @Inject constructor(
 
     fun upsertPrincipleGroup() {
         viewModelScope.launch {
-            if (model.groupId == null) {
+            if (model.groupId == null || model.groupId == -1) {
                 createPrincipleGroupUseCase(
                     MyPrincipleGroup.EMPTY.copy(
                         groupName = groupNameState.value,

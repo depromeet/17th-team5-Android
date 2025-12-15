@@ -22,7 +22,7 @@ data class Feedback(
 fun NavGraphBuilder.feedbackScreen(
     navController: NavController,
     onRemoveClick: () -> Unit,
-    onNavigatedToNewPrinciple: (Int, List<String>) -> Unit,
+    onNavigatedToNewPrinciple: (Int?, orderType: OrderType, List<String>) -> Unit,
     onShowToast: (String) -> Unit,
     onShowErrorToast: (Throwable) -> Unit
 ) {

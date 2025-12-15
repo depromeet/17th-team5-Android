@@ -22,7 +22,9 @@ import com.depromeet.team5.features.login.loginGraph
 import com.depromeet.team5.features.newprinciples.screen.navigation.navigateToNewPrincipleGraph
 import com.depromeet.team5.features.newprinciples.screen.navigation.newPrincipleGraph
 import com.depromeet.team5.features.principlegroupmodification.navigation.navigateToPrincipleGroupModification
+import com.depromeet.team5.features.principlegroupmodification.navigation.navigateToPrincipleGroupModificationDialog
 import com.depromeet.team5.features.principlegroupmodification.navigation.principleGroupModification
+import com.depromeet.team5.features.principlegroupmodification.navigation.principleGroupModificationDialog
 import com.depromeet.team5.features.retrospect.screen.navigateToRetrospect
 import com.depromeet.team5.features.retrospect.screen.retrospectScreen
 import com.depromeet.team5.features.search.navigateToSearch
@@ -149,6 +151,13 @@ fun HedgeNavHost(
             onShowErrorToast = onShowErrorToast
         )
 
+        principleGroupModificationDialog(
+            navController = navController,
+            onShowNoIconToast = onShowNoIconToast,
+            onShowToast = onShowToast,
+            onShowErrorToast = onShowErrorToast
+        )
+
         reasonNavigation(
             navController = navController,
             onClickBack = navController::popBackStack,
@@ -182,11 +191,17 @@ fun HedgeNavHost(
         feedbackScreen(
             navController = navController,
             onRemoveClick = { navController.popBackStack(Home, inclusive = false) },
-            onNavigatedToNewPrinciple = { groupId, principles ->
-                navController.navigateToNewPrincipleGraph(
-                    groupId = groupId,
-                    newPrinciples = principles
-                )
+            onNavigatedToNewPrinciple = { groupId, orderType, principles ->
+                if (groupId == null) {
+                    navController.navigateToPrincipleGroupModificationDialog(
+                        orderType = orderType
+                    )
+                } else {
+                    navController.navigateToNewPrincipleGraph(
+                        groupId = groupId,
+                        newPrinciples = principles
+                    )
+                }
             },
             onShowToast = onShowToast,
             onShowErrorToast = onShowErrorToast

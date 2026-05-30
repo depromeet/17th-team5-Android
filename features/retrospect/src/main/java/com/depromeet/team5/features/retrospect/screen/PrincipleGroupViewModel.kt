@@ -58,7 +58,8 @@ class PrincipleGroupViewModel @Inject constructor(
                 else -> -1
             }
 
-            val groupId = list[idx].id
+            val groupId = list.getOrNull(idx)?.id
+                ?: error("Unsupported orderType: $orderType")
             getPrincipleGroupUseCase(groupId)
         }
 }
